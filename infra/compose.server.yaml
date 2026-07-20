@@ -3,6 +3,25 @@ services:
     build:
       context: ..
       dockerfile: apps/web/Dockerfile
-    ports:
-      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8080}:80"
+    expose:
+      - "80"
     restart: unless-stopped
+
+  proxy:
+    image: caddy:2-alpine
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - idle-tamer-caddy-data:/data
+      - idle-tamer-caddy-config:/config
+    restart: unless-stopped
+
+volumes:
+  idle-tamer-caddy-data:
+  idle-tamer-caddy-config:
