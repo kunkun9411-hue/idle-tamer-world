@@ -46,11 +46,14 @@
     </style>
   </head>
   <body>
-    <header><div class="brand"><small>ETHER PROTOCOL · DEV</small><strong>IDLE TAMER ART GALLERY</strong></div><nav aria-label="Galeriefilter"><button class="is-active" data-filter="all">ALLE ASSETS</button><button data-filter="zone">3 ZONEN</button><button data-filter="starter">10 STARTER</button><button data-filter="enemy">30 GEGNER</button><button data-filter="boss">5 BOSSE</button><button data-filter="gem">45 GEMS</button></nav></header>
+    <header><div class="brand"><small>ETHER PROTOCOL · DEV</small><strong>IDLE TAMER ART GALLERY</strong></div><nav aria-label="Galeriefilter"><button class="is-active" data-filter="all">ALLE ASSETS</button><button data-filter="zone">3 ZONEN</button><button data-filter="starter">10 STARTER</button><button data-filter="egg">11 EIER</button><button data-filter="item">5 MATERIALIEN</button><button data-filter="effect">5 SYSTEM-ASSETS</button><button data-filter="enemy">30 GEGNER</button><button data-filter="boss">5 BOSSE</button><button data-filter="gem">45 GEMS</button></nav></header>
     <main>
-      <div class="hero"><small>VISUAL V2 · IMAGEGEN + PIXELLAB-VORBEREITUNG</small><h1>Eine Welt.<br>Jetzt mit Atmosphäre.</h1><p>Live aus denselben Katalogen und Runtime-Pfaden, die das Spiel verwendet. Kreaturen, Umgebungen und Equipment können hier gemeinsam beurteilt werden.</p><div class="stats"><span>3 HD-ZONENWELTEN</span><span>10 SAMMELBARE ROOKIE-LINIEN</span><span>30 NORMALGEGNER</span><span>5 ZONENBOSSE</span><span>45 GEMS</span><span>KEINE PIXEL-ART</span></div></div>
+      <div class="hero"><small>VISUAL V2 · IMAGEGEN + PIXELLAB-VORBEREITUNG</small><h1>Eine Welt.<br>Jetzt mit Atmosphäre.</h1><p>Live aus denselben Katalogen und Runtime-Pfaden, die das Spiel verwendet. Kreaturen, Umgebungen, Eier, Materialien und Effekte können hier gemeinsam beurteilt werden.</p><div class="stats"><span>3 HD-ZONENWELTEN</span><span>10 SAMMELBARE ROOKIE-LINIEN</span><span>11 EI-ASSETS</span><span>5 MATERIALIEN</span><span>5 SYSTEM-ASSETS</span><span>30 NORMALGEGNER</span><span>5 ZONENBOSSE</span><span>45 GEMS</span><span>KEINE PIXEL-ART</span></div></div>
       <section data-group="zone"><h2>Battle Environments · Optik V2</h2><div class="scene-grid" id="zones"></div></section>
       <section data-group="starter"><h2>Rookie-Starter</h2><div class="grid" id="starters"></div></section>
+      <section data-group="egg"><h2>Monstereier · zehn Linien plus unbekannter Drop</h2><div class="grid" id="eggs"></div></section>
+      <section data-group="item"><h2>Kernmaterialien</h2><div class="grid" id="items"></div></section>
+      <section data-group="effect"><h2>Brut- und Prestige-Systemassets</h2><div class="grid" id="system-assets"></div></section>
       <section data-group="enemy"><h2>Normale Wildsignale</h2><div class="grid" id="enemies"></div></section>
       <section data-group="boss"><h2>Zonenbosse</h2><div class="grid" id="bosses"></div></section>
       <section data-group="gem"><h2>Gem-Ausrüstung · 3 Formen × 5 Farben × 3 Seltenheiten</h2><div class="grid gem-grid" id="gems"></div></section>
@@ -59,12 +62,22 @@
     <script type="module">
       import { MONSTERS, elementLabel } from "/src/game/content.ts";
       import { ENEMIES, BOSSES } from "/src/game/encounters.ts";
-      import { COMBAT_ROLE_LABELS, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, ZONES, getZone } from "/src/game/catalog.ts";
+      import { COMBAT_ROLE_LABELS, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, ITEMS, ZONES, getZone } from "/src/game/catalog.ts";
 
       const card = ({ id, name, sprite, accent, meta, description }) => `<article style="--accent:${accent}"><code>${id}</code><figure><img src="${sprite}" width="200" height="200" alt="${name}" loading="lazy"></figure><div><small>${meta}</small><h3>${name}</h3><p>${description}</p></div></article>`;
       const zoneArt = { "violet-rim": "/assets/zones/violet-rim-v2.webp", "glass-gardens": "/assets/zones/glass-gardens-v2.webp", "obsidian-fjord": "/assets/zones/obsidian-fjord-v2.webp" };
       document.querySelector("#zones").innerHTML = ZONES.map(zone => `<article class="scene-card" style="--accent:${zone.accent}"><code>${zone.id}</code><figure><img src="${zoneArt[zone.id]}" width="1600" height="900" alt="${zone.name}" loading="lazy"></figure><div><small>${zone.subtitle} · 1600×900 WEBP</small><h3>${zone.name}</h3><p>${zone.description}</p></div></article>`).join("");
       document.querySelector("#starters").innerHTML = MONSTERS.map(monster => card({ id: monster.id, name: monster.name, sprite: monster.sprite, accent: monster.accent, meta: `${elementLabel[monster.element]} · ${COMBAT_ROLE_LABELS[monster.combatRole]}`, description: `Evolution: ${monster.evolution.name}` })).join("");
+      document.querySelector("#eggs").innerHTML = [...MONSTERS.map(monster => ({ id: monster.id, name: `${monster.name}-Ei`, sprite: `/assets/eggs/${monster.id}.png`, accent: monster.accent, meta: `${elementLabel[monster.element]} · 200×200 RGBA`, description: `Artspezifischer Drop der ${monster.name}-Linie.` })), { id: "mystery", name: "Unbekanntes Ei", sprite: "/assets/eggs/mystery.png", accent: "#a88bff", meta: "DROP-ICON · 200×200 RGBA", description: "Neutrale Darstellung vor der Enthüllung einer Monsterlinie." }].map(card).join("");
+      document.querySelector("#items").innerHTML = [...ITEMS.map(item => ({ id: item.id, name: item.name, sprite: item.image, accent: "#a88bff", meta: `${item.rarity} · 200×200 RGBA`, description: item.description })), { id: "prestige_core", name: "Prestige-Kern", sprite: "/assets/items/prestige-core.png", accent: "#cbb8ff", meta: "PERMANENT · 200×200 RGBA", description: "Dauerhafte Währung aus dem Ether-Ritual." }].map(card).join("");
+      const systemAssets = [
+        { id: "incubator-frame-v1", name: "Ether-Inkubator", sprite: "/assets/incubator/incubator-frame-v1.png", accent: "#a88bff", meta: "BRUT · 512×512 RGBA", description: "Leerer Rahmen für jedes separat eingesetzte Ei." },
+        { id: "ether-hatch-burst-v1", name: "Schlupf-Impuls", sprite: "/assets/effects/hatch/ether-hatch-burst-v1.png", accent: "#ffd58f", meta: "SCREEN VFX · 512×512", description: "Kurzer additiver Lichtimpuls beim Schlupf." },
+        { id: "ether-ritual-ring-v1", name: "Ritualring", sprite: "/assets/effects/prestige/ether-ritual-ring-v1.png", accent: "#a88bff", meta: "PRESTIGE · 512×512 RGBA", description: "Zwei unabhängig rotierende Ebenen hinter dem Kristall." },
+        { id: "ether-shard-v1", name: "Ether-Splitter", sprite: "/assets/effects/prestige/ether-shard-v1.png", accent: "#8f72dc", meta: "PRESTIGE · 200×200 RGBA", description: "Wird sechsfach geklont und auf eigenen Bahnen freigesetzt." },
+        { id: "ether-release-burst-v1", name: "Prestige-Impuls", sprite: "/assets/effects/prestige/ether-release-burst-v1.png", accent: "#cbb8ff", meta: "SCREEN VFX · 512×512", description: "Additiver Abschluss der 1,65-Sekunden-Sequenz." },
+      ];
+      document.querySelector("#system-assets").innerHTML = systemAssets.map(card).join("");
       document.querySelector("#enemies").innerHTML = ENEMIES.map(encounter => card({ ...encounter, meta: `${getZone(encounter.zoneId).name} · Ei: ${encounter.eggMonsterId}` })).join("");
       document.querySelector("#bosses").innerHTML = BOSSES.map(encounter => card({ ...encounter, meta: `${getZone(encounter.zoneId).name} · Boss` })).join("");
       document.querySelector("#gems").innerHTML = GEMS.map(gem => `<article class="gem-card" style="--accent:${GEM_COLORS[gem.color].hex}"><code>${gem.id}</code><figure><img src="${gem.image}" width="200" height="200" alt="${gem.name}" loading="lazy"></figure><div><small>${GEM_RARITIES[gem.rarity].name} · ${GEM_SHAPES[gem.shape].name}</small><h3>${gem.name}</h3><p>${[gem.attackPercent ? `+${gem.attackPercent}% ATK` : "", gem.hpPercent ? `+${gem.hpPercent}% HP` : ""].filter(Boolean).join(" · ")}</p></div></article>`).join("");

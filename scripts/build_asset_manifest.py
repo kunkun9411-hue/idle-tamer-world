@@ -25,6 +25,10 @@ def asset_kind(path: Path) -> str:
         "zones": "zone",
         "gems": "gem",
         "animations": "animation",
+        "eggs": "egg",
+        "effects": "effect",
+        "items": "item",
+        "incubator": "incubator",
     }.get(group, group)
 
 

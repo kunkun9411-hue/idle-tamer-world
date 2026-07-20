@@ -1,6 +1,6 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach der bewussten Entwicklungspause vom 20. Juli 2026. Bis zum Reset des Arbeitslimits werden keine neuen Spiel- oder Backendfunktionen begonnen.
+Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026. Auf ausdrücklichen Wunsch wurde danach ausschließlich das visuelle Eier-, Material-, Brut- und Prestige-Effektpaket V1 ergänzt; der Backend-Fortschritt wurde dabei nicht vorgezogen.
 
 ## Wo wir stehen
 
@@ -12,6 +12,8 @@ Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach der bewussten Ent
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
 Die Roadmap wird durch diese Pause nicht künstlich weitergezählt. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang nur das geprüfte Backend-Fundament.
+
+Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
 ## Live erreichbar
 
@@ -137,4 +139,3 @@ Erst nach dieser Planung beginnt Block 4, Schritt 2 mit Code. Der Run, Gold, Dro
 - `API_CONTRACT_V8.md` – Client-/Serververtrag
 - `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
 - `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server
-

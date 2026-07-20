@@ -360,6 +360,13 @@ main { width: 100%; flex: 1; }
 .egg-visual span::before { left: 8px; top: -5px; }.egg-visual span::after { right: 8px; bottom: -5px; }
 .egg-visual.is-running { animation: eggPulse 2.4s ease-in-out infinite; }
 .egg-visual--small { width: 60px; height: 78px; }
+.incubator-frame { width: 230px; height: 230px; position: absolute; z-index: 1; object-fit: contain; pointer-events: none; filter: drop-shadow(0 16px 24px rgba(0,0,0,.42)); }
+.egg-asset { width: 150px; height: 150px; position: relative; z-index: 2; display: block; object-fit: contain; filter: drop-shadow(0 18px 22px rgba(0,0,0,.42)); }
+.egg-asset.is-running { animation: eggPulse 2.4s ease-in-out infinite; }
+.egg-asset.is-idle { opacity: .42; filter: grayscale(.38) drop-shadow(0 14px 18px rgba(0,0,0,.32)); }
+.egg-asset--small { width: 76px; height: 76px; object-fit: contain; }
+.hatch-vfx { width: 210px; height: 210px; position: absolute; z-index: 4; object-fit: contain; opacity: 0; mix-blend-mode: screen; pointer-events: none; animation: hatchVfxRelease 1.15s ease-out both; }
+@keyframes hatchVfxRelease { 0% { opacity: 0; transform: scale(.35); } 22% { opacity: 1; } 72% { opacity: .9; transform: scale(1.08); } 100% { opacity: 0; transform: scale(1.32); } }
 .gene-note { padding: 25px; }
 .gene-note ol { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--line); }
 .gene-note li { min-height: 48px; display: grid; grid-template-columns: 28px 1fr; align-items: center; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 9px; }
@@ -696,6 +703,10 @@ footer > div:first-child i { width: 2px; height: 2px; border-radius: 50%; backgr
 .item-card { min-height: 285px; position: relative; padding: 20px; display: flex; flex-direction: column; align-items: flex-start; overflow: hidden; }
 .item-card::after { content: ""; position: absolute; width: 130px; height: 130px; right: -55px; top: -55px; border-radius: 50%; background: rgba(168,139,255,.08); filter: blur(10px); }
 .item-card__icon { width: 52px; height: 52px; margin-bottom: 24px; display: grid; place-items: center; border: 1px solid rgba(206,195,234,.22); border-radius: 15px; color: var(--violet-bright); background: var(--violet-soft); font-size: 22px; }
+.item-card__icon { width: 78px; height: 78px; padding: 4px; }
+.item-card__icon img { width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 10px 13px rgba(0,0,0,.38)); }
+.crafting-recipe__output img { width: 54px; height: 54px; display: block; object-fit: contain; }
+.resource-icon img { width: 145%; height: 145%; display: block; object-fit: contain; }
 .item-card h2 { margin: 5px 0 8px; font-family: var(--display); font-size: 20px; font-weight: 560; }
 .item-card p { min-height: 62px; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
 .item-card div > small:last-child { display: block; margin-top: 12px; color: var(--dim); font-size: 6px; letter-spacing: .5px; }

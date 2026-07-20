@@ -96,6 +96,7 @@ export interface ItemDefinition {
   id: ItemId;
   name: string;
   icon: string;
+  image: string;
   rarity: "Gewöhnlich" | "Selten" | "Episch";
   description: string;
   source: string;
@@ -103,10 +104,10 @@ export interface ItemDefinition {
 }
 
 export const ITEMS: ItemDefinition[] = [
-  { id: "training_data", name: "Trainingsdaten", icon: "↗", rarity: "Gewöhnlich", description: "Erhöht das normale Level eines Monsters sofort um 1 – ohne Goldkosten.", source: "Normale Expeditionen", action: "train" },
-  { id: "evolution_core", name: "Evolutionskern", icon: "◇", rarity: "Episch", description: "Drei Kerne entwickeln ein Rookie ab Level 20 in seine nächste Form.", source: "Zonenbosse und Story-Ziele" },
-  { id: "incubator_charge", name: "Brutladung", icon: "○", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 60 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
-  { id: "ether_dust", name: "Etherstaub", icon: "✦", rarity: "Gewöhnlich", description: "Universelles Herstellmaterial für Trainingsdaten, Brutladungen und Evolutionskerne.", source: "Kampf, Zeit-Expeditionen und Offline-Erträge" },
+  { id: "training_data", name: "Trainingsdaten", icon: "↗", image: "/assets/items/training-data.png", rarity: "Gewöhnlich", description: "Erhöht das normale Level eines Monsters sofort um 1 – ohne Goldkosten.", source: "Normale Expeditionen", action: "train" },
+  { id: "evolution_core", name: "Evolutionskern", icon: "◇", image: "/assets/items/evolution-core.png", rarity: "Episch", description: "Drei Kerne entwickeln ein Rookie ab Level 20 in seine nächste Form.", source: "Zonenbosse und Story-Ziele" },
+  { id: "incubator_charge", name: "Brutladung", icon: "○", image: "/assets/items/incubator-charge.png", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 60 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
+  { id: "ether_dust", name: "Etherstaub", icon: "✦", image: "/assets/items/ether-dust.png", rarity: "Gewöhnlich", description: "Universelles Herstellmaterial für Trainingsdaten, Brutladungen und Evolutionskerne.", source: "Kampf, Zeit-Expeditionen und Offline-Erträge" },
 ];
 
 export const emptyInventory = (): Record<ItemId, number> => ({

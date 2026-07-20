@@ -98,6 +98,7 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/PRE_BACKEND_ROADMAP.md` – vollständige Reihenfolge und Fertig-Kriterien vor dem Serverbau
 - `docs/DATABASE_BLUEPRINT.md` – verbindliches PostgreSQL-Modell für Besitz und Transaktionen
 - `docs/ASSET_PIPELINE.md` – HD-200×200- und spätere PixelLab-API-Pipeline
+- `docs/EGG_AND_VFX_ASSET_PACK.md` – elf Eier, Kernmaterialien, Inkubator, Prestige-/Bruteffekte und reproduzierbare Prompts
 - `docs/PIXELLAB_ANIMATION_CONTRACT.md` – Frame-, Anker-, Namens- und API-Jobvertrag für Animationen
 - `docs/ASSET_PROMPTS.md` – reproduzierbare Designprompts der ersten Monster
 - `docs/UI_SYSTEM.md` – verbindliche Farben, Komponenten und Responsive-Regeln

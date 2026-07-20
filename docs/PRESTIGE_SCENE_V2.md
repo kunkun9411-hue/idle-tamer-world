@@ -6,6 +6,9 @@ Die Prestige-Szene ist ein eigenständiger Ritualraum und kein normales Untermen
 
 - `apps/web/public/assets/prestige/prestige-sanctum-v2.webp` – optimierter 1600×900-RGB-Hintergrund
 - `apps/web/public/assets/prestige/ether-crystal-v2.png` – transparenter 512×768-RGBA-Kristall
+- `apps/web/public/assets/effects/prestige/ether-ritual-ring-v1.png` – gegenläufig rotierender transparenter Ritualring
+- `apps/web/public/assets/effects/prestige/ether-shard-v1.png` – sechsfach verwendeter fliegender Splitter
+- `apps/web/public/assets/effects/prestige/ether-release-burst-v1.png` – additiver Abschlussimpuls
 - `apps/web/src/styles-progression-v3.css` – Siegel, Orbits, Splitter, Energiestrahl, Plattform und Aktivierungssequenz
 - `scripts/prepare_prestige_assets.py` – reproduzierbarer Export aus den unveränderten Mastern
 
@@ -17,8 +20,8 @@ Im Ruhezustand schwebt der Kristall langsam, während sich Siegel und Orbitparti
 
 1. Siegel und Orbits beschleunigen.
 2. Der Kristall dreht sich räumlich um seine Hochachse und lädt sich auf.
-3. Splitter lösen sich, der Energiestrahl öffnet sich und der Raum reagiert.
-4. Ein kurzer heller Impuls löst die Zeitlinie auf.
+3. Sechs echte Ether-Splitter-Assets lösen sich auf individuellen Bahnen, der Energiestrahl öffnet sich und der Raum reagiert.
+4. Der generierte violett-weiße Abschlussimpuls wird per `screen`-Blend eingeblendet und löst die Zeitlinie auf.
 5. Erst danach wird das Prestige-Kommando ausgeführt und der neue Zustand angezeigt.
 
 ## Verwendete Imagegen-Prompts
