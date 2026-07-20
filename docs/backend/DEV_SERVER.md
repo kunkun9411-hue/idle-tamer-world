@@ -20,7 +20,7 @@ PostgreSQL wird nur als `127.0.0.1:54329` veröffentlicht. Ein externer Verbindu
 
 ## Zugang und Netzwerk
 
-SSH akzeptiert nur Public-Key-Anmeldung. Passwort- und interaktive Anmeldung sind deaktiviert; Root ist ausschließlich mit Schlüssel erlaubt. Die Host-Firewall erlaubt eingehend nur TCP-Port 22. Das im Repository und in Supportnachrichten niemals zu speichernde Root-Passwort ist deshalb kein regulärer Zugangsweg.
+SSH akzeptiert nur Public-Key-Anmeldung. Passwort- und interaktive Anmeldung sind deaktiviert; Root ist ausschließlich mit Schlüssel erlaubt. Die Host-Firewall sperrt eingehenden Verkehr standardmäßig und erlaubt nur 22/TCP für SSH sowie 80/TCP, 443/TCP und 443/UDP für die Web-App über IPv4 und IPv6. Das im Repository und in Supportnachrichten niemals zu speichernde Root-Passwort ist deshalb kein regulärer Zugangsweg.
 
 Für eine lokale Datenbankverbindung wird ein SSH-Tunnel verwendet:
 
@@ -55,7 +55,7 @@ ufw status
 ss -lntp
 ```
 
-Erwartet werden ein gesunder PostgreSQL-Container, zwei aktive Dienste, nur SSH auf allen Interfaces und PostgreSQL ausschließlich auf Loopback.
+Erwartet werden gesunde PostgreSQL- und Web-Container, ein aktiver Caddy-Proxy, aktive Docker- und Backup-Dienste, nur SSH/HTTP/HTTPS auf öffentlichen Interfaces und PostgreSQL ausschließlich auf Loopback.
 
 Ein manuelles Backup startet mit:
 
@@ -69,3 +69,5 @@ journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 Updates erfolgen ausschließlich als Fast-Forward von `origin/main`. Vor einer Migration wird ein Backup erzeugt. Danach laufen Compose-Healthcheck, Migration und eine Datenbankstichprobe. Niemals werden Serverdateien durch `git reset --hard` oder ein Datenvolume durch `docker compose down -v` ersetzt.
 
 Die statische Web-App ist über die Server-IP auf HTTP-Port 80 und über `idle-tamer-world.de` hinter Caddy erreichbar. Caddy stellt nach aktiver DNS-Auflösung automatisch HTTPS bereit und erneuert Zertifikate. Die API und PostgreSQL bleiben intern. Diese Dev-Domain ist ausdrücklich keine Release-Infrastruktur.
+
+Der verbindliche Pausen-, Sicherungs- und Wiedereinstiegsstand steht in `../CURRENT_CHECKPOINT.md`.

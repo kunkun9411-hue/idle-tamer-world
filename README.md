@@ -85,6 +85,7 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 
 ## Zentrale Dokumente
 
+- `docs/CURRENT_CHECKPOINT.md` – aktueller Live-, Sicherungs- und Wiedereinstiegsstand nach der Entwicklungspause
 - `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan vom Prototyp über PostgreSQL bis zum Launch
 - `docs/GAMEPLAY_FOUNDATION_SPEC.md` – verbindliche Zielbalance, Resetmatrix, E2E-Ablauf und UI-Zustände
 - `docs/NUMBER_SCALE_POLICY.md` – verbindliche Kleinzahl-, Prestige- und wissenschaftliche Zahlenregeln

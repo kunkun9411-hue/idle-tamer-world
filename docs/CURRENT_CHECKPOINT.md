@@ -1,0 +1,140 @@
+# Aktueller Entwicklungs-Checkpoint
+
+Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach der bewussten Entwicklungspause vom 20. Juli 2026. Bis zum Reset des Arbeitslimits werden keine neuen Spiel- oder Backendfunktionen begonnen.
+
+## Wo wir stehen
+
+- Gesamtfortschritt: **12 von 32 Schritten (37,5 %)**
+- Abgeschlossen: **Block 1 bis Block 3**
+- Nächster Arbeitsblock: **Block 4 – Accounts, Sessions und Bootstrap**
+- Nächster Arbeitsschritt: **Schritt 1 – Planen**
+- Noch nicht begonnen: Account-, Session- oder Authentifizierungsimplementierung
+- Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
+
+Die Roadmap wird durch diese Pause nicht künstlich weitergezählt. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang nur das geprüfte Backend-Fundament.
+
+## Live erreichbar
+
+| Ziel | Adresse |
+| --- | --- |
+| Spiel | `https://idle-tamer-world.de/` |
+| Roadmap | `https://idle-tamer-world.de/roadmap/` |
+| WWW-Alias | `https://www.idle-tamer-world.de/` |
+| Entwicklungsserver | `185.190.143.112` / `2a02:c207:3019:8470::1` |
+
+Am 20. Juli 2026 wurden HTTP-zu-HTTPS-Weiterleitung, Spiel, Roadmap und WWW-Alias extern geprüft. HTTPS antwortete über IPv4 und IPv6 mit Status 200. Das aktive Let's-Encrypt-Zertifikat ist für `idle-tamer-world.de` ausgestellt und war bei der Prüfung bis 18. Oktober 2026 gültig; Caddy übernimmt Ausstellung und Erneuerung.
+
+## Laufende Architektur
+
+```text
+Internet :80/:443
+        -> Caddy (TLS und Reverse Proxy)
+        -> statischer Web-Container :80, nur im Compose-Netz
+
+PostgreSQL 18
+        -> Host 127.0.0.1:54329
+        -> nicht öffentlich erreichbar
+```
+
+- Server: Ubuntu 26.04 LTS, Kernel `7.0.0-28-generic`
+- Checkout: `/srv/idle-tamer/app`
+- Serverumgebung: `/srv/idle-tamer/.env`, Modus `0600`
+- Docker: 29.6.2; Compose: 5.3.1
+- Container: PostgreSQL gesund, Web gesund, Caddy aktiv
+- Firewall: standardmäßig eingehend gesperrt; nur 22/TCP, 80/TCP, 443/TCP und 443/UDP für IPv4 und IPv6 freigegeben
+- SSH: Public-Key aktiv, Passwort und Keyboard-Interactive deaktiviert, Root nur mit Schlüssel
+- Datenbank: nur an Loopback gebunden
+- Backup-Timer: aktiv, täglicher Lauf mit 14 Tagen lokaler Aufbewahrung
+
+## Gesicherter Stand
+
+Am 20. Juli 2026 wurde vor der Pause ein neuer Sicherungssatz erstellt:
+
+| Sicherung | Serverpfad | SHA-256 |
+| --- | --- | --- |
+| PostgreSQL-Dump | `/srv/idle-tamer/backups/idle-tamer-20260720T191431Z.sql.gz` | `ced0e251bb0c4e0283ae405d541f55b3ca328c1951faa961bff6e34740664f1f` |
+| Bereinigter Betriebs-Snapshot | `/srv/idle-tamer/backups/idle-tamer-ops-20260720T191430Z.tar.gz` | `d046efc228be1ff098f1ae25aa631a36d5de8795fefb80ecf8b54cac908993e0` |
+
+Der SQL-Dump wurde nicht nur entpackt: Er wurde erfolgreich in die temporäre Datenbank `idle_tamer_checkpoint_restore` eingespielt, dort mit **8 öffentlichen Tabellen** geprüft und anschließend wieder entfernt.
+
+Eine zweite Kopie liegt lokal und wird von Git ignoriert:
+
+```text
+C:\Users\xapu\Documents\idle browsergame\.runtime\checkpoints\2026-07-20
+```
+
+Der Betriebs-Snapshot enthält ausgewählte SSH-, Firewall-/Netzwerk-, Docker- und systemd-Konfigurationen sowie einen Zustandsbericht. Er enthält weder `.env`-Werte noch SSH-Privatschlüssel oder private TLS-Schlüssel. Server und lokale Kopie allein sind für eine spätere Produktion noch keine ausreichende Backupstrategie; vor echten Spielerdaten kommen verschlüsselte, automatisierte Offsite-Backups und regelmäßige Restore-Proben hinzu.
+
+## Sicherheitsrestpunkt
+
+Ein früheres Root-Passwort wurde im Chat offengelegt. SSH-Passwortanmeldung ist auf dem Server zwar wirksam deaktiviert, das Passwort sollte dennoch im Contabo-Kundenbereich beziehungsweise über die Serverkonsole erneut auf einen einzigartigen, nirgendwo dokumentierten Wert geändert werden. Es gehört weder ins Repository noch in dieses Dokument.
+
+## Sicher wieder einsteigen
+
+### 1. Lokal prüfen
+
+```powershell
+git status --short
+git fetch --tags origin
+git switch main
+git pull --ff-only
+git describe --tags --exact-match
+pnpm check
+```
+
+Erwartet werden ein sauberer Arbeitsbaum und der Tag `checkpoint/domain-live-backend-foundation-2026-07-20` am Checkpoint. Spätere Commits dürfen natürlich hinter diesem Tag liegen.
+
+### 2. Server prüfen
+
+```powershell
+ssh -i "$HOME\.ssh\cleancore_freebsd_ed25519" root@185.190.143.112
+```
+
+```bash
+cd /srv/idle-tamer/app
+git status --short
+git pull --ff-only
+
+docker compose \
+  --env-file /srv/idle-tamer/.env \
+  -f infra/compose.yaml \
+  -f infra/compose.server.yaml \
+  ps
+
+systemctl is-active docker
+systemctl is-active idle-tamer-db-backup.timer
+ufw status
+ss -lntup
+```
+
+Vor jeder Datenbankmigration:
+
+```bash
+systemctl start idle-tamer-db-backup.service
+journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
+```
+
+Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öffentliche PostgreSQL-Freigabe oder Secrets im Repository verwenden.
+
+## Exakter nächster Arbeitsauftrag
+
+Weiter geht es ausschließlich mit **Block 4, Schritt 1 – Planen**:
+
+1. Registrierung, Login, Logout, Sessionerneuerung, Geräteverwaltung, Widerruf und Accountlöschung als Zustandsmodell festlegen.
+2. Passwort-Hashing, HTTP-only Cookies, CSRF-Schutz, Rate-Limits, Wiederherstellung und Sperren verbindlich entscheiden.
+3. Bootstrap-Antwort, Profil, Starterwahl und den Übergang vom lokalen zum serverautoritativen Spielstand normieren.
+4. SQL-Tabellen, API-Verträge, Datenschutz, Export/Löschung und Abnahmekriterien freigeben.
+
+Erst nach dieser Planung beginnt Block 4, Schritt 2 mit Code. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal; sie werden nicht nebenbei halb migriert.
+
+## Relevante Unterlagen
+
+- `PRODUCT_ROADMAP.md` – Status, Reihenfolge und Gates
+- `backend/README.md` – Backend-Einstieg und abgenommener Stand
+- `backend/DEV_SERVER.md` – Betrieb des Entwicklungsservers
+- `backend/OPERATIONS_PLAN.md` – Umgebungen, Backups und Restore
+- `backend/SCHEMA_REVIEW.md` – Tabellen- und Transaktionsregeln
+- `API_CONTRACT_V8.md` – Client-/Serververtrag
+- `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
+- `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server
+
