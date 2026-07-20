@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
-  "activeBlock": 2,
-  "activeStep": 4,
+  "activeBlock": 3,
+  "activeStep": 1,
   "blocks": [
     {
       "id": 1,
@@ -13,7 +13,7 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "Kernloop, Inhalte, Ökonomie und Stil festgelegt" },
         { "name": "Bauen", "done": true, "note": "Kampf, Sammlung, Prestige und Meta-Systeme spielbar" },
-        { "name": "Prüfen", "done": true, "note": "33 Regeltests, Build und 94 Runtime-Assets validiert" },
+        { "name": "Prüfen", "done": true, "note": "33 Regeltests, Build und 96 Runtime-Assets validiert" },
         { "name": "Abnehmen", "done": true, "note": "Grundversion dokumentiert und auf GitHub gesichert" }
       ]
     },
@@ -27,8 +27,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festgezogen" },
         { "name": "Bauen", "done": true, "note": "E2E-Kernloop, Service-Port, UI-Zustände und Assetvertrag fertig" },
-        { "name": "Prüfen", "done": true, "note": "44 Verträge und 11 Browserfälle auf drei Gerätegrößen grün" },
-        { "name": "Abnehmen", "done": false, "note": "Client- und API-Vertrag gemeinsam freigeben" }
+        { "name": "Prüfen", "done": true, "note": "45 Verträge und 11 Browserfälle auf drei Gerätegrößen grün" },
+        { "name": "Abnehmen", "done": true, "note": "Spielbogen, Prestige V2 und API-Protokoll 8 freigegeben" }
       ]
     },
     {

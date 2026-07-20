@@ -1,8 +1,8 @@
 # Idle Tamer – Arbeitsroadmap
 
 - Stand: 20. Juli 2026
-- Aktiver Block: **Block 2 – Backend-bereiter Client**
-- Aktiver Schritt: **Schritt 4 – Abnehmen**
+- Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
+- Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `public/roadmap/roadmap-status.json`
 
@@ -30,15 +30,15 @@ flowchart LR
 | Block | Ergebnis | 1 Planen | 2 Bauen | 3 Prüfen | 4 Abnehmen | Status |
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
-| 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [ ] | **Aktiv** |
-| 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | Geplant |
+| 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
+| 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **7 von 32 Schritten abgeschlossen**.
+Gesamtfortschritt: **8 von 32 Schritten abgeschlossen (25 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -117,7 +117,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] einheitliche Verbindungs-, Lade- und Revisionskonflikt-UI umgesetzt
 - [x] Asset-Manifest und PixelLab-Animationsvertrag für 200×200-Monster ergänzt
 
-**Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 94 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
+**Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 96 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
 
 ### Schritt 3 – Prüfen ✅
 
@@ -128,17 +128,17 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Parallel-Tab-, Reload- und veraltete-Revision-Fälle simulieren
 - [x] CI für Test, Build, Content und Assets aktivieren
 
-**Definition of Done erfüllt:** 44 Regel-, Content- und Service-Vertragstests sowie elf echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen, parallele Tabs und die Zone-10-Prestigesperre sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 94 Assetverträge und den sichtbaren Kernloop.
+**Definition of Done erfüllt:** 45 Regel-, Content- und Service-Vertragstests sowie elf echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen, parallele Tabs und die Zone-10-Prestigesperre sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 96 Assetverträge und den sichtbaren Kernloop.
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] manuellen ersten Spielbogen ohne Blocker abschließen
+- [x] manuellen ersten Spielbogen ohne Blocker abschließen
 - [x] automatischen E2E-Kernloop erfolgreich ausführen
 - [x] Balance- und Resetregeln als verbindlich markieren
-- [ ] Backend-API-Vertrag versionieren und freigeben
-- [ ] Dokumentation, Tests und GitHub-Stand synchronisieren
+- [x] Backend-API-Vertrag versionieren und freigeben
+- [x] Dokumentation, Tests und GitHub-Stand synchronisieren
 
-**Gate:** Kein Spielkommando akzeptiert resultierende Bestände vom Client. Die UI kennt ausschließlich Absichten und autoritative Antworten.
+**Gate erfüllt:** Der erste Spielbogen wurde im echten Browser auf Desktop und 390×844 ohne Blocker abgenommen. `API_CONTRACT_V8.md` friert die Backendgrenze ein: Kein Spielkommando akzeptiert resultierende Bestände vom Client; die UI kennt ausschließlich Absichten und autoritative Antworten. Die vollständige Qualitätsschranke und der GitHub-Stand sind synchron.
 
 ---
 
@@ -419,12 +419,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir beginnen mit **Block 2, Schritt 2 – Bauen**:
+Wir beginnen mit **Block 3, Schritt 1 – Planen**:
 
-1. Foundation-1.0-Werte in die zentrale Balancekonfiguration übernehmen.
-2. Browser-E2E-Ablauf mit reproduzierbaren Fixtures aufsetzen.
-3. reine Regeln weiter von DOM, Browserzeit und `localStorage` entkoppeln.
-4. Verbindungs-, Lade- und Revisionskonflikt-UI ergänzen.
-5. Asset-Manifest und PixelLab-Animationsvertrag ergänzen.
+1. Zielstruktur für Web, API, gemeinsame Verträge, Content und Datenbank festziehen.
+2. Node/TypeScript-HTTP-Schicht, PostgreSQL-Zugriff und Migrationstechnik verbindlich auswählen.
+3. Blueprint, Indizes, Revisionen, Idempotenz und Ledger gegen API-Protokoll 8 prüfen.
+4. Entwicklungs-, Test-, Produktions-, Backup- und Rollbackabläufe dokumentieren.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.

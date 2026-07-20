@@ -43,7 +43,7 @@ Bereits im Vertical Slice vorhanden:
 8. Kampfkonsole, Beutespeicher und aktive Verbindung
 9. leere Zustände für Sammlung und Ei-Inventar
 10. sammelbarer Offline-Bericht, Erfolgsbanner und temporärer Toast
-11. eigenständige Prestige-Szene mit Ether-Kristall, Reset-Ledger und Aktivierungsanimation
+11. eigenständige Prestige-Szene mit HD-Ether-Heiligtum, Kristall, Reset-Ledger und räumlicher Aktivierungsanimation
 12. Forschungs-, Monster-, Ei-, Zonen- und Gilden-DNA-Karten
 13. einklappbares Kampf-HUD, Fokusmodus, Mobile-Bottom-Navigation und technische Fußzeile der Unterseiten
 14. Gem-Arbeitsbereich mit drei festen Form-Slots, Inventarchips und direkt sichtbaren Grundwertboni
@@ -60,6 +60,7 @@ Bereits im Vertical Slice vorhanden:
 - Unter 620 Pixeln stehen Karten, Aktionen und Statistiken einspaltig.
 - Klickziele sind mindestens 40 Pixel hoch. Fokuszustände sind immer sichtbar.
 - `prefers-reduced-motion` deaktiviert längere Animationen nahezu vollständig.
+- Die Prestige-Szene bleibt bei 1280×720 vollständig sichtbar; auf Mobilgeräten wird ihre Ritualachse vor das Reset-Ledger gestapelt.
 
 ## Neue Seiten
 

@@ -23,7 +23,7 @@ test("an external tab update blocks stale autosaves and reloads the latest state
   await secondTab.evaluate((key) => {
     const latest = JSON.parse(localStorage.getItem(key) ?? "{}");
     latest.resources.gold = 9_876;
-    latest.lastSeenAt += 1;
+    latest.lastSavedAt += 1;
     localStorage.setItem(key, JSON.stringify(latest));
   }, STORAGE_KEY);
 

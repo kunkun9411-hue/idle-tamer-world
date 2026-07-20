@@ -50,6 +50,9 @@ test("Prestige remains locked before zone 10 even after 500 run victories", asyn
   await page.locator('[data-combat-panel="missions"]').click();
   await page.locator("#start-prestige").click();
 
+  await expect(page.getByTestId("prestige-scene")).toBeVisible();
+  await expect(page.getByTestId("prestige-crystal").locator("img")).toHaveAttribute("src", "/assets/prestige/ether-crystal-v2.png");
+  await expect(page.getByTestId("prestige-backdrop")).toHaveCSS("background-image", /prestige-sanctum-v2\.webp/);
   await expect(page.getByText("ZONE 9 / 10")).toBeVisible();
   await expect(page.locator("#confirm-prestige")).toBeDisabled();
   await expect(page.locator("#confirm-prestige")).toHaveText("PRESTIGE AB ZONE 10");
@@ -99,7 +102,10 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await page.locator('[data-combat-panel="missions"]').click();
   await expect(page.locator("#start-prestige")).toBeVisible();
   await page.locator("#start-prestige").click();
+  await expect(page.getByTestId("prestige-scene")).toBeVisible();
+  await expect(page.getByTestId("prestige-crystal").locator("img")).toBeVisible();
   await page.locator("#confirm-prestige").click();
+  await expect(page.getByTestId("prestige-scene")).toHaveClass(/is-activating/);
   await expect(page.getByText("Neue Zeitlinie gestartet")).toBeVisible({ timeout: 5_000 });
 
   const persisted = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}"), STORAGE_KEY) as typeof state;

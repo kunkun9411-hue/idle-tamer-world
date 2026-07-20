@@ -157,6 +157,7 @@ nav a:not(.nav-cta):hover {
 
 .hero {
   position: relative;
+  overflow: clip;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   align-items: center;

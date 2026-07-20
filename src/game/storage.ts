@@ -18,7 +18,7 @@ export interface LoadedGame {
 
 export type SaveResult =
   | { ok: true; savedAt: number }
-  | { ok: false; savedAt: number; reason: "storage-unavailable" };
+  | { ok: false; savedAt: number; reason: "stale-revision" | "storage-unavailable" };
 
 export interface StorageDependencies {
   storage?: Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -314,9 +314,16 @@ export const loadGame = ({ storage = browserStorage(), now = Date.now }: Storage
 
 export const saveGame = (state: GameState, { storage = browserStorage(), now = Date.now }: StorageDependencies = {}): SaveResult => {
   const previousSavedAt = state.lastSavedAt;
-  const savedAt = now();
-  state.lastSavedAt = savedAt;
   try {
+    const persisted = storage.getItem(STORAGE_KEY);
+    if (persisted) {
+      const persistedState = JSON.parse(persisted) as Partial<GameState>;
+      if (typeof persistedState.lastSavedAt === "number" && persistedState.lastSavedAt > previousSavedAt) {
+        return { ok: false, savedAt: previousSavedAt, reason: "stale-revision" };
+      }
+    }
+    const savedAt = Math.max(now(), previousSavedAt + 1);
+    state.lastSavedAt = savedAt;
     storage.setItem(STORAGE_KEY, JSON.stringify(state));
     return { ok: true, savedAt };
   } catch {

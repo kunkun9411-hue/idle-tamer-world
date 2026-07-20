@@ -992,19 +992,27 @@ function prestigeView(): string {
   const zoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
   const reward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
   const charge = Math.min(100, game.runVictories);
+  const visualCharge = zoneReady ? charge : Math.min(100, game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber * 100);
   const permanentHyper = game.roster.reduce((sum, monster) => sum + monster.hyperLevel, 0);
   const equippedGems = game.roster.reduce((sum, monster) => sum + Object.keys(monster.gemSlots).length, 0);
   const currentStatBonus = (game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",");
   const currentGoldBonus = (game.prestigeCount * BALANCE.prestige.repeatableGoldPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",");
   const currentDropBonus = (game.prestigeCount * BALANCE.prestige.dropChancePerPrestige * 100).toFixed(3).replace(".", ",");
-  return `<main class="prestige-scene ${prestigeActivating ? "is-activating" : ""}">
+  return `<main class="prestige-scene ${prestigeActivating ? "is-activating" : ""}" style="--ether-charge:${visualCharge}%" data-testid="prestige-scene">
+    <div class="prestige-scene__backdrop" data-testid="prestige-backdrop" aria-hidden="true"></div>
     <div class="prestige-scene__ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="prestige-scene__flash" aria-hidden="true"></div>
     <header class="prestige-header"><button class="brand" data-home>${brandMarkup()}</button><button class="secondary-button" data-view="expedition" ${prestigeActivating ? "disabled" : ""}>← ZURÜCK ZUM KAMPF</button></header>
-    <section class="prestige-copy"><span class="eyebrow">PRESTIGE · ETHER-RESONANZ</span><h1>Eine Zeitlinie endet.<br><em>Deine Bindung bleibt.</em></h1><p>Der Ether-Kristall speichert nur, was deinen Account wirklich stärker macht. Der aktuelle Run wird freigegeben und beginnt anschließend wieder bei null.</p></section>
+    <section class="prestige-copy"><span class="eyebrow">PRESTIGE · ETHER-RESONANZ</span><h1>Eine Zeitlinie endet.<br><em>Deine Bindung bleibt.</em></h1><p>Der Ether-Kristall verankert nur, was deinen Account dauerhaft stärker macht. Dein Run wird freigegeben – Hyperlevel, Evolutionen und Gems überdauern den Wandel.</p><span class="prestige-access-seal"><i></i>${zoneReady ? "RITUALZUGANG BESTÄTIGT" : `RESONANZSPERRE · ZONE ${BALANCE.prestige.requiredZoneNumber}`}</span></section>
     <section class="ether-crystal-stage" aria-label="Ether-Kristall zu ${charge} Prozent geladen">
-      <div class="ether-orbit ether-orbit--outer"><i></i><i></i><i></i></div><div class="ether-orbit ether-orbit--inner"><i></i><i></i></div>
-      <div class="ether-crystal"><i></i><i></i><i></i><span></span></div>
-      <div class="ether-charge"><span><small>${zoneReady ? "KRISTALL-LADUNG" : "PRESTIGE-ZUGANG"}</small><b>${zoneReady ? `${game.runVictories} / 100` : `ZONE ${game.highestZoneNumber} / ${BALANCE.prestige.requiredZoneNumber}`}</b></span><i><em style="width:${zoneReady ? charge : Math.min(100, game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber * 100)}%"></em></i><strong>${reward > 0 ? `${reward} ETHER-KERN${reward === 1 ? "" : "E"} BEREIT` : zoneReady ? `${Math.max(0, 100 - game.runVictories)} SIEGE BIS PRESTIGE` : `ERREICHE ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong></div>
+      <div class="ether-beam" aria-hidden="true"></div>
+      <div class="ether-sigil ether-sigil--outer" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="ether-sigil ether-sigil--inner" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="ether-orbit ether-orbit--outer" aria-hidden="true"><i></i><i></i><i></i></div><div class="ether-orbit ether-orbit--inner" aria-hidden="true"><i></i><i></i></div>
+      <div class="ether-fragments" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="ether-crystal" data-testid="prestige-crystal"><img src="/assets/prestige/ether-crystal-v2.png" alt=""><span></span></div>
+      <div class="ether-pedestal" aria-hidden="true"><i></i><span></span></div>
+      <div class="ether-charge"><span><small>${zoneReady ? "KRISTALL-LADUNG" : "PRESTIGE-ZUGANG"}</small><b>${zoneReady ? `${game.runVictories} / 100` : `ZONE ${game.highestZoneNumber} / ${BALANCE.prestige.requiredZoneNumber}`}</b></span><i><em></em></i><strong>${reward > 0 ? `${reward} ETHER-KERN${reward === 1 ? "" : "E"} BEREIT` : zoneReady ? `${Math.max(0, 100 - game.runVictories)} SIEGE BIS PRESTIGE` : `ERREICHE ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong></div>
     </section>
     <section class="prestige-ledger">
       <article><span class="eyebrow">WIRD FREIGEGEBEN</span><h2>Run-Fortschritt</h2><ul><li><b>${formatNumber(game.resources.gold)}</b><span>Run-Gold</span></li><li><b>${game.roster.reduce((sum, monster) => sum + Math.max(0, monster.level - 1), 0)}</b><span>zusätzliche normale Level</span></li><li><b>${getZone(game.currentZoneId).name}</b><span>Zone und Stage-Fortschritt</span></li></ul></article>
@@ -1153,7 +1161,14 @@ function frame(now: number): void {
   if (delta < 1_000) tickBattle(now);
   const dynamicView = !showLogin && !showOfflineReport && !starterDialogOpen && (activeView === "expedition" || activeView === "incubation" || activeView === "dispatch");
   if (dynamicView && now - lastRender >= 500) { render(); lastRender = now; }
-  if (clientUiState !== "conflict" && now - lastSave >= 5_000) { service.save(); lastSave = now; }
+  if (clientUiState !== "conflict" && now - lastSave >= 5_000) {
+    const saveResult = service.save();
+    lastSave = now;
+    if (!saveResult.ok && saveResult.reason === "stale-revision") {
+      clientUiState = "conflict";
+      render();
+    }
+  }
   requestAnimationFrame(frame);
 }
 

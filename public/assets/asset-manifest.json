@@ -1004,6 +1004,28 @@
       "sha256": "dcb4676d5a82932a27034efd247e589eb743a5a592067a681433879a61a7a7ec"
     },
     {
+      "id": "prestige.ether-crystal-v2",
+      "kind": "prestige",
+      "path": "/assets/prestige/ether-crystal-v2.png",
+      "format": "png",
+      "width": 512,
+      "height": 768,
+      "alpha": true,
+      "bytes": 219193,
+      "sha256": "f37eb92fd7a13acc1a86fd5468999548c8ca5119d863184bd12febc6687a749b"
+    },
+    {
+      "id": "prestige.prestige-sanctum-v2",
+      "kind": "prestige",
+      "path": "/assets/prestige/prestige-sanctum-v2.webp",
+      "format": "webp",
+      "width": 1600,
+      "height": 900,
+      "alpha": false,
+      "bytes": 136864,
+      "sha256": "e63bca1af0ffa0499e219d28e0c2dbdec442623643a7d03e0fe05c7b690f6447"
+    },
+    {
       "id": "zone.glass-gardens-v2",
       "kind": "zone",
       "path": "/assets/zones/glass-gardens-v2.webp",

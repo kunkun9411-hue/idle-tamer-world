@@ -31,4 +31,16 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
     expect(box!.x, `${selector} starts inside the viewport`).toBeGreaterThanOrEqual(-1);
     expect(box!.x + box!.width, `${selector} ends inside the viewport`).toBeLessThanOrEqual(layout.innerWidth + 1);
   }
+
+  await page.locator('[data-combat-panel="missions"]').click();
+  await page.locator("#start-prestige").click();
+  await expect(page.getByTestId("prestige-scene")).toBeVisible();
+  await expect(page.getByTestId("prestige-crystal").locator("img")).toBeVisible();
+  const prestigeLayout = await page.evaluate(() => ({
+    innerWidth: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+    bodyWidth: document.body.scrollWidth,
+  }));
+  expect(prestigeLayout.documentWidth).toBeLessThanOrEqual(prestigeLayout.innerWidth + 1);
+  expect(prestigeLayout.bodyWidth).toBeLessThanOrEqual(prestigeLayout.innerWidth + 1);
 });

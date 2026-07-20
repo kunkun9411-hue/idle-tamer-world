@@ -11,7 +11,7 @@
 
 Imagegen erzeugt zunächst einen hochauflösenden Chroma-Master. Der installierte Freistellungsprozess entfernt den Key. `scripts/prepare_sprite.py` trimmt nur die transparente Fläche, erhält acht Pixel Sicherheitsabstand und exportiert deterministisch auf einer 200×200-Leinwand.
 
-Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf Bosse. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller 94 Runtime-Bilder.
+Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf Bosse. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. Die Prestige-Szene ergänzt ein 1600×900-Heiligtum und einen transparenten 512×768-Ether-Kristall. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller 96 Runtime-Bilder.
 
 ## Ordner
 
@@ -27,6 +27,8 @@ Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf 
 - `art-source/generated/gems/transparent` – neun neutrale freigestellte Gem-Master
 - `public/assets/gems/<rarity>/*.png` – 45 freigegebene transparente 200×200-Gems
 - `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes 1024×1024-Markenlogo
+- `art-source/generated/prestige-v2` – unveränderte Imagegen- und freigestellte Prestige-Master
+- `public/assets/prestige` – optimierter Hintergrund und transparenter Ether-Kristall
 - `public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
 - `art-source/archive/pixel-v1` – verworfener Pixel-Stiltest
 
@@ -48,3 +50,5 @@ Der vollständige Job-, Frame-, Anker- und Abnahmevertrag steht in `PIXELLAB_ANI
 Zonenhintergründe laufen getrennt von der 200×200-PixelLab-Spritepipeline. `python scripts/prepare_zone_backgrounds.py` erzeugt ihre WebP-Runtime-Dateien reproduzierbar aus den PNG-Mastern; Promptset und Art Direction stehen in `docs/ART_DIRECTION_V2.md`.
 
 Gems laufen ebenfalls getrennt von Monsteranimationen. `python scripts/build_gem_assets.py` erzeugt aus neun freigestellten Mastern alle fünf Farbvarianten pro Form und Seltenheit. Regeln und der reproduzierbare Prompt stehen in `docs/GEM_SYSTEM.md`.
+
+Prestige-Art läuft ebenfalls getrennt von der 200×200-Spritepipeline. `python scripts/prepare_prestige_assets.py` erzeugt beide Runtime-Dateien reproduzierbar; Komposition, Animation und vollständige Prompts stehen in `docs/PRESTIGE_SCENE_V2.md`.

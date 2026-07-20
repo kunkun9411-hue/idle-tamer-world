@@ -31,7 +31,7 @@ Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatische
 - Ether-Brutstation mit echter Zeit, Erstentdeckung und Duplikaterkennung
 - monsterspezifische Fragmente für permanente Hyperlevel und Evolutionen
 - Gem-Ausrüstung mit drei Formen, fünf Farben und drei Seltenheiten: 45 transparente HD-Assets
-- eigene Prestige-Szene mit aufladbarem Ether-Kristall und Reset-Animation
+- eigene Prestige-Szene als HD-Ether-Heiligtum mit aufladbarem Kristall, Ritualeffekten und Reset-Animation
 - Prestige erst nach Erreichen von Zone 10 und ab 100 Run-Siegen; Hyperlevel, Evolutionen, Gems und Sammlung bleiben erhalten
 - kleine dauerhafte Prestige-Boni: +0,2 % Grundwerte, +0,1 % wiederholbares Gold und +0,001 Prozentpunkte Dropchance je Prestige
 - permanente Account-Forschung mit Prestige-Kernen
@@ -89,7 +89,8 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `public/assets/enemies` und `public/assets/bosses` – 35 weitere Imagegen-Runtime-Assets
 - `public/assets/zones` – drei optimierte 1600×900-WebP-Kampfumgebungen
 - `public/assets/gems` – 45 transparente 200×200-Gems nach Seltenheit
-- `public/assets/asset-manifest.json` – 94 eindeutige Runtime-IDs mit Maßen und SHA-256
+- `public/assets/prestige` – 1600×900-Heiligtum und transparenter 512×768-Ether-Kristall
+- `public/assets/asset-manifest.json` – 96 eindeutige Runtime-IDs mit Maßen und SHA-256
 - `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes Markenlogo im Runtime-Vertrag
 - `art-source` – HD-Master, Chroma-Quellen und archivierte Stiltests
 
@@ -102,12 +103,14 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/ART_DIRECTION_V2.md` – neue visuelle Richtung, Zonenprompts und schnelle Anpassung
 - `docs/PLAYER_ENTRY_FLOW.md` – verbindlicher Ablauf von Login bis Hauptkampfszene
 - `docs/ONLINE_ARCHITECTURE.md` – direkter Weg zu Accounts, PostgreSQL, PvP und Gilden
+- `docs/API_CONTRACT_V8.md` – für den Backendbau freigegebener Kommando- und Antwortvertrag
 - `docs/PRE_BACKEND_ROADMAP.md` – vollständige Reihenfolge und Fertig-Kriterien vor dem Serverbau
 - `docs/DATABASE_BLUEPRINT.md` – verbindliches PostgreSQL-Modell für Besitz und Transaktionen
 - `docs/ASSET_PIPELINE.md` – HD-200×200- und spätere PixelLab-API-Pipeline
 - `docs/PIXELLAB_ANIMATION_CONTRACT.md` – Frame-, Anker-, Namens- und API-Jobvertrag für Animationen
 - `docs/ASSET_PROMPTS.md` – reproduzierbare Designprompts der ersten Monster
 - `docs/UI_SYSTEM.md` – verbindliche Farben, Komponenten und Responsive-Regeln
+- `docs/PRESTIGE_SCENE_V2.md` – Aufbau, Animation, Assets und reproduzierbare Imagegen-Prompts der Prestige-Szene
 - `docs/CONTENT_PIPELINE.md` – Dev-Konzept für Zonenpflege, Validierung und Live-Veröffentlichung
 - `docs/CUSTOMIZATION_GUIDE.md` – schnelle Übersicht: welche Werte du morgen wo änderst
 - `docs/CORE_GAME_LOOP.md` – kompletter Spielkreislauf und Resetgrenzen

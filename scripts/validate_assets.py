@@ -17,10 +17,11 @@ GROUPS = {
 }
 ZONE_BACKGROUNDS = ROOT / "public" / "assets" / "zones"
 GEM_ROOT = ROOT / "public" / "assets" / "gems"
+PRESTIGE_ROOT = ROOT / "public" / "assets" / "prestige"
 MANIFEST = ROOT / "public" / "assets" / "asset-manifest.json"
 ASSET_ROOT = ROOT / "public" / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000}
 
 
 def validate(path: Path) -> None:
@@ -45,6 +46,7 @@ def asset_kind(path: Path) -> str:
         "zones": "zone",
         "gems": "gem",
         "branding": "branding",
+        "prestige": "prestige",
     }[path.relative_to(ASSET_ROOT).parts[0]]
 
 
@@ -101,6 +103,22 @@ def main() -> None:
             if image.mode != "RGB":
                 raise ValueError(f"{path}: expected RGB, got {image.mode}")
     print(f"zones: {len(zone_files)} valid 1600x900 WebP backgrounds")
+    prestige_files = sorted(PRESTIGE_ROOT.glob("*"))
+    if {path.name for path in prestige_files} != {"prestige-sanctum-v2.webp", "ether-crystal-v2.png"}:
+        raise ValueError(f"prestige: unexpected runtime assets {[path.name for path in prestige_files]}")
+    with Image.open(PRESTIGE_ROOT / "prestige-sanctum-v2.webp") as image:
+        if image.size != (1600, 900) or image.mode != "RGB":
+            raise ValueError(f"prestige background: expected 1600x900 RGB, got {image.size} {image.mode}")
+    with Image.open(PRESTIGE_ROOT / "ether-crystal-v2.png") as image:
+        if image.size != (512, 768) or image.mode != "RGBA":
+            raise ValueError(f"prestige crystal: expected 512x768 RGBA, got {image.size} {image.mode}")
+        alpha = image.getchannel("A")
+        if alpha.getbbox() is None:
+            raise ValueError("prestige crystal: no visible pixels")
+        corners = [alpha.getpixel(point) for point in ((0, 0), (511, 0), (0, 767), (511, 767))]
+        if any(corners):
+            raise ValueError("prestige crystal: corners must be transparent")
+    print("prestige: 1600x900 RGB sanctum and transparent 512x768 crystal valid")
     gem_files = sorted(GEM_ROOT.glob("*/*.png"))
     if len(gem_files) != 45:
         raise ValueError(f"gems: expected 45 runtime assets, found {len(gem_files)}")
@@ -133,7 +151,7 @@ def main() -> None:
     if total_bytes > 6_000_000:
         raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 6 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
-    print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems + 1 branding asset")
+    print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems + 1 branding asset + {len(prestige_files)} prestige assets")
 
 
 if __name__ == "__main__":

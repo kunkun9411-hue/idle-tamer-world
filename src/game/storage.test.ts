@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createInitialState, createMonster } from "./rules";
-import { loadGame, saveGame } from "./storage";
+import { loadGame, saveGame, STORAGE_KEY } from "./storage";
 
 let values: Map<string, string>;
 
@@ -14,6 +14,18 @@ beforeEach(() => {
 });
 
 describe("save schema v9", () => {
+  it("refuses to overwrite a newer save from another tab", () => {
+    const state = createInitialState(() => 1_000);
+    const external = structuredClone(state);
+    external.resources.gold = 9_876;
+    external.lastSavedAt = state.lastSavedAt + 1;
+    values.set(STORAGE_KEY, JSON.stringify(external));
+
+    state.resources.gold = 100;
+    expect(saveGame(state, { now: () => 2_000 })).toEqual({ ok: false, savedAt: 1_000, reason: "stale-revision" });
+    expect(JSON.parse(values.get(STORAGE_KEY) ?? "{}").resources.gold).toBe(9_876);
+  });
+
   it("migrates a v3 roster without losing permanent progress", () => {
     const monster = createMonster("pyrook", 17, 2, 4);
     values.set("idle-tamer.save.v3", JSON.stringify({
