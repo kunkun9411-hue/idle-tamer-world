@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
   "activeBlock": 3,
-  "activeStep": 2,
+  "activeStep": 3,
   "blocks": [
     {
       "id": 1,
@@ -19,7 +19,7 @@
     },
     {
       "id": 2,
-      "kicker": "Jetzt aktiv",
+      "kicker": "Client",
       "title": "Backend-bereiter Client",
       "summary": "Der geprüfte Clientvertrag wird jetzt im echten Spielbogen abgenommen und für den Backendstart freigegeben.",
       "visual": "client",
@@ -33,15 +33,15 @@
     },
     {
       "id": 3,
-      "kicker": "Technik",
+      "kicker": "Jetzt aktiv",
       "title": "API & PostgreSQL",
       "summary": "Ein deploybares Backend-Fundament mit Migrationen, Transaktionen, Ledger und Backups.",
       "visual": "backend",
       "accent": "blue",
       "steps": [
         { "name": "Planen", "done": true, "note": "Node 24, Fastify 5, PostgreSQL 18, SQL-Schema und Betrieb festgelegt" },
-        { "name": "Bauen", "done": false, "note": "Workspace, API, Migration, Transaktionen und PostgreSQL-CI gebaut; echte SQL-Abnahme läuft" },
-        { "name": "Prüfen", "done": false, "note": "Transaktionen, Constraints, Parallelität und Restore testen" },
+        { "name": "Bauen", "done": true, "note": "Workspace, Fastify, Migration, Seed, Ledger und PostgreSQL-18-CI stehen" },
+        { "name": "Prüfen", "done": false, "note": "SQL-Kernfälle grün; Restore und Log-Sicherheitsprüfung folgen" },
         { "name": "Abnehmen", "done": false, "note": "Reproduzierbares Fundament in Testumgebung freigeben" }
       ]
     },

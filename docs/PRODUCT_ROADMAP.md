@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
-- Aktiver Schritt: **Schritt 2 – Bauen**
+- Aktiver Schritt: **Schritt 3 – Prüfen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -31,14 +31,14 @@ flowchart LR
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
-| 3 | API- und PostgreSQL-Fundament | [x] | [ ] | [ ] | [ ] | **Aktiv** |
+| 3 | API- und PostgreSQL-Fundament | [x] | [x] | [ ] | [ ] | **Aktiv** |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **9 von 32 Schritten abgeschlossen (28,1 %)**.
+Gesamtfortschritt: **10 von 32 Schritten abgeschlossen (31,3 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -156,21 +156,23 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** `docs/backend` friert Node 24 LTS, Fastify 5, PostgreSQL 18, `pg`, `node-pg-migrate`, den inkrementellen Workspace-Umzug, kanonische SQL-Namen, Revisions-/Idempotenzmuster, Umgebungen sowie Backup und Restore ein. PostgreSQL bleibt die verbindliche Wahrheitsquelle; kritische Regeln existieren nicht nur in TypeScript.
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] Workspace in Web-, API-, Vertrags-, Content- und Datenbankpakete gliedern
-- [ ] lokale PostgreSQL-Instanz und isolierte Testdatenbank bereitstellen
-- [ ] erste versionierte Migrationen und Seed-Daten erstellen
-- [ ] Healthcheck, strukturierte Logs, Request-ID und einheitliche Fehlerantworten
-- [ ] Transaktionshelfer für `commandId`, `expectedRevision` und Ledger einbauen
-- [ ] Content-Version und Feature-Flag-Grundlage speichern
+- [x] Workspace in Web-, API-, Vertrags-, Content- und Datenbankpakete gliedern
+- [x] lokale PostgreSQL-Instanz und isolierte Testdatenbank bereitstellen
+- [x] erste versionierte Migrationen und Seed-Daten erstellen
+- [x] Healthcheck, strukturierte Logs, Request-ID und einheitliche Fehlerantworten
+- [x] Transaktionshelfer für `commandId`, `expectedRevision` und Ledger einbauen
+- [x] Content-Version und Feature-Flag-Grundlage speichern
+
+**Gate erfüllt:** Fastify und PostgreSQL 18 sind als reproduzierbarer Workspace-Unterbau vorhanden. GitHub Actions hat Migration, echte SQL-Constraints, parallele Idempotenz, Revision, Ledger, Builds, Assets und Browserpfade erfolgreich ausgeführt.
 
 ### Schritt 3 – Prüfen ⬜
 
-- [ ] Migration von leerer Datenbank bis aktuellem Schema testen
-- [ ] echte PostgreSQL-Integrationstests ausführen
-- [ ] negative Bestände per `CHECK` und bedingter Aktualisierung verhindern
-- [ ] parallele Kommandos, Rollback und wiederholte Requests testen
+- [x] Migration von leerer Datenbank bis aktuellem Schema testen
+- [x] echte PostgreSQL-Integrationstests ausführen
+- [x] negative Bestände per `CHECK` und bedingter Aktualisierung verhindern
+- [x] parallele Kommandos, Rollback und wiederholte Requests testen
 - [ ] Backup in eine leere Datenbank zurückspielen
 - [ ] Logs und Fehler enthalten keine Passwörter, Cookies oder privaten Daten
 
@@ -419,11 +421,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir beginnen mit **Block 3, Schritt 2 – Bauen**:
+Wir arbeiten jetzt an **Block 3, Schritt 3 – Prüfen**:
 
-1. Root in einen pnpm-Workspace-Orchestrator und den bestehenden Client nach `apps/web` überführen.
-2. Verträge, Spielregeln und Content in einseitig abhängige Pakete extrahieren.
-3. `apps/api`, PostgreSQL-18-Konfiguration, Pool, Migrationen und Healthcheck ergänzen.
-4. Revisions-, Idempotenz- und Ledger-Transaktionshelfer mit einem echten Beispielkommando bauen.
+1. Migration zusätzlich rückwärts und erneut vorwärts ausführen.
+2. einen echten Backup-Dump in eine neue leere Datenbank zurückspielen.
+3. Log-Redaction und Fehlerantworten gezielt auf Cookies, Token und private Daten prüfen.
+4. Healthcheck, Beispieltransaktion und Ledger gemeinsam gegen die restaurierte Datenbank prüfen.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.
