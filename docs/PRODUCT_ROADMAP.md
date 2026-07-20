@@ -4,7 +4,7 @@
 - Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
 - Aktiver Schritt: **Schritt 2 – Bauen**
 - Visuelle Statusseite: `/roadmap/`
-- Statusdaten: `public/roadmap/roadmap-status.json`
+- Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 

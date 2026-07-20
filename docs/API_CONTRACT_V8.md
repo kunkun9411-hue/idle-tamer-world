@@ -7,7 +7,7 @@
 - Fehlervertrag: **1**
 - Stand: **20. Juli 2026**
 
-Dieses Dokument friert die Grenze zwischen dem abgenommenen Browser-Client und dem kommenden PostgreSQL-Backend ein. Die ausführbaren TypeScript-Typen in `src/game/api-contract.ts` bleiben die technische Quelle.
+Dieses Dokument friert die Grenze zwischen dem abgenommenen Browser-Client und dem kommenden PostgreSQL-Backend ein. Die ausführbaren TypeScript-Typen in `packages/contracts/src/api-contract.ts` bleiben die technische Quelle.
 
 ## Endpunkte
 

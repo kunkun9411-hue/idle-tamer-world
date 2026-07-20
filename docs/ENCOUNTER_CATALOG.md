@@ -6,7 +6,7 @@ Die zehn Rookie-Linien sind die sammelbaren Account-Monster. Die 30 normalen Geg
 
 Jeder Gegner besitzt ein `eggMonsterId`. Wenn ein Ei droppt, verweist es auf eine der zehn sammelbaren Rookie-Linien. Die sichtbare Wildform und das mögliche Ei müssen also nicht identisch sein.
 
-Technische Quelle: `src/game/encounters.ts`
+Technische Quelle: `packages/content/src/encounters.ts`
 
 ## Verteilung
 
@@ -58,7 +58,7 @@ Die Kombination ist reihenfolgeunabhängig. Angriff in der Front plus Support im
 - 30 normale Gegner: vollständig als HD-Runtime-Sprites
 - fünf Bosse: vollständig als HD-Runtime-Sprites
 - alle Dateien: PNG, RGBA, transparent, exakt 200×200
-- Runtime: `public/assets/monsters`, `public/assets/enemies`, `public/assets/bosses`
+- Runtime: `apps/web/public/assets/monsters`, `apps/web/public/assets/enemies`, `apps/web/public/assets/bosses`
 - Chroma- und Alpha-Master: `art-source/generated/hd-v2`
 - Validierung: `python scripts/validate_assets.py`
 

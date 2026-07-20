@@ -4,7 +4,7 @@
 
 Optik V2 soll nicht nur sauber aussehen, sondern das Spiel greifbar machen. Monster stehen deshalb auf einem sichtbaren Boden in einer konkreten Zone. Verwaltung bleibt vorhanden, ordnet sich aber der Kampfbühne, dem aktiven Monster und der nächsten sinnvollen Aktion unter.
 
-Die stabile V1-Komponentenbasis bleibt in `src/styles.css`. Alle bewussten V2-Entscheidungen und Overrides liegen getrennt in `src/styles-v2.css`. Dadurch kann die neue Richtung schnell verändert werden, ohne alte Layoutregeln oder Spiellogik zu zerlegen.
+Die stabile V1-Komponentenbasis bleibt in `apps/web/src/styles.css`. Alle bewussten V2-Entscheidungen und Overrides liegen getrennt in `apps/web/src/styles-v2.css`. Dadurch kann die neue Richtung schnell verändert werden, ohne alte Layoutregeln oder Spiellogik zu zerlegen.
 
 ## Fünf verbindliche Prinzipien
 
@@ -18,9 +18,9 @@ Die stabile V1-Komponentenbasis bleibt in `src/styles.css`. Alle bewussten V2-En
 
 | Zone | Farbidentität | Runtime | unveränderter Master |
 | --- | --- | --- | --- |
-| Violetter Saum | Graphit, Silber, Amethyst, Gewitterviolett | `public/assets/zones/violet-rim-v2.webp` | `art-source/generated/zone-backgrounds-v2/violet-rim-v2-master.png` |
-| Glasgärten | Perlsilber, Rauch-Türkis, Cyan, Lavendel | `public/assets/zones/glass-gardens-v2.webp` | `art-source/generated/zone-backgrounds-v2/glass-gardens-v2-master.png` |
-| Obsidian-Fjord | Schwarzglas, Gunmetal, Nachtblau, kaltes Cyan | `public/assets/zones/obsidian-fjord-v2.webp` | `art-source/generated/zone-backgrounds-v2/obsidian-fjord-v2-master.png` |
+| Violetter Saum | Graphit, Silber, Amethyst, Gewitterviolett | `apps/web/public/assets/zones/violet-rim-v2.webp` | `art-source/generated/zone-backgrounds-v2/violet-rim-v2-master.png` |
+| Glasgärten | Perlsilber, Rauch-Türkis, Cyan, Lavendel | `apps/web/public/assets/zones/glass-gardens-v2.webp` | `art-source/generated/zone-backgrounds-v2/glass-gardens-v2-master.png` |
+| Obsidian-Fjord | Schwarzglas, Gunmetal, Nachtblau, kaltes Cyan | `apps/web/public/assets/zones/obsidian-fjord-v2.webp` | `art-source/generated/zone-backgrounds-v2/obsidian-fjord-v2-master.png` |
 
 Die Runtime-Hintergründe sind 1600×900 WebP. `python scripts/prepare_zone_backgrounds.py` erzeugt sie reproduzierbar aus den PNG-Mastern. CSS-Vignetten und Overlays gehören zur UI und dürfen nicht in die Masterbilder eingebacken werden.
 
@@ -77,7 +77,7 @@ Obsidian-Fjord: frozen black-glass coast at the edge of a broken ether world; ob
 
 ## Schnell anpassen
 
-- Gesamtfarben und Oberflächen: Variablen am Anfang von `src/styles-v2.css`
+- Gesamtfarben und Oberflächen: Variablen am Anfang von `apps/web/src/styles-v2.css`
 - Kampfhöhe: `.battle-card` und `.battle-stage`
 - Monstergröße im Kampf: `.fighter .monster-avatar`
 - Abdunklung pro Zone: `.battle-stage::before` und `.battle-stage--glass-gardens::before`

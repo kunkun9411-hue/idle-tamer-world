@@ -7,7 +7,7 @@ from PIL import Image, ImageEnhance
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT / "art-source" / "generated" / "prestige-v2"
-OUTPUT_DIR = ROOT / "public" / "assets" / "prestige"
+OUTPUT_DIR = ROOT / "apps" / "web" / "public" / "assets" / "prestige"
 BACKGROUND_SIZE = (1600, 900)
 CRYSTAL_SIZE = (512, 768)
 

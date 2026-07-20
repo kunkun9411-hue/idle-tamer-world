@@ -7,7 +7,7 @@ from PIL import Image, ImageEnhance
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT / "art-source" / "generated" / "zone-backgrounds-v2"
-OUTPUT_DIR = ROOT / "public" / "assets" / "zones"
+OUTPUT_DIR = ROOT / "apps" / "web" / "public" / "assets" / "zones"
 TARGET_SIZE = (1600, 900)
 
 

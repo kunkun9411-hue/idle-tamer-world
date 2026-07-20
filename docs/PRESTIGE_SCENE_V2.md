@@ -4,9 +4,9 @@ Die Prestige-Szene ist ein eigenständiger Ritualraum und kein normales Untermen
 
 ## Runtime-Aufbau
 
-- `public/assets/prestige/prestige-sanctum-v2.webp` – optimierter 1600×900-RGB-Hintergrund
-- `public/assets/prestige/ether-crystal-v2.png` – transparenter 512×768-RGBA-Kristall
-- `src/styles-progression-v3.css` – Siegel, Orbits, Splitter, Energiestrahl, Plattform und Aktivierungssequenz
+- `apps/web/public/assets/prestige/prestige-sanctum-v2.webp` – optimierter 1600×900-RGB-Hintergrund
+- `apps/web/public/assets/prestige/ether-crystal-v2.png` – transparenter 512×768-RGBA-Kristall
+- `apps/web/src/styles-progression-v3.css` – Siegel, Orbits, Splitter, Energiestrahl, Plattform und Aktivierungssequenz
 - `scripts/prepare_prestige_assets.py` – reproduzierbarer Export aus den unveränderten Mastern
 
 Die Szene bleibt auf Desktop vollständig im ersten 1280×720-Bildschirm. Auf 390×844 wird sie einspaltig und ohne horizontales Überlaufen fortgesetzt. `prefers-reduced-motion` sowie die interne Einstellung für reduzierte Bewegung stoppen die langen Schleifen.

@@ -6,7 +6,7 @@ Eine testbare Grundversion des 2D-Idle-Monster-RPGs für den Browser. Der sichtb
 
 ```powershell
 pnpm install
-pnpm dev
+pnpm dev:web
 ```
 
 Danach `http://127.0.0.1:5173` öffnen.
@@ -16,6 +16,8 @@ Für die feste Smartphone-Vorschau: `http://127.0.0.1:5173/dev/mobile-preview.ht
 Für die automatisch aus den Katalogen erzeugte Galerie aller Kreaturen und drei Zonenwelten: `http://127.0.0.1:5173/dev/asset-gallery.html`.
 
 Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatischer Prozentanzeige: `http://127.0.0.1:5173/roadmap/`.
+
+Das neue Backend-Fundament startet nach `pnpm db:up`, `pnpm db:migrate` und `pnpm db:seed` gemeinsam mit dem Client über `pnpm dev`. Die API läuft dann auf `http://127.0.0.1:3001`; `/health/live`, `/health/ready` und `/api/v1/meta` trennen Prozesszustand, Datenbankbereitschaft und öffentliche Versionsdaten sauber voneinander.
 
 ## Bereits spielbar
 
@@ -66,32 +68,19 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 
 ## Struktur
 
-- `src/game/content.ts` – zehn Monsterlinien samt Evolutionswerten
-- `src/game/catalog.ts` – Zonen, Items, Dropchancen, Avatare und Rahmen
-- `src/game/encounters.ts` – 30 normale Gegner, fünf Bosse und Ei-Zuordnung
-- `src/game/rules.ts` – deterministische Formeln und Resetgrenzen
-- `src/game/number-scale.ts` – einheitliche Zahlenanzeige und Grenze zur wissenschaftlichen Notation
-- `src/game/objectives.ts` – typisierte Aktivitäten, Tages-/Wochenperioden, Erfolge und Belohnungen
-- `src/game/expeditions.ts` – Zeitaufträge, Slots, Anforderungen und Match-Boni
-- `src/game/crafting.ts` – feste Herstellrezepte und Kostenprüfung
-- `src/game/system-messages.ts` – lokale Systempost und einmalige Belohnungen
-- `src/game/game-service.ts` – UI-Aktionsgrenze; später durch einen HTTP-Service ersetzbar
-- `src/game/api-contract.ts` – DTOs und idempotente Backend-Kommandos
-- `src/game/api-client.ts` – inaktiver, testbarer HTTP-Transport für das spätere echte Backend
-- `src/game/game-service-port.ts` – gemeinsame asynchrone Intent-Schnittstelle für lokalen und HTTP-Service
-- `src/game/contract-versions.ts` – Content-, Fehler- und Asset-Vertragsversionen
-- `src/game/storage.ts` – ausschließlich lokaler Prototyp-Speicher und Migration
-- `src/main.ts` – Darstellung und Kampf-Taktung
-- `src/styles-v2.css` – isolierte Optik-V2-Schicht, Animationen und Zoneninszenierung
-- `src/styles-game-first.css` – Login, Offline-Bericht und bildschirmfüllender Kampf-HUD
-- `src/styles-progression-v3.css` – Gem-Arbeitsbereich und eigenständige Prestige-Szene
-- `public/assets/monsters` – ausschließlich freigegebene 200×200-Runtime-Assets
-- `public/assets/enemies` und `public/assets/bosses` – 35 weitere Imagegen-Runtime-Assets
-- `public/assets/zones` – drei optimierte 1600×900-WebP-Kampfumgebungen
-- `public/assets/gems` – 45 transparente 200×200-Gems nach Seltenheit
-- `public/assets/prestige` – 1600×900-Heiligtum und transparenter 512×768-Ether-Kristall
-- `public/assets/asset-manifest.json` – 96 eindeutige Runtime-IDs mit Maßen und SHA-256
-- `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes Markenlogo im Runtime-Vertrag
+- `apps/web` – bestehender Vite-Client, Browser-Tests, Roadmap und alle Runtime-Assets
+- `apps/api` – Fastify-API mit strukturierten Logs, Request-ID, Fehlervertrag und Healthchecks
+- `packages/contracts` – API-Protokoll 8, gemeinsame DTOs, Spielstandtypen und Vertragsversionen
+- `packages/content` – zehn Monsterlinien, Zonen, 30 Gegner, fünf Bosse, Gems und Storydefinitionen
+- `packages/game-core` – deterministische Regeln, Zahlenformat, Aufträge, Expeditionen und Crafting
+- `packages/config` – validierte Umgebung, Feature-Flags und Log-Redaction
+- `packages/database` – PostgreSQL-Pool, Migration, Seed, Kommando-Transaktion und Ledger
+- `infra/compose.yaml` – lokale PostgreSQL-18-Instanz mit separater Testdatenbank
+- `apps/web/src/game/game-service.ts` – lokale UI-Aktionsgrenze; später durch den HTTP-Service ersetzbar
+- `apps/web/src/game/api-client.ts` – testbarer, Cookie-basierter HTTP-Transport
+- `apps/web/src/game/storage.ts` – ausschließlich lokaler Prototyp-Speicher und Migration
+- `apps/web/src/main.ts` – Darstellung und Kampf-Taktung
+- `apps/web/public/assets` – 96 versionierte HD-Runtime-Assets samt SHA-256-Manifest
 - `art-source` – HD-Master, Chroma-Quellen und archivierte Stiltests
 
 ## Zentrale Dokumente

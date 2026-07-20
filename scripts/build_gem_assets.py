@@ -9,7 +9,7 @@ from PIL import Image, ImageEnhance, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "art-source" / "generated" / "gems" / "transparent"
-OUTPUT = ROOT / "public" / "assets" / "gems"
+OUTPUT = ROOT / "apps" / "web" / "public" / "assets" / "gems"
 
 COLORS = {
     "crimson": (228, 67, 82),

@@ -53,8 +53,7 @@ Die Grundwertsteigerung wird auf Leben und Angriff der Monster angewendet. Hyper
 
 ## Versionierung und Abnahme
 
-- Zentraler Code: `src/game/catalog.ts`, `src/game/rules.ts` und `src/game/number-scale.ts`
+- Zentraler Code: `packages/content/src/catalog.ts`, `packages/game-core/src/rules.ts` und `packages/game-core/src/number-scale.ts`
 - Save-Schema: v9 mit permanentem `highestZoneNumber`
 - API-Protokoll: v8 mit `balanceContractVersion` und `balanceReleaseId`
 - Jede Änderung dieser Werte benötigt eine neue Balance-Release-ID, aktualisierte Beispiele und automatisierte Grenztests.
-

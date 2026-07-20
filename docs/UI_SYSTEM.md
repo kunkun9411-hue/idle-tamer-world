@@ -27,7 +27,7 @@ Idle Tamer wirkt ruhig, hochwertig und technisch, aber nicht wie ein überladene
 | Silberviolett | `#c8b8ff` | helle Akzente und Fokus |
 | Erfolg | `#73dfba` | gespeichert, abgeschlossen, online |
 
-Die Basistokens stehen am Anfang von `src/styles.css`; V2-Oberflächen, Licht und Bewegungswerte stehen am Anfang von `src/styles-v2.css`.
+Die Basistokens stehen am Anfang von `apps/web/src/styles.css`; V2-Oberflächen, Licht und Bewegungswerte stehen am Anfang von `apps/web/src/styles-v2.css`.
 
 ## Komponenten-Inventar
 

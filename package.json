@@ -1,25 +1,27 @@
 {
-  "name": "idle-tamer",
+  "name": "idle-tamer-world",
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@11.9.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "tsc && vite build",
-    "preview": "vite preview --host 127.0.0.1",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
-    "check:content": "vitest run src/game/content-contract.test.ts",
+    "dev": "pnpm --parallel --filter @idle-tamer/web --filter @idle-tamer/api dev",
+    "dev:web": "pnpm --filter @idle-tamer/web dev",
+    "dev:api": "pnpm --filter @idle-tamer/api dev",
+    "build": "pnpm -r --if-present build",
+    "preview": "pnpm --filter @idle-tamer/web preview",
+    "test": "pnpm -r --if-present test",
+    "test:e2e": "pnpm --filter @idle-tamer/web test:e2e",
+    "test:integration": "pnpm --filter @idle-tamer/database test:integration",
+    "check:content": "pnpm --filter @idle-tamer/web check:content",
     "check:assets": "python scripts/validate_assets.py",
     "check:roadmap": "node scripts/validate-roadmap.mjs",
     "check": "pnpm test && pnpm build && pnpm check:roadmap && pnpm check:assets",
-    "check:all": "pnpm check && pnpm test:e2e"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.61.1",
-    "typescript": "^5.9.2",
-    "vite": "^7.0.6",
-    "vitest": "^3.2.4"
+    "check:all": "pnpm check && pnpm test:e2e",
+    "db:up": "docker compose -f infra/compose.yaml up -d --wait",
+    "db:down": "docker compose -f infra/compose.yaml down",
+    "db:migrate": "pnpm --filter @idle-tamer/database db:migrate",
+    "db:rollback": "pnpm --filter @idle-tamer/database db:rollback",
+    "db:seed": "pnpm --filter @idle-tamer/database db:seed"
   }
 }

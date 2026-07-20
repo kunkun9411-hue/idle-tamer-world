@@ -18,18 +18,18 @@ Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf 
 - `art-source/generated/hd-v1/*_chroma.png` – unveränderte Generierung
 - `art-source/generated/hd-v1/*_master.png` – freigestellter HD-Master
 - `art-source/generated/hd-v2` – Chroma- und Alpha-Master der vollständigen neuen Serie
-- `public/assets/monsters/*.png` – freigegebener 200×200-Runtime-Export
-- `public/assets/enemies/*.png` – 30 freigegebene Normalgegner
-- `public/assets/bosses/*.png` – fünf freigegebene Zonenbosse
+- `apps/web/public/assets/monsters/*.png` – freigegebener 200×200-Runtime-Export
+- `apps/web/public/assets/enemies/*.png` – 30 freigegebene Normalgegner
+- `apps/web/public/assets/bosses/*.png` – fünf freigegebene Zonenbosse
 - `art-source/generated/zone-backgrounds-v2` – unveränderte ImageGen-PNG-Master der drei Welten
-- `public/assets/zones/*-v2.webp` – optimierte 1600×900-Runtime-Hintergründe
+- `apps/web/public/assets/zones/*-v2.webp` – optimierte 1600×900-Runtime-Hintergründe
 - `art-source/generated/gems/masters` – neun unveränderte Imagegen-Chroma-Master
 - `art-source/generated/gems/transparent` – neun neutrale freigestellte Gem-Master
-- `public/assets/gems/<rarity>/*.png` – 45 freigegebene transparente 200×200-Gems
-- `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes 1024×1024-Markenlogo
+- `apps/web/public/assets/gems/<rarity>/*.png` – 45 freigegebene transparente 200×200-Gems
+- `apps/web/public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes 1024×1024-Markenlogo
 - `art-source/generated/prestige-v2` – unveränderte Imagegen- und freigestellte Prestige-Master
-- `public/assets/prestige` – optimierter Hintergrund und transparenter Ether-Kristall
-- `public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
+- `apps/web/public/assets/prestige` – optimierter Hintergrund und transparenter Ether-Kristall
+- `apps/web/public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
 - `art-source/archive/pixel-v1` – verworfener Pixel-Stiltest
 
 ## PixelLab später

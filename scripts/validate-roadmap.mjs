@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const statusPath = new URL("../public/roadmap/roadmap-status.json", import.meta.url);
+const statusPath = new URL("../apps/web/public/roadmap/roadmap-status.json", import.meta.url);
 const documentPath = new URL("../docs/PRODUCT_ROADMAP.md", import.meta.url);
 
 const data = JSON.parse(await readFile(statusPath, "utf8"));

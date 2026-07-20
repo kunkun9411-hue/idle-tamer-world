@@ -1,0 +1,11 @@
+{
+  "name": "@idle-tamer/config",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@idle-tamer/contracts": "workspace:*",
+    "zod": "^4.4.3"
+  }
+}

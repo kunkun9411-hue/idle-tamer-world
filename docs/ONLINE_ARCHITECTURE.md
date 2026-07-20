@@ -6,7 +6,7 @@ PostgreSQL ist die verbindliche Zieldatenbank. Die vollständige Reihenfolge bis
 
 Der Browser sendet nur Absichten. Er darf niemals einen neuen Gold-, Fragment-, Hyperlevel-, Gem- oder Gilden-DNA-Stand festlegen. Die API prüft Besitz, Kosten, Zeit und Berechtigungen und antwortet mit einem neuen autoritativen Zustand.
 
-`src/game/game-service.ts` bildet diese Grenze für den lokalen Prototyp ab. `src/game/api-contract.ts` definiert Bootstrap, Sitzungsdaten, Feature-Flags und idempotente Kommandos mit `commandId` und `expectedRevision`. `src/game/api-client.ts` enthält bereits den transportneutralen, Cookie-basierten HTTP-Client. Aktiv geschaltet wird er erst, wenn ein echter Server existiert; die UI behauptet bis dahin ausdrücklich nur „lokal gesichert“.
+`apps/web/src/game/game-service.ts` bildet diese Grenze für den lokalen Prototyp ab. `packages/contracts/src/api-contract.ts` definiert Bootstrap, Sitzungsdaten, Feature-Flags und idempotente Kommandos mit `commandId` und `expectedRevision`. `apps/web/src/game/api-client.ts` enthält bereits den transportneutralen, Cookie-basierten HTTP-Client. Aktiv geschaltet wird er erst, wenn ein echter Spielkommando-Endpunkt existiert; die UI behauptet bis dahin ausdrücklich nur „lokal gesichert“.
 
 ## Zielbild
 

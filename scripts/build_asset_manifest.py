@@ -10,7 +10,7 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLIC = ROOT / "public"
+PUBLIC = ROOT / "apps" / "web" / "public"
 ASSET_ROOT = PUBLIC / "assets"
 OUTPUT = ASSET_ROOT / "asset-manifest.json"
 CONTENT_RELEASE_ID = "foundation-1.0.0"

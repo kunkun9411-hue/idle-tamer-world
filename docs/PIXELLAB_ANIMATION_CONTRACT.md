@@ -30,10 +30,10 @@ Die Browsergrundversion darf zunächst nur `idle` verwenden. Ein neuer Clip wird
 ```text
 art-source/animation-jobs/<monster-id>/<job-id>/request.json
 art-source/animation-jobs/<monster-id>/<job-id>/raw/frame-0001.png
-public/assets/animations/<monster-id>/<form>/<clip>/right/frame-0001.png
+apps/web/public/assets/animations/<monster-id>/<form>/<clip>/right/frame-0001.png
 ```
 
-Beispiel: `public/assets/animations/pyrook/rookie/attack/right/frame-0005.png`.
+Beispiel: `apps/web/public/assets/animations/pyrook/rookie/attack/right/frame-0005.png`.
 
 ## Interner API-Auftrag
 
@@ -63,7 +63,7 @@ Der Adapter darf Provider-Felder ergänzen, aber keine Identitäts-, Canvas- ode
 
 ## Abnahme je Job
 
-1. Quell-ID und SHA-256 stimmen mit `public/assets/asset-manifest.json` überein.
+1. Quell-ID und SHA-256 stimmen mit `apps/web/public/assets/asset-manifest.json` überein.
 2. Framezahl, RGBA, 200×200 und transparente Ecken werden automatisch geprüft.
 3. Kein Frame wird beschnitten; Baseline und Mittelpunkt bleiben im Toleranzbereich.
 4. Erster und letzter Loop-Frame erzeugen keinen sichtbaren Sprung.
@@ -77,4 +77,3 @@ Der Identitätsblock kommt unverändert aus `docs/PIXELLAB_PROMPTS.md`. Der Bewe
 ```text
 Create an 8-frame non-looping attack animation. Preserve the supplied creature identity, proportions, palette and chest core exactly. Frames 1-2 anticipation, frames 3-4 forward motion, frame 5 impact, frames 6-8 controlled return to the original idle anchor. No camera movement, no scale drift, no added effects or background.
 ```
-

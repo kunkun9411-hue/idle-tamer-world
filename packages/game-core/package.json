@@ -1,0 +1,11 @@
+{
+  "name": "@idle-tamer/game-core",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@idle-tamer/content": "workspace:*",
+    "@idle-tamer/contracts": "workspace:*"
+  }
+}

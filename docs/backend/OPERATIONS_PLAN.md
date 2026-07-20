@@ -17,17 +17,13 @@ Nur `.env.example` wird versioniert. Echte `.env`-Dateien, Dumps, Session-Token 
 
 | Variable | Bedeutung |
 |---|---|
-| `APP_ENV` | `development`, `test`, `staging` oder `production` |
-| `API_HOST`, `API_PORT` | Bind-Adresse und Port |
+| `NODE_ENV` | `development`, `test` oder `production` |
+| `HOST`, `PORT` | Bind-Adresse und Port |
 | `DATABASE_URL` | Anwendungsrolle, nie Superuser |
-| `DATABASE_MIGRATION_URL` | getrennte Rolle mit DDL-Rechten |
-| `DATABASE_POOL_MAX` | bewusst kleines Poollimit pro Instanz |
-| `WEB_ORIGIN` | erlaubter Browserursprung |
-| `TRUST_PROXY` | nur hinter bekanntem Reverse Proxy aktiv |
-| `SESSION_COOKIE_NAME` | Cookiebezeichnung ohne Geheimnis |
-| `SESSION_TOKEN_PEPPER` | separates Secret zur Token-Hash-Härtung |
-| `PASSWORD_PEPPER` | separates Secret zusätzlich zum Passwort-Hash |
 | `LOG_LEVEL` | strukturierte Logstufe |
+| `FEATURE_GUILDS`, `FEATURE_GUILD_DNA`, `FEATURE_LIVE_EVENTS`, `FEATURE_PVP` | neue Onlinebereiche standardmäßig geschlossen |
+
+Getrennte Migrationsrolle, Browserursprung, Proxyvertrauen und Session-Secrets kommen mit Block 4 hinzu, bevor Accounts von außen erreichbar werden. Sie werden nicht als scheinbar fertige Variablen vorweggenommen.
 
 Content-, Balance-, API- und Fehlervertragsversionen stammen aus versioniertem Code und dürfen nicht per Umgebungsvariable auseinanderlaufen.
 

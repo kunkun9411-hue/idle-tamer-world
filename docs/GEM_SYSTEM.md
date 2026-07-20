@@ -22,7 +22,7 @@ Die fünf Farben Karmin, Azur, Jade, Violett und Bernstein sind bereits vollstä
 | Selten | +8 % | +6 % auf beide Werte |
 | Mythisch | +14 % | +10 % auf beide Werte |
 
-Das ergibt `3 Formen × 5 Farben × 3 Seltenheiten = 45` Definitionen. Ihre IDs werden ausschließlich in `src/game/catalog.ts` erzeugt; Runtime-Bilder folgen demselben Schema: `/assets/gems/<rarity>/<shape>-<color>.png`.
+Das ergibt `3 Formen × 5 Farben × 3 Seltenheiten = 45` Definitionen. Ihre IDs werden ausschließlich in `packages/content/src/catalog.ts` erzeugt; Runtime-Bilder folgen demselben Schema: `/assets/gems/<rarity>/<shape>-<color>.png`.
 
 ## Beute und Ausrüstung
 
@@ -47,5 +47,5 @@ Quellen und Ergebnisse bleiben getrennt:
 
 - `art-source/generated/gems/masters` – unveränderte Imagegen-Ausgaben
 - `art-source/generated/gems/transparent` – freigestellte neutrale Master
-- `public/assets/gems` – 45 fertige Runtime-Assets
-- `dev/asset-gallery.html` – vollständige visuelle Kontrolle im Browser
+- `apps/web/public/assets/gems` – 45 fertige Runtime-Assets
+- `apps/web/dev/asset-gallery.html` – vollständige visuelle Kontrolle im Browser

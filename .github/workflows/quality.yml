@@ -18,6 +18,23 @@ jobs:
     name: Foundation contracts and browser flow
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: idle_tamer_test
+          POSTGRES_USER: idle_tamer
+          POSTGRES_PASSWORD: idle_tamer_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U idle_tamer -d idle_tamer_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://idle_tamer:idle_tamer_ci@127.0.0.1:5432/idle_tamer_test
+      TEST_DATABASE_URL: postgres://idle_tamer:idle_tamer_ci@127.0.0.1:5432/idle_tamer_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -44,7 +61,10 @@ jobs:
       - name: Install asset validator
         run: pip install --requirement requirements-assets.txt
 
-      - name: Run unit, content, build, roadmap and asset checks
+      - name: Migrate PostgreSQL 18 test database
+        run: pnpm db:migrate
+
+      - name: Run unit, PostgreSQL, content, build, roadmap and asset checks
         run: pnpm check
 
       - name: Install Chromium and Linux browser dependencies

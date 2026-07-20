@@ -10,16 +10,17 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PUBLIC = ROOT / "apps" / "web" / "public"
 GROUPS = {
-    "monsters": (ROOT / "public" / "assets" / "monsters", 10),
-    "enemies": (ROOT / "public" / "assets" / "enemies", 30),
-    "bosses": (ROOT / "public" / "assets" / "bosses", 5),
+    "monsters": (PUBLIC / "assets" / "monsters", 10),
+    "enemies": (PUBLIC / "assets" / "enemies", 30),
+    "bosses": (PUBLIC / "assets" / "bosses", 5),
 }
-ZONE_BACKGROUNDS = ROOT / "public" / "assets" / "zones"
-GEM_ROOT = ROOT / "public" / "assets" / "gems"
-PRESTIGE_ROOT = ROOT / "public" / "assets" / "prestige"
-MANIFEST = ROOT / "public" / "assets" / "asset-manifest.json"
-ASSET_ROOT = ROOT / "public" / "assets"
+ZONE_BACKGROUNDS = PUBLIC / "assets" / "zones"
+GEM_ROOT = PUBLIC / "assets" / "gems"
+PRESTIGE_ROOT = PUBLIC / "assets" / "prestige"
+MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
+ASSET_ROOT = PUBLIC / "assets"
 EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2}
 MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000}
 
@@ -60,7 +61,7 @@ def validate_manifest_asset(asset: dict[str, object]) -> None:
     if set(asset) != required:
         raise ValueError(f"asset manifest: invalid fields for {asset.get('id')}: {set(asset) ^ required}")
     public_path = str(asset["path"]).lstrip("/")
-    path = (ROOT / "public" / public_path).resolve()
+    path = (PUBLIC / public_path).resolve()
     if ASSET_ROOT.resolve() not in path.parents or not path.is_file():
         raise ValueError(f"asset manifest: unsafe or missing path {asset['path']}")
     kind = asset_kind(path)
@@ -68,7 +69,7 @@ def validate_manifest_asset(asset: dict[str, object]) -> None:
         actual = {
             "id": expected_asset_id(path),
             "kind": kind,
-            "path": f"/{path.relative_to(ROOT / 'public').as_posix()}",
+            "path": f"/{path.relative_to(PUBLIC).as_posix()}",
             "format": image.format.lower() if image.format else path.suffix.lstrip(".").lower(),
             "width": image.width,
             "height": image.height,
@@ -127,8 +128,8 @@ def main() -> None:
     print(f"gems: {len(gem_files)} valid transparent 200x200 assets")
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     actual_paths = {
-        f"/{path.relative_to(ROOT / 'public').as_posix()}"
-        for path in (ROOT / "public" / "assets").rglob("*")
+        f"/{path.relative_to(PUBLIC).as_posix()}"
+        for path in ASSET_ROOT.rglob("*")
         if path.is_file() and path.suffix.lower() in {".png", ".webp"}
     }
     assets = manifest.get("assets", [])

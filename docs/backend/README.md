@@ -1,10 +1,11 @@
 # Backend-Fundament – Einstieg
 
-Dieser Ordner ist die verbindliche technische Planung für Block 3. Er beantwortet vor dem ersten Servercode drei getrennte Fragen:
+Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und erster ausführbarer Unterbau sind jetzt getrennt nachvollziehbar:
 
 1. [`STACK_AND_WORKSPACE.md`](STACK_AND_WORKSPACE.md) – Welche Werkzeuge verwenden wir und wo liegt welcher Code?
 2. [`SCHEMA_REVIEW.md`](SCHEMA_REVIEW.md) – Welche SQL-Tabellen, Schlüssel, Constraints, Indizes und Transaktionsregeln gelten?
 3. [`OPERATIONS_PLAN.md`](OPERATIONS_PLAN.md) – Wie unterscheiden sich Entwicklungs-, Test- und Produktionsumgebung und wie funktionieren Backup, Restore und Rollback?
+4. [`LOCAL_DEVELOPMENT.md`](LOCAL_DEVELOPMENT.md) – Wie werden PostgreSQL, Migration, Seed, API und echte Integrationstests gestartet?
 
 ## Verbindlicher Kurzstand
 
@@ -20,7 +21,17 @@ Dieser Ordner ist die verbindliche technische Planung für Block 3. Er beantwort
 
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
 
-## Gate für Block 3, Schritt 2
+## Stand von Block 3, Schritt 2
+
+- [x] pnpm-Workspace mit Web, API, Contracts, Content, Game-Core, Config und Datenbank
+- [x] Fastify-Prozess mit Request-ID, Secret-Redaction, Fehlervertrag und getrennten Healthchecks
+- [x] PostgreSQL-18-Compose, erste Migration und reproduzierbarer Entwicklungs-Seed
+- [x] atomarer Kommandohelfer für Revision, Idempotenz, Bestand und append-only Ledger
+- [x] Content-Release und standardmäßig geschlossene Feature-Flags an der API-Grenze
+- [x] echte PostgreSQL-18-Integrationstests in der GitHub-Qualitätsschranke
+- [ ] lokaler PostgreSQL-Lauf auf diesem Windows-Rechner; derzeit fehlen Docker und `psql`
+
+## Ursprüngliches Planungs-Gate
 
 Der Bauschritt darf beginnen, sobald keine der folgenden Entscheidungen erneut geöffnet werden muss:
 
