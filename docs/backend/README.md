@@ -29,6 +29,9 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 - [x] atomarer Kommandohelfer für Revision, Idempotenz, Bestand und append-only Ledger
 - [x] Content-Release und standardmäßig geschlossene Feature-Flags an der API-Grenze
 - [x] echte PostgreSQL-18-Integrationstests in der GitHub-Qualitätsschranke
+- [x] Migration Down/Up, Custom-Format-Dump und Restore in eine neue Datenbank geprüft
+- [x] restaurierte Datenbank mit Healthcheck, Revision, Goldbestand und Ledgerbuchung geprüft
+- [x] echter JSON-Logger redigiert Auth, Cookie, Token, Passwort und E-Mail
 - [ ] lokaler PostgreSQL-Lauf auf diesem Windows-Rechner; derzeit fehlen Docker und `psql`
 
 ## Ursprüngliches Planungs-Gate

@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
-- Aktiver Schritt: **Schritt 3 – Prüfen**
+- Aktiver Schritt: **Schritt 4 – Abnehmen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -31,14 +31,14 @@ flowchart LR
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
-| 3 | API- und PostgreSQL-Fundament | [x] | [x] | [ ] | [ ] | **Aktiv** |
+| 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [ ] | **Aktiv** |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **10 von 32 Schritten abgeschlossen (31,3 %)**.
+Gesamtfortschritt: **11 von 32 Schritten abgeschlossen (34,4 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -167,14 +167,16 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** Fastify und PostgreSQL 18 sind als reproduzierbarer Workspace-Unterbau vorhanden. GitHub Actions hat Migration, echte SQL-Constraints, parallele Idempotenz, Revision, Ledger, Builds, Assets und Browserpfade erfolgreich ausgeführt.
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
 - [x] Migration von leerer Datenbank bis aktuellem Schema testen
 - [x] echte PostgreSQL-Integrationstests ausführen
 - [x] negative Bestände per `CHECK` und bedingter Aktualisierung verhindern
 - [x] parallele Kommandos, Rollback und wiederholte Requests testen
-- [ ] Backup in eine leere Datenbank zurückspielen
-- [ ] Logs und Fehler enthalten keine Passwörter, Cookies oder privaten Daten
+- [x] Backup in eine leere Datenbank zurückspielen
+- [x] Logs und Fehler enthalten keine Passwörter, Cookies oder privaten Daten
+
+**Gate erfüllt:** PostgreSQL 18 migriert in CI vorwärts, rückwärts und erneut vorwärts. Vier echte Integrationstests beweisen Constraints, parallele Idempotenz, Konflikte und vollständigen Rollback. Ein Custom-Format-Dump wird in eine neue Datenbank restauriert und dort durch Healthcheck, Beispielbuchung, Revision und Ledger geprüft. Der reale JSON-Logger redigiert Auth-Header, Cookies, Token, Passwörter und E-Mail-Felder.
 
 ### Schritt 4 – Abnehmen ⬜
 
@@ -421,11 +423,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir arbeiten jetzt an **Block 3, Schritt 3 – Prüfen**:
+Wir arbeiten jetzt an **Block 3, Schritt 4 – Abnehmen**:
 
-1. Migration zusätzlich rückwärts und erneut vorwärts ausführen.
-2. einen echten Backup-Dump in eine neue leere Datenbank zurückspielen.
-3. Log-Redaction und Fehlerantworten gezielt auf Cookies, Token und private Daten prüfen.
-4. Healthcheck, Beispieltransaktion und Ledger gemeinsam gegen die restaurierte Datenbank prüfen.
+1. den Compose-Start auf dem Entwicklungsrechner durchführen, sobald Docker oder PostgreSQL 18 lokal verfügbar ist.
+2. Healthchecks, Seed und Beispieltransaktion im lokalen Betriebsweg sichten.
+3. Architektur-, Betriebs- und Supporteinstieg als zusammenhängenden Abnahmepfad lesen.
+4. Block 3 freigeben und danach Block 4 „Accounts & Bootstrap“ planen.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.
