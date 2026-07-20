@@ -61,11 +61,17 @@ jobs:
       - name: Install asset validator
         run: pip install --requirement requirements-assets.txt
 
-      - name: Migrate PostgreSQL 18 test database
-        run: pnpm db:migrate
+      - name: Migrate PostgreSQL 18 test database down and up
+        run: |
+          pnpm db:migrate
+          pnpm db:rollback
+          pnpm db:migrate
 
       - name: Run unit, PostgreSQL, content, build, roadmap and asset checks
         run: pnpm check
+
+      - name: Restore backup into a clean database and verify ledger
+        run: bash infra/scripts/verify-restore.sh
 
       - name: Install Chromium and Linux browser dependencies
         run: pnpm --filter @idle-tamer/web exec playwright install --with-deps chromium

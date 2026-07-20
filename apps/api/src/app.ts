@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
 
-import { LOG_REDACTION_PATHS, loadServerConfig, publicRuntimeConfig, type ServerConfig } from "@idle-tamer/config";
+import { loadServerConfig, publicRuntimeConfig, type ServerConfig } from "@idle-tamer/config";
 import { API_PROTOCOL_VERSION, ERROR_CONTRACT_VERSION, type ApiProblem } from "@idle-tamer/contracts";
 import Fastify from "fastify";
 
 import { ApiError } from "./errors";
+import { createApiLogger } from "./logger";
 
 export interface DatabaseHealth {
   ping(): Promise<void>;
@@ -18,11 +19,9 @@ export interface BuildAppOptions {
 
 export const buildApp = (options: BuildAppOptions = {}) => {
   const config = options.config ?? loadServerConfig(process.env);
-  const logger = options.logger ?? (config.NODE_ENV === "test"
-    ? false
-    : { level: config.LOG_LEVEL, redact: { paths: [...LOG_REDACTION_PATHS], censor: "[REDACTED]" } });
+  const logger = options.logger ?? (config.NODE_ENV === "test" ? false : createApiLogger(config));
   const app = Fastify({
-    logger,
+    ...(logger === false ? { logger: false } : { loggerInstance: logger }),
     requestIdHeader: "x-request-id",
     genReqId: () => randomUUID(),
   });

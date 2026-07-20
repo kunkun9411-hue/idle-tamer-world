@@ -10,7 +10,8 @@
     "test:integration": "vitest run src/integration.test.ts",
     "db:migrate": "node-pg-migrate --migrations-dir migrations up",
     "db:rollback": "node-pg-migrate --migrations-dir migrations down",
-    "db:seed": "tsx src/seed.ts"
+    "db:seed": "tsx src/seed.ts",
+    "db:verify-restore": "tsx src/verify-restored-database.ts"
   },
   "dependencies": {
     "@idle-tamer/contracts": "workspace:*",
