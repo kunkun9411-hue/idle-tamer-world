@@ -2,6 +2,8 @@
 
 Dieses Dokument ist die verbindliche UX-Reihenfolge für Idle Tamer. Sie verhindert, dass der Hauptkampf später wieder zu einer kleinen Dashboard-Karte schrumpft.
 
+Der reproduzierbare 24-Schritte-Abnahmeablauf für Login, Kampf, Brut, Entwicklung, Prestige, Reload und Fehlerfälle steht in `GAMEPLAY_FOUNDATION_SPEC.md`.
+
 ## Verbindlicher Ablauf
 
 1. **Login**

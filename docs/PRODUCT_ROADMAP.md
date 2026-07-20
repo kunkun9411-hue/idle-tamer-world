@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 2 – Backend-bereiter Client**
-- Aktiver Schritt: **Schritt 1 – Planen**
+- Aktiver Schritt: **Schritt 2 – Bauen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `public/roadmap/roadmap-status.json`
 
@@ -30,7 +30,7 @@ flowchart LR
 | Block | Ergebnis | 1 Planen | 2 Bauen | 3 Prüfen | 4 Abnehmen | Status |
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
-| 2 | Backend-bereiter, abgenommener Client | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
+| 2 | Backend-bereiter, abgenommener Client | [x] | [ ] | [ ] | [ ] | **Aktiv** |
 | 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
@@ -38,7 +38,7 @@ flowchart LR
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **4 von 32 Schritten abgeschlossen**.
+Gesamtfortschritt: **5 von 32 Schritten abgeschlossen**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -95,16 +95,18 @@ Gesamtfortschritt: **4 von 32 Schritten abgeschlossen**.
 
 **Ergebnis:** Die sichtbare Grundversion und ihre Regeln sind abgenommen. Der Browser kann später vom lokalen Service auf die HTTP-API wechseln, ohne dass die UI neu gebaut werden muss.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] ersten Spielbogen für Stunde 1, Tag 1 und Woche 1 verbindlich festlegen
-- [ ] Kostenkurven für Run-Level, Hyperlevel, Evolution und Forschung abnehmen
-- [ ] Dropchancen, Pity, Brutzeiten, Fragmente und Prestige-Ertrag einfrieren
-- [ ] sämtliche Resetgrenzen in einer einzigen Regeltabelle zusammenführen
-- [ ] vollständigen Spielerablauf Login → Offline → Kampf → Brut → Prestige als Abnahmefall schreiben
-- [ ] Lade-, Fehler-, Konflikt-, Leer-, Voll- und Maximalzustände je Szene erfassen
+- [x] ersten Spielbogen für Stunde 1, Tag 1 und Woche 1 verbindlich festlegen
+- [x] Kostenkurven für Run-Level, Hyperlevel, Evolution und Forschung abnehmen
+- [x] Dropchancen, Pity, Brutzeiten, Fragmente und Prestige-Ertrag einfrieren
+- [x] sämtliche Resetgrenzen in einer einzigen Regeltabelle zusammenführen
+- [x] vollständigen Spielerablauf Login → Offline → Kampf → Brut → Prestige als Abnahmefall schreiben
+- [x] Lade-, Fehler-, Konflikt-, Leer-, Voll- und Maximalzustände je Szene erfassen
 
 **Definition of Done:** Es gibt keine ungeklärte Spielregel, die während des Backendbaus Tabellen oder API-Kommandos verändern würde.
+
+Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte, Umsetzungsdeltas, vollständige Prestige-Matrix, 24-Schritte-E2E-Ablauf und UI-Zustandsinventar.
 
 ### Schritt 2 – Bauen ⬜
 
@@ -413,11 +415,12 @@ Gesamtfortschritt: **4 von 32 Schritten abgeschlossen**.
 
 ## Direkt als Nächstes
 
-Wir beginnen mit **Block 2, Schritt 1 – Planen**:
+Wir beginnen mit **Block 2, Schritt 2 – Bauen**:
 
-1. Spielbogen Stunde 1, Tag 1 und Woche 1 festlegen.
-2. Kosten-, Drop- und Prestige-Kurven abnehmen.
-3. Resetregeln und vollständigen E2E-Abnahmefall zusammenführen.
-4. Alle benötigten UI-Zustände erfassen.
+1. Foundation-1.0-Werte in die zentrale Balancekonfiguration übernehmen.
+2. Browser-E2E-Ablauf mit reproduzierbaren Fixtures aufsetzen.
+3. reine Regeln weiter von DOM, Browserzeit und `localStorage` entkoppeln.
+4. Verbindungs-, Lade- und Revisionskonflikt-UI ergänzen.
+5. Asset-Manifest und PixelLab-Animationsvertrag ergänzen.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.

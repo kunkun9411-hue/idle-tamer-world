@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
   "activeBlock": 2,
-  "activeStep": 1,
+  "activeStep": 2,
   "blocks": [
     {
       "id": 1,
@@ -25,7 +25,7 @@
       "visual": "client",
       "accent": "cyan",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festziehen" },
+        { "name": "Planen", "done": true, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festgezogen" },
         { "name": "Bauen", "done": false, "note": "E2E-Ablauf, Service-Grenze und Fehlerzustände umsetzen" },
         { "name": "Prüfen", "done": false, "note": "Geräte, Barrierearmut, Verträge und Parallelfälle testen" },
         { "name": "Abnehmen", "done": false, "note": "Client- und API-Vertrag gemeinsam freigeben" }

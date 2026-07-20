@@ -4,6 +4,8 @@
 
 Diese Tabelle ist die verbindliche Übersicht aller aktuellen Quellen und Senken. Die Zahlen sind ein erster spielbarer Balance-Pass, keine endgültige Live-Economy. Vor dem Onlinegang werden sie mit Telemetrie und serverseitigen Simulationen erneut geprüft.
 
+Die verbindlichen Foundation-1.0-Zielwerte für Stunde 1, Tag 1, Woche 1, Brut, Offline-Ertrag und Prestige stehen in `GAMEPLAY_FOUNDATION_SPEC.md`. Dort sind auch die bewusst noch offenen Umsetzungsdeltas des schnellen lokalen Prototyps aufgeführt.
+
 | Bestand | Hauptquellen | Hauptsenken | Prestige |
 | --- | --- | --- | --- |
 | Run-Gold | Kämpfe, Offline-Speicher, Ziele, Zeit-Expeditionen, Systempost | normale Monsterlevel, Etherwerkstatt | wird auf 0 gesetzt |

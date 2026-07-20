@@ -86,6 +86,7 @@ Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, 
 ## Zentrale Dokumente
 
 - `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan vom Prototyp über PostgreSQL bis zum Launch
+- `docs/GAMEPLAY_FOUNDATION_SPEC.md` – verbindliche Zielbalance, Resetmatrix, E2E-Ablauf und UI-Zustände
 - `docs/GAME_CONCEPT.md` – verbindliche Produkt- und Gameplay-Quelle
 - `docs/ART_DIRECTION_V2.md` – neue visuelle Richtung, Zonenprompts und schnelle Anpassung
 - `docs/PLAYER_ENTRY_FLOW.md` – verbindlicher Ablauf von Login bis Hauptkampfszene

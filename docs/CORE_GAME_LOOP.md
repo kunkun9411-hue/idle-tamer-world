@@ -24,6 +24,8 @@ Nach dem Laden wird höchstens acht Stunden nachproduziert. Alle 45 Sekunden ent
 
 ## Temporär und permanent
 
+Die vollständige, backend-verbindliche Resetmatrix einschließlich Ei-Pity, laufender Brut, Expeditionen, Claims und Kampfspeicher steht in `GAMEPLAY_FOUNDATION_SPEC.md`. Die folgende Tabelle ist die kurze Spielerfassung.
+
 | Wird bei Prestige zurückgesetzt | Bleibt erhalten |
 | --- | --- |
 | Run-Gold | Monsterbesitz |
