@@ -16,7 +16,7 @@
 12. Einen Zonenboss auf Stage 10 besiegen, Evolutionskern erhalten und die nächste Zone öffnen.
 13. Ein Rookie ab Level 20 mit drei Evolutionskernen und 30 Art-Fragmenten dauerhaft entwickeln; die neue Form bestimmt neue Grundwerte.
 14. Drei Gem-Slots ausrüsten: Dreieck für Angriff, Quadrat für Leben, Raute für beides.
-15. Ab 100 Run-Siegen den Ether-Kristall in der Prestige-Szene aktivieren und Prestige-Kerne in Forschung investieren.
+15. Erst Zone 10 erreichen, dann ab 100 Run-Siegen den Ether-Kristall in der Prestige-Szene aktivieren und Prestige-Kerne in Forschung investieren.
 
 ## Was offline passiert
 
@@ -34,8 +34,11 @@ Die vollständige, backend-verbindliche Resetmatrix einschließlich Ei-Pity, lau
 | Zonenfreischaltungen und aktuelle Stages | Eier und Inventarmaterialien |
 | nicht eingesammeltes Gold | Gesamtsiege und Story-Meilensteine |
 |  | Gems, Gem-Ausrüstung, Avatare, Rahmen und Forschung |
+|  | höchste jemals erreichte Zone und permanente Prestige-Boni |
 
 Nicht eingesammelte Eier und Materialien werden vor dem Prestige automatisch gesichert. Nicht eingesammeltes Gold verfällt bewusst.
+
+Jedes Prestige gibt dauerhaft +0,2 % Grundwerte, +0,1 % Gold aus wiederholbaren Quellen und +0,001 Prozentpunkte Dropchance. Erst bei jedem 100. Prestige werden Gegner stufenweise um 2 % stärker.
 
 ## Aktueller Content-Umfang
 

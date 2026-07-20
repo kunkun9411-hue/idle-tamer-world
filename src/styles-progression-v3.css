@@ -301,6 +301,7 @@ body.is-prestige-active { overflow: auto; background: #07070c; }
 .prestige-ledger li b { color: var(--silver); font-size: 10px; }
 .prestige-ledger li span { color: var(--muted); font-size: 8px; }
 .prestige-ledger .is-permanent li b { color: #c9b8ff; }
+.prestige-balance-note { display: block; margin-top: 10px; color: #9287ae; font-size: 7px; line-height: 1.5; }
 .prestige-action { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .prestige-action .primary-button { min-width: 320px; }
 .prestige-action > small { color: var(--dim); font-size: 8px; }

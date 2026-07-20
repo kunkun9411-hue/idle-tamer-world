@@ -117,7 +117,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] einheitliche Verbindungs-, Lade- und Revisionskonflikt-UI umgesetzt
 - [x] Asset-Manifest und PixelLab-Animationsvertrag für 200×200-Monster ergänzt
 
-**Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 93 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
+**Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 94 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
 
 ### Schritt 3 – Prüfen ✅
 
@@ -128,13 +128,13 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Parallel-Tab-, Reload- und veraltete-Revision-Fälle simulieren
 - [x] CI für Test, Build, Content und Assets aktivieren
 
-**Definition of Done erfüllt:** 37 Regel-, Content- und Service-Vertragstests sowie zehn echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen und parallele Tabs sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 93 Assetverträge und den sichtbaren Kernloop.
+**Definition of Done erfüllt:** 44 Regel-, Content- und Service-Vertragstests sowie elf echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen, parallele Tabs und die Zone-10-Prestigesperre sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 94 Assetverträge und den sichtbaren Kernloop.
 
 ### Schritt 4 – Abnehmen ⬜
 
 - [ ] manuellen ersten Spielbogen ohne Blocker abschließen
-- [ ] automatischen E2E-Kernloop erfolgreich ausführen
-- [ ] Balance- und Resetregeln als verbindlich markieren
+- [x] automatischen E2E-Kernloop erfolgreich ausführen
+- [x] Balance- und Resetregeln als verbindlich markieren
 - [ ] Backend-API-Vertrag versionieren und freigeben
 - [ ] Dokumentation, Tests und GitHub-Stand synchronisieren
 

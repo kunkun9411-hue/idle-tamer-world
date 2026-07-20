@@ -14,6 +14,10 @@ import {
   monsterAttack,
   monsterMaxHp,
   prestigeCoreReward,
+  prestigeDropChanceBonus,
+  prestigeEnemyMultiplier,
+  prestigeGoldMultiplier,
+  prestigePlayerStatMultiplier,
   rankForVictories,
   researchCost,
   hyperLevelCost,
@@ -29,9 +33,9 @@ beforeEach(() => {
 });
 
 describe("Idle Tamer progression rules", () => {
-  it("creates a backend-shaped version 8 save awaiting starter choice", () => {
+  it("creates a backend-shaped version 9 save awaiting starter choice", () => {
     const state = createInitialState();
-    expect(state.version).toBe(8);
+    expect(state.version).toBe(9);
     expect(state.roster).toHaveLength(0);
     expect(state.activeMonsterUid).toBe("");
     expect(state.eggInventory.mossbit).toBe(1);
@@ -39,6 +43,7 @@ describe("Idle Tamer progression rules", () => {
     expect(state.inventory.training_data).toBe(2);
     expect(Object.values(state.gemInventory).reduce((sum, amount) => sum + amount, 0)).toBe(3);
     expect(state.unlockedZoneIds).toEqual(["violet-rim"]);
+    expect(state.highestZoneNumber).toBe(1);
     expect(MONSTERS).toHaveLength(10);
     expect(MONSTERS.every((monster) => monster.evolution.name.length > 0)).toBe(true);
     expect(state.research).toEqual({ power: 0, vitality: 0, extraction: 0, incubation: 0 });
@@ -73,9 +78,25 @@ describe("Idle Tamer progression rules", () => {
     expect(incubationDurationMs(0)).toBe(300_000);
     expect(incubationDurationMs(5)).toBe(150_000);
     expect(incubationDurationMs(20)).toBe(120_000);
-    expect(prestigeCoreReward(99)).toBe(0);
-    expect(prestigeCoreReward(100)).toBe(1);
-    expect(prestigeCoreReward(300)).toBe(3);
+    expect(prestigeCoreReward(99, 10)).toBe(0);
+    expect(prestigeCoreReward(100, 9)).toBe(0);
+    expect(prestigeCoreReward(100, 10)).toBe(1);
+    expect(prestigeCoreReward(300, 10)).toBe(3);
+  });
+
+  it("keeps Prestige bonuses small and strengthens enemies only every hundred runs", () => {
+    expect(prestigePlayerStatMultiplier(1)).toBeCloseTo(1.002);
+    expect(prestigeGoldMultiplier(1)).toBeCloseTo(1.001);
+    expect(prestigeDropChanceBonus(1)).toBeCloseTo(0.00001);
+    expect(prestigeEnemyMultiplier(99)).toBe(1);
+    expect(prestigeEnemyMultiplier(100)).toBe(1.02);
+    expect(prestigeEnemyMultiplier(200)).toBe(1.04);
+
+    const monster = createMonster("pyrook");
+    expect(monsterAttack(monster, 100)).toBeGreaterThan(monsterAttack(monster, 0));
+    expect(monsterMaxHp(monster, 100)).toBeGreaterThan(monsterMaxHp(monster, 0));
+    expect(enemyStats("mossbit", 1, 99)).toEqual(enemyStats("mossbit", 1, 0));
+    expect(enemyStats("mossbit", 1, 100).hp).toBeGreaterThan(enemyStats("mossbit", 1, 99).hp);
   });
 
   it("ships thirty normal encounters and five rotating bosses", () => {
@@ -146,6 +167,7 @@ describe("LocalGameService command boundary", () => {
     const service = new LocalGameService(state);
     service.chooseStarter("pyrook");
     state.runVictories = 100;
+    state.highestZoneNumber = 10;
     state.totalVictories = 140;
     state.resources.gold = 999;
     state.roster[0].level = 25;
@@ -177,9 +199,37 @@ describe("LocalGameService command boundary", () => {
     expect(state.inventory.evolution_core).toBe(0);
     expect(state.fragments.voltfin).toBe(0);
     state.runVictories = 100;
+    state.highestZoneNumber = 10;
     expect(service.prestige()).toBe(1);
     expect(starter.level).toBe(1);
     expect(starter.evolution).toBe("evolved");
+  });
+
+  it("blocks Prestige before zone 10 even when the victory requirement is met", () => {
+    const state = createInitialState();
+    const service = new LocalGameService(state);
+    service.chooseStarter("pyrook");
+    state.runVictories = 500;
+    state.highestZoneNumber = 9;
+
+    expect(service.prestige()).toBe(0);
+    expect(state.prestigeCount).toBe(0);
+    expect(state.runVictories).toBe(500);
+
+    state.highestZoneNumber = 10;
+    expect(service.prestige()).toBe(5);
+    expect(state.prestigeCount).toBe(1);
+  });
+
+  it("applies the permanent Prestige gold bonus to repeatable combat rewards", () => {
+    const baseState = createInitialState();
+    const prestigeState = createInitialState();
+    prestigeState.prestigeCount = 100;
+    const baseService = new LocalGameService(baseState, () => 1);
+    const prestigeService = new LocalGameService(prestigeState, () => 1);
+
+    expect(baseService.recordVictory("flickerimp", 1).gold).toBe(13);
+    expect(prestigeService.recordVictory("flickerimp", 1).gold).toBe(14);
   });
 
   it("equips one Gem per shape and applies it to base stats", () => {

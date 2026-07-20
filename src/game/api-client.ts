@@ -6,7 +6,7 @@ import {
   type GameCommand,
   type GameCommandResponse,
 } from "./api-contract";
-import { CONTENT_CONTRACT_VERSION, ERROR_CONTRACT_VERSION } from "./contract-versions";
+import { BALANCE_CONTRACT_VERSION, BALANCE_RELEASE_ID, CONTENT_CONTRACT_VERSION, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
 export class GameApiError extends Error {
   public constructor(
@@ -83,6 +83,9 @@ export class HttpGameClient implements GameApiClient {
     }
     if (!("contentContractVersion" in body) || body.contentContractVersion !== CONTENT_CONTRACT_VERSION) {
       throw new GameApiError(response.status, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Content-Verträge." });
+    }
+    if (!("balanceContractVersion" in body) || body.balanceContractVersion !== BALANCE_CONTRACT_VERSION || !("balanceReleaseId" in body) || body.balanceReleaseId !== BALANCE_RELEASE_ID) {
+      throw new GameApiError(response.status, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Balance-Verträge." });
     }
     return body as T;
   }

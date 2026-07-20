@@ -1,8 +1,8 @@
 import type { ResearchId } from "./progression";
 import type { GameState, ItemInventory } from "./types";
-import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
+import { BALANCE_CONTRACT_VERSION, BALANCE_RELEASE_ID, CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
-export const API_PROTOCOL_VERSION = 7;
+export const API_PROTOCOL_VERSION = 8;
 
 export interface SessionSummary {
   authenticated: boolean;
@@ -32,6 +32,8 @@ export interface GameStateResponse {
   protocolVersion: typeof API_PROTOCOL_VERSION;
   contentContractVersion: typeof CONTENT_CONTRACT_VERSION;
   contentReleaseId: typeof CONTENT_RELEASE_ID;
+  balanceContractVersion: typeof BALANCE_CONTRACT_VERSION;
+  balanceReleaseId: typeof BALANCE_RELEASE_ID;
   revision: number;
   serverTime: string;
   state: GameState;

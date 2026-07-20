@@ -13,7 +13,7 @@ beforeEach(() => {
   });
 });
 
-describe("save schema v8", () => {
+describe("save schema v9", () => {
   it("migrates a v3 roster without losing permanent progress", () => {
     const monster = createMonster("pyrook", 17, 2, 4);
     values.set("idle-tamer.save.v3", JSON.stringify({
@@ -36,14 +36,15 @@ describe("save schema v8", () => {
 
     const loaded = loadGame();
     expect(loaded.migrated).toBe(true);
-    expect(loaded.state.version).toBe(8);
+    expect(loaded.state.version).toBe(9);
     expect(loaded.state.roster[0]).toMatchObject({ definitionId: "pyrook", level: 17, hyperLevel: 4, evolution: "rookie" });
     expect(loaded.state.fragments.pyrook).toBe(7);
     expect(loaded.state.unlockedZoneIds).toEqual(["violet-rim", "glass-gardens", "obsidian-fjord"]);
     expect(loaded.state.profile).toEqual({ avatarId: "wanderer", frameId: "silver" });
     expect(loaded.state.activityCounters).toMatchObject({ victory: 82, hyper_up: 4, prestige: 1 });
     expect(loaded.state.objectivePeriods.dailyBaseline.victory).toBe(82);
-    expect(values.has("idle-tamer.save.v8")).toBe(true);
+    expect(loaded.state.highestZoneNumber).toBe(3);
+    expect(values.has("idle-tamer.save.v9")).toBe(true);
   });
 
   it("renames v4 Ultra progress to Hyper progress and supplies Gem slots", () => {
@@ -79,7 +80,7 @@ describe("save schema v8", () => {
 
     const loaded = loadGame();
     expect(loaded.migrated).toBe(true);
-    expect(loaded.state.version).toBe(8);
+    expect(loaded.state.version).toBe(9);
     expect(loaded.state.activityCounters).toMatchObject({ victory: 54, level_up: 11, hyper_up: 2 });
     expect(loaded.state.objectivePeriods.dailyBaseline.victory).toBe(54);
     expect(loaded.state.claimedObjectives).toEqual([]);
@@ -97,7 +98,7 @@ describe("save schema v8", () => {
 
     const loaded = loadGame();
     expect(loaded.migrated).toBe(true);
-    expect(loaded.state.version).toBe(8);
+    expect(loaded.state.version).toBe(9);
     expect(loaded.state.claimedObjectives).toEqual(["permanent:achievement-evolution"]);
     expect(loaded.state.activityCounters.evolution).toBe(1);
     expect(loaded.state.activityCounters.expedition_complete).toBe(0);
@@ -119,11 +120,28 @@ describe("save schema v8", () => {
     }));
 
     const loaded = loadGame();
-    expect(loaded.state.version).toBe(8);
+    expect(loaded.state.version).toBe(9);
     expect(loaded.state.expeditions).toHaveLength(1);
     expect(loaded.state.settings.numberFormat).toBe("compact");
     expect(loaded.state.tutorialStep).toBe(4);
     expect(loaded.state.claimedSystemMessages).toEqual([]);
+  });
+
+  it("migrates v8 and derives the permanent highest-zone gate", () => {
+    const state = createInitialState();
+    values.set("idle-tamer.save.v8", JSON.stringify({
+      ...state,
+      version: 8,
+      highestZoneNumber: undefined,
+      currentZoneId: "obsidian-fjord",
+      unlockedZoneIds: ["violet-rim", "glass-gardens", "obsidian-fjord"],
+    }));
+
+    const loaded = loadGame();
+    expect(loaded.migrated).toBe(true);
+    expect(loaded.state.version).toBe(9);
+    expect(loaded.state.highestZoneNumber).toBe(3);
+    expect(values.has("idle-tamer.save.v9")).toBe(true);
   });
 
   it("caps offline progress at the available cache capacity", () => {
@@ -134,9 +152,9 @@ describe("save schema v8", () => {
     state.cacheSlotsUsed = 89;
     state.lastSavedAt = Date.now() - 24 * 60 * 60 * 1_000;
     saveGame(state);
-    const stored = JSON.parse(values.get("idle-tamer.save.v8") ?? "{}");
+    const stored = JSON.parse(values.get("idle-tamer.save.v9") ?? "{}");
     stored.lastSavedAt = Date.now() - 24 * 60 * 60 * 1_000;
-    values.set("idle-tamer.save.v8", JSON.stringify(stored));
+    values.set("idle-tamer.save.v9", JSON.stringify(stored));
 
     const loaded = loadGame();
     expect(loaded.offlineSlots).toBe(1);
@@ -150,9 +168,9 @@ describe("save schema v8", () => {
     state.roster.push(monster);
     state.activeMonsterUid = monster.uid;
     saveGame(state);
-    const stored = JSON.parse(values.get("idle-tamer.save.v8") ?? "{}");
+    const stored = JSON.parse(values.get("idle-tamer.save.v9") ?? "{}");
     stored.lastSavedAt = Date.now() - 10 * 60_000;
-    values.set("idle-tamer.save.v8", JSON.stringify(stored));
+    values.set("idle-tamer.save.v9", JSON.stringify(stored));
 
     const first = loadGame();
     const firstPendingGold = first.state.pendingGold;

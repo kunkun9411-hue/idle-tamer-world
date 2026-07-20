@@ -26,7 +26,7 @@ Vor dem ersten echten Server soll Idle Tamer lokal wie ein vollständiges kleine
 | Zeit-Expeditionen | zwei Slots, sechs Missionen, Monsterbindung, Match-Boni und Zeitstempel |
 | Herstellung | drei garantierte Etherstaub-Rezepte mit festen Quellen und Senken |
 | Komfort | Vier-Schritt-Tutorial, Systempost, Audio, Effekte, Bewegung und Zahlenformat |
-| Technik | Save v8, Migrationen, Offline-Replay-Schutz, API-Protokoll 7 und 30 automatisierte Tests |
+| Technik | Save v9, Migrationen, Offline-Replay-Schutz, API-Protokoll 8, eigener Balance-Vertrag und 44 Regel-/Vertragstests |
 
 ## Noch vor dem Backend
 

@@ -6,6 +6,8 @@ Diese Tabelle ist die verbindliche Übersicht aller aktuellen Quellen und Senken
 
 Die verbindlichen Foundation-1.0-Zielwerte für Stunde 1, Tag 1, Woche 1, Brut, Offline-Ertrag und Prestige stehen in `GAMEPLAY_FOUNDATION_SPEC.md`. Dort sind auch die bewusst noch offenen Umsetzungsdeltas des schnellen lokalen Prototyps aufgeführt.
 
+Die verbindliche Grenze für kleine Zahlen, wissenschaftliche Darstellung, Zone-10-Freigabe und die exakten permanenten Prestige-Boni steht in `NUMBER_SCALE_POLICY.md`. Der aktive Balance-Release ist `low-numbers-1.0.0`.
+
 | Bestand | Hauptquellen | Hauptsenken | Prestige |
 | --- | --- | --- | --- |
 | Run-Gold | Kämpfe, Offline-Speicher, Ziele, Zeit-Expeditionen, Systempost | normale Monsterlevel, Etherwerkstatt | wird auf 0 gesetzt |
@@ -43,6 +45,8 @@ Es gibt keinen Zufall, keine Fehlschlagchance und keinen frei kombinierbaren Inp
 - wiederholte Ziel-, Systempost- und Expeditions-Claims zahlen nicht erneut aus
 - das Offline-Zeitfenster wird direkt beim Laden gespeichert und kann durch schnellen Reload nicht erneut belohnt werden
 - drei simulierte Prestige-Runs erhalten Gesamtsiege, Prestigezahl und permanente Kerne, ohne negative Bestände
+- Prestige bleibt selbst bei 500 Run-Siegen bis zur permanent erreichten Zone 10 gesperrt
+- Kostenstufen bleiben vor der wissenschaftlichen Phase unter dem Zweifachen des vorherigen Preises
 
 ## Spätere SQL-Regel
 

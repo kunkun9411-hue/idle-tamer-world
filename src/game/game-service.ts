@@ -15,6 +15,8 @@ import {
   isEggPityGuaranteed,
   levelCost,
   prestigeCoreReward,
+  prestigeDropChanceBonus,
+  prestigeGoldMultiplier,
   rankForVictories,
   researchCost,
   hyperLevelCost,
@@ -347,7 +349,7 @@ export class LocalGameService implements GameService {
       monsterUid,
       startedAt: now,
       completesAt: now + definition.durationMs,
-      rewardMultiplier: expeditionRewardMultiplier(monster, definition),
+      rewardMultiplier: expeditionRewardMultiplier(monster, definition) * prestigeGoldMultiplier(this.state.prestigeCount),
     });
     recordActivity(this.state, "expedition_start", 1, now);
     this.save();
@@ -427,6 +429,7 @@ export class LocalGameService implements GameService {
       if (nextZone && !this.state.unlockedZoneIds.includes(nextZone.id)) {
         this.state.unlockedZoneIds.push(nextZone.id);
         this.state.zoneProgress[nextZone.id] = { stage: 1, clears: 0 };
+        this.state.highestZoneNumber = Math.max(this.state.highestZoneNumber, ZONES.indexOf(nextZone) + 1);
         unlockedZoneId = nextZone.id;
       }
       addItem(this.state.pendingItems, "evolution_core", 1);
@@ -456,7 +459,7 @@ export class LocalGameService implements GameService {
     }
 
     const synergy = activeZoneSynergy(this.state);
-    const gold = Math.round((9 + enemyLevel * 4) * (1 + this.state.research.extraction * 0.1) * (1 + (synergy?.goldPercent ?? 0) / 100));
+    const gold = Math.round((9 + enemyLevel * 4) * (1 + this.state.research.extraction * 0.1) * (1 + (synergy?.goldPercent ?? 0) / 100) * prestigeGoldMultiplier(this.state.prestigeCount));
     this.state.pendingGold += gold;
     this.state.cacheSlotsUsed += 1;
     const items: ItemDrop[] = [];
@@ -468,23 +471,24 @@ export class LocalGameService implements GameService {
     };
     if (bossDefeated) items.push({ itemId: "evolution_core", amount: 1 });
     const materialBonus = synergy?.materialChanceBonus ?? 0;
-    rollItem("training_data", Math.min(1, BALANCE.drops.trainingDataChance + materialBonus));
-    rollItem("ether_dust", Math.min(1, BALANCE.drops.etherDustChance + materialBonus));
-    rollItem("incubator_charge", Math.min(1, BALANCE.drops.incubatorChargeChance + materialBonus * 0.35));
+    const prestigeDropBonus = prestigeDropChanceBonus(this.state.prestigeCount);
+    rollItem("training_data", Math.min(1, BALANCE.drops.trainingDataChance + materialBonus + prestigeDropBonus));
+    rollItem("ether_dust", Math.min(1, BALANCE.drops.etherDustChance + materialBonus + prestigeDropBonus));
+    rollItem("incubator_charge", Math.min(1, BALANCE.drops.incubatorChargeChance + materialBonus * 0.35 + prestigeDropBonus));
 
-    const dropped = isEggPityGuaranteed(this.state.eggPity) || this.random() < Math.min(1, eggDropChance(this.state.eggPity) + (synergy?.eggChanceBonus ?? 0));
+    const dropped = isEggPityGuaranteed(this.state.eggPity) || this.random() < Math.min(1, eggDropChance(this.state.eggPity) + (synergy?.eggChanceBonus ?? 0) + prestigeDropBonus);
     const eggDefinitionId = findEncounter(enemyDefinitionId)?.eggMonsterId ?? enemyDefinitionId;
     if (dropped) {
       this.state.pendingEggs.push(eggDefinitionId);
       this.state.eggPity = 0;
     } else this.state.eggPity += 1;
-    if (!bossDefeated && this.random() < BALANCE.drops.gemChance) rollGem(false);
+    if (!bossDefeated && this.random() < Math.min(1, BALANCE.drops.gemChance + prestigeDropBonus)) rollGem(false);
     this.save();
     return { gold, eggDefinitionId: dropped ? eggDefinitionId : undefined, items, cacheFull: false, bossDefeated, unlockedZoneId, gemId };
   }
 
   public prestige(): number {
-    const reward = prestigeCoreReward(this.state.runVictories);
+    const reward = prestigeCoreReward(this.state.runVictories, this.state.highestZoneNumber);
     if (reward <= 0) return 0;
     for (const definitionId of this.state.pendingEggs) addEgg(this.state.eggInventory, definitionId);
     for (const [itemId, amount] of Object.entries(this.state.pendingItems) as [ItemId, number][]) addItem(this.state.inventory, itemId, amount);

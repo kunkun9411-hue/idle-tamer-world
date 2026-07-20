@@ -11,7 +11,7 @@
 
 Imagegen erzeugt zunächst einen hochauflösenden Chroma-Master. Der installierte Freistellungsprozess entfernt den Key. `scripts/prepare_sprite.py` trimmt nur die transparente Fläche, erhält acht Pixel Sicherheitsabstand und exportiert deterministisch auf einer 200×200-Leinwand.
 
-Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf Bosse. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. `python scripts/validate_assets.py` prüft Anzahl, Format und Größe aller 45 Kreaturen-, drei Umgebungs- und 45 Gem-Assets.
+Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf Bosse. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller 94 Runtime-Bilder.
 
 ## Ordner
 
@@ -26,6 +26,7 @@ Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf 
 - `art-source/generated/gems/masters` – neun unveränderte Imagegen-Chroma-Master
 - `art-source/generated/gems/transparent` – neun neutrale freigestellte Gem-Master
 - `public/assets/gems/<rarity>/*.png` – 45 freigegebene transparente 200×200-Gems
+- `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes 1024×1024-Markenlogo
 - `public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
 - `art-source/archive/pixel-v1` – verworfener Pixel-Stiltest
 

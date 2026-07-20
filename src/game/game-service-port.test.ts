@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { API_PROTOCOL_VERSION, type GameBootstrapResponse } from "./api-contract";
 import { GameApiError, type GameApiClient } from "./api-client";
-import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
+import { BALANCE_CONTRACT_VERSION, BALANCE_RELEASE_ID, CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
 import { LocalGameService } from "./game-service";
 import { HttpGameService, LocalGameServicePort } from "./game-service-port";
 import { createInitialState } from "./rules";
@@ -20,6 +20,8 @@ const bootstrap = (): GameBootstrapResponse => ({
   protocolVersion: API_PROTOCOL_VERSION,
   contentContractVersion: CONTENT_CONTRACT_VERSION,
   contentReleaseId: CONTENT_RELEASE_ID,
+  balanceContractVersion: BALANCE_CONTRACT_VERSION,
+  balanceReleaseId: BALANCE_RELEASE_ID,
   revision: 4,
   serverTime: "2026-07-20T06:00:00.000Z",
   state: createInitialState(),
@@ -31,7 +33,7 @@ const bootstrap = (): GameBootstrapResponse => ({
 describe("shared game service port", () => {
   it("executes the same intent contract locally and advances its revision", async () => {
     const port = new LocalGameServicePort(new LocalGameService(createInitialState()));
-    await expect(port.bootstrap()).resolves.toMatchObject({ accepted: true, revision: 0, event: { type: "bootstrap.local", payload: { contentContractVersion: CONTENT_CONTRACT_VERSION, contentReleaseId: CONTENT_RELEASE_ID } } });
+    await expect(port.bootstrap()).resolves.toMatchObject({ accepted: true, revision: 0, event: { type: "bootstrap.local", payload: { contentContractVersion: CONTENT_CONTRACT_VERSION, contentReleaseId: CONTENT_RELEASE_ID, balanceContractVersion: BALANCE_CONTRACT_VERSION, balanceReleaseId: BALANCE_RELEASE_ID } } });
     await expect(port.send({ type: "starter.choose", definitionId: "pyrook" })).resolves.toMatchObject({ accepted: true, revision: 1 });
     await expect(port.send({ type: "starter.choose", definitionId: "mossbit" })).resolves.toMatchObject({ accepted: false, revision: 1 });
     await expect(port.send({ type: "settings.update", key: "numberFormat", value: "invalid" })).resolves.toMatchObject({ accepted: false, revision: 1 });

@@ -58,6 +58,17 @@
       "sha256": "7e5c94675d2cd9ddb6e136b77d48c48d5d8479f170a0f1b84531df40da3511b1"
     },
     {
+      "id": "branding.idle-tamer-world-logo",
+      "kind": "branding",
+      "path": "/assets/branding/idle-tamer-world-logo.png",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 477338,
+      "sha256": "d3206ab48ca39365256bb737fefce4f3f96210f0c596cdbee3aaeaf0fd857278"
+    },
+    {
       "id": "enemy.ashmaw_idle_left",
       "kind": "enemy",
       "path": "/assets/enemies/ashmaw_idle_left.png",

@@ -24,7 +24,7 @@ export const createMonster = (
 export const createInitialState = (now: () => number = Date.now): GameState => {
   const activityCounters = emptyActivityCounters();
   return ({
-  version: 8,
+  version: 9,
   playerName: "Tamer",
   resources: { gold: 100, cores: 0 },
   pendingGold: 0,
@@ -47,6 +47,7 @@ export const createInitialState = (now: () => number = Date.now): GameState => {
   incubation: null,
   currentZoneId: "violet-rim",
   unlockedZoneIds: ["violet-rim"],
+  highestZoneNumber: 1,
   zoneProgress: { "violet-rim": { stage: 1, clears: 0 } },
   runVictories: 0,
   totalVictories: 0,
@@ -71,18 +72,30 @@ export const hyperLevelCost = (hyperLevel: number): number => 10 + hyperLevel * 
 export const cacheCapacity = (extractionLevel: number): number =>
   BALANCE.cache.baseCapacity + extractionLevel * BALANCE.cache.capacityPerExtractionLevel;
 
-export const monsterMaxHp = (monster: MonsterInstance): number => {
+export const prestigePlayerStatMultiplier = (prestigeCount: number): number =>
+  1 + Math.max(0, prestigeCount) * BALANCE.prestige.playerBaseStatPerPrestige;
+
+export const prestigeGoldMultiplier = (prestigeCount: number): number =>
+  1 + Math.max(0, prestigeCount) * BALANCE.prestige.repeatableGoldPerPrestige;
+
+export const prestigeDropChanceBonus = (prestigeCount: number): number =>
+  Math.max(0, prestigeCount) * BALANCE.prestige.dropChancePerPrestige;
+
+export const prestigeEnemyMultiplier = (prestigeCount: number): number =>
+  1 + Math.floor(Math.max(0, prestigeCount) / BALANCE.prestige.enemyStepInterval) * BALANCE.prestige.enemyPercentPerStep;
+
+export const monsterMaxHp = (monster: MonsterInstance, prestigeCount = 0): number => {
   const form = getMonsterForm(monster);
   const runMultiplier = 1 + (monster.level - 1) * 0.14;
   const hyperMultiplier = 1 + monster.hyperLevel * 0.08;
-  return Math.round(form.baseHp * (1 + monsterGemBonuses(monster).hpPercent / 100) * runMultiplier * hyperMultiplier);
+  return Math.round(form.baseHp * (1 + monsterGemBonuses(monster).hpPercent / 100) * runMultiplier * hyperMultiplier * prestigePlayerStatMultiplier(prestigeCount));
 };
 
-export const monsterAttack = (monster: MonsterInstance): number => {
+export const monsterAttack = (monster: MonsterInstance, prestigeCount = 0): number => {
   const form = getMonsterForm(monster);
   const runMultiplier = 1 + (monster.level - 1) * 0.11;
   const hyperMultiplier = 1 + monster.hyperLevel * 0.07;
-  return Math.round(form.baseAttack * (1 + monsterGemBonuses(monster).attackPercent / 100) * runMultiplier * hyperMultiplier);
+  return Math.round(form.baseAttack * (1 + monsterGemBonuses(monster).attackPercent / 100) * runMultiplier * hyperMultiplier * prestigePlayerStatMultiplier(prestigeCount));
 };
 
 export const monsterGemBonuses = (monster: MonsterInstance): { attackPercent: number; hpPercent: number } =>
@@ -111,22 +124,23 @@ export const enemyForVictoryCount = (runVictories: number): { definitionId: stri
   level: 1 + Math.floor(runVictories / 3),
 });
 
-export const enemyStats = (definitionId: string, level: number): { hp: number; attack: number } => {
+export const enemyStats = (definitionId: string, level: number, prestigeCount = 0): { hp: number; attack: number } => {
   const definition = findEncounter(definitionId) ?? getMonster(definitionId);
+  const prestigeMultiplier = prestigeEnemyMultiplier(prestigeCount);
   return {
-    hp: Math.round(definition.baseHp * 0.72 * (1 + (level - 1) * 0.13)),
-    attack: Math.max(4, Math.round(definition.baseAttack * 0.44 * (1 + (level - 1) * 0.1))),
+    hp: Math.round(definition.baseHp * 0.72 * (1 + (level - 1) * 0.13) * prestigeMultiplier),
+    attack: Math.max(4, Math.round(definition.baseAttack * 0.44 * (1 + (level - 1) * 0.1) * prestigeMultiplier)),
   };
 };
 
 export const rankForVictories = (totalVictories: number): number => 1 + Math.floor(totalVictories / 25);
 export const researchCost = (level: number): number => 1 + Math.floor(level / 2);
 
-export const playerMaxHp = (monster: MonsterInstance, vitalityLevel: number, zoneHpPercent = 0): number =>
-  Math.round(monsterMaxHp(monster) * (1 + vitalityLevel * 0.08) * (1 + zoneHpPercent / 100));
+export const playerMaxHp = (monster: MonsterInstance, vitalityLevel: number, zoneHpPercent = 0, prestigeCount = 0): number =>
+  Math.round(monsterMaxHp(monster, prestigeCount) * (1 + vitalityLevel * 0.08) * (1 + zoneHpPercent / 100));
 
-export const playerAttack = (monster: MonsterInstance, powerLevel: number, zoneAttackPercent = 0): number =>
-  Math.round(monsterAttack(monster) * (1 + powerLevel * 0.07) * (1 + zoneAttackPercent / 100));
+export const playerAttack = (monster: MonsterInstance, powerLevel: number, zoneAttackPercent = 0, prestigeCount = 0): number =>
+  Math.round(monsterAttack(monster, prestigeCount) * (1 + powerLevel * 0.07) * (1 + zoneAttackPercent / 100));
 
 export const activeZoneSynergy = (state: GameState): ZoneSynergyDefinition | null => {
   const lead = state.roster.find((monster) => monster.uid === state.activeMonsterUid);
@@ -156,15 +170,17 @@ export const calculateOfflineProgress = (state: GameState, now: number): Offline
   const offlineSlots = state.roster.length > 0
     ? Math.min(availableSlots, Math.floor(offlineSeconds / BALANCE.cache.offlineSecondsPerReward))
     : 0;
-  const offlineGold = Math.round(offlineSlots * 12 * (1 + state.research.extraction * 0.1));
+  const offlineGold = Math.round(offlineSlots * 12 * (1 + state.research.extraction * 0.1) * prestigeGoldMultiplier(state.prestigeCount));
   const offlineItems = emptyInventory();
   offlineItems.training_data = Math.floor(offlineSlots / 3);
   offlineItems.ether_dust = Math.floor(offlineSlots / 8);
   return { offlineSeconds, offlineGold, offlineSlots, offlineItems };
 };
 
-export const prestigeCoreReward = (runVictories: number): number =>
-  runVictories < 100 ? 0 : 1 + Math.floor((runVictories - 100) / 100);
+export const prestigeCoreReward = (runVictories: number, highestZoneNumber: number): number =>
+  highestZoneNumber < BALANCE.prestige.requiredZoneNumber || runVictories < 100
+    ? 0
+    : 1 + Math.floor((runVictories - 100) / 100);
 
 export const eggDropChance = (eggPity: number): number => Math.min(1, BALANCE.drops.eggBaseChance + eggPity * 0.015);
 export const isEggPityGuaranteed = (eggPity: number): boolean => eggPity >= BALANCE.drops.eggPityMisses;

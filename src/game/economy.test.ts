@@ -26,6 +26,7 @@ describe("economy and release invariants", () => {
     const state = createInitialState();
     const service = new LocalGameService(state, () => 1);
     service.chooseStarter("pyrook");
+    state.highestZoneNumber = 10;
 
     for (let run = 0; run < 3; run += 1) {
       for (let victory = 0; victory < 100; victory += 1) {

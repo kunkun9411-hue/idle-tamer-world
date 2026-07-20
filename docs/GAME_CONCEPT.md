@@ -61,7 +61,7 @@ Die Evolution bleibt bei Prestige erhalten und verändert Name, Design, Rolle un
 
 ## Prestige und PvP
 
-Prestige wird in der Grundversion nach 100 Run-Siegen verfügbar. Der Fortschritt lädt einen Ether-Kristall in einer eigenen Szene. Beim Aktivieren dreht und entlädt er sich; Gold, normale Level und Zonenfortschritt werden zurückgesetzt. Monsterbesitz, Fragmente, Hyperlevel, Evolutionen, Gems, Eier, Gesamtsiege und Forschung bleiben.
+Prestige wird erst verfügbar, wenn der Account mindestens einmal Zone 10 erreicht hat und der aktuelle Run mindestens 100 Siege besitzt. Der Fortschritt lädt einen Ether-Kristall in einer eigenen Szene. Beim Aktivieren dreht und entlädt er sich; Gold, normale Level und Zonenfortschritt werden zurückgesetzt. Monsterbesitz, Fragmente, Hyperlevel, Evolutionen, Gems, Eier, Gesamtsiege, höchste Zone und Forschung bleiben. Jedes Prestige erhöht dauerhaft die Grundwerte um 0,2 %, wiederholbares Gold um 0,1 % und Dropchancen um 0,001 Prozentpunkte. Je 100 Prestige erhalten Gegner stufenweise 2 % mehr Leben und Angriff.
 
 Späteres asynchrones PvP verwendet primär permanente Werte. Ein neuer Prestige-Run darf die PvP-Kraft nicht plötzlich löschen.
 

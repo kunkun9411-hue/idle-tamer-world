@@ -19,8 +19,8 @@ ZONE_BACKGROUNDS = ROOT / "public" / "assets" / "zones"
 GEM_ROOT = ROOT / "public" / "assets" / "gems"
 MANIFEST = ROOT / "public" / "assets" / "asset-manifest.json"
 ASSET_ROOT = ROOT / "public" / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000}
 
 
 def validate(path: Path) -> None:
@@ -44,6 +44,7 @@ def asset_kind(path: Path) -> str:
         "bosses": "boss",
         "zones": "zone",
         "gems": "gem",
+        "branding": "branding",
     }[path.relative_to(ASSET_ROOT).parts[0]]
 
 
@@ -132,7 +133,7 @@ def main() -> None:
     if total_bytes > 6_000_000:
         raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 6 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
-    print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems")
+    print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems + 1 branding asset")
 
 
 if __name__ == "__main__":

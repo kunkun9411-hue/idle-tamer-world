@@ -89,7 +89,7 @@ export interface PlayerSettings {
 }
 
 export interface GameState {
-  version: 8;
+  version: 9;
   playerName: string;
   resources: Resources;
   pendingGold: number;
@@ -107,6 +107,7 @@ export interface GameState {
   incubation: IncubationState | null;
   currentZoneId: string;
   unlockedZoneIds: string[];
+  highestZoneNumber: number;
   zoneProgress: Record<string, ZoneRunProgress>;
   runVictories: number;
   totalVictories: number;

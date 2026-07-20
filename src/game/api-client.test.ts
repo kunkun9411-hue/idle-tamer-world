@@ -2,12 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { API_PROTOCOL_VERSION, type GameBootstrapResponse } from "./api-contract";
 import { GameApiError, HttpGameClient } from "./api-client";
 import { createInitialState } from "./rules";
-import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
+import { BALANCE_CONTRACT_VERSION, BALANCE_RELEASE_ID, CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
 const bootstrapPayload = (): GameBootstrapResponse => ({
   protocolVersion: API_PROTOCOL_VERSION,
   contentContractVersion: CONTENT_CONTRACT_VERSION,
   contentReleaseId: CONTENT_RELEASE_ID,
+  balanceContractVersion: BALANCE_CONTRACT_VERSION,
+  balanceReleaseId: BALANCE_RELEASE_ID,
   revision: 12,
   serverTime: "2026-07-19T22:00:00.000Z",
   state: createInitialState(),
@@ -42,6 +44,20 @@ describe("HttpGameClient backend boundary", () => {
     const client = new HttpGameClient({ clientInstanceId: "client-1", fetchImpl });
 
     await expect(client.send({ type: "monster.level_up", monsterUid: "monster-1" }, 12)).resolves.toMatchObject({ accepted: true });
+  });
+
+  it("rejects a server response with a stale balance contract", async () => {
+    const payload = { ...bootstrapPayload(), balanceContractVersion: 0 };
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    })) as unknown as typeof fetch;
+    const client = new HttpGameClient({ fetchImpl });
+
+    await expect(client.bootstrap()).rejects.toMatchObject({
+      status: 200,
+      problem: { message: "Frontend und Server verwenden unterschiedliche Balance-Verträge." },
+    });
   });
 
   it("turns conflicts and unreachable servers into typed errors", async () => {

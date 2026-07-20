@@ -13,6 +13,7 @@ import { CONTENT_RELEASE_ID } from "./game/contract-versions";
 import { isAvatarUnlocked, isFrameUnlocked, LocalGameService } from "./game/game-service";
 import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
+import { formatGameNumber } from "./game/number-scale";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
 import {
   activeZoneSynergy,
@@ -74,12 +75,10 @@ let clientUiState: ClientUiState = import.meta.env.DEV && ["loading", "online", 
   ? requestedUiState as ClientUiState
   : "local";
 
-const compactNumberFormatter = new Intl.NumberFormat("de-DE", { notation: "compact", maximumFractionDigits: 1 });
-const fullNumberFormatter = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
 const timeFormatter = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 
 function formatNumber(value: number): string {
-  return game.settings.numberFormat === "full" ? fullNumberFormatter.format(value) : compactNumberFormatter.format(value);
+  return formatGameNumber(value, game.settings.numberFormat);
 }
 
 function playUiTone(tone: NoticeTone): void {
@@ -111,10 +110,10 @@ function createBattleState(): BattleState | null {
   if (!player) return null;
   const zoneProgress = game.zoneProgress[game.currentZoneId] ?? { stage: 1, clears: 0 };
   const enemy = enemyForZone(game.currentZoneId, zoneProgress.stage, game.runVictories, zoneProgress.clears);
-  const enemyValues = enemyStats(enemy.definitionId, enemy.level);
+  const enemyValues = enemyStats(enemy.definitionId, enemy.level, game.prestigeCount);
   const now = performance.now();
   const synergy = activeZoneSynergy(game);
-  const maxHp = playerMaxHp(player, game.research.vitality, synergy?.hpPercent);
+  const maxHp = playerMaxHp(player, game.research.vitality, synergy?.hpPercent, game.prestigeCount);
   return {
     enemyDefinitionId: enemy.definitionId,
     enemyLevel: enemy.level,
@@ -152,7 +151,7 @@ function tickBattle(now: number): void {
   if (now >= battle.playerNextAttackAt) {
     const player = activeMonster();
     if (!player) return;
-    const damage = playerAttack(player, game.research.power, activeZoneSynergy(game)?.attackPercent) + Math.floor(Math.random() * 5);
+    const damage = playerAttack(player, game.research.power, activeZoneSynergy(game)?.attackPercent, game.prestigeCount) + Math.floor(Math.random() * 5);
     battle.enemyHp = Math.max(0, battle.enemyHp - damage);
     battle.playerNextAttackAt = now + 1_650;
     const impactedBattle = battle;
@@ -183,7 +182,7 @@ function tickBattle(now: number): void {
   }
 
   if (now >= battle.enemyNextAttackAt) {
-    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel);
+    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel, game.prestigeCount);
     const damage = values.attack + Math.floor(Math.random() * 3);
     battle.playerHp = Math.max(0, battle.playerHp - damage);
     battle.enemyNextAttackAt = now + 1_900;
@@ -416,7 +415,7 @@ function openPrestigeScene(): void {
 }
 
 function confirmPrestige(): void {
-  if (prestigeActivating || prestigeCoreReward(game.runVictories) <= 0) return;
+  if (prestigeActivating || prestigeCoreReward(game.runVictories, game.highestZoneNumber) <= 0) return;
   prestigeActivating = true;
   render();
   window.setTimeout(() => {
@@ -518,6 +517,10 @@ function brandMarkup(compact = false): string {
   return `<span class="brand__mark"><i></i></span>${compact ? "" : `<span class="brand__copy"><strong>IDLE <span>TAMER</span></strong><small>ETHER PROTOCOL</small></span>`}`;
 }
 
+function officialLogoMarkup(): string {
+  return `<img class="official-logo" src="/assets/branding/idle-tamer-world-logo.png" alt="Idle Tamer World" width="1024" height="1024" draggable="false">`;
+}
+
 function navButton(view: View, label: string, locked = false): string {
   const shortLabel: Record<View, string> = { expedition: "Kampf", objectives: "Aufträge", dispatch: "Missionen", habitat: "Monster", incubation: "Brut", inventory: "Inventar", research: "Labor", guild: "Gilde", profile: "Profil", prestige: "Prestige" };
   return `<button class="nav-button ${activeView === view ? "is-active" : ""}" data-view="${view}" aria-label="${label}" aria-current="${activeView === view ? "page" : "false"}"><span>${icon(view)}</span><b><span class="nav-label-full">${label}</span><span class="nav-label-short">${shortLabel[view]}</span></b>${locked ? '<i title="Vorschau ab Rang 10">10</i>' : ""}</button>`;
@@ -585,7 +588,7 @@ function loginShell(): string {
     <main class="login-screen" data-testid="login-screen">
       <div class="login-screen__backdrop" aria-hidden="true"></div>
       <section class="login-world" aria-label="Vorschau auf die Spielwelt">
-        <div class="login-world__brand">${brandMarkup()}</div>
+        <div class="login-world__brand">${officialLogoMarkup()}</div>
         <div class="login-world__copy">
           <span><i></i> ETHER-NETZWERK BEREIT</span>
           <h1>Dein Partner<br>kämpft weiter.</h1>
@@ -595,7 +598,7 @@ function loginShell(): string {
         <div class="login-world__status"><span><i></i> AUTOMATISCHE EXPEDITION</span><small>Violetter Saum · Signal stabil</small></div>
       </section>
       <section class="login-panel" aria-labelledby="login-title">
-        <div class="login-panel__mobile-brand">${brandMarkup()}</div>
+        <div class="login-panel__mobile-brand">${officialLogoMarkup()}</div>
         <span class="eyebrow">ACCOUNT-ZUGANG</span>
         <h2 id="login-title">Willkommen zurück.</h2>
         <p>Deine Expedition hat während deiner Abwesenheit weiter Ressourcen gesammelt.</p>
@@ -685,8 +688,11 @@ function expeditionView(): string {
   const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
   const capacity = cacheCapacity(game.research.extraction);
-  const prestigeReward = prestigeCoreReward(game.runVictories);
-  const prestigeProgress = Math.min(100, game.runVictories);
+  const prestigeZoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
+  const prestigeReward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
+  const prestigeProgress = prestigeZoneReady
+    ? Math.min(100, game.runVictories)
+    : Math.min(100, (game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber) * 100);
   const readyObjectives = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
   const eggGuarantee = Math.max(1, BALANCE.drops.eggPityMisses + 1 - game.eggPity);
   const zone = getZone(game.currentZoneId);
@@ -716,8 +722,8 @@ function expeditionView(): string {
           <div class="fighter fighter--enemy"><div class="nameplate"><div><span><small>${bossStage ? "ZONENBOSS" : "WILDSIGNAL"}</small><strong>${enemyDefinition.name}</strong></span><b>LV ${battle.enemyLevel}</b></div><div class="hp-track hp-track--enemy"><i style="width:${enemyHpPercent}%"></i></div><small>${battle.enemyHp} / ${battle.enemyMaxHp} HP</small></div>${encounterAvatar(enemyDefinition.id, "right", battle.enemyHit && game.settings.combatEffects)}${battle.enemyHit && game.settings.combatEffects ? `<span class="impact-number impact-number--enemy">−${battle.enemyDamageTaken}</span>` : ""}</div>
         </div>
         <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small>${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span>${resourceIcon("gold")}<small>GOLD</small><b>${formatNumber(game.pendingGold)}</b></span><span>${resourceIcon("eggs")}<small>EIER</small><b>${game.pendingEggs.length}</b></span><span>${icon("inventory")}<small>FUNDE</small><b>${pendingFindCount}</b></span></div><div class="combat-capacity"><i style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "disabled" : ""}>${cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`}</button></aside>
-        <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
-        <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}">${claimable ? `<div><small>STORY-BELOHNUNG BEREIT</small><strong>${claimable.title}</strong><span>${claimable.reward.gold} Gold${claimable.reward.eggId ? ` · ${getMonster(claimable.reward.eggId).name}-Ei` : ""}</span></div><button class="primary-button" data-milestone="${claimable.target}">BERGEN</button>` : upcoming ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>` : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`}<button class="combat-objectives-link" data-view="objectives"><span>${icon("objectives")}</span><div><small>AUFTRAGSZENTRALE</small><strong>${readyObjectives > 0 ? `${readyObjectives} BELOHNUNG${readyObjectives === 1 ? "" : "EN"} BEREIT` : "TÄGLICH · WÖCHENTLICH · ERFOLGE"}</strong></div></button><button class="combat-prestige" id="start-prestige"><span>∞</span><div><small>ETHER-KRISTALL ${game.runVictories}/100</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : "PRESTIGE ANSEHEN"}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button></section>
+        <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
+        <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}">${claimable ? `<div><small>STORY-BELOHNUNG BEREIT</small><strong>${claimable.title}</strong><span>${claimable.reward.gold} Gold${claimable.reward.eggId ? ` · ${getMonster(claimable.reward.eggId).name}-Ei` : ""}</span></div><button class="primary-button" data-milestone="${claimable.target}">BERGEN</button>` : upcoming ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>` : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`}<button class="combat-objectives-link" data-view="objectives"><span>${icon("objectives")}</span><div><small>AUFTRAGSZENTRALE</small><strong>${readyObjectives > 0 ? `${readyObjectives} BELOHNUNG${readyObjectives === 1 ? "" : "EN"} BEREIT` : "TÄGLICH · WÖCHENTLICH · ERFOLGE"}</strong></div></button><button class="combat-prestige" id="start-prestige"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button></section>
         ${combatMonsterSelector()}
         <section class="combat-console-hud combat-panel--log ${activeCombatPanel === "log" ? "is-open" : ""}"><div class="combat-console-status"><span class="status-orb ${battle.status}"></span><div><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT"}</strong><small>${battle.log[0]}</small></div></div><div class="combat-attack-cycle"><span><small>NÄCHSTE AKTION</small><b>${playerDefinition.name}</b></span><div><i style="width:${playerAttackProgress}%"></i></div></div><small class="combat-save-state"><i></i>${service.lastSaveResult.ok ? "LOKAL GESICHERT" : "SPEICHERFEHLER"}</small></section>
         ${combatControlDock(Boolean(claimable), cacheEmpty)}
@@ -768,7 +774,7 @@ function monsterCard(monster: MonsterInstance): string {
   const fragments = game.fragments[monster.definitionId] ?? 0;
   const evolutionReady = canEvolve(monster, game.inventory.evolution_core, fragments);
   const bonuses = monsterGemBonuses(monster);
-  return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster)}</b></span><span><small>ATK</small><b>${monsterAttack(monster)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>EVOLUTION</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>DATEN +1 <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
+  return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span><small>ATK</small><b>${monsterAttack(monster, game.prestigeCount)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP${game.prestigeCount > 0 ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS` : ""}</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>EVOLUTION</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>DATEN +1 <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
 }
 
 function incubationView(): string {
@@ -948,7 +954,7 @@ function playerSettings(): string {
   return `<section class="profile-settings panel"><div class="profile-section-heading"><div><span class="eyebrow">KOMFORT · BARRIEREARM</span><h2>Darstellung &amp; Feedback</h2><p>Alle Einstellungen werden im Spielstand gespeichert und später accountweit synchronisiert.</p></div></div><div class="settings-grid">${toggles.map((setting) => {
     const enabled = Boolean(game.settings[setting.key]);
     return `<button class="setting-toggle ${enabled ? "is-enabled" : ""}" data-setting="${setting.key}" data-setting-value="${!enabled}"><span><strong>${setting.title}</strong><small>${setting.copy}</small></span><i><em></em></i></button>`;
-  }).join("")}<div class="setting-format"><span><strong>Zahlenformat</strong><small>Kompakte Werte für Idle-Zahlen oder vollständig ausgeschriebene Bestände.</small></span><div><button class="${game.settings.numberFormat === "compact" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="compact">1,2 MIO.</button><button class="${game.settings.numberFormat === "full" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="full">1.200.000</button></div></div></div></section>`;
+  }).join("")}<div class="setting-format"><span><strong>Zahlenformat</strong><small>Lesbare Werte bleiben bis 1e15 erhalten. Erst danach wechselt das Spiel automatisch zur wissenschaftlichen Darstellung.</small></span><div><button class="${game.settings.numberFormat === "compact" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="compact">1,2 MIO.</button><button class="${game.settings.numberFormat === "full" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="full">1.200.000</button></div></div></div></section>`;
 }
 
 function profileView(): string {
@@ -983,10 +989,14 @@ function guildView(): string {
 }
 
 function prestigeView(): string {
-  const reward = prestigeCoreReward(game.runVictories);
+  const zoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
+  const reward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
   const charge = Math.min(100, game.runVictories);
   const permanentHyper = game.roster.reduce((sum, monster) => sum + monster.hyperLevel, 0);
   const equippedGems = game.roster.reduce((sum, monster) => sum + Object.keys(monster.gemSlots).length, 0);
+  const currentStatBonus = (game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",");
+  const currentGoldBonus = (game.prestigeCount * BALANCE.prestige.repeatableGoldPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",");
+  const currentDropBonus = (game.prestigeCount * BALANCE.prestige.dropChancePerPrestige * 100).toFixed(3).replace(".", ",");
   return `<main class="prestige-scene ${prestigeActivating ? "is-activating" : ""}">
     <div class="prestige-scene__ambient" aria-hidden="true"><i></i><i></i><i></i></div>
     <header class="prestige-header"><button class="brand" data-home>${brandMarkup()}</button><button class="secondary-button" data-view="expedition" ${prestigeActivating ? "disabled" : ""}>← ZURÜCK ZUM KAMPF</button></header>
@@ -994,13 +1004,13 @@ function prestigeView(): string {
     <section class="ether-crystal-stage" aria-label="Ether-Kristall zu ${charge} Prozent geladen">
       <div class="ether-orbit ether-orbit--outer"><i></i><i></i><i></i></div><div class="ether-orbit ether-orbit--inner"><i></i><i></i></div>
       <div class="ether-crystal"><i></i><i></i><i></i><span></span></div>
-      <div class="ether-charge"><span><small>KRISTALL-LADUNG</small><b>${game.runVictories} / 100</b></span><i><em style="width:${charge}%"></em></i><strong>${reward > 0 ? `${reward} ETHER-KERN${reward === 1 ? "" : "E"} BEREIT` : `${100 - game.runVictories} SIEGE BIS PRESTIGE`}</strong></div>
+      <div class="ether-charge"><span><small>${zoneReady ? "KRISTALL-LADUNG" : "PRESTIGE-ZUGANG"}</small><b>${zoneReady ? `${game.runVictories} / 100` : `ZONE ${game.highestZoneNumber} / ${BALANCE.prestige.requiredZoneNumber}`}</b></span><i><em style="width:${zoneReady ? charge : Math.min(100, game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber * 100)}%"></em></i><strong>${reward > 0 ? `${reward} ETHER-KERN${reward === 1 ? "" : "E"} BEREIT` : zoneReady ? `${Math.max(0, 100 - game.runVictories)} SIEGE BIS PRESTIGE` : `ERREICHE ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong></div>
     </section>
     <section class="prestige-ledger">
       <article><span class="eyebrow">WIRD FREIGEGEBEN</span><h2>Run-Fortschritt</h2><ul><li><b>${formatNumber(game.resources.gold)}</b><span>Run-Gold</span></li><li><b>${game.roster.reduce((sum, monster) => sum + Math.max(0, monster.level - 1), 0)}</b><span>zusätzliche normale Level</span></li><li><b>${getZone(game.currentZoneId).name}</b><span>Zone und Stage-Fortschritt</span></li></ul></article>
-      <article class="is-permanent"><span class="eyebrow">BLEIBT GESPEICHERT</span><h2>Permanente Bindung</h2><ul><li><b>${permanentHyper}</b><span>Hyperlevel</span></li><li><b>${game.roster.filter((monster) => monster.evolution === "evolved").length}</b><span>Evolutionen</span></li><li><b>${equippedGems}</b><span>eingesetzte Gems</span></li><li><b>${Object.values(game.fragments).reduce((sum, amount) => sum + amount, 0)}</b><span>Art-Fragmente</span></li></ul></article>
+      <article class="is-permanent"><span class="eyebrow">BLEIBT GESPEICHERT</span><h2>Permanente Bindung</h2><ul><li><b>${permanentHyper}</b><span>Hyperlevel</span></li><li><b>${game.roster.filter((monster) => monster.evolution === "evolved").length}</b><span>Evolutionen</span></li><li><b>${equippedGems}</b><span>eingesetzte Gems</span></li><li><b>${Object.values(game.fragments).reduce((sum, amount) => sum + amount, 0)}</b><span>Art-Fragmente</span></li><li><b>+0,2 %</b><span>Grundwerte je Prestige · aktuell +${currentStatBonus} %</span></li><li><b>+0,1 %</b><span>Gold je Prestige · aktuell +${currentGoldBonus} %</span></li><li><b>+0,001 PP</b><span>Dropchance je Prestige · aktuell +${currentDropBonus} PP</span></li></ul><small class="prestige-balance-note">Alle 100 Prestige werden Gegner um 2 % stärker.</small></article>
     </section>
-    <div class="prestige-action"><button class="primary-button primary-button--large" id="confirm-prestige" ${reward <= 0 || prestigeActivating ? "disabled" : ""}>${prestigeActivating ? "ZEITLINIE WIRD GELÖST …" : reward > 0 ? "ETHER-KRISTALL AKTIVIEREN" : "KRISTALL NOCH NICHT GELADEN"}</button><small>${prestigeActivating ? "Hyperlevel, Evolutionen und Gems werden verankert." : "Diese Aktion setzt nur den oben aufgeführten Run-Fortschritt zurück."}</small></div>
+    <div class="prestige-action"><button class="primary-button primary-button--large" id="confirm-prestige" ${reward <= 0 || prestigeActivating ? "disabled" : ""}>${prestigeActivating ? "ZEITLINIE WIRD GELÖST …" : reward > 0 ? "ETHER-KRISTALL AKTIVIEREN" : zoneReady ? "KRISTALL NOCH NICHT GELADEN" : `PRESTIGE AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</button><small>${prestigeActivating ? "Hyperlevel, Evolutionen und Gems werden verankert." : zoneReady ? "Diese Aktion setzt nur den oben aufgeführten Run-Fortschritt zurück." : "Die höchste erreichte Zone bleibt permanent gespeichert. Frühe Runs können Prestige nicht beschleunigen."}</small></div>
   </main>`;
 }
 

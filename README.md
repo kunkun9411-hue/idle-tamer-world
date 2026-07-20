@@ -32,7 +32,8 @@ Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatische
 - monsterspezifische Fragmente für permanente Hyperlevel und Evolutionen
 - Gem-Ausrüstung mit drei Formen, fünf Farben und drei Seltenheiten: 45 transparente HD-Assets
 - eigene Prestige-Szene mit aufladbarem Ether-Kristall und Reset-Animation
-- Prestige ab 100 Run-Siegen; Hyperlevel, Evolutionen, Gems und Sammlung bleiben erhalten
+- Prestige erst nach Erreichen von Zone 10 und ab 100 Run-Siegen; Hyperlevel, Evolutionen, Gems und Sammlung bleiben erhalten
+- kleine dauerhafte Prestige-Boni: +0,2 % Grundwerte, +0,1 % wiederholbares Gold und +0,001 Prozentpunkte Dropchance je Prestige
 - permanente Account-Forschung mit Prestige-Kernen
 - rundes Accountprofil mit getrennt wechselbaren Avataren und Rahmen
 - zehn kurze Ether-Welt-Storyknoten bis 500 Gesamtsiege
@@ -41,7 +42,7 @@ Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatische
 - Etherwerkstatt mit drei festen Rezepten als vollständige Senke für Etherstaub
 - kontextuelle Vier-Schritt-Einführung, Systempost und gespeicherte Komfort-/Barrierearm-Einstellungen
 - HD-/Cel-Shading-Monster in exakt 200×200 Pixeln
-- lokaler Save v8, sichere v1–v7-Migration und bis zu acht Stunden kapazitätsbegrenzte Offline-Beute
+- lokaler Save v9, sichere v1–v8-Migration und bis zu acht Stunden kapazitätsbegrenzte Offline-Beute
 - responsive Desktop- und Mobiloberfläche
 - klarer Einstieg über Login, sammelbaren Offline-Bericht und die direkte Rückkehr in den Kampf
 - bildschirmfüllende Hauptkampfszene: Zonen, Ressourcen, Beute, Duo, Monsterwechsel und Navigation liegen als HUD in der Spielwelt
@@ -69,6 +70,7 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `src/game/catalog.ts` – Zonen, Items, Dropchancen, Avatare und Rahmen
 - `src/game/encounters.ts` – 30 normale Gegner, fünf Bosse und Ei-Zuordnung
 - `src/game/rules.ts` – deterministische Formeln und Resetgrenzen
+- `src/game/number-scale.ts` – einheitliche Zahlenanzeige und Grenze zur wissenschaftlichen Notation
 - `src/game/objectives.ts` – typisierte Aktivitäten, Tages-/Wochenperioden, Erfolge und Belohnungen
 - `src/game/expeditions.ts` – Zeitaufträge, Slots, Anforderungen und Match-Boni
 - `src/game/crafting.ts` – feste Herstellrezepte und Kostenprüfung
@@ -87,13 +89,15 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `public/assets/enemies` und `public/assets/bosses` – 35 weitere Imagegen-Runtime-Assets
 - `public/assets/zones` – drei optimierte 1600×900-WebP-Kampfumgebungen
 - `public/assets/gems` – 45 transparente 200×200-Gems nach Seltenheit
-- `public/assets/asset-manifest.json` – 93 eindeutige Runtime-IDs mit Maßen und SHA-256
+- `public/assets/asset-manifest.json` – 94 eindeutige Runtime-IDs mit Maßen und SHA-256
+- `public/assets/branding/idle-tamer-world-logo.png` – offizielles transparentes Markenlogo im Runtime-Vertrag
 - `art-source` – HD-Master, Chroma-Quellen und archivierte Stiltests
 
 ## Zentrale Dokumente
 
 - `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan vom Prototyp über PostgreSQL bis zum Launch
 - `docs/GAMEPLAY_FOUNDATION_SPEC.md` – verbindliche Zielbalance, Resetmatrix, E2E-Ablauf und UI-Zustände
+- `docs/NUMBER_SCALE_POLICY.md` – verbindliche Kleinzahl-, Prestige- und wissenschaftliche Zahlenregeln
 - `docs/GAME_CONCEPT.md` – verbindliche Produkt- und Gameplay-Quelle
 - `docs/ART_DIRECTION_V2.md` – neue visuelle Richtung, Zonenprompts und schnelle Anpassung
 - `docs/PLAYER_ENTRY_FLOW.md` – verbindlicher Ablauf von Login bis Hauptkampfszene

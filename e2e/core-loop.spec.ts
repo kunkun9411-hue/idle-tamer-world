@@ -11,6 +11,7 @@ const skipTutorialIfVisible = async (page: Page): Promise<void> => {
 test("fresh account reaches starter choice and the focused auto battle", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("login-screen")).toBeVisible();
+  await expect(page.locator('img[alt="Idle Tamer World"]').first()).toBeVisible();
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
@@ -30,6 +31,30 @@ test("loading and revision-conflict states are visible and recoverable", async (
   await expect(page).not.toHaveURL(/ui-state/);
 });
 
+test("Prestige remains locked before zone 10 even after 500 run victories", async ({ page }) => {
+  const state = createInitialState();
+  const starter = createMonster("pyrook", 5, 1, 0, "rookie", () => "zone-gate-pyrook");
+  state.roster = [starter];
+  state.activeMonsterUid = starter.uid;
+  state.runVictories = 500;
+  state.totalVictories = 500;
+  state.highestZoneNumber = 9;
+  state.tutorialStep = 4;
+
+  await page.addInitScript(({ key, save }) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(save));
+  }, { key: STORAGE_KEY, save: state });
+  await page.goto("/");
+  await page.getByTestId("login-submit").click();
+  await page.locator("#offline-continue").click();
+  await page.locator('[data-combat-panel="missions"]').click();
+  await page.locator("#start-prestige").click();
+
+  await expect(page.getByText("ZONE 9 / 10")).toBeVisible();
+  await expect(page.locator("#confirm-prestige")).toBeDisabled();
+  await expect(page.locator("#confirm-prestige")).toHaveText("PRESTIGE AB ZONE 10");
+});
+
 test("offline claim to hatch, permanent upgrades and Prestige remains consistent", async ({ page }) => {
   const state = createInitialState(() => Date.now() - 10 * 60_000);
   const starter = createMonster("pyrook", 20, 1, 0, "rookie", () => "e2e-pyrook");
@@ -44,6 +69,7 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   state.inventory.incubator_charge = 5;
   state.runVictories = 100;
   state.totalVictories = 100;
+  state.highestZoneNumber = 10;
   state.tutorialStep = 4;
 
   await page.addInitScript(({ key, save }) => {

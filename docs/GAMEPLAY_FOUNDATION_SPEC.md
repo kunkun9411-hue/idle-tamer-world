@@ -2,6 +2,7 @@
 
 - Status: **Verbindlicher Plan für Block 2**
 - Version: **Foundation 1.0**
+- Balance-Ergänzung: **low-numbers-1.0.0**
 - Stand: **20. Juli 2026**
 
 ## Zweck
@@ -26,16 +27,16 @@ Dieses Dokument friert den Solo-Kern von Idle Tamer ein, bevor PostgreSQL und Se
 | Minute 5–12 | erstes Ei in der Brut, erstes zusätzliches Monster und Supportplatz verständlich |
 | Minute 10–20 | Kampfspeicher bewusst einsammeln, Tagesziele und erste Zeit-Expedition nutzen |
 | Minute 15–30 | Rollen- oder Zonenbonus gezielt aktivieren und mehrere Monster leveln |
-| Minute 30–45 | 100 Run-Siege erreichen und ersten Ether-Kristall aktivieren |
-| Minute 45–60 | ersten Forschungspunkt ausgeben und den schnelleren zweiten Run beginnen |
+| Minute 30–45 | vorhandene Zonen meistern, Teamrollen vergleichen und permanenten Fortschritt vorbereiten |
+| Minute 45–60 | Brut, Hyperlevel, Evolution, Gems und Forschung als langfristige Ziele verstehen |
 
-Der erste Prestige soll früh genug kommen, um den eigentlichen Idle-Loop zu zeigen, aber nicht so früh, dass Zone, Brut, Gems und Teamwahl bedeutungslos wirken.
+Prestige ist kein früher Klickloop. Es wird erst nach Zone 10 und 100 Run-Siegen verfügbar. Der aktuelle Drei-Zonen-Prototyp zeigt die gesperrte Szene; ein reproduzierbares Test-Fixture bildet bereits den späteren Zone-10-Zustand ab.
 
 ### Erster Tag
 
 Ein normal aktiver Spieler mit mehreren Rückkehr-Sessions soll ungefähr Folgendes erreichen können:
 
-- zwei bis vier Prestige-Runs,
+- Fortschritt in Richtung Zone 10; die spätere reale Prestigezahl wird erst mit den Zonen 4–10 kalibriert,
 - drei bis sechs entdeckte Monsterlinien,
 - alle drei Zonen mindestens einmal betreten,
 - ein bis drei Hyperlevel auf bevorzugten Monstern,
@@ -48,7 +49,7 @@ Ein normal aktiver Spieler mit mehreren Rückkehr-Sessions soll ungefähr Folgen
 
 Zielkorridor für einen regelmäßig wiederkehrenden Spieler:
 
-- acht bis fünfzehn Prestige-Runs,
+- mehrere Prestige-Runs nach der Zone-10-Freischaltung; der Wochenkorridor wird mit den Zonen 4–10 kalibriert,
 - sieben bis zehn entdeckte Monsterlinien,
 - zwei bis fünf entwickelte Monster,
 - mehrere spezialisierte Front-/Support-Duos,
@@ -69,12 +70,12 @@ Diese Korridore sind keine garantierten Belohnungen. Sie sind Messpunkte für Si
 | Level 1 → 5 | insgesamt 256 Gold | frühe sichtbare Verbesserung |
 | Level 1 → 10 | insgesamt 936 Gold | innerhalb des ersten Runs erreichbar |
 | Level 1 → 20 | insgesamt 3.496 Gold | Evolution braucht bewusste Investition |
-| Prestige-Freigabe | 100 Run-Siege | entspricht einem vollständigen ersten Lernbogen |
+| Prestige-Freigabe | höchste Zone mindestens 10 und 100 Run-Siege | verhindert das Farmen sehr kurzer Prestige-Runs |
 | Prestige-Kerne | `1 + floor((Run-Siege - 100) / 100)` | längere Runs bleiben eine echte Wahl |
 | Forschungspreis | `1 + floor(aktuelles Level / 2)` Kerne | frühe Spezialisierung, später steigende Bindung |
 | Kampfspeicher | 90 Plätze + 12 je Extraktionsstufe | mindestens ein bewusster Claim pro erstem Run |
 
-Zielzeit für den ersten Prestige: **30 bis 45 Minuten**. Schritt 2 passt Kampftempo oder Gegnerkurve an, falls die Browsermessung außerhalb dieses Korridors liegt. Die Freigabe bei 100 Siegen bleibt bestehen.
+Eine reale Zielzeit für den ersten Prestige wird erst festgelegt, wenn die Zonen 4 bis 10 spielbar sind. Die Zone-10- und 100-Siege-Grenzen selbst sind verbindlich und werden nicht für einen schnelleren Testlauf abgeschwächt.
 
 ### Gold und Materialien pro Sieg
 
@@ -83,10 +84,12 @@ Zielzeit für den ersten Prestige: **30 bis 45 Minuten**. Schritt 2 passt Kampft
 | Grundgold | `9 + Gegnerlevel × 4` |
 | Extraktionsforschung | +10 % Gold je Stufe |
 | Zonen-Goldbonus | je nach aktivem Duo +10 % oder +12 % |
+| Prestige-Goldbonus | +0,1 % je Prestige auf wiederholbare Quellen |
 | Trainingsdaten | 55 % Grundchance |
 | Etherstaub | 18 % Grundchance |
 | Brutladung | 4 % Grundchance |
 | Zonen-Materialbonus | je nach Duo bis +12 Prozentpunkte |
+| Prestige-Dropbonus | +0,001 Prozentpunkte je Prestige |
 
 Trainingsdaten ersetzen genau einen normalen Levelkauf. Materialien bleiben über Prestige erhalten, das dadurch erzeugte normale Level nicht.
 
@@ -145,6 +148,7 @@ Identische Gems derselben Definition bleiben stapelbar. Zufällige Einzelwerte w
 | Grundspeicher | 90 Bündel = 7,5 Stunden |
 | Extraktionsstufe 1 | 102 Bündel, deckt die Acht-Stunden-Grenze ab |
 | Gold je Bündel | 12 × Extraktionsmultiplikator |
+| Prestige-Goldbonus | +0,1 % je Prestige |
 | Trainingsdaten | eines je drei Bündel |
 | Etherstaub | einer je acht Bündel |
 | ohne Starter | kein Offline-Ertrag |
@@ -161,7 +165,7 @@ Der Speicher ist eine Kapazitätsgrenze, die Acht-Stunden-Regel eine Zeitgrenze.
 
 ## In Schritt 2 umgesetzte Foundation-Deltas
 
-Die folgenden alten Testwerte wurden in Schritt 2 durch Foundation 1.0 ersetzt. Nur die reale Zeitmessung bis zum ersten Prestige bleibt ein Prüfpunkt für Schritt 3.
+Die folgenden alten Testwerte wurden in Schritt 2 durch Foundation 1.0 ersetzt. Die reale Zeitmessung bis zum ersten Prestige ist bewusst vertagt, bis die Zonen 4 bis 10 spielbar sind.
 
 | Bereich | Alter Prototypwert | Foundation 1.0 | Stand |
 | --- | --- | --- | --- |
@@ -170,7 +174,7 @@ Die folgenden alten Testwerte wurden in Schritt 2 durch Foundation 1.0 ersetzt. 
 | Brutladung | −15 Sekunden | −60 Sekunden | aktiv |
 | Offline-Bündel | alle 45 Sekunden | alle 5 Minuten | aktiv |
 | Grundspeicher offline | nach 67,5 Minuten voll | nach 7,5 Stunden voll | aktiv |
-| erster Prestige | nicht zeitlich gemessen | 30–45 Minuten | Messung in Schritt 3 |
+| erster Prestige | nach 100 Siegen | erst nach Zone 10 und 100 Siegen | Zugang aktiv, Zeitmessung nach Zonen 4–10 |
 
 Diese Deltas sind seit Block 2, Schritt 2 im Client aktiv. Sie verändern keine Besitzart und kein geplantes SQL-Schema; es sind reine versionierte Balancewerte.
 
@@ -193,6 +197,11 @@ Die spätere Serveraktion `prestige.start` führt diese Matrix in einer einzigen
 | Kampfspeicherbelegung | auf 0 | Speicher wurde aufgelöst |
 | Prestige-Kerne | Belohnung addieren | permanente Forschung |
 | Prestigezahl | um 1 erhöhen | permanenter Accountwert |
+| höchste jemals erreichte Zone | behalten | permanenter Nachweis für die Zone-10-Freigabe |
+| Prestige-Grundwertbonus | +0,2 % je Prestige | kleine dauerhafte Verstärkung |
+| Prestige-Goldbonus | +0,1 % je Prestige | minimale Beschleunigung wiederholbarer Quellen |
+| Prestige-Dropbonus | +0,001 Prozentpunkte je Prestige | sehr kleine langfristige Verbesserung |
+| Gegnerverstärkung | je 100 Prestige +2 % Leben und Angriff | begrenzte Gegenbewegung gegen Power-Creep |
 | Gesamtsiege | behalten | Rang und Story |
 | Monsterbesitz | behalten | Sammlung |
 | aktive Front und Support | behalten | Komfort, sofern weiterhin gültig |
@@ -237,7 +246,7 @@ Der Browser-E2E-Test aus Block 2, Schritt 2 bildet später mindestens diesen Abl
 16. Gem in den passenden Formslot einsetzen und Grundwerte aktualisieren.
 17. Genügend Testressourcen für Hyperlevel und Evolution bereitstellen.
 18. Hyperlevel erhöhen, Evolution auslösen und permanente Werte prüfen.
-19. 100 Run-Siege erreichen und Prestige-Szene öffnen.
+19. Mit einem ausdrücklich vorbereiteten Zone-10-Fixture 100 Run-Siege erreichen und Prestige-Szene öffnen; Zone 9 muss gesperrt bleiben.
 20. Prestige bestätigen und Resetmatrix vollständig vergleichen.
 21. Prestige-Kern in Forschung investieren.
 22. Seite neu laden und erhaltene permanente Werte erneut prüfen.
@@ -288,6 +297,7 @@ Für den Test werden reproduzierbare Fixtures und beschleunigte Testzeiten verwe
 - Jede schreibende Aktion besitzt `commandId` und `expectedRevision`.
 - Zeitjobs speichern Start, Ende, Status und verwendete Content-Version.
 - Drop-, Kosten- und Dauerwerte kommen aus einer versionierten Content-Konfiguration.
+- Balanceantworten tragen `balanceContractVersion` und `balanceReleaseId`; der aktive Release ist `low-numbers-1.0.0`.
 - Ein Reward-Batch wird serverseitig erzeugt und genau einmal geclaimt.
 - Prestige, Brutabschluss, Expedition-Claim und Equipmentwechsel sind atomare Transaktionen.
 

@@ -1,7 +1,7 @@
 import type { GameApiClient } from "./api-client";
 import { GameApiError } from "./api-client";
 import type { GameCommand } from "./api-contract";
-import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID } from "./contract-versions";
+import { BALANCE_CONTRACT_VERSION, BALANCE_RELEASE_ID, CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID } from "./contract-versions";
 import type { LocalGameService } from "./game-service";
 import type { GameState } from "./types";
 import type { PlayerSettings } from "./types";
@@ -42,7 +42,7 @@ export class LocalGameServicePort implements GameServicePort {
   }
 
   public async bootstrap(): Promise<GameServiceResult> {
-    return { accepted: true, revision: this.revision, state: this.state, event: event("bootstrap.local", { contentContractVersion: CONTENT_CONTRACT_VERSION, contentReleaseId: CONTENT_RELEASE_ID }) };
+    return { accepted: true, revision: this.revision, state: this.state, event: event("bootstrap.local", { contentContractVersion: CONTENT_CONTRACT_VERSION, contentReleaseId: CONTENT_RELEASE_ID, balanceContractVersion: BALANCE_CONTRACT_VERSION, balanceReleaseId: BALANCE_RELEASE_ID }) };
   }
 
   public async send(command: GameCommand): Promise<GameServiceResult> {

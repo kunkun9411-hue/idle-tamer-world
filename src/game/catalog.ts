@@ -26,6 +26,14 @@ export const BALANCE = {
     incubatorChargeChance: 0.04,
     gemChance: 0.04,
   },
+  prestige: {
+    requiredZoneNumber: 10,
+    playerBaseStatPerPrestige: 0.002,
+    repeatableGoldPerPrestige: 0.001,
+    dropChancePerPrestige: 0.00001,
+    enemyStepInterval: 100,
+    enemyPercentPerStep: 0.02,
+  },
 } as const;
 
 export interface GemDefinition {

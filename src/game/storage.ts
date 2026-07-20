@@ -3,8 +3,8 @@ import { cacheCapacity, calculateOfflineProgress, createInitialState } from "./r
 import { createObjectivePeriods, emptyActivityCounters } from "./objectives";
 import type { EvolutionStage, GameState, ItemInventory, MonsterInstance } from "./types";
 
-export const STORAGE_KEY = "idle-tamer.save.v8";
-const PREVIOUS_STORAGE_KEYS = ["idle-tamer.save.v7", "idle-tamer.save.v6", "idle-tamer.save.v5", "idle-tamer.save.v4", "idle-tamer.save.v3"];
+export const STORAGE_KEY = "idle-tamer.save.v9";
+const PREVIOUS_STORAGE_KEYS = ["idle-tamer.save.v8", "idle-tamer.save.v7", "idle-tamer.save.v6", "idle-tamer.save.v5", "idle-tamer.save.v4", "idle-tamer.save.v3"];
 const LEGACY_STORAGE_KEY = "echobound.save.v1";
 
 export interface LoadedGame {
@@ -31,12 +31,13 @@ const isValidState = (value: unknown): value is GameState => {
   if (!value || typeof value !== "object") return false;
   const state = value as Partial<GameState>;
   return (
-    state.version === 8 &&
+    state.version === 9 &&
     Array.isArray(state.roster) &&
     typeof state.activeMonsterUid === "string" &&
     typeof state.lastSavedAt === "number" &&
     !!state.inventory &&
     !!state.zoneProgress &&
+    typeof state.highestZoneNumber === "number" &&
     !!state.profile &&
     !!state.gemInventory &&
     Array.isArray(state.pendingGems) &&
@@ -102,7 +103,7 @@ const migrateModernState = (value: Record<string, unknown>): GameState => {
   const totalVictories = typeof value.totalVictories === "number" ? value.totalVictories : 0;
   const prestigeCount = typeof value.prestigeCount === "number" ? value.prestigeCount : 0;
   const zoneProgress = value.zoneProgress && typeof value.zoneProgress === "object" ? value.zoneProgress as GameState["zoneProgress"] : initial.zoneProgress;
-  const hasObjectiveState = (value.version === 6 || value.version === 7) && value.activityCounters && typeof value.activityCounters === "object" &&
+  const hasObjectiveState = (value.version === 6 || value.version === 7 || value.version === 8 || value.version === 9) && value.activityCounters && typeof value.activityCounters === "object" &&
     value.objectivePeriods && typeof value.objectivePeriods === "object" && Array.isArray(value.claimedObjectives);
   const activityCounters = hasObjectiveState
     ? normalizeActivityCounters(value.activityCounters)
@@ -116,9 +117,13 @@ const migrateModernState = (value: Record<string, unknown>): GameState => {
       weeklyBaseline: normalizeActivityCounters(rawPeriods.weeklyBaseline),
     }
     : createObjectivePeriods(activityCounters);
+  const unlockedZoneIds = Array.isArray(value.unlockedZoneIds)
+    ? value.unlockedZoneIds.filter((entry): entry is string => typeof entry === "string")
+    : initial.unlockedZoneIds;
+  const derivedHighestZone = unlockedZoneIds.reduce((highest, zoneId) => Math.max(highest, ZONES.findIndex((zone) => zone.id === zoneId) + 1), 1);
   return {
     ...initial,
-    version: 8,
+    version: 9,
     playerName: typeof value.playerName === "string" ? value.playerName : initial.playerName,
     resources: value.resources && typeof value.resources === "object" ? value.resources as GameState["resources"] : initial.resources,
     pendingGold: typeof value.pendingGold === "number" ? value.pendingGold : 0,
@@ -135,7 +140,8 @@ const migrateModernState = (value: Record<string, unknown>): GameState => {
     supportMonsterUid: typeof value.supportMonsterUid === "string" ? value.supportMonsterUid : "",
     incubation: value.incubation && typeof value.incubation === "object" ? value.incubation as GameState["incubation"] : null,
     currentZoneId: typeof value.currentZoneId === "string" ? value.currentZoneId : initial.currentZoneId,
-    unlockedZoneIds: Array.isArray(value.unlockedZoneIds) ? value.unlockedZoneIds.filter((entry): entry is string => typeof entry === "string") : initial.unlockedZoneIds,
+    unlockedZoneIds,
+    highestZoneNumber: Math.max(derivedHighestZone, typeof value.highestZoneNumber === "number" ? value.highestZoneNumber : 1),
     zoneProgress,
     runVictories: typeof value.runVictories === "number" ? value.runVictories : 0,
     totalVictories,
@@ -180,7 +186,7 @@ const migratedZoneState = (totalVictories: number): Pick<GameState, "currentZone
 const migrateOlderState = (value: unknown): GameState | null => {
   if (!value || typeof value !== "object") return null;
   const legacy = value as Record<string, unknown>;
-  if (legacy.version === 4 || legacy.version === 5 || legacy.version === 6 || legacy.version === 7) return migrateModernState(legacy);
+  if (legacy.version === 4 || legacy.version === 5 || legacy.version === 6 || legacy.version === 7 || legacy.version === 8 || legacy.version === 9) return migrateModernState(legacy);
   if (legacy.version !== 1 && legacy.version !== 2 && legacy.version !== 3) return null;
   const roster = Array.isArray(legacy.roster)
     ? legacy.roster.map(migrateMonster).filter((monster): monster is MonsterInstance => monster !== null)
@@ -216,7 +222,7 @@ const migrateOlderState = (value: unknown): GameState | null => {
   );
 
   return {
-    version: 8,
+    version: 9,
     playerName: typeof legacy.playerName === "string" ? legacy.playerName : "Tamer",
     resources: { gold, cores },
     pendingGold,
@@ -240,6 +246,7 @@ const migrateOlderState = (value: unknown): GameState | null => {
     supportMonsterUid: "",
     incubation: legacy.incubation && typeof legacy.incubation === "object" ? legacy.incubation as GameState["incubation"] : null,
     ...zoneState,
+    highestZoneNumber: zoneState.unlockedZoneIds.length,
     runVictories,
     totalVictories,
     prestigeCount: typeof legacy.prestigeCount === "number" ? legacy.prestigeCount : 0,

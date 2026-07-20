@@ -56,7 +56,7 @@ Monsterdefinitionen, Evolutionslinien, Encounter, Bossrotationen, Zonenprotokoll
 
 Alle schreibenden Requests laufen in einer Datenbanktransaktion. `expectedRevision` verhindert verlorene parallele Updates; die eindeutige `commandId` verhindert doppelte Zahlungen bei Netzwerk-Retries. Der Server antwortet immer mit der neuen Revision und einem vollständigen autoritativen Spielzustand.
 
-Der bestehende Kommandokatalog in API-Protokoll 7 deckt bereits Starterwahl, Einsammeln, Leveln, Training, Evolution, Zonenwahl, Inkubation, Brutbeschleunigung, Hyperlevel, Gem-Ausrüstung, Ziel-Claims, Zeit-Expeditionen, Herstellung, Systempost, Einstellungen, Forschung, Prestige sowie Avatar- und Rahmenwechsel ab. Für den echten Server werden dieselben Namen verwendet; nur `LocalGameService` wird durch den HTTP-Transport ersetzt.
+Der bestehende Kommandokatalog in API-Protokoll 8 deckt bereits Starterwahl, Einsammeln, Leveln, Training, Evolution, Zonenwahl, Inkubation, Brutbeschleunigung, Hyperlevel, Gem-Ausrüstung, Ziel-Claims, Zeit-Expeditionen, Herstellung, Systempost, Einstellungen, Forschung, Prestige sowie Avatar- und Rahmenwechsel ab. Bootstrap und Kommandoantwort tragen zusätzlich eine eigene Balance-Vertragsversion und die Release-ID `low-numbers-1.0.0`. Für den echten Server werden dieselben Namen verwendet; nur `LocalGameService` wird durch den HTTP-Transport ersetzt.
 
 `monster.hyper_up`, `monster.evolve`, `monster.gem_equip`, `monster.gem_unequip` und `prestige.start` müssen jeweils Kosten, Besitz, Slotform und aktuelle Revision in derselben Datenbanktransaktion prüfen. Der Client übermittelt niemals resultierende Werte oder einen selbst berechneten Prestige-Ertrag.
 
