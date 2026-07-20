@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idle Tamer · Creature Gallery</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #09090d; color: #f1eff6; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 78% 0%, rgba(129,98,210,.14), transparent 32%), #09090d; }
+      header { position: sticky; z-index: 3; top: 0; padding: 20px 4vw; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #292631; background: rgba(9,9,13,.9); backdrop-filter: blur(20px); }
+      .brand small, .hero small { color: #bba5ff; font-size: 9px; font-weight: 800; letter-spacing: 1.6px; }
+      .brand strong { display: block; margin-top: 3px; font-size: 18px; letter-spacing: -.4px; }
+      nav { display: flex; gap: 6px; }
+      button { min-height: 36px; padding: 0 13px; border: 1px solid #2e2b37; border-radius: 8px; color: #a9a4b3; background: #131219; cursor: pointer; font-size: 8px; font-weight: 750; letter-spacing: .7px; }
+      button.is-active { border-color: #8e6ee8; color: #f2ecff; background: rgba(142,110,232,.16); }
+      main { width: min(1500px, 92vw); margin: auto; padding: 58px 0 90px; }
+      .hero { max-width: 780px; margin-bottom: 42px; }
+      h1 { margin: 10px 0 14px; font-size: clamp(42px, 6vw, 75px); line-height: .98; letter-spacing: -3px; }
+      .hero p { color: #9d98a7; line-height: 1.65; }
+      .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+      .stats span { padding: 8px 10px; border: 1px solid #292631; border-radius: 8px; color: #c5c0cc; background: #111017; font-size: 8px; }
+      section { margin-top: 45px; }
+      section > h2 { margin: 0 0 15px; font-size: 14px; letter-spacing: .5px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+      .scene-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .scene-card { min-height: 360px; }
+      .scene-card figure { height: 270px; }
+      .scene-card img { width: 100%; height: 100%; object-fit: cover; }
+      .gem-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); }
+      .gem-card { min-height: 220px; }
+      .gem-card figure { height: 145px; }
+      .gem-card img { width: 130px; height: 130px; }
+      article { position: relative; min-height: 280px; overflow: hidden; border: 1px solid #282530; border-radius: 14px; background: linear-gradient(155deg, color-mix(in srgb, var(--accent) 7%, #181721), #101016 66%); }
+      article figure { height: 190px; margin: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 76%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 58%); }
+      article img { width: 185px; height: 185px; object-fit: contain; image-rendering: auto; }
+      article div { padding: 13px 14px 15px; border-top: 1px solid #25232c; }
+      article h3 { margin: 5px 0 4px; font-size: 17px; letter-spacing: -.3px; }
+      article p { min-height: 29px; margin: 0; color: #86818f; font-size: 8px; line-height: 1.45; }
+      article small { color: var(--accent); font-size: 7px; font-weight: 750; letter-spacing: .8px; text-transform: uppercase; }
+      article code { position: absolute; top: 10px; left: 10px; padding: 5px 6px; border: 1px solid rgba(255,255,255,.1); border-radius: 6px; color: #bab4c5; background: rgba(7,7,10,.68); font-size: 7px; }
+      [hidden] { display: none !important; }
+      footer { padding: 24px 4vw; border-top: 1px solid #292631; color: #6f6978; font-size: 8px; text-align: center; }
+      @media (max-width: 900px) { .scene-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 720px) { header { align-items: flex-start; flex-direction: column; } nav { width: 100%; overflow-x: auto; } main { padding-top: 38px; } h1 { letter-spacing: -2px; } .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } article { min-height: 245px; } article figure { height: 150px; } article img { width: 150px; height: 150px; } .scene-card figure { height: 210px; } .scene-card img { width: 100%; height: 100%; } }
+    </style>
+  </head>
+  <body>
+    <header><div class="brand"><small>ETHER PROTOCOL · DEV</small><strong>IDLE TAMER ART GALLERY</strong></div><nav aria-label="Galeriefilter"><button class="is-active" data-filter="all">ALLE ASSETS</button><button data-filter="zone">3 ZONEN</button><button data-filter="starter">10 STARTER</button><button data-filter="enemy">30 GEGNER</button><button data-filter="boss">5 BOSSE</button><button data-filter="gem">45 GEMS</button></nav></header>
+    <main>
+      <div class="hero"><small>VISUAL V2 · IMAGEGEN + PIXELLAB-VORBEREITUNG</small><h1>Eine Welt.<br>Jetzt mit Atmosphäre.</h1><p>Live aus denselben Katalogen und Runtime-Pfaden, die das Spiel verwendet. Kreaturen, Umgebungen und Equipment können hier gemeinsam beurteilt werden.</p><div class="stats"><span>3 HD-ZONENWELTEN</span><span>10 SAMMELBARE ROOKIE-LINIEN</span><span>30 NORMALGEGNER</span><span>5 ZONENBOSSE</span><span>45 GEMS</span><span>KEINE PIXEL-ART</span></div></div>
+      <section data-group="zone"><h2>Battle Environments · Optik V2</h2><div class="scene-grid" id="zones"></div></section>
+      <section data-group="starter"><h2>Rookie-Starter</h2><div class="grid" id="starters"></div></section>
+      <section data-group="enemy"><h2>Normale Wildsignale</h2><div class="grid" id="enemies"></div></section>
+      <section data-group="boss"><h2>Zonenbosse</h2><div class="grid" id="bosses"></div></section>
+      <section data-group="gem"><h2>Gem-Ausrüstung · 3 Formen × 5 Farben × 3 Seltenheiten</h2><div class="grid gem-grid" id="gems"></div></section>
+    </main>
+    <footer>Quelle: catalog.ts + content.ts + encounters.ts · Runtime-Assets automatisch validiert</footer>
+    <script type="module">
+      import { MONSTERS, elementLabel } from "/src/game/content.ts";
+      import { ENEMIES, BOSSES } from "/src/game/encounters.ts";
+      import { COMBAT_ROLE_LABELS, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, ZONES, getZone } from "/src/game/catalog.ts";
+
+      const card = ({ id, name, sprite, accent, meta, description }) => `<article style="--accent:${accent}"><code>${id}</code><figure><img src="${sprite}" width="200" height="200" alt="${name}" loading="lazy"></figure><div><small>${meta}</small><h3>${name}</h3><p>${description}</p></div></article>`;
+      const zoneArt = { "violet-rim": "/assets/zones/violet-rim-v2.webp", "glass-gardens": "/assets/zones/glass-gardens-v2.webp", "obsidian-fjord": "/assets/zones/obsidian-fjord-v2.webp" };
+      document.querySelector("#zones").innerHTML = ZONES.map(zone => `<article class="scene-card" style="--accent:${zone.accent}"><code>${zone.id}</code><figure><img src="${zoneArt[zone.id]}" width="1600" height="900" alt="${zone.name}" loading="lazy"></figure><div><small>${zone.subtitle} · 1600×900 WEBP</small><h3>${zone.name}</h3><p>${zone.description}</p></div></article>`).join("");
+      document.querySelector("#starters").innerHTML = MONSTERS.map(monster => card({ id: monster.id, name: monster.name, sprite: monster.sprite, accent: monster.accent, meta: `${elementLabel[monster.element]} · ${COMBAT_ROLE_LABELS[monster.combatRole]}`, description: `Evolution: ${monster.evolution.name}` })).join("");
+      document.querySelector("#enemies").innerHTML = ENEMIES.map(encounter => card({ ...encounter, meta: `${getZone(encounter.zoneId).name} · Ei: ${encounter.eggMonsterId}` })).join("");
+      document.querySelector("#bosses").innerHTML = BOSSES.map(encounter => card({ ...encounter, meta: `${getZone(encounter.zoneId).name} · Boss` })).join("");
+      document.querySelector("#gems").innerHTML = GEMS.map(gem => `<article class="gem-card" style="--accent:${GEM_COLORS[gem.color].hex}"><code>${gem.id}</code><figure><img src="${gem.image}" width="200" height="200" alt="${gem.name}" loading="lazy"></figure><div><small>${GEM_RARITIES[gem.rarity].name} · ${GEM_SHAPES[gem.shape].name}</small><h3>${gem.name}</h3><p>${[gem.attackPercent ? `+${gem.attackPercent}% ATK` : "", gem.hpPercent ? `+${gem.hpPercent}% HP` : ""].filter(Boolean).join(" · ")}</p></div></article>`).join("");
+      document.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click", () => {
+        document.querySelectorAll("[data-filter]").forEach(entry => entry.classList.toggle("is-active", entry === button));
+        document.querySelectorAll("[data-group]").forEach(section => section.hidden = button.dataset.filter !== "all" && section.dataset.group !== button.dataset.filter);
+      }));
+    </script>
+  </body>
+</html>

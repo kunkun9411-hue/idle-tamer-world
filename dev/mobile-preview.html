@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idle Tamer · Mobile Preview</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #08080c; color: #eeedf2; }
+      * { box-sizing: border-box; }
+      body { min-height: 100vh; margin: 0; display: grid; place-items: start center; padding: 28px; background: radial-gradient(circle at 50% 20%, #1a1727, #08080c 55%); }
+      main { display: grid; grid-template-columns: 390px minmax(230px, 320px); align-items: center; gap: 28px; }
+      .phone { width: 390px; height: 844px; overflow: hidden; border: 1px solid #4c465c; border-radius: 36px; background: #0b0b10; box-shadow: 0 40px 100px #000, inset 0 0 0 7px #111018; }
+      iframe { width: 390px; height: 844px; border: 0; background: #0b0b10; }
+      aside { padding: 20px; border: 1px solid #2c2936; border-radius: 16px; background: rgba(20,19,28,.86); }
+      small { color: #a88bff; font-size: 10px; font-weight: 800; letter-spacing: 1.3px; }
+      h1 { margin: 9px 0; font-size: 26px; }
+      p, li { color: #aaa5b5; font-size: 12px; line-height: 1.6; }
+      ul { padding-left: 18px; }
+      code { color: #d1c3ff; }
+      @media (max-width: 760px) { body { padding: 0; } main { display: block; } aside { display: none; } .phone { border: 0; border-radius: 0; box-shadow: none; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="phone"><iframe src="/" title="Idle Tamer in 390 mal 844 Pixeln"></iframe></div>
+      <aside>
+        <small>DEV-WERKZEUG</small>
+        <h1>Mobile Preview</h1>
+        <p>Das Spiel läuft in einer echten 390×844-Fläche. Dadurch greifen dieselben Breakpoints wie auf einem schmalen Smartphone.</p>
+        <ul>
+          <li>Start: <code>pnpm dev</code></li>
+          <li>Öffnen: <code>/dev/mobile-preview.html</code></li>
+          <li>Spielstand entspricht derselben lokalen Origin.</li>
+        </ul>
+      </aside>
+    </main>
+  </body>
+</html>
