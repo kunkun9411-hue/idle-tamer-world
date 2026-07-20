@@ -15,6 +15,8 @@ Für die feste Smartphone-Vorschau: `http://127.0.0.1:5173/dev/mobile-preview.ht
 
 Für die automatisch aus den Katalogen erzeugte Galerie aller Kreaturen und drei Zonenwelten: `http://127.0.0.1:5173/dev/asset-gallery.html`.
 
+Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatischer Prozentanzeige: `http://127.0.0.1:5173/roadmap/`.
+
 ## Bereits spielbar
 
 - automatischer 1-gegen-1-Kampf ohne Angriffs- oder Geschwindigkeitsschalter
@@ -52,6 +54,7 @@ Für die automatisch aus den Katalogen erzeugte Galerie aller Kreaturen und drei
 ```powershell
 pnpm test
 pnpm build
+pnpm check:roadmap
 ```
 
 Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen und den Prestige-Erhalt permanenter Werte ab. Simulationen prüfen außerdem den 500-Siege-Bogen und drei vollständige Prestige-Runs.
@@ -82,7 +85,7 @@ Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, 
 
 ## Zentrale Dokumente
 
-- `docs/PRODUCT_ROADMAP.md` – Gesamtweg vom heutigen Prototyp über PostgreSQL bis Gilde, PvP und Launch
+- `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan vom Prototyp über PostgreSQL bis zum Launch
 - `docs/GAME_CONCEPT.md` – verbindliche Produkt- und Gameplay-Quelle
 - `docs/ART_DIRECTION_V2.md` – neue visuelle Richtung, Zonenprompts und schnelle Anpassung
 - `docs/PLAYER_ENTRY_FLOW.md` – verbindlicher Ablauf von Login bis Hauptkampfszene

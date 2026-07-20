@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Live-Entwicklungsstand und Roadmap von Idle Tamer." />
+    <meta name="theme-color" content="#0b0d14" />
+    <title>Idle Tamer – Entwicklungsroadmap</title>
+    <link rel="icon" href="/idle-tamer-mark.svg" />
+    <link rel="stylesheet" href="/roadmap/styles.css" />
+  </head>
+  <body>
+    <div class="page-glow page-glow--violet" aria-hidden="true"></div>
+    <div class="page-glow page-glow--cyan" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Idle Tamer öffnen">
+        <img src="/idle-tamer-mark.svg" alt="" />
+        <span>
+          <strong>Idle Tamer</strong>
+          <small>Development Protocol</small>
+        </span>
+      </a>
+      <nav aria-label="Seitennavigation">
+        <a href="#blocks">8 Blöcke</a>
+        <a href="#detail">Aktiver Stand</a>
+        <a class="nav-cta" href="/">Spiel öffnen</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Öffentliche Entwicklungsübersicht</p>
+          <h1 id="page-title">Vom spielbaren Kern<br /><em>zum lebenden Universum.</em></h1>
+          <p class="hero-lead">
+            Acht Hauptblöcke. Vier feste Qualitätsgates pro Block. Hier ist auf einen Blick sichtbar,
+            was bereits funktioniert, woran wir gerade arbeiten und was danach kommt.
+          </p>
+          <div class="hero-actions">
+            <a class="button button--primary" href="#blocks">Fortschritt ansehen</a>
+            <a class="button button--ghost" href="/">Prototyp starten</a>
+          </div>
+        </div>
+
+        <div class="progress-orbit" aria-label="Gesamtfortschritt">
+          <div class="orbit-track orbit-track--outer" aria-hidden="true"></div>
+          <div class="orbit-track orbit-track--inner" aria-hidden="true"></div>
+          <div class="progress-ring" id="overall-ring">
+            <div>
+              <span id="overall-percent">–</span>
+              <small>Gesamt</small>
+            </div>
+          </div>
+          <span class="orbit-node orbit-node--one" aria-hidden="true"></span>
+          <span class="orbit-node orbit-node--two" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <section class="status-strip" aria-label="Projektstatus">
+        <div>
+          <small>Aktiver Block</small>
+          <strong id="active-block-label">Wird geladen …</strong>
+        </div>
+        <div>
+          <small>Aktives Gate</small>
+          <strong id="active-step-label">Wird geladen …</strong>
+        </div>
+        <div>
+          <small>Abgeschlossen</small>
+          <strong id="completed-label">–</strong>
+        </div>
+        <div>
+          <small>Letztes Update</small>
+          <strong id="updated-label">–</strong>
+        </div>
+      </section>
+
+      <section class="blocks-section" id="blocks" aria-labelledby="blocks-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span></span> Masterplan</p>
+            <h2 id="blocks-title">Acht Blöcke. Klarer Fortschritt.</h2>
+          </div>
+          <p>Wähle einen Block, um seine vier Schritte und ein visuelles Zielbild zu sehen.</p>
+        </div>
+        <div class="block-grid" id="block-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="detail-section" id="detail" aria-labelledby="detail-title">
+        <div class="detail-visual" id="detail-visual" aria-label="Visuelles Beispiel des ausgewählten Blocks"></div>
+        <div class="detail-content">
+          <p class="eyebrow" id="detail-kicker"><span></span> Block</p>
+          <div class="detail-title-row">
+            <h2 id="detail-title">Roadmap wird geladen</h2>
+            <strong class="detail-percent" id="detail-percent">–</strong>
+          </div>
+          <p class="detail-summary" id="detail-summary"></p>
+          <div class="step-list" id="step-list"></div>
+          <p class="detail-hint" id="detail-hint"></p>
+        </div>
+      </section>
+
+      <section class="principles" aria-labelledby="principles-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span></span> Arbeitsweise</p>
+            <h2 id="principles-title">Qualität vor Häkchen.</h2>
+          </div>
+        </div>
+        <div class="principle-grid">
+          <article>
+            <span>01</span>
+            <h3>Ein Block aktiv</h3>
+            <p>Neue Ideen landen im passenden späteren Block und zerreißen nicht den aktuellen Fokus.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Vier echte Gates</h3>
+            <p>Planen, Bauen, Prüfen und Abnehmen sind Qualitätsstufen – keine künstlichen Zeitabschnitte.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Beweisbarer Stand</h3>
+            <p>Ein Haken zählt erst, wenn Spiel, Tests, Dokumentation und GitHub denselben Stand zeigen.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Idle Tamer · Ether Protocol</span>
+      <span>8 Blöcke · 32 Qualitätsgates · ein klarer Weg</span>
+    </footer>
+
+    <noscript>Für die interaktive Roadmap muss JavaScript aktiviert sein.</noscript>
+    <script type="module" src="/roadmap/app.js"></script>
+  </body>
+</html>
