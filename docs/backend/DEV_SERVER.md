@@ -14,6 +14,7 @@ Stand 20. Juli 2026:
 - persistentes Datenvolume `idle-tamer-local_idle-tamer-postgres`
 - Backups unter `/srv/idle-tamer/backups`
 - 2 GB Swap als Schutz vor kurzzeitigen Build-Spitzen
+- Web-Container hinter Port 80 für Spiel und Roadmap
 
 PostgreSQL wird nur als `127.0.0.1:54329` veröffentlicht. Ein externer Verbindungsversuch auf diesen Port wurde nach Einrichtung und nach Neustart abgewiesen.
 
@@ -67,4 +68,4 @@ journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 
 Updates erfolgen ausschließlich als Fast-Forward von `origin/main`. Vor einer Migration wird ein Backup erzeugt. Danach laufen Compose-Healthcheck, Migration und eine Datenbankstichprobe. Niemals werden Serverdateien durch `git reset --hard` oder ein Datenvolume durch `docker compose down -v` ersetzt.
 
-Die aktuelle Instanz bleibt absichtlich intern. Öffentliche Web- und API-Ports werden erst zusammen mit Reverse Proxy, TLS, Origin-Regeln und Block 4 freigegeben.
+Die statische Web-App darf auf dem Dev-Server über HTTP-Port 80 erreichbar sein. Die API und PostgreSQL bleiben intern. Eine Domain, HTTPS, öffentliche API-Routen und produktive Origin-Regeln folgen getrennt in Block 4; diese IP-basierte HTTP-Freigabe ist ausdrücklich keine Release-Infrastruktur.
