@@ -1,8 +1,8 @@
 # Idle Tamer – Arbeitsroadmap
 
 - Stand: 20. Juli 2026
-- Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
-- Aktiver Schritt: **Schritt 4 – Abnehmen**
+- Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
+- Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -31,14 +31,14 @@ flowchart LR
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
-| 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [ ] | **Aktiv** |
-| 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
+| 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
+| 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **11 von 32 Schritten abgeschlossen (34,4 %)**.
+Gesamtfortschritt: **12 von 32 Schritten abgeschlossen (37,5 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -178,15 +178,15 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** PostgreSQL 18 migriert in CI vorwärts, rückwärts und erneut vorwärts. Vier echte Integrationstests beweisen Constraints, parallele Idempotenz, Konflikte und vollständigen Rollback. Ein Custom-Format-Dump wird in eine neue Datenbank restauriert und dort durch Healthcheck, Beispielbuchung, Revision und Ledger geprüft. Der reale JSON-Logger redigiert Auth-Header, Cookies, Token, Passwörter und E-Mail-Felder.
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] API und Datenbank reproduzierbar lokal starten
-- [ ] Testumgebung automatisch aufbauen und migrieren
-- [ ] Healthcheck, Beispieltransaktion und Ledger im echten Lauf prüfen
-- [ ] Architektur- und Betriebsdokumentation aktualisieren
-- [ ] geprüften Fundamentstand sichern
+- [x] API und Datenbank reproduzierbar auf dem Entwicklungsserver starten
+- [x] Testumgebung automatisch aufbauen und migrieren
+- [x] Healthcheck, Seed, Transaktionsmuster und Ledger im echten Lauf prüfen
+- [x] Architektur- und Betriebsdokumentation aktualisieren
+- [x] geprüften Fundamentstand sichern
 
-**Gate:** Der Server kann noch wenig Spielinhalt, aber jede vorhandene Schreibaktion ist bereits atomar, idempotent und beobachtbar.
+**Gate erfüllt:** Ubuntu 26.04 startet Docker Engine und PostgreSQL 18 nach einem echten Serverneustart automatisch. Migration, Seed, acht Fundamenttabellen, aktiver Content-Release, internes Datenbank-Binding, SSH-Schlüsselzugang, Firewall, täglicher Backup-Timer und ein lesbarer Initial-Dump wurden geprüft. CI beweist ergänzend Idempotenz, Revision, Ledger, Rollback und Restore. Der Server kann noch wenig Spielinhalt, aber jede vorhandene Schreibaktion ist bereits atomar, idempotent und beobachtbar.
 
 ---
 
@@ -423,11 +423,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir arbeiten jetzt an **Block 3, Schritt 4 – Abnehmen**:
+Wir arbeiten jetzt an **Block 4, Schritt 1 – Planen**:
 
-1. den Compose-Start auf dem Entwicklungsrechner durchführen, sobald Docker oder PostgreSQL 18 lokal verfügbar ist.
-2. Healthchecks, Seed und Beispieltransaktion im lokalen Betriebsweg sichten.
-3. Architektur-, Betriebs- und Supporteinstieg als zusammenhängenden Abnahmepfad lesen.
-4. Block 3 freigeben und danach Block 4 „Accounts & Bootstrap“ planen.
+1. Registrierung, Login, Logout, Sessionerneuerung und Accountlöschung als Zustandsdiagramm festziehen.
+2. Passwort-Hashing, Cookie-Regeln, CSRF-Schutz, Rate-Limits und Recovery-Grenzen entscheiden.
+3. Bootstrap-Antwort, Starterwahl und den Übergang vom lokalen zum autoritativen Spielstand normieren.
+4. Tabellen, API-Verträge, Datenschutz- und Abnahmekriterien für den Bauschritt freigeben.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.

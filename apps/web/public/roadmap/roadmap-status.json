@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
-  "activeBlock": 3,
-  "activeStep": 4,
+  "activeBlock": 4,
+  "activeStep": 1,
   "blocks": [
     {
       "id": 1,
@@ -33,7 +33,7 @@
     },
     {
       "id": 3,
-      "kicker": "Jetzt aktiv",
+      "kicker": "Fundament",
       "title": "API & PostgreSQL",
       "summary": "Ein deploybares Backend-Fundament mit Migrationen, Transaktionen, Ledger und Backups.",
       "visual": "backend",
@@ -42,12 +42,12 @@
         { "name": "Planen", "done": true, "note": "Node 24, Fastify 5, PostgreSQL 18, SQL-Schema und Betrieb festgelegt" },
         { "name": "Bauen", "done": true, "note": "Workspace, Fastify, Migration, Seed, Ledger und PostgreSQL-18-CI stehen" },
         { "name": "Prüfen", "done": true, "note": "PG18, Up/Down, Parallelität, Rollback, Restore, Ledger und Log-Redaction grün" },
-        { "name": "Abnehmen", "done": false, "note": "Fundament lokal starten, Betriebsweg sichten und freigeben" }
+        { "name": "Abnehmen", "done": true, "note": "Dev-Server, PostgreSQL, Migration, Neustart, Firewall und Backups geprüft" }
       ]
     },
     {
       "id": 4,
-      "kicker": "Identität",
+      "kicker": "Jetzt aktiv",
       "title": "Accounts & Bootstrap",
       "summary": "Sichere Accounts, Sessions und derselbe autoritative Spielstand auf jedem Browser.",
       "visual": "account",

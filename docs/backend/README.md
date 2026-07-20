@@ -6,6 +6,7 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 2. [`SCHEMA_REVIEW.md`](SCHEMA_REVIEW.md) – Welche SQL-Tabellen, Schlüssel, Constraints, Indizes und Transaktionsregeln gelten?
 3. [`OPERATIONS_PLAN.md`](OPERATIONS_PLAN.md) – Wie unterscheiden sich Entwicklungs-, Test- und Produktionsumgebung und wie funktionieren Backup, Restore und Rollback?
 4. [`LOCAL_DEVELOPMENT.md`](LOCAL_DEVELOPMENT.md) – Wie werden PostgreSQL, Migration, Seed, API und echte Integrationstests gestartet?
+5. [`DEV_SERVER.md`](DEV_SERVER.md) – Wie ist der echte Entwicklungsserver aufgebaut, abgesichert und zu prüfen?
 
 ## Verbindlicher Kurzstand
 
@@ -21,7 +22,7 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
 
-## Stand von Block 3, Schritt 2
+## Abgenommener Stand von Block 3
 
 - [x] pnpm-Workspace mit Web, API, Contracts, Content, Game-Core, Config und Datenbank
 - [x] Fastify-Prozess mit Request-ID, Secret-Redaction, Fehlervertrag und getrennten Healthchecks
@@ -32,7 +33,8 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 - [x] Migration Down/Up, Custom-Format-Dump und Restore in eine neue Datenbank geprüft
 - [x] restaurierte Datenbank mit Healthcheck, Revision, Goldbestand und Ledgerbuchung geprüft
 - [x] echter JSON-Logger redigiert Auth, Cookie, Token, Passwort und E-Mail
-- [ ] lokaler PostgreSQL-Lauf auf diesem Windows-Rechner; derzeit fehlen Docker und `psql`
+- [x] echter Ubuntu-Entwicklungsserver mit Docker Engine, PostgreSQL 18, Migration, Seed und Neustartprobe
+- [x] PostgreSQL ausschließlich an Loopback gebunden; SSH nur per Schlüssel und täglicher Backup-Timer aktiv
 
 ## Ursprüngliches Planungs-Gate
 

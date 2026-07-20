@@ -6,10 +6,11 @@
 |---|---|---|---|
 | Lokal | PostgreSQL 18 in Compose oder gleichwertige lokale 18.x-Instanz | Entwicklung und manuelle Prüfung | nur Seed-/Testdaten |
 | Test | neue isolierte Datenbank pro CI-Job | Migrationen, Integration und Parallelität | bei jedem Lauf neu aufgebaut |
+| Dev-Server | PostgreSQL 18 in Docker auf einem getrennten Ubuntu-Host | echte Deploy-, Neustart- und Betriebsabnahme | nur synthetische Seed-/Testdaten |
 | Staging | eigene verwaltete PostgreSQL-Instanz | produktionsnahe Migration und geschlossene Tests | synthetisch, keine kopierten Passwörter |
 | Produktion | verwaltetes PostgreSQL 18 mit PITR | echte Accounts und Besitz | geringste Rechte, verschlüsselte Backups |
 
-Auf dem aktuellen Windows-Rechner sind Node 24 vorhanden, Docker und `psql` jedoch noch nicht installiert. Block 3, Schritt 2 liefert deshalb zuerst Compose- und Diagnosekonfiguration. Danach wird entweder Docker Desktop bereitgestellt oder PostgreSQL 18 lokal installiert; beide Wege verwenden dieselben Migrationen und Tests.
+Auf dem aktuellen Windows-Rechner sind Node 24 vorhanden, Docker und `psql` jedoch nicht installiert. Die reale Abnahme läuft deshalb auf dem getrennten Ubuntu-Entwicklungsserver; PostgreSQL bleibt dort an Loopback gebunden und ist bei Bedarf über einen SSH-Tunnel erreichbar. CI und Dev-Server verwenden dieselben Migrationen und PostgreSQL 18. Details stehen in [`DEV_SERVER.md`](DEV_SERVER.md).
 
 ## Konfigurationsvertrag
 
