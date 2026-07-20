@@ -26,6 +26,7 @@ Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf 
 - `art-source/generated/gems/masters` – neun unveränderte Imagegen-Chroma-Master
 - `art-source/generated/gems/transparent` – neun neutrale freigestellte Gem-Master
 - `public/assets/gems/<rarity>/*.png` – 45 freigegebene transparente 200×200-Gems
+- `public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
 - `art-source/archive/pixel-v1` – verworfener Pixel-Stiltest
 
 ## PixelLab später
@@ -40,6 +41,8 @@ Die aktuellen 200×200-Dateien sind die Identitäts- und Idle-Anker für die sp�
 - Export- und Prüfsumme
 
 Erste Animationen: Idle, Treffer, Angriff, Sieg und K. o. Pro Iteration wird nur eine Animation und ein Monster freigegeben, bevor Credits für ganze Evolutionslinien eingesetzt werden.
+
+Der vollständige Job-, Frame-, Anker- und Abnahmevertrag steht in `PIXELLAB_ANIMATION_CONTRACT.md`. `python scripts/build_asset_manifest.py` aktualisiert nach einem freigegebenen Export das deterministische Runtime-Manifest.
 
 Zonenhintergründe laufen getrennt von der 200×200-PixelLab-Spritepipeline. `python scripts/prepare_zone_backgrounds.py` erzeugt ihre WebP-Runtime-Dateien reproduzierbar aus den PNG-Mastern; Promptset und Art Direction stehen in `docs/ART_DIRECTION_V2.md`.
 

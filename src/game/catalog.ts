@@ -5,7 +5,7 @@ export const BALANCE = {
     baseCapacity: 90,
     capacityPerExtractionLevel: 12,
     maxOfflineSeconds: 8 * 60 * 60,
-    offlineSecondsPerReward: 45,
+    offlineSecondsPerReward: 5 * 60,
   },
   evolution: {
     requiredLevel: 20,
@@ -14,7 +14,9 @@ export const BALANCE = {
   },
   hatch: {
     duplicateFragments: 10,
-    baseDurationMs: 45_000,
+    baseDurationMs: 5 * 60_000,
+    minDurationMs: 2 * 60_000,
+    chargeReductionMs: 60_000,
   },
   drops: {
     eggBaseChance: 0.12,
@@ -95,7 +97,7 @@ export interface ItemDefinition {
 export const ITEMS: ItemDefinition[] = [
   { id: "training_data", name: "Trainingsdaten", icon: "↗", rarity: "Gewöhnlich", description: "Erhöht das normale Level eines Monsters sofort um 1 – ohne Goldkosten.", source: "Normale Expeditionen", action: "train" },
   { id: "evolution_core", name: "Evolutionskern", icon: "◇", rarity: "Episch", description: "Drei Kerne entwickeln ein Rookie ab Level 20 in seine nächste Form.", source: "Zonenbosse und Story-Ziele" },
-  { id: "incubator_charge", name: "Brutladung", icon: "○", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 15 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
+  { id: "incubator_charge", name: "Brutladung", icon: "○", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 60 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
   { id: "ether_dust", name: "Etherstaub", icon: "✦", rarity: "Gewöhnlich", description: "Universelles Herstellmaterial für Trainingsdaten, Brutladungen und Evolutionskerne.", source: "Kampf, Zeit-Expeditionen und Offline-Erträge" },
 ];
 

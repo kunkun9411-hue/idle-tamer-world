@@ -590,3 +590,24 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
   .offline-report-backdrop,
   .offline-report { animation: none; }
 }
+
+/* Backend-ready client states */
+.client-state-overlay { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 13px; padding: 24px; color: #efedf5; background: rgba(7, 7, 12, .92); backdrop-filter: blur(18px); text-align: center; }
+.client-state-overlay strong { font: 560 22px var(--display); }
+.client-state-overlay small { max-width: 430px; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.client-state-spinner { width: 48px; height: 48px; border: 2px solid rgba(255,255,255,.12); border-top-color: var(--violet-bright); border-radius: 50%; animation: clientStateSpin .9s linear infinite; }
+.client-state-banner { position: fixed; z-index: 280; left: 50%; top: 18px; width: min(720px, calc(100vw - 28px)); min-height: 76px; padding: 12px 14px; display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 13px; border: 1px solid rgba(239,102,114,.28); border-radius: 13px; color: var(--silver-2); background: rgba(20,16,23,.96); box-shadow: 0 18px 60px rgba(0,0,0,.48); backdrop-filter: blur(18px); transform: translateX(-50%); }
+.client-state-banner--conflict { border-color: rgba(168,139,255,.42); background: rgba(20,17,30,.97); }
+.client-state-banner > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; color: var(--violet-bright); background: var(--violet-soft); }
+.client-state-banner svg { width: 19px; height: 19px; fill: none; stroke: currentColor; }
+.client-state-banner strong, .client-state-banner small { display: block; }
+.client-state-banner strong { font-size: 10px; }
+.client-state-banner small { margin-top: 4px; color: var(--muted); font-size: 7px; line-height: 1.45; }
+.client-state-banner .secondary-button { min-width: 150px; }
+@keyframes clientStateSpin { to { transform: rotate(360deg); } }
+@media (max-width: 620px) {
+  .client-state-banner { top: 8px; grid-template-columns: 32px 1fr; }
+  .client-state-banner > span { width: 31px; height: 31px; }
+  .client-state-banner .secondary-button { grid-column: 1 / -1; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .client-state-spinner { animation-duration: 1.8s; } }

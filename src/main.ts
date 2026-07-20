@@ -8,7 +8,10 @@ import { findEncounter, getEncounter } from "./game/encounters";
 import { canCraft, CRAFTING_RECIPES, getCraftingRecipe } from "./game/crafting";
 import { canStartExpedition, EXPEDITIONS, EXPEDITION_SLOT_COUNT, expeditionMatchCount, expeditionRewardMultiplier, getExpedition, isMonsterDispatched, type ExpeditionDefinition } from "./game/expeditions";
 import { API_PROTOCOL_VERSION } from "./game/api-contract";
+import { clientStatusCopy, type ClientUiState } from "./game/client-status";
+import { CONTENT_RELEASE_ID } from "./game/contract-versions";
 import { isAvatarUnlocked, isFrameUnlocked, LocalGameService } from "./game/game-service";
+import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
 import {
@@ -50,6 +53,7 @@ const app: HTMLDivElement = appElement;
 
 const loaded = loadGame();
 const service = new LocalGameService(loaded.state);
+const servicePort = new LocalGameServicePort(service);
 const game = service.state;
 let activeView: View = "expedition";
 let showLogin = true;
@@ -65,6 +69,10 @@ let prestigeActivating = false;
 let starterDialogOpen = false;
 let activeCombatPanel: CombatPanel | null = null;
 let combatFocusMode = false;
+const requestedUiState = new URLSearchParams(window.location.search).get("ui-state");
+let clientUiState: ClientUiState = import.meta.env.DEV && ["loading", "online", "offline", "conflict", "error"].includes(requestedUiState ?? "")
+  ? requestedUiState as ClientUiState
+  : "local";
 
 const compactNumberFormatter = new Intl.NumberFormat("de-DE", { notation: "compact", maximumFractionDigits: 1 });
 const fullNumberFormatter = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
@@ -334,7 +342,7 @@ function hatchIncubation(): void {
 }
 
 function accelerateIncubation(): void {
-  if (service.useIncubatorCharge()) showNotice("Brutladung eingesetzt", "Die Inkubation wurde um 15 Sekunden verkürzt.", "success");
+  if (service.useIncubatorCharge()) showNotice("Brutladung eingesetzt", "Die Inkubation wurde um 60 Sekunden verkürzt.", "success");
 }
 
 function setAvatar(avatarId: string): void {
@@ -437,6 +445,7 @@ function setView(view: View): void {
 }
 
 function signIn(): void {
+  if (clientUiState === "loading") return;
   showLogin = false;
   activeView = "expedition";
   if (game.roster.length === 0) {
@@ -521,8 +530,17 @@ function accountAvatar(size: "small" | "large" = "small"): string {
 }
 
 function syncIndicator(): string {
-  const healthy = service.lastSaveResult.ok;
-  return `<div class="sync-indicator ${healthy ? "is-synced" : "is-error"}" title="Das Backend ist noch nicht aktiv. Dieser Prototyp speichert lokal."><i></i><span><b>${healthy ? "LOKAL GESICHERT" : "SPEICHERFEHLER"}</b><small>${healthy ? `${timeFormatter.format(game.lastSavedAt)} · API READY` : "Browser-Speicher prüfen"}</small></span></div>`;
+  const healthy = service.lastSaveResult.ok && clientUiState !== "error";
+  const copy = clientStatusCopy(clientUiState);
+  return `<div class="sync-indicator ${healthy ? "is-synced" : "is-error"}" title="${copy.message}" data-testid="sync-indicator"><i></i><span><b>${healthy ? copy.title.toUpperCase() : "SPEICHERFEHLER"}</b><small>${healthy ? `${timeFormatter.format(game.lastSavedAt)} · ${servicePort.mode.toUpperCase()}` : "Browser-Speicher prüfen"}</small></span></div>`;
+}
+
+function clientStatusMarkup(): string {
+  if (clientUiState === "local" || clientUiState === "online") return "";
+  const copy = clientStatusCopy(clientUiState);
+  if (clientUiState === "loading") return `<div class="client-state-overlay" role="status" data-testid="client-loading"><span class="client-state-spinner"></span><strong>${copy.title}</strong><small>${copy.message}</small></div>`;
+  const actionLabel = copy.action === "reload" ? "NEUESTEN STAND LADEN" : "ERNEUT VERSUCHEN";
+  return `<aside class="client-state-banner client-state-banner--${clientUiState}" role="alert" data-testid="client-${clientUiState}"><span>${icon(clientUiState === "conflict" ? "shield" : "spark")}</span><div><strong>${copy.title}</strong><small>${copy.message}</small></div><button class="secondary-button" id="client-state-action">${actionLabel}</button></aside>`;
 }
 
 function topShell(content: string): string {
@@ -547,24 +565,24 @@ function topShell(content: string): string {
       <main>${content}</main>
       <footer><div><span>VISUAL BUILD V2</span><i></i><span>SAVE V${game.version}</span><i></i><span>API PROTOKOLL ${API_PROTOCOL_VERSION}</span></div>${syncIndicator()}<button class="text-button" id="reset-game">Spielstand zurücksetzen</button></footer>
     </div>
-    ${uiNoticeMarkup()}${starterDialog()}`;
+    ${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
 }
 
 function combatShell(content: string): string {
   return `
     <div class="combat-shell combat-shell--${game.currentZoneId} ${combatFocusMode ? "is-focus-mode" : ""}">${content}</div>
-    ${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
+    ${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
 }
 
 function prestigeShell(content: string): string {
-  return `<div class="prestige-shell">${content}</div>${uiNoticeMarkup()}`;
+  return `<div class="prestige-shell">${content}</div>${clientStatusMarkup()}${uiNoticeMarkup()}`;
 }
 
 function loginShell(): string {
   const previewMonster = activeMonster() ?? createMonster("pyrook", 1);
   const previewDefinition = getMonsterForm(previewMonster);
   return `
-    <main class="login-screen">
+    <main class="login-screen" data-testid="login-screen">
       <div class="login-screen__backdrop" aria-hidden="true"></div>
       <section class="login-world" aria-label="Vorschau auf die Spielwelt">
         <div class="login-world__brand">${brandMarkup()}</div>
@@ -585,13 +603,13 @@ function loginShell(): string {
           <label for="login-identifier"><span>E-MAIL ODER TAMER-NAME</span><input id="login-identifier" name="identifier" type="text" autocomplete="username" value="demo@idletamer.local" required></label>
           <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="demo" required></label>
           <div class="login-form__meta"><label><input type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled>Passwort vergessen</button></div>
-          <button class="primary-button primary-button--large login-submit" type="submit">EINLOGGEN ${icon("arrow")}</button>
+          <button class="primary-button primary-button--large login-submit" type="submit" data-testid="login-submit" ${clientUiState === "loading" ? "disabled" : ""}>${clientUiState === "loading" ? "SPIELSTAND WIRD GELADEN …" : `EINLOGGEN ${icon("arrow")}`}</button>
         </form>
         <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>Lokaler Prototyp-Zugang</strong><small>Der Formularvertrag ist für die spätere Account-API vorbereitet. Aktuell bleibt der Spielstand in diesem Browser.</small></div></div>
-        <small class="login-panel__version">CLIENT V0.1 · SAVE V${game.version} · API-PROTOKOLL ${API_PROTOCOL_VERSION}</small>
+        <small class="login-panel__version">CLIENT V0.1 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
       </section>
     </main>
-    ${uiNoticeMarkup()}${starterDialog()}`;
+    ${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
 }
 
 function combatZoneTabs(): string {
@@ -679,7 +697,7 @@ function expeditionView(): string {
   const rank = rankForVictories(game.totalVictories);
 
   return `
-    <main class="combat-main">
+    <main class="combat-main" data-testid="combat-scene">
       <section class="combat-battlefield battle-stage battle-stage--${zone.id} battle-stage--${battle.status}">
         <div class="battle-stage__sky" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="combat-vignette" aria-hidden="true"></div>
@@ -759,7 +777,7 @@ function incubationView(): string {
   const remaining = incubation ? Math.max(0, Math.ceil((incubation.hatchAt - Date.now()) / 1000)) : 0;
   const eggEntries = Object.entries(game.eggInventory).filter(([, amount]) => amount > 0);
   const progress = incubation ? Math.min(100, ((Date.now() - incubation.startedAt) / (incubation.hatchAt - incubation.startedAt)) * 100) : 0;
-  return `<section class="page">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><i></i><div class="egg-visual is-running"><span></span></div><b>${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p>${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button></div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><i></i><div class="egg-visual"><span></span></div></div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p></div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
+  return `<section class="page">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><i></i><div class="egg-visual is-running"><span></span></div><b>${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p>${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button>${ready ? "" : `<button class="secondary-button" id="accelerate-incubation" ${game.inventory.incubator_charge <= 0 ? "disabled" : ""}>BRUTLADUNG −60s · ${game.inventory.incubator_charge}×</button>`}</div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><i></i><div class="egg-visual"><span></span></div></div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p></div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
 }
 
 function eggCard(definitionId: string, amount: number): string {
@@ -782,7 +800,7 @@ function inventoryView(): string {
   const totalItems = Object.values(game.inventory).reduce((sum, amount) => sum + amount, 0);
   return `<section class="page">${pageHeading("BEUTE · MATERIALIEN", "Inventar", "Hier landet alles, was du aus dem Kampfspeicher einsammelst. Materialien sind nach Einsatz und Quelle getrennt.", `${totalItems} MATERIALIEN · ${Object.values(game.eggInventory).reduce((sum, amount) => sum + amount, 0)} EIER`)}
     <div class="inventory-summary panel"><div><span class="eyebrow">KAMPFSPEICHER</span><strong>${game.cacheSlotsUsed} / ${cacheCapacity(game.research.extraction)} Plätze belegt</strong><small>${Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0)} Materialien, ${game.pendingEggs.length} Eier und ${game.pendingGems.length} Gems warten auf Abholung.</small></div><button class="primary-button" id="collect-cache" ${game.cacheSlotsUsed === 0 && game.pendingGold === 0 && game.pendingGems.length === 0 ? "disabled" : ""}>BEUTE EINSAMMELN ${icon("arrow")}</button></div>
-    <div class="item-grid">${ITEMS.map((item) => `<article class="item-card panel item-card--${item.rarity.toLowerCase()}"><span class="item-card__icon">${item.icon}</span><div><span class="eyebrow">${item.rarity.toUpperCase()}</span><h2>${item.name}</h2><p>${item.description}</p><small>QUELLE · ${item.source}</small></div><b class="item-count">${game.inventory[item.id]}×</b>${item.action === "train" && active ? `<button class="secondary-button" data-train="${active.uid}" ${game.inventory[item.id] <= 0 ? "disabled" : ""}>${getMonsterForm(active).name} TRAINIEREN</button>` : item.action === "accelerate" ? `<button class="secondary-button" id="accelerate-incubation" ${!game.incubation || game.inventory[item.id] <= 0 ? "disabled" : ""}>BRUTZEIT −15s</button>` : item.id === "ether_dust" ? `<span class="item-reserved">ROHSTOFF · ETHERWERKSTATT</span>` : `<span class="item-reserved">VERBRAUCH · EVOLUTION</span>`}</article>`).join("")}</div>
+    <div class="item-grid">${ITEMS.map((item) => `<article class="item-card panel item-card--${item.rarity.toLowerCase()}"><span class="item-card__icon">${item.icon}</span><div><span class="eyebrow">${item.rarity.toUpperCase()}</span><h2>${item.name}</h2><p>${item.description}</p><small>QUELLE · ${item.source}</small></div><b class="item-count">${game.inventory[item.id]}×</b>${item.action === "train" && active ? `<button class="secondary-button" data-train="${active.uid}" ${game.inventory[item.id] <= 0 ? "disabled" : ""}>${getMonsterForm(active).name} TRAINIEREN</button>` : item.action === "accelerate" ? `<button class="secondary-button" id="accelerate-incubation" ${!game.incubation || game.inventory[item.id] <= 0 ? "disabled" : ""}>BRUTZEIT −60s</button>` : item.id === "ether_dust" ? `<span class="item-reserved">ROHSTOFF · ETHERWERKSTATT</span>` : `<span class="item-reserved">VERBRAUCH · EVOLUTION</span>`}</article>`).join("")}</div>
     ${craftingWorkbench()}
     <div class="inventory-gem-callout panel"><div><span class="eyebrow">GEM-AUSRÜSTUNG</span><strong>${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} Gems im Inventar</strong><small>Dreieck verstärkt Angriff, Quadrat verstärkt Leben, Raute verstärkt beides. Fünf Farben und drei Seltenheiten sind vorbereitet.</small></div><div>${GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).slice(0, 5).map((gem) => `<img src="${gem.image}" alt="${gem.name}" title="${gem.name}">`).join("")}</div><button class="secondary-button" data-view="habitat">GEMS AUSRÜSTEN</button></div>
     <div class="inventory-note panel"><span>${icon("shield")}</span><div><strong>Backend-Regel</strong><small>Der Browser zeigt Bestände nur an. Im Onlinebetrieb bestätigt ausschließlich der Server jeden Fund, Verbrauch und Tausch.</small></div></div>
@@ -951,7 +969,7 @@ function starterGate(): string {
 
 function starterDialog(): string {
   if (!starterDialogOpen || game.roster.length > 0) return "";
-  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jeder Starter besitzt eine feste erste Evolution. Werte und Namen lassen sich zentral im Monsterkatalog ändern.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}">${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} Die Starterwahl wird später serverseitig einmalig bestätigt.</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
+  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title" data-testid="starter-dialog"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jeder Starter besitzt eine feste erste Evolution. Werte und Namen lassen sich zentral im Monsterkatalog ändern.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}" data-testid="starter-${monster.id}">${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} Die Starterwahl wird später serverseitig einmalig bestätigt.</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
 }
 
 function researchView(): string {
@@ -1004,7 +1022,7 @@ function offlineReport(): string {
   const offlineMaterialCount = Object.values(loaded.offlineItems).reduce((sum, amount) => sum + amount, 0);
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const hasPendingRewards = game.pendingGold > 0 || game.pendingEggs.length > 0 || pendingMaterialCount > 0 || game.pendingGems.length > 0;
-  return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title">
+  return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
     <div class="offline-report__signal"><span>${icon("spark")}</span><i></i></div>
     <span class="eyebrow">EXPEDITION FORTGESETZT</span>
     <h2 id="offline-report-title">Willkommen zurück.</h2>
@@ -1016,7 +1034,7 @@ function offlineReport(): string {
       <span>${icon("shield")}<small>SPEICHERPLÄTZE</small><b>+${loaded.offlineSlots}</b></span>
     </div>
     <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${cacheCapacity(game.research.extraction)}</span></div>
-    <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large" id="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
+    <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
   </section></div>`;
 }
@@ -1078,6 +1096,14 @@ function bindEvents(): void {
   document.querySelector("#start-prestige")?.addEventListener("click", openPrestigeScene);
   document.querySelector("#confirm-prestige")?.addEventListener("click", confirmPrestige);
   document.querySelector("#close-ui-notice")?.addEventListener("click", () => { uiNotice = null; render(); });
+  document.querySelector("#client-state-action")?.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("ui-state");
+    window.history.replaceState({}, "", url);
+    if (clientUiState === "conflict") return window.location.reload();
+    clientUiState = "local";
+    render();
+  });
   document.querySelector("#advance-tutorial")?.addEventListener("click", () => advanceTutorial(false));
   document.querySelector("#skip-tutorial")?.addEventListener("click", () => advanceTutorial(true));
   document.querySelector("#reset-game")?.addEventListener("click", () => { if (!window.confirm("Lokalen Idle-Tamer-Spielstand wirklich löschen?")) return; resetGame(); window.location.reload(); });

@@ -151,7 +151,7 @@ describe("save schema v8", () => {
     state.activeMonsterUid = monster.uid;
     saveGame(state);
     const stored = JSON.parse(values.get("idle-tamer.save.v8") ?? "{}");
-    stored.lastSavedAt = Date.now() - 90_000;
+    stored.lastSavedAt = Date.now() - 10 * 60_000;
     values.set("idle-tamer.save.v8", JSON.stringify(stored));
 
     const first = loadGame();

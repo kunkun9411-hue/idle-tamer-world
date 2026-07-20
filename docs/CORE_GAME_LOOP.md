@@ -20,7 +20,7 @@
 
 ## Was offline passiert
 
-Nach dem Laden wird höchstens acht Stunden nachproduziert. Alle 45 Sekunden entsteht ein Beutebündel, solange im Kampfspeicher noch Platz ist. Offline-Beute enthält Gold, regelmäßig Trainingsdaten und seltener Etherstaub. Ohne gewählten Starter gibt es keinen Offline-Fortschritt. Das verbrauchte Zeitfenster wird sofort gespeichert, damit ein schneller Reload es nicht erneut auszahlt.
+Nach dem Laden wird höchstens acht Stunden nachproduziert. Alle fünf Minuten entsteht ein Beutebündel, solange im Kampfspeicher noch Platz ist. Offline-Beute enthält Gold, regelmäßig Trainingsdaten und seltener Etherstaub. Ohne gewählten Starter gibt es keinen Offline-Fortschritt. Das verbrauchte Zeitfenster wird sofort gespeichert, damit ein schneller Reload es nicht erneut auszahlt.
 
 ## Temporär und permanent
 

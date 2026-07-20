@@ -1,5 +1,6 @@
 import type { ResearchId } from "./progression";
 import type { GameState, ItemInventory } from "./types";
+import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
 export const API_PROTOCOL_VERSION = 7;
 
@@ -29,6 +30,8 @@ export interface OfflineProgressSummary {
 /** Stable bootstrap boundary shared by the browser and the authoritative API. */
 export interface GameStateResponse {
   protocolVersion: typeof API_PROTOCOL_VERSION;
+  contentContractVersion: typeof CONTENT_CONTRACT_VERSION;
+  contentReleaseId: typeof CONTENT_RELEASE_ID;
   revision: number;
   serverTime: string;
   state: GameState;
@@ -85,6 +88,7 @@ export interface GameCommandResponse extends GameStateResponse {
 }
 
 export interface ApiProblem {
+  errorContractVersion: typeof ERROR_CONTRACT_VERSION;
   code: "UNAUTHENTICATED" | "CONFLICT" | "VALIDATION" | "RATE_LIMITED" | "UNAVAILABLE" | "UNKNOWN";
   message: string;
   correlationId?: string;

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 
 from PIL import Image
 
@@ -15,6 +16,7 @@ GROUPS = {
 }
 ZONE_BACKGROUNDS = ROOT / "public" / "assets" / "zones"
 GEM_ROOT = ROOT / "public" / "assets" / "gems"
+MANIFEST = ROOT / "public" / "assets" / "asset-manifest.json"
 
 
 def validate(path: Path) -> None:
@@ -57,6 +59,18 @@ def main() -> None:
     for path in gem_files:
         validate(path)
     print(f"gems: {len(gem_files)} valid transparent 200x200 assets")
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    actual_paths = {
+        f"/{path.relative_to(ROOT / 'public').as_posix()}"
+        for path in (ROOT / "public" / "assets").rglob("*")
+        if path.is_file() and path.suffix.lower() in {".png", ".webp"}
+    }
+    manifest_paths = {asset["path"] for asset in manifest["assets"]}
+    if manifest.get("manifestVersion") != 1 or manifest.get("contentReleaseId") != "foundation-1.0.0":
+        raise ValueError("asset manifest: unsupported version or content release")
+    if manifest_paths != actual_paths:
+        raise ValueError(f"asset manifest: path mismatch (missing={actual_paths - manifest_paths}, stale={manifest_paths - actual_paths})")
+    print(f"manifest: {len(manifest_paths)} paths match runtime assets")
     print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems")
 
 

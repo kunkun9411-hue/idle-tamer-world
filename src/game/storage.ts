@@ -1,9 +1,9 @@
-import { BALANCE, emptyGemInventory, emptyInventory, ZONES } from "./catalog";
-import { cacheCapacity, createInitialState } from "./rules";
+import { emptyGemInventory, emptyInventory, ZONES } from "./catalog";
+import { cacheCapacity, calculateOfflineProgress, createInitialState } from "./rules";
 import { createObjectivePeriods, emptyActivityCounters } from "./objectives";
 import type { EvolutionStage, GameState, ItemInventory, MonsterInstance } from "./types";
 
-const STORAGE_KEY = "idle-tamer.save.v8";
+export const STORAGE_KEY = "idle-tamer.save.v8";
 const PREVIOUS_STORAGE_KEYS = ["idle-tamer.save.v7", "idle-tamer.save.v6", "idle-tamer.save.v5", "idle-tamer.save.v4", "idle-tamer.save.v3"];
 const LEGACY_STORAGE_KEY = "echobound.save.v1";
 
@@ -19,6 +19,13 @@ export interface LoadedGame {
 export type SaveResult =
   | { ok: true; savedAt: number }
   | { ok: false; savedAt: number; reason: "storage-unavailable" };
+
+export interface StorageDependencies {
+  storage?: Pick<Storage, "getItem" | "setItem" | "removeItem">;
+  now?: () => number;
+}
+
+const browserStorage = (): Pick<Storage, "getItem" | "setItem" | "removeItem"> => localStorage;
 
 const isValidState = (value: unknown): value is GameState => {
   if (!value || typeof value !== "object") return false;
@@ -260,12 +267,12 @@ const migrateOlderState = (value: unknown): GameState | null => {
   };
 };
 
-export const loadGame = (): LoadedGame => {
-  let state = createInitialState();
+export const loadGame = ({ storage = browserStorage(), now = Date.now }: StorageDependencies = {}): LoadedGame => {
+  let state = createInitialState(now);
   let migrated = false;
   try {
-    const current = localStorage.getItem(STORAGE_KEY);
-    const previous = PREVIOUS_STORAGE_KEYS.map((key) => localStorage.getItem(key)).find((entry) => entry !== null) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
+    const current = storage.getItem(STORAGE_KEY);
+    const previous = PREVIOUS_STORAGE_KEYS.map((key) => storage.getItem(key)).find((entry) => entry !== null) ?? storage.getItem(LEGACY_STORAGE_KEY);
     const saved = current ?? previous;
     if (saved) {
       const parsed: unknown = JSON.parse(saved);
@@ -286,33 +293,24 @@ export const loadGame = (): LoadedGame => {
     state.supportMonsterUid = "";
   }
 
-  const elapsed = Math.max(0, Math.floor((Date.now() - state.lastSavedAt) / 1000));
-  const offlineSeconds = Math.min(elapsed, BALANCE.cache.maxOfflineSeconds);
-  const availableSlots = Math.max(0, cacheCapacity(state.research.extraction) - state.cacheSlotsUsed);
-  const offlineSlots = state.roster.length > 0
-    ? Math.min(availableSlots, Math.floor(offlineSeconds / BALANCE.cache.offlineSecondsPerReward))
-    : 0;
-  const offlineGold = Math.round(offlineSlots * 12 * (1 + state.research.extraction * 0.1));
-  const offlineItems = emptyInventory();
-  offlineItems.training_data = Math.floor(offlineSlots / 3);
-  offlineItems.ether_dust = Math.floor(offlineSlots / 8);
+  const { offlineSeconds, offlineGold, offlineSlots, offlineItems } = calculateOfflineProgress(state, now());
 
   state.pendingGold += offlineGold;
   state.pendingItems.training_data += offlineItems.training_data;
   state.pendingItems.ether_dust += offlineItems.ether_dust;
   state.cacheSlotsUsed += offlineSlots;
-  state.lastSavedAt = Date.now();
+  state.lastSavedAt = now();
   // Persist the consumed offline window immediately so a fast reload cannot claim it twice.
-  saveGame(state);
+  saveGame(state, { storage, now });
   return { state, offlineSeconds, offlineGold, offlineSlots, offlineItems, migrated };
 };
 
-export const saveGame = (state: GameState): SaveResult => {
+export const saveGame = (state: GameState, { storage = browserStorage(), now = Date.now }: StorageDependencies = {}): SaveResult => {
   const previousSavedAt = state.lastSavedAt;
-  const savedAt = Date.now();
+  const savedAt = now();
   state.lastSavedAt = savedAt;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    storage.setItem(STORAGE_KEY, JSON.stringify(state));
     return { ok: true, savedAt };
   } catch {
     state.lastSavedAt = previousSavedAt;
@@ -320,8 +318,8 @@ export const saveGame = (state: GameState): SaveResult => {
   }
 };
 
-export const resetGame = (): void => {
-  localStorage.removeItem(STORAGE_KEY);
-  for (const key of PREVIOUS_STORAGE_KEYS) localStorage.removeItem(key);
-  localStorage.removeItem(LEGACY_STORAGE_KEY);
+export const resetGame = ({ storage = browserStorage() }: StorageDependencies = {}): void => {
+  storage.removeItem(STORAGE_KEY);
+  for (const key of PREVIOUS_STORAGE_KEYS) storage.removeItem(key);
+  storage.removeItem(LEGACY_STORAGE_KEY);
 };

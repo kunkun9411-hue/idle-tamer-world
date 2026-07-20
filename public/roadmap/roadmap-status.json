@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
   "activeBlock": 2,
-  "activeStep": 2,
+  "activeStep": 3,
   "blocks": [
     {
       "id": 1,
@@ -13,7 +13,7 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "Kernloop, Inhalte, Ökonomie und Stil festgelegt" },
         { "name": "Bauen", "done": true, "note": "Kampf, Sammlung, Prestige und Meta-Systeme spielbar" },
-        { "name": "Prüfen", "done": true, "note": "30 Tests, Build und 93 Runtime-Assets validiert" },
+        { "name": "Prüfen", "done": true, "note": "33 Regeltests, Build und 93 Runtime-Assets validiert" },
         { "name": "Abnehmen", "done": true, "note": "Grundversion dokumentiert und auf GitHub gesichert" }
       ]
     },
@@ -21,12 +21,12 @@
       "id": 2,
       "kicker": "Jetzt aktiv",
       "title": "Backend-bereiter Client",
-      "summary": "Regeln, UI-Zustände und Service-Verträge werden eingefroren, bevor der Serverbau beginnt.",
+      "summary": "Der gebaute Clientvertrag wird jetzt auf Geräte, Barrierearmut, Parallelfälle und Contentintegrität geprüft.",
       "visual": "client",
       "accent": "cyan",
       "steps": [
         { "name": "Planen", "done": true, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festgezogen" },
-        { "name": "Bauen", "done": false, "note": "E2E-Ablauf, Service-Grenze und Fehlerzustände umsetzen" },
+        { "name": "Bauen", "done": true, "note": "E2E-Kernloop, Service-Port, UI-Zustände und Assetvertrag fertig" },
         { "name": "Prüfen", "done": false, "note": "Geräte, Barrierearmut, Verträge und Parallelfälle testen" },
         { "name": "Abnehmen", "done": false, "note": "Client- und API-Vertrag gemeinsam freigeben" }
       ]

@@ -159,20 +159,20 @@ Der Speicher ist eine Kapazitätsgrenze, die Acht-Stunden-Regel eine Zeitgrenze.
 - Herstellung bleibt garantiert und besitzt keine Fehlschlagchance.
 - Rezepte bleiben 3 Staub + 40 Gold für Trainingsdaten, 5 Staub + 90 Gold für Brutladung und 20 Staub + 500 Gold für Evolutionskern.
 
-## Bekannte Umsetzungsdeltas
+## In Schritt 2 umgesetzte Foundation-Deltas
 
-Diese Unterschiede sind im aktuellen lokalen Prototyp absichtlich noch nicht geändert. Sie werden in Block 2, Schritt 2 umgesetzt und getestet.
+Die folgenden alten Testwerte wurden in Schritt 2 durch Foundation 1.0 ersetzt. Nur die reale Zeitmessung bis zum ersten Prestige bleibt ein Prüfpunkt für Schritt 3.
 
-| Bereich | Aktueller Testwert | Foundation-1.0-Ziel |
-| --- | --- | --- |
-| Grundbrutzeit | 45 Sekunden | 5 Minuten |
-| minimale Brutzeit | 18 Sekunden | 2 Minuten |
-| Brutladung | −15 Sekunden | −60 Sekunden |
-| Offline-Bündel | alle 45 Sekunden | alle 5 Minuten |
-| Grundspeicher offline | nach 67,5 Minuten voll | nach 7,5 Stunden voll |
-| erster Prestige | noch nicht zeitlich gemessen | 30–45 Minuten |
+| Bereich | Alter Prototypwert | Foundation 1.0 | Stand |
+| --- | --- | --- | --- |
+| Grundbrutzeit | 45 Sekunden | 5 Minuten | aktiv |
+| minimale Brutzeit | 18 Sekunden | 2 Minuten | aktiv |
+| Brutladung | −15 Sekunden | −60 Sekunden | aktiv |
+| Offline-Bündel | alle 45 Sekunden | alle 5 Minuten | aktiv |
+| Grundspeicher offline | nach 67,5 Minuten voll | nach 7,5 Stunden voll | aktiv |
+| erster Prestige | nicht zeitlich gemessen | 30–45 Minuten | Messung in Schritt 3 |
 
-Diese Deltas verändern keine Besitzart und kein geplantes SQL-Schema. Sie sind reine versionierte Balancewerte.
+Diese Deltas sind seit Block 2, Schritt 2 im Client aktiv. Sie verändern keine Besitzart und kein geplantes SQL-Schema; es sind reine versionierte Balancewerte.
 
 ## Vollständige Prestige-Resetmatrix
 
@@ -300,4 +300,4 @@ Für den Test werden reproduzierbare Fixtures und beschleunigte Testzeiten verwe
 - [x] Lade-, Fehler-, Konflikt-, Leer-, Voll- und Maximalzustände sind erfasst.
 - [x] bekannte Unterschiede zwischen Prototyp und Zielbalance sind ausdrücklich dokumentiert.
 
-Damit ist die Planung abgeschlossen. Die Umsetzungsdeltas und Tests gehören zu Block 2, Schritt 2 und 3.
+Damit ist die Planung abgeschlossen und die Foundation-Deltas sind umgesetzt. Die breiten Geräte-, Barrierearmuts-, Parallelitäts- und CI-Prüfungen folgen in Block 2, Schritt 3.

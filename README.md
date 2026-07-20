@@ -53,11 +53,16 @@ Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatische
 
 ```powershell
 pnpm test
+pnpm test:e2e
 pnpm build
 pnpm check:roadmap
+python scripts/build_asset_manifest.py
+python scripts/validate_assets.py
 ```
 
-Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen und den Prestige-Erhalt permanenter Werte ab. Simulationen prüfen außerdem den 500-Siege-Bogen und drei vollständige Prestige-Runs.
+Die 33 Regel- und Vertragstests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen, Service-Port und den Prestige-Erhalt permanenter Werte ab. Die Playwright-Suite prüft zusätzlich den echten sichtbaren Kernpfad von Login und Offline-Claim bis Brut, Fragmenten, Hyperlevel, Evolution, Gem und Prestige.
+
+Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `conflict` und `error` bereit.
 
 ## Struktur
 
@@ -72,6 +77,8 @@ Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, 
 - `src/game/game-service.ts` – UI-Aktionsgrenze; später durch einen HTTP-Service ersetzbar
 - `src/game/api-contract.ts` – DTOs und idempotente Backend-Kommandos
 - `src/game/api-client.ts` – inaktiver, testbarer HTTP-Transport für das spätere echte Backend
+- `src/game/game-service-port.ts` – gemeinsame asynchrone Intent-Schnittstelle für lokalen und HTTP-Service
+- `src/game/contract-versions.ts` – Content-, Fehler- und Asset-Vertragsversionen
 - `src/game/storage.ts` – ausschließlich lokaler Prototyp-Speicher und Migration
 - `src/main.ts` – Darstellung und Kampf-Taktung
 - `src/styles-v2.css` – isolierte Optik-V2-Schicht, Animationen und Zoneninszenierung
@@ -81,6 +88,7 @@ Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, 
 - `public/assets/enemies` und `public/assets/bosses` – 35 weitere Imagegen-Runtime-Assets
 - `public/assets/zones` – drei optimierte 1600×900-WebP-Kampfumgebungen
 - `public/assets/gems` – 45 transparente 200×200-Gems nach Seltenheit
+- `public/assets/asset-manifest.json` – 93 eindeutige Runtime-IDs mit Maßen und SHA-256
 - `art-source` – HD-Master, Chroma-Quellen und archivierte Stiltests
 
 ## Zentrale Dokumente
@@ -94,6 +102,7 @@ Die 30 Tests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, 
 - `docs/PRE_BACKEND_ROADMAP.md` – vollständige Reihenfolge und Fertig-Kriterien vor dem Serverbau
 - `docs/DATABASE_BLUEPRINT.md` – verbindliches PostgreSQL-Modell für Besitz und Transaktionen
 - `docs/ASSET_PIPELINE.md` – HD-200×200- und spätere PixelLab-API-Pipeline
+- `docs/PIXELLAB_ANIMATION_CONTRACT.md` – Frame-, Anker-, Namens- und API-Jobvertrag für Animationen
 - `docs/ASSET_PROMPTS.md` – reproduzierbare Designprompts der ersten Monster
 - `docs/UI_SYSTEM.md` – verbindliche Farben, Komponenten und Responsive-Regeln
 - `docs/CONTENT_PIPELINE.md` – Dev-Konzept für Zonenpflege, Validierung und Live-Veröffentlichung

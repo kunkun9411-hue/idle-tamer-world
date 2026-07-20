@@ -13,7 +13,7 @@ Die verbindlichen Foundation-1.0-Zielwerte für Stunde 1, Tag 1, Woche 1, Brut, 
 | Art-Fragmente | Duplikat-Schlupf derselben Monsterart | Hyperlevel und Evolution derselben Art | bleibt |
 | Trainingsdaten | Kampf, Offline-Speicher, Ziele, Expeditionen, Herstellung | ein normales Monsterlevel | bleibt als Item; erzeugtes Level wird zurückgesetzt |
 | Evolutionskerne | Zonenbosse, Wochenziel, Expedition, Herstellung | drei pro erster Evolution | bleibt |
-| Brutladungen | Kampf, Ziele, Expeditionen, Herstellung | 15 Sekunden Brutbeschleunigung | bleibt |
+| Brutladungen | Kampf, Ziele, Expeditionen, Herstellung | 60 Sekunden Brutbeschleunigung | bleibt |
 | Etherstaub | Kampf, Offline-Speicher, Ziele, Expeditionen, Systempost | feste Herstellrezepte | bleibt |
 | Gems | normale seltene Drops, garantierter Bossdrop, Erfolge | kein Verbrauch; Belegung eines Form-Slots | bleibt |
 

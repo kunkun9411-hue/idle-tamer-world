@@ -6,6 +6,7 @@ import {
   type GameCommand,
   type GameCommandResponse,
 } from "./api-contract";
+import { CONTENT_CONTRACT_VERSION, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
 export class GameApiError extends Error {
   public constructor(
@@ -64,18 +65,24 @@ export class HttpGameClient implements GameApiClient {
         headers: { accept: "application/json", ...init.headers },
       });
     } catch {
-      throw new GameApiError(0, { code: "UNAVAILABLE", message: "Der Spielserver ist momentan nicht erreichbar." });
+      throw new GameApiError(0, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNAVAILABLE", message: "Der Spielserver ist momentan nicht erreichbar." });
     }
 
     const body = await response.json().catch(() => null) as T | ApiProblem | null;
     if (!response.ok) {
       const problem = body && "code" in body
         ? body as ApiProblem
-        : { code: "UNKNOWN" as const, message: `Serveranfrage fehlgeschlagen (${response.status}).` };
+        : { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN" as const, message: `Serveranfrage fehlgeschlagen (${response.status}).` };
+      if (problem.errorContractVersion !== ERROR_CONTRACT_VERSION) {
+        throw new GameApiError(response.status, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Fehlerverträge." });
+      }
       throw new GameApiError(response.status, problem);
     }
     if (!body || !("protocolVersion" in body) || body.protocolVersion !== API_PROTOCOL_VERSION) {
-      throw new GameApiError(response.status, { code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Protokollversionen." });
+      throw new GameApiError(response.status, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Protokollversionen." });
+    }
+    if (!("contentContractVersion" in body) || body.contentContractVersion !== CONTENT_CONTRACT_VERSION) {
+      throw new GameApiError(response.status, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "UNKNOWN", message: "Frontend und Server verwenden unterschiedliche Content-Verträge." });
     }
     return body as T;
   }

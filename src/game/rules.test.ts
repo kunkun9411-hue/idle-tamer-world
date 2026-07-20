@@ -70,8 +70,9 @@ describe("Idle Tamer progression rules", () => {
     expect(late.attack).toBeGreaterThan(early.attack);
     expect(rankForVictories(0)).toBe(1);
     expect(rankForVictories(250)).toBe(11);
-    expect(incubationDurationMs(0)).toBe(45_000);
-    expect(incubationDurationMs(5)).toBeLessThan(45_000);
+    expect(incubationDurationMs(0)).toBe(300_000);
+    expect(incubationDurationMs(5)).toBe(150_000);
+    expect(incubationDurationMs(20)).toBe(120_000);
     expect(prestigeCoreReward(99)).toBe(0);
     expect(prestigeCoreReward(100)).toBe(1);
     expect(prestigeCoreReward(300)).toBe(3);

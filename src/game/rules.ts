@@ -18,9 +18,10 @@ export const createMonster = (
   generation = 1,
   hyperLevel = 0,
   evolution: EvolutionStage = "rookie",
-): MonsterInstance => ({ uid: uid(), definitionId, level, hyperLevel, evolution, generation, gemSlots: {} });
+  createUid: () => string = uid,
+): MonsterInstance => ({ uid: createUid(), definitionId, level, hyperLevel, evolution, generation, gemSlots: {} });
 
-export const createInitialState = (): GameState => {
+export const createInitialState = (now: () => number = Date.now): GameState => {
   const activityCounters = emptyActivityCounters();
   return ({
   version: 8,
@@ -61,7 +62,7 @@ export const createInitialState = (): GameState => {
   settings: { soundEnabled: true, combatEffects: true, reducedMotion: false, numberFormat: "compact" },
   tutorialStep: 0,
   claimedSystemMessages: [],
-  lastSavedAt: Date.now(),
+  lastSavedAt: now(),
   });
 };
 
@@ -138,7 +139,29 @@ export const activeZoneSynergy = (state: GameState): ZoneSynergyDefinition | nul
 };
 
 export const incubationDurationMs = (incubationLevel: number): number =>
-  Math.max(18_000, Math.round(BALANCE.hatch.baseDurationMs * (1 - incubationLevel * 0.1)));
+  Math.max(BALANCE.hatch.minDurationMs, Math.round(BALANCE.hatch.baseDurationMs * (1 - incubationLevel * 0.1)));
+
+export interface OfflineProgress {
+  offlineSeconds: number;
+  offlineGold: number;
+  offlineSlots: number;
+  offlineItems: ReturnType<typeof emptyInventory>;
+}
+
+/** Pure offline calculation. Browser storage and wall-clock access stay outside the rule. */
+export const calculateOfflineProgress = (state: GameState, now: number): OfflineProgress => {
+  const elapsed = Math.max(0, Math.floor((now - state.lastSavedAt) / 1_000));
+  const offlineSeconds = Math.min(elapsed, BALANCE.cache.maxOfflineSeconds);
+  const availableSlots = Math.max(0, cacheCapacity(state.research.extraction) - state.cacheSlotsUsed);
+  const offlineSlots = state.roster.length > 0
+    ? Math.min(availableSlots, Math.floor(offlineSeconds / BALANCE.cache.offlineSecondsPerReward))
+    : 0;
+  const offlineGold = Math.round(offlineSlots * 12 * (1 + state.research.extraction * 0.1));
+  const offlineItems = emptyInventory();
+  offlineItems.training_data = Math.floor(offlineSlots / 3);
+  offlineItems.ether_dust = Math.floor(offlineSlots / 8);
+  return { offlineSeconds, offlineGold, offlineSlots, offlineItems };
+};
 
 export const prestigeCoreReward = (runVictories: number): number =>
   runVictories < 100 ? 0 : 1 + Math.floor((runVictories - 100) / 100);

@@ -19,7 +19,7 @@ import {
   researchCost,
   hyperLevelCost,
 } from "./rules";
-import { saveGame, type SaveResult } from "./storage";
+import { saveGame, type SaveResult, type StorageDependencies } from "./storage";
 import { getSystemMessage } from "./system-messages";
 import type { GameState, GemRarity, ItemId, PlayerSettings } from "./types";
 
@@ -119,9 +119,14 @@ export class LocalGameService implements GameService {
   public constructor(
     public readonly state: GameState,
     private readonly random: () => number = Math.random,
+    private readonly storageDependencies: StorageDependencies = {},
   ) {
     this.lastSaveResult = { ok: true, savedAt: state.lastSavedAt };
-    refreshObjectivePeriods(state);
+    refreshObjectivePeriods(state, this.now());
+  }
+
+  private now(): number {
+    return this.storageDependencies.now?.() ?? Date.now();
   }
 
   public chooseStarter(definitionId: string): boolean {
@@ -227,21 +232,21 @@ export class LocalGameService implements GameService {
   public startIncubation(definitionId: string): boolean {
     if (this.state.incubation || (this.state.eggInventory[definitionId] ?? 0) <= 0) return false;
     this.state.eggInventory[definitionId] -= 1;
-    const startedAt = Date.now();
+    const startedAt = this.now();
     this.state.incubation = { definitionId, startedAt, hatchAt: startedAt + incubationDurationMs(this.state.research.incubation) };
     this.save();
     return true;
   }
 
-  public useIncubatorCharge(now = Date.now()): boolean {
+  public useIncubatorCharge(now = this.now()): boolean {
     if (!this.state.incubation || this.state.incubation.hatchAt <= now || this.state.inventory.incubator_charge <= 0) return false;
     this.state.inventory.incubator_charge -= 1;
-    this.state.incubation.hatchAt = Math.max(now, this.state.incubation.hatchAt - 15_000);
+    this.state.incubation.hatchAt = Math.max(now, this.state.incubation.hatchAt - BALANCE.hatch.chargeReductionMs);
     this.save();
     return true;
   }
 
-  public hatchIncubation(now = Date.now()): HatchResult | null {
+  public hatchIncubation(now = this.now()): HatchResult | null {
     const incubation = this.state.incubation;
     if (!incubation || now < incubation.hatchAt) return null;
     const known = this.state.roster.some((monster) => monster.definitionId === incubation.definitionId);
@@ -316,7 +321,7 @@ export class LocalGameService implements GameService {
     return true;
   }
 
-  public claimObjective(objectiveId: string, now = Date.now()): boolean {
+  public claimObjective(objectiveId: string, now = this.now()): boolean {
     refreshObjectivePeriods(this.state, now);
     const objective = OBJECTIVES.find((entry) => entry.id === objectiveId);
     if (!objective || !isObjectiveClaimable(this.state, objective)) return false;
@@ -331,7 +336,7 @@ export class LocalGameService implements GameService {
     return true;
   }
 
-  public startExpedition(slot: number, definitionId: string, monsterUid: string, now = Date.now()): boolean {
+  public startExpedition(slot: number, definitionId: string, monsterUid: string, now = this.now()): boolean {
     const definition = getExpedition(definitionId);
     const monster = this.state.roster.find((entry) => entry.uid === monsterUid);
     if (!definition || !monster || !canStartExpedition(this.state, definition, monster, slot)) return false;
@@ -349,7 +354,7 @@ export class LocalGameService implements GameService {
     return true;
   }
 
-  public claimExpedition(expeditionId: string, now = Date.now()): ExpeditionClaimResult | null {
+  public claimExpedition(expeditionId: string, now = this.now()): ExpeditionClaimResult | null {
     const index = this.state.expeditions.findIndex((entry) => entry.id === expeditionId);
     const expedition = this.state.expeditions[index];
     const definition = expedition ? getExpedition(expedition.definitionId) : undefined;
@@ -503,7 +508,7 @@ export class LocalGameService implements GameService {
   }
 
   public save(): SaveResult {
-    this.lastSaveResult = saveGame(this.state);
+    this.lastSaveResult = saveGame(this.state, this.storageDependencies);
     return this.lastSaveResult;
   }
 }

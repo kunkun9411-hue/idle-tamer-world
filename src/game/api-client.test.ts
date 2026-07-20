@@ -2,9 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { API_PROTOCOL_VERSION, type GameBootstrapResponse } from "./api-contract";
 import { GameApiError, HttpGameClient } from "./api-client";
 import { createInitialState } from "./rules";
+import { CONTENT_CONTRACT_VERSION, CONTENT_RELEASE_ID, ERROR_CONTRACT_VERSION } from "./contract-versions";
 
 const bootstrapPayload = (): GameBootstrapResponse => ({
   protocolVersion: API_PROTOCOL_VERSION,
+  contentContractVersion: CONTENT_CONTRACT_VERSION,
+  contentReleaseId: CONTENT_RELEASE_ID,
   revision: 12,
   serverTime: "2026-07-19T22:00:00.000Z",
   state: createInitialState(),
@@ -43,6 +46,7 @@ describe("HttpGameClient backend boundary", () => {
 
   it("turns conflicts and unreachable servers into typed errors", async () => {
     const conflictFetch = vi.fn(async () => new Response(JSON.stringify({
+      errorContractVersion: ERROR_CONTRACT_VERSION,
       code: "CONFLICT",
       message: "Spielstand wurde bereits geändert.",
       latestRevision: 13,

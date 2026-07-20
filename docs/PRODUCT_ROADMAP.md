@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 2 – Backend-bereiter Client**
-- Aktiver Schritt: **Schritt 2 – Bauen**
+- Aktiver Schritt: **Schritt 3 – Prüfen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `public/roadmap/roadmap-status.json`
 
@@ -30,7 +30,7 @@ flowchart LR
 | Block | Ergebnis | 1 Planen | 2 Bauen | 3 Prüfen | 4 Abnehmen | Status |
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
-| 2 | Backend-bereiter, abgenommener Client | [x] | [ ] | [ ] | [ ] | **Aktiv** |
+| 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [ ] | [ ] | **Aktiv** |
 | 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
@@ -38,7 +38,7 @@ flowchart LR
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **5 von 32 Schritten abgeschlossen**.
+Gesamtfortschritt: **6 von 32 Schritten abgeschlossen**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -108,14 +108,16 @@ Gesamtfortschritt: **5 von 32 Schritten abgeschlossen**.
 
 Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte, Umsetzungsdeltas, vollständige Prestige-Matrix, 24-Schritte-E2E-Ablauf und UI-Zustandsinventar.
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] Browser-E2E-Test für den vollständigen Spielerablauf einbauen
-- [ ] gemeinsame Service-Schnittstelle für `LocalGameService` und `HttpGameService` festziehen
-- [ ] reine Regeln von DOM, Browserzeit und `localStorage` entkoppeln
-- [ ] Content-, API- und Fehlercode-Verträge eindeutig versionieren
-- [ ] einheitliche Verbindungs-, Lade- und Revisionskonflikt-UI umsetzen
-- [ ] Asset-Manifest und PixelLab-Animationsvertrag für 200×200-Monster ergänzen
+- [x] Browser-E2E-Test für den vollständigen Spielerablauf eingebaut
+- [x] gemeinsame asynchrone Intent-Schnittstelle für lokalen und HTTP-Spielservice festgezogen
+- [x] Offline-Regel, Uhr und Speicherung von DOM, Browserzeit und `localStorage` entkoppelt
+- [x] Content-, API-, Fehlercode- und Asset-Verträge eindeutig versioniert
+- [x] einheitliche Verbindungs-, Lade- und Revisionskonflikt-UI umgesetzt
+- [x] Asset-Manifest und PixelLab-Animationsvertrag für 200×200-Monster ergänzt
+
+**Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 93 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
 
 ### Schritt 3 – Prüfen ⬜
 
