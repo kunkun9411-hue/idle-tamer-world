@@ -68,7 +68,7 @@ jobs:
         run: pnpm check
 
       - name: Install Chromium and Linux browser dependencies
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @idle-tamer/web exec playwright install --with-deps chromium
 
       - name: Run desktop, tablet and mobile browser checks
         run: pnpm test:e2e
