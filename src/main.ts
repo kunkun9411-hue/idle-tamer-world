@@ -33,7 +33,7 @@ import {
   researchCost,
   hyperLevelCost,
 } from "./game/rules";
-import { loadGame, resetGame } from "./game/storage";
+import { loadGame, resetGame, STORAGE_KEY } from "./game/storage";
 import { SYSTEM_MESSAGES } from "./game/system-messages";
 import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./game/types";
 
@@ -1056,6 +1056,34 @@ function render(): void {
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
   bindEvents();
+  bindModalKeyboard();
+}
+
+function bindModalKeyboard(): void {
+  const dialog = document.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"]');
+  if (!dialog) return;
+  const focusable = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+  const focusFirst = (): void => (focusable[0] ?? dialog).focus();
+  if (!dialog.contains(document.activeElement)) queueMicrotask(focusFirst);
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (starterDialogOpen) starterDialogOpen = false;
+      else if (showOfflineReport) showOfflineReport = false;
+      render();
+      return;
+    }
+    if (event.key !== "Tab" || focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
 }
 
 function bindEvents(): void {
@@ -1113,12 +1141,19 @@ function frame(now: number): void {
   const delta = now - lastFrame;
   lastFrame = now;
   if (delta < 1_000) tickBattle(now);
-  const dynamicView = !showLogin && !showOfflineReport && (activeView === "expedition" || activeView === "incubation" || activeView === "dispatch");
+  const dynamicView = !showLogin && !showOfflineReport && !starterDialogOpen && (activeView === "expedition" || activeView === "incubation" || activeView === "dispatch");
   if (dynamicView && now - lastRender >= 500) { render(); lastRender = now; }
-  if (now - lastSave >= 5_000) { service.save(); lastSave = now; }
+  if (clientUiState !== "conflict" && now - lastSave >= 5_000) { service.save(); lastSave = now; }
   requestAnimationFrame(frame);
 }
 
-window.addEventListener("beforeunload", () => service.save());
+window.addEventListener("storage", (event) => {
+  if (event.storageArea !== localStorage || event.key !== STORAGE_KEY || event.newValue === event.oldValue) return;
+  clientUiState = "conflict";
+  render();
+});
+window.addEventListener("beforeunload", () => {
+  if (clientUiState !== "conflict") service.save();
+});
 render();
 requestAnimationFrame(frame);

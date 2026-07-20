@@ -31,8 +31,10 @@ const bootstrap = (): GameBootstrapResponse => ({
 describe("shared game service port", () => {
   it("executes the same intent contract locally and advances its revision", async () => {
     const port = new LocalGameServicePort(new LocalGameService(createInitialState()));
+    await expect(port.bootstrap()).resolves.toMatchObject({ accepted: true, revision: 0, event: { type: "bootstrap.local", payload: { contentContractVersion: CONTENT_CONTRACT_VERSION, contentReleaseId: CONTENT_RELEASE_ID } } });
     await expect(port.send({ type: "starter.choose", definitionId: "pyrook" })).resolves.toMatchObject({ accepted: true, revision: 1 });
     await expect(port.send({ type: "starter.choose", definitionId: "mossbit" })).resolves.toMatchObject({ accepted: false, revision: 1 });
+    await expect(port.send({ type: "settings.update", key: "numberFormat", value: "invalid" })).resolves.toMatchObject({ accepted: false, revision: 1 });
     expect(port.state.roster[0].definitionId).toBe("pyrook");
   });
 
@@ -63,5 +65,26 @@ describe("shared game service port", () => {
     await expect(port.send({ type: "cache.claim" })).rejects.toBeInstanceOf(GameApiError);
     expect(port.connection).toBe("conflict");
   });
-});
 
+  it("recovers from a stale revision only by bootstrapping authoritative state again", async () => {
+    const first = bootstrap();
+    const latest = bootstrap();
+    latest.revision = 9;
+    latest.state.resources.gold = 909;
+    const conflict = new GameApiError(409, { errorContractVersion: ERROR_CONTRACT_VERSION, code: "CONFLICT", message: "stale", latestRevision: 9 });
+    const client: GameApiClient = {
+      bootstrap: vi.fn()
+        .mockResolvedValueOnce(first)
+        .mockResolvedValueOnce(latest),
+      send: vi.fn(async () => { throw conflict; }),
+    };
+    const port = new HttpGameService(client);
+    await port.bootstrap();
+    await expect(port.send({ type: "cache.claim" })).rejects.toBe(conflict);
+    expect(port.revision).toBe(4);
+    expect(port.connection).toBe("conflict");
+
+    await expect(port.bootstrap()).resolves.toMatchObject({ revision: 9, state: { resources: { gold: 909 } } });
+    expect(port.connection).toBe("ready");
+  });
+});

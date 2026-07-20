@@ -566,7 +566,7 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
   .combat-zone-tab small { display: none; }
   .combat-world-label { top: 68px; }
   .combat-world-label span { display: none; }
-  .combat-duel { inset: 98px -9px 292px; grid-template-columns: 1fr 28px 1fr; }
+  .combat-duel { inset: 98px 0 292px; grid-template-columns: 1fr 28px 1fr; }
   .combat-duel .fighter .monster-avatar { width: 42vw; height: 42vw; margin-inline: -8px; }
   .combat-duel .nameplate { margin-bottom: 2px; }
   .combat-duel .nameplate > div > span small { display: none; }
@@ -610,4 +610,4 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
   .client-state-banner > span { width: 31px; height: 31px; }
   .client-state-banner .secondary-button { grid-column: 1 / -1; width: 100%; }
 }
-@media (prefers-reduced-motion: reduce) { .client-state-spinner { animation-duration: 1.8s; } }
+@media (prefers-reduced-motion: reduce) { .client-state-spinner { animation: none; } }

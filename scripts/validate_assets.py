@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
 import json
 
 from PIL import Image
@@ -17,6 +18,9 @@ GROUPS = {
 ZONE_BACKGROUNDS = ROOT / "public" / "assets" / "zones"
 GEM_ROOT = ROOT / "public" / "assets" / "gems"
 MANIFEST = ROOT / "public" / "assets" / "asset-manifest.json"
+ASSET_ROOT = ROOT / "public" / "assets"
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000}
 
 
 def validate(path: Path) -> None:
@@ -31,6 +35,49 @@ def validate(path: Path) -> None:
         corners = [alpha.getpixel(point) for point in ((0, 0), (199, 0), (0, 199), (199, 199))]
         if any(corners):
             raise ValueError(f"{path}: corners must be transparent")
+
+
+def asset_kind(path: Path) -> str:
+    return {
+        "monsters": "monster",
+        "enemies": "enemy",
+        "bosses": "boss",
+        "zones": "zone",
+        "gems": "gem",
+    }[path.relative_to(ASSET_ROOT).parts[0]]
+
+
+def expected_asset_id(path: Path) -> str:
+    relative = path.relative_to(ASSET_ROOT).with_suffix("")
+    return f"{asset_kind(path)}.{'.'.join(relative.parts[1:])}"
+
+
+def validate_manifest_asset(asset: dict[str, object]) -> None:
+    required = {"id", "kind", "path", "format", "width", "height", "alpha", "bytes", "sha256"}
+    if set(asset) != required:
+        raise ValueError(f"asset manifest: invalid fields for {asset.get('id')}: {set(asset) ^ required}")
+    public_path = str(asset["path"]).lstrip("/")
+    path = (ROOT / "public" / public_path).resolve()
+    if ASSET_ROOT.resolve() not in path.parents or not path.is_file():
+        raise ValueError(f"asset manifest: unsafe or missing path {asset['path']}")
+    kind = asset_kind(path)
+    with Image.open(path) as image:
+        actual = {
+            "id": expected_asset_id(path),
+            "kind": kind,
+            "path": f"/{path.relative_to(ROOT / 'public').as_posix()}",
+            "format": image.format.lower() if image.format else path.suffix.lstrip(".").lower(),
+            "width": image.width,
+            "height": image.height,
+            "alpha": "A" in image.mode,
+            "bytes": path.stat().st_size,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        }
+    if asset != actual:
+        mismatches = {key: (asset[key], actual[key]) for key in required if asset[key] != actual[key]}
+        raise ValueError(f"asset manifest: stale metadata for {asset['id']}: {mismatches}")
+    if actual["bytes"] > MAX_BYTES[kind]:
+        raise ValueError(f"{path}: {actual['bytes']} bytes exceeds {MAX_BYTES[kind]} byte {kind} budget")
 
 
 def main() -> None:
@@ -65,12 +112,26 @@ def main() -> None:
         for path in (ROOT / "public" / "assets").rglob("*")
         if path.is_file() and path.suffix.lower() in {".png", ".webp"}
     }
-    manifest_paths = {asset["path"] for asset in manifest["assets"]}
+    assets = manifest.get("assets", [])
+    manifest_paths = {asset["path"] for asset in assets}
     if manifest.get("manifestVersion") != 1 or manifest.get("contentReleaseId") != "foundation-1.0.0":
         raise ValueError("asset manifest: unsupported version or content release")
+    ids = [asset.get("id") for asset in assets]
+    if len(ids) != len(set(ids)):
+        raise ValueError("asset manifest: duplicate asset IDs")
+    if len(manifest_paths) != len(assets):
+        raise ValueError("asset manifest: duplicate asset paths")
     if manifest_paths != actual_paths:
         raise ValueError(f"asset manifest: path mismatch (missing={actual_paths - manifest_paths}, stale={manifest_paths - actual_paths})")
-    print(f"manifest: {len(manifest_paths)} paths match runtime assets")
+    for asset in assets:
+        validate_manifest_asset(asset)
+    kind_counts = {kind: sum(asset["kind"] == kind for asset in assets) for kind in EXPECTED_KIND_COUNTS}
+    if kind_counts != EXPECTED_KIND_COUNTS:
+        raise ValueError(f"asset manifest: kind counts {kind_counts}, expected {EXPECTED_KIND_COUNTS}")
+    total_bytes = sum(asset["bytes"] for asset in assets)
+    if total_bytes > 6_000_000:
+        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 6 MB budget")
+    print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
     print(f"total: {checked} transparent creature assets + {len(zone_files)} zone backgrounds + {len(gem_files)} Gems")
 
 

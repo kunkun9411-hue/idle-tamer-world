@@ -2,6 +2,7 @@
   "name": "idle-tamer",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@11.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -9,7 +10,11 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check:roadmap": "node scripts/validate-roadmap.mjs"
+    "check:content": "vitest run src/game/content-contract.test.ts",
+    "check:assets": "python scripts/validate_assets.py",
+    "check:roadmap": "node scripts/validate-roadmap.mjs",
+    "check": "pnpm test && pnpm build && pnpm check:roadmap && pnpm check:assets",
+    "check:all": "pnpm check && pnpm test:e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 2 – Backend-bereiter Client**
-- Aktiver Schritt: **Schritt 3 – Prüfen**
+- Aktiver Schritt: **Schritt 4 – Abnehmen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `public/roadmap/roadmap-status.json`
 
@@ -30,7 +30,7 @@ flowchart LR
 | Block | Ergebnis | 1 Planen | 2 Bauen | 3 Prüfen | 4 Abnehmen | Status |
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
-| 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [ ] | [ ] | **Aktiv** |
+| 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [ ] | **Aktiv** |
 | 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
@@ -38,7 +38,7 @@ flowchart LR
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **6 von 32 Schritten abgeschlossen**.
+Gesamtfortschritt: **7 von 32 Schritten abgeschlossen**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -119,14 +119,16 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Definition of Done erfüllt:** Foundation-1.0-Werte sind aktiv, 93 Runtime-Bilder besitzen eindeutige IDs und Prüfsummen, und der Browserpfad Login → Offline → Kampf → Brut → Fragmente → Hyperlevel → Evolution → Gem → Prestige läuft automatisiert durch.
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
-- [ ] vollständigen Ablauf auf Desktop, Tablet und 390×844 prüfen
-- [ ] Tastaturbedienung, Kontrast und reduzierte Bewegung testen
-- [ ] Vertragsprüfungen für lokalen und späteren HTTP-Service ausführen
-- [ ] Content-IDs, Asset-IDs, Abmessungen und Dateigrößen automatisiert validieren
-- [ ] Parallel-Tab-, Reload- und veraltete-Revision-Fälle simulieren
-- [ ] CI für Test, Build, Content und Assets aktivieren
+- [x] vollständigen Ablauf auf Desktop, Tablet und 390×844 prüfen
+- [x] Tastaturbedienung, Kontrast und reduzierte Bewegung testen
+- [x] Vertragsprüfungen für lokalen und späteren HTTP-Service ausführen
+- [x] Content-IDs, Asset-IDs, Abmessungen und Dateigrößen automatisiert validieren
+- [x] Parallel-Tab-, Reload- und veraltete-Revision-Fälle simulieren
+- [x] CI für Test, Build, Content und Assets aktivieren
+
+**Definition of Done erfüllt:** 37 Regel-, Content- und Service-Vertragstests sowie zehn echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen und parallele Tabs sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 93 Assetverträge und den sichtbaren Kernloop.
 
 ### Schritt 4 – Abnehmen ⬜
 

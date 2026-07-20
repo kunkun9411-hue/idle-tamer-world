@@ -52,15 +52,14 @@ Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatische
 ## Prüfen
 
 ```powershell
-pnpm test
-pnpm test:e2e
-pnpm build
-pnpm check:roadmap
-python scripts/build_asset_manifest.py
-python scripts/validate_assets.py
+pnpm check          # Unit-/Contenttests, Build, Roadmap und Asset-Vertrag
+pnpm test:e2e       # Desktop, Tablet, 390x844, Tastatur und Mehrtab-Fälle
+pnpm check:all      # komplette lokale Qualitätsschranke
 ```
 
-Die 33 Regel- und Vertragstests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen, Service-Port und den Prestige-Erhalt permanenter Werte ab. Die Playwright-Suite prüft zusätzlich den echten sichtbaren Kernpfad von Login und Offline-Claim bis Brut, Fragmenten, Hyperlevel, Evolution, Gem und Prestige.
+Die Regel-, Content- und Vertragstests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen, Service-Port und den Prestige-Erhalt permanenter Werte ab. Die Playwright-Suite prüft zusätzlich den echten sichtbaren Kernpfad von Login und Offline-Claim bis Brut, Fragmenten, Hyperlevel, Evolution, Gem und Prestige – inklusive Desktop, Tablet, 390×844, Tastatur, Kontrast, reduzierter Bewegung und paralleler Tabs.
+
+Die GitHub-Action `.github/workflows/quality.yml` führt dieselbe Qualitätsschranke bei jedem Push und Pull Request gegen `main` aus. Das Asset-Manifest wird dabei bewusst nur validiert, nicht automatisch neu erzeugt: unbemerkte Dateiänderungen müssen so als Vertragsbruch auffallen.
 
 Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `conflict` und `error` bereit.
 
