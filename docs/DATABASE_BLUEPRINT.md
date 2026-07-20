@@ -1,5 +1,7 @@
 # PostgreSQL-Blueprint
 
+Die Domänenidee steht hier; die für Block 3 normierten Tabellennamen, Datentypen, Constraints und Pflichtindizes stehen verbindlich in `backend/SCHEMA_REVIEW.md`.
+
 ## Verbindliche Entscheidung
 
 Die Online-Version verwendet PostgreSQL als zentrale, autoritative SQL-Datenbank. Dynamischer Besitz und jeder wertverändernde Vorgang liegen dort: Accounts, Sessions, Monster, Währungen, Items, Gems, Eier, Fragmente, Zeitjobs, Aufträge, Prestige, Gilden und Transaktionen.

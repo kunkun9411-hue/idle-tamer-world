@@ -104,6 +104,7 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/PLAYER_ENTRY_FLOW.md` – verbindlicher Ablauf von Login bis Hauptkampfszene
 - `docs/ONLINE_ARCHITECTURE.md` – direkter Weg zu Accounts, PostgreSQL, PvP und Gilden
 - `docs/API_CONTRACT_V8.md` – für den Backendbau freigegebener Kommando- und Antwortvertrag
+- `docs/backend/README.md` – verbindlicher Backend-Stack, Workspace-, Schema- und Betriebsplan
 - `docs/PRE_BACKEND_ROADMAP.md` – vollständige Reihenfolge und Fertig-Kriterien vor dem Serverbau
 - `docs/DATABASE_BLUEPRINT.md` – verbindliches PostgreSQL-Modell für Besitz und Transaktionen
 - `docs/ASSET_PIPELINE.md` – HD-200×200- und spätere PixelLab-API-Pipeline

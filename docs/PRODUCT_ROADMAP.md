@@ -2,7 +2,7 @@
 
 - Stand: 20. Juli 2026
 - Aktiver Block: **Block 3 – API- und PostgreSQL-Fundament**
-- Aktiver Schritt: **Schritt 1 – Planen**
+- Aktiver Schritt: **Schritt 2 – Bauen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `public/roadmap/roadmap-status.json`
 
@@ -31,14 +31,14 @@ flowchart LR
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
-| 3 | API- und PostgreSQL-Fundament | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
+| 3 | API- und PostgreSQL-Fundament | [x] | [ ] | [ ] | [ ] | **Aktiv** |
 | 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **8 von 32 Schritten abgeschlossen (25 %)**.
+Gesamtfortschritt: **9 von 32 Schritten abgeschlossen (28,1 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -146,15 +146,15 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Ergebnis:** Ein deploybares technisches Backend mit echter PostgreSQL-Datenbank, Migrationen, Logs und sicheren Transaktionsmustern.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] Zielstruktur für `apps/web`, `apps/api` und gemeinsame Pakete festlegen
-- [ ] Node/TypeScript-API, PostgreSQL-Zugriff und Migrationstechnik auswählen
-- [ ] Tabellen, Schlüssel, Indizes, Revisionen und Ledger gegen den Blueprint prüfen
-- [ ] Entwicklungs-, Test- und Produktionsumgebungen definieren
-- [ ] Backup-, Wiederherstellungs- und Rollbackstrategie beschreiben
+- [x] Zielstruktur für `apps/web`, `apps/api` und gemeinsame Pakete festlegen
+- [x] Node/TypeScript-API, PostgreSQL-Zugriff und Migrationstechnik auswählen
+- [x] Tabellen, Schlüssel, Indizes, Revisionen und Ledger gegen den Blueprint prüfen
+- [x] Entwicklungs-, Test- und Produktionsumgebungen definieren
+- [x] Backup-, Wiederherstellungs- und Rollbackstrategie beschreiben
 
-**Technischer Rat:** Node/TypeScript mit einer kleinen HTTP-Schicht passt zum vorhandenen Client, weil Verträge und Typen geteilt werden können. PostgreSQL bleibt dennoch die verbindliche Wahrheitsquelle; wichtige Regeln dürfen nicht nur in TypeScript existieren.
+**Gate erfüllt:** `docs/backend` friert Node 24 LTS, Fastify 5, PostgreSQL 18, `pg`, `node-pg-migrate`, den inkrementellen Workspace-Umzug, kanonische SQL-Namen, Revisions-/Idempotenzmuster, Umgebungen sowie Backup und Restore ein. PostgreSQL bleibt die verbindliche Wahrheitsquelle; kritische Regeln existieren nicht nur in TypeScript.
 
 ### Schritt 2 – Bauen ⬜
 
@@ -419,11 +419,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir beginnen mit **Block 3, Schritt 1 – Planen**:
+Wir beginnen mit **Block 3, Schritt 2 – Bauen**:
 
-1. Zielstruktur für Web, API, gemeinsame Verträge, Content und Datenbank festziehen.
-2. Node/TypeScript-HTTP-Schicht, PostgreSQL-Zugriff und Migrationstechnik verbindlich auswählen.
-3. Blueprint, Indizes, Revisionen, Idempotenz und Ledger gegen API-Protokoll 8 prüfen.
-4. Entwicklungs-, Test-, Produktions-, Backup- und Rollbackabläufe dokumentieren.
+1. Root in einen pnpm-Workspace-Orchestrator und den bestehenden Client nach `apps/web` überführen.
+2. Verträge, Spielregeln und Content in einseitig abhängige Pakete extrahieren.
+3. `apps/api`, PostgreSQL-18-Konfiguration, Pool, Migrationen und Healthcheck ergänzen.
+4. Revisions-, Idempotenz- und Ledger-Transaktionshelfer mit einem echten Beispielkommando bauen.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.

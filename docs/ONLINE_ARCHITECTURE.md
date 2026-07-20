@@ -1,6 +1,6 @@
 # Backend- und Online-Architektur
 
-PostgreSQL ist die verbindliche Zieldatenbank. Die vollständige Reihenfolge bis zum Launch steht in `PRODUCT_ROADMAP.md`, das detaillierte Tabellen-, Ledger- und Transaktionsmodell in `DATABASE_BLUEPRINT.md`; die bereits lokal fertiggestellten Systeme stehen in `PRE_BACKEND_ROADMAP.md`.
+PostgreSQL ist die verbindliche Zieldatenbank. Die vollständige Reihenfolge bis zum Launch steht in `PRODUCT_ROADMAP.md`, das Domänenmodell in `DATABASE_BLUEPRINT.md` und der normierte Bauvertrag in `backend/SCHEMA_REVIEW.md`; die bereits lokal fertiggestellten Systeme stehen in `PRE_BACKEND_ROADMAP.md`.
 
 ## Autoritative Grenze
 
@@ -26,17 +26,18 @@ Für Browser-Accounts sind sichere HTTP-only Session-Cookies sinnvoller als selb
 
 | Tabelle | Wichtige Inhalte |
 |---|---|
-| `users` | Loginidentität, Anzeigename, Sperrstatus |
-| `player_profiles` | Account-Rang, Prestige, Kerne, Gesamtsiege, aktiver Avatar, aktiver Rahmen, Save-Version |
+| `users`, `user_credentials`, `user_sessions` | Loginidentität, Passwort-Hash, Session-Hash und Sperrstatus |
+| `player_profiles` | Anzeigename, Account-Rang, Prestige, Gesamtsiege, Avatar, Rahmen und Revision |
 | `player_runs` | Gold, Run-Siege, aktive Zone, Front-Monster, Support-Monster, Kampfspeicherbelegung, letzter autoritativer Tick |
 | `player_zone_progress` | freigeschaltete Zone, aktuelle Stage, Abschlüsse |
 | `monster_instances` | Besitzer, Art, normales Level, Hyperlevel, Evolution, Generation |
 | `monster_fragments` | Spieler, Monsterart, Fragmentanzahl |
-| `gem_inventory` | Spieler, Gem-Definition, ungebundene Anzahl |
+| `wallet_balances` | Spieler, Währungs-ID und exakter nichtnegativer Bestand |
+| `gem_balances` | Spieler, Gem-Definition und ungebundene Anzahl |
 | `monster_gem_slots` | Monsterinstanz, Slotform, ausgerüstete Gem-Definition |
-| `egg_inventory` | Spieler, Monsterart, Anzahl |
-| `item_inventory` | Spieler, Material-ID, gesicherte Anzahl |
-| `pending_rewards` | serverseitig erzeugte, noch nicht eingesammelte Gold-, Ei-, Material- und Gem-Beute |
+| `egg_balances` | Spieler, Monsterart und Anzahl |
+| `item_balances` | Spieler, Material-ID und gesicherte Anzahl |
+| `pending_reward_batches` | serverseitig erzeugte, noch nicht eingesammelte Gold-, Ei-, Material- und Gem-Beute |
 | `incubation_jobs` | Eiart, Start, Ende, Status, Ergebnis |
 | `cosmetic_entitlements` | freigeschaltete Avatar- und Rahmen-IDs samt Quelle |
 | `research_levels` | Spieler, Forschungszweig, Stufe |
@@ -45,7 +46,8 @@ Für Browser-Accounts sind sichere HTTP-only Session-Cookies sinnvoller als selb
 | `guild_members` | Spieler, Rolle, Beitritt, Beitrag |
 | `guild_dna_nodes` | Chromosom, Gen, Stufe und Investition |
 | `guild_ledger` | unveränderbares Ressourcen- und Berechtigungsprotokoll |
-| `idempotency_keys` | verhindert doppelte Käufe bei Request-Wiederholung |
+| `economy_ledger` | append-only Vorher-/Nachherbuchungen jeder Bestandsänderung |
+| `game_commands` | Idempotenz, Revision, Request-Hash und gespeichertes Ergebnis |
 
 Monsterdefinitionen, Evolutionslinien, Encounter, Bossrotationen, Zonenprotokolle und Balancing bleiben zunächst versioniert im Servercode. Die Datenbank speichert Instanzen und Fortschritt, keine willkürlich vom Client gelieferten Basiswerte.
 

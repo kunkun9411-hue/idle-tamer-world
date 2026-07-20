@@ -1,7 +1,7 @@
 {
   "updated": "20. Juli 2026",
   "activeBlock": 3,
-  "activeStep": 1,
+  "activeStep": 2,
   "blocks": [
     {
       "id": 1,
@@ -39,7 +39,7 @@
       "visual": "backend",
       "accent": "blue",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Workspace, Serverstack, Schema und Umgebungen entscheiden" },
+        { "name": "Planen", "done": true, "note": "Node 24, Fastify 5, PostgreSQL 18, SQL-Schema und Betrieb festgelegt" },
         { "name": "Bauen", "done": false, "note": "API, PostgreSQL, Migrationen und Logs aufsetzen" },
         { "name": "Prüfen", "done": false, "note": "Transaktionen, Constraints, Parallelität und Restore testen" },
         { "name": "Abnehmen", "done": false, "note": "Reproduzierbares Fundament in Testumgebung freigeben" }
