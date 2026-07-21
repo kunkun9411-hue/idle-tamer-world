@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { loadServerConfig } from "@idle-tamer/config";
+
 import { buildApp } from "./app";
 
 const testConfig = {
@@ -48,5 +50,35 @@ describe("Fastify foundation", () => {
       features: { guilds: false, guildDna: true, liveEvents: false, pvp: false },
     });
     await app.close();
+  });
+
+  it("does not opt cross-origin browsers into credentialed API access", async () => {
+    const app = buildApp({ config: testConfig, database: { ping: vi.fn() }, logger: false });
+    const response = await app.inject({
+      method: "OPTIONS",
+      url: "/api/v1/bootstrap",
+      headers: {
+        origin: "https://evil.test",
+        "access-control-request-method": "GET",
+      },
+    });
+    expect(response.statusCode).toBe(404);
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+    expect(response.headers["access-control-allow-credentials"]).toBeUndefined();
+    await app.close();
+  });
+
+  it("fails closed when production lacks HTTPS or an external rate-limit secret", () => {
+    expect(() => loadServerConfig({ NODE_ENV: "production", PUBLIC_ORIGIN: "https://idle-tamer.test" })).toThrow(/rate-limit HMAC secret/iu);
+    expect(() => loadServerConfig({
+      NODE_ENV: "production",
+      PUBLIC_ORIGIN: "http://idle-tamer.test",
+      RATE_LIMIT_HMAC_SECRET: "external-test-secret-at-least-32-characters",
+    })).toThrow(/HTTPS public origin/iu);
+    expect(loadServerConfig({
+      NODE_ENV: "production",
+      PUBLIC_ORIGIN: "https://idle-tamer.test",
+      RATE_LIMIT_HMAC_SECRET: "external-test-secret-at-least-32-characters",
+    })).toMatchObject({ NODE_ENV: "production", PUBLIC_ORIGIN: "https://idle-tamer.test" });
   });
 });

@@ -23,6 +23,8 @@ export interface BuildAppOptions {
   database?: DatabaseHealth;
   authStore?: AuthStore;
   authMail?: AuthMailPort;
+  authNow?: () => Date;
+  authSleep?: (milliseconds: number) => Promise<void>;
   logger?: false;
 }
 
@@ -44,8 +46,8 @@ export const buildApp = (options: BuildAppOptions = {}) => {
       termsVersion: config.AUTH_TERMS_VERSION,
       privacyVersion: config.AUTH_PRIVACY_VERSION,
       features: publicRuntimeConfig(config).features,
-    });
-    const rateLimiter = new AuthRateLimiter(options.authStore, config.RATE_LIMIT_HMAC_SECRET);
+    }, options.authNow);
+    const rateLimiter = new AuthRateLimiter(options.authStore, config.RATE_LIMIT_HMAC_SECRET, options.authNow, options.authSleep);
     void app.register(async (authApp) => registerAuthRoutes(authApp, { service: authService, rateLimiter, publicOrigin: config.PUBLIC_ORIGIN }));
   }
 

@@ -246,6 +246,15 @@ export class AuthService {
     return { identity: candidate, csrfToken };
   }
 
+  public authorizeCsrf(session: AuthenticatedSession, csrfToken: string | undefined): AuthenticatedSession {
+    if (!csrfToken) throw new AuthError(403, "FORBIDDEN", "CSRF_INVALID", "Die Sicherheitsprüfung ist abgelaufen. Bitte lade die Seite neu.");
+    const actual = sha256(csrfToken);
+    if (actual.length !== session.identity.csrfHash.length || !timingSafeEqual(actual, session.identity.csrfHash)) {
+      throw new AuthError(403, "FORBIDDEN", "CSRF_INVALID", "Die Sicherheitsprüfung ist abgelaufen. Bitte lade die Seite neu.");
+    }
+    return { identity: session.identity, csrfToken };
+  }
+
   public async bootstrap(session: AuthenticatedSession, rotateCsrf = false): Promise<AccountBootstrapResponse> {
     let csrfToken = session.csrfToken;
     if (rotateCsrf || !csrfToken) {

@@ -21,7 +21,7 @@ integration("PostgreSQL 18 auth store", () => {
   });
 
   beforeEach(async () => {
-    await pool.query("TRUNCATE users CASCADE");
+    await pool.query("TRUNCATE users, auth_rate_limits CASCADE");
   });
 
   afterAll(async () => {
@@ -62,6 +62,42 @@ integration("PostgreSQL 18 auth store", () => {
   it("lets only one concurrent email and name registration win", async () => {
     const [first, second] = await Promise.all([createAccount("race"), createAccount("race")]);
     expect([first.status, second.status].sort()).toEqual(["created", "email_exists"]);
+  });
+
+  it("rejects a duplicate display name without leaving a partial second account", async () => {
+    const first = await createAccount("name-owner");
+    expect(first.status).toBe("created");
+    const duplicate = await store.createPendingAccount({
+      emailOriginal: "different@example.test",
+      emailNormalized: "different@example.test",
+      displayName: "Tamer name-owner",
+      displayNameNormalized: "tamer name-owner",
+      passwordHash: "$argon2id$test",
+      termsVersion: "alpha-foundation-1",
+      privacyVersion: "alpha-foundation-1",
+      verificationTokenHash: hash("verify-different"),
+      verificationExpiresAt: new Date(Date.now() + 60_000),
+      contentReleaseId: "foundation-1.0.0",
+      balanceReleaseId: "low-numbers-1.0.0",
+    });
+    expect(duplicate.status).toBe("display_name_taken");
+    await expect(pool.query("SELECT count(*)::int AS count FROM users")).resolves.toMatchObject({ rows: [{ count: 1 }] });
+  });
+
+  it("counts parallel rate-limit attempts atomically", async () => {
+    const windowStarted = new Date("2026-07-21T20:00:00.000Z");
+    const blockedUntil = new Date("2026-07-21T20:15:00.000Z");
+    const attempts = await Promise.all(Array.from({ length: 6 }, () => store.consumeRateLimit({
+      action: "integration.login",
+      keyHash: hash("private-rate-key"),
+      windowStarted,
+      limit: 5,
+      blockedUntil,
+    })));
+    expect(attempts.filter((attempt) => attempt.allowed)).toHaveLength(5);
+    expect(attempts.filter((attempt) => !attempt.allowed)).toHaveLength(1);
+    expect(attempts.map((attempt) => attempt.attemptCount).sort((left, right) => left - right)).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(attempts.find((attempt) => !attempt.allowed)?.blockedUntil).toEqual(blockedUntil);
   });
 
   it("keeps at most ten active sessions and chooses a starter idempotently", async () => {

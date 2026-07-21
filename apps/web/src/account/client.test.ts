@@ -16,6 +16,16 @@ const bootstrap = (): AccountBootstrapResponse => ({
 });
 
 describe("AccountClient", () => {
+  it("calls browser fetch without binding AccountClient as its receiver", async () => {
+    const receiverAwareFetch = vi.fn(function (this: unknown) {
+      expect(this).toBeUndefined();
+      return Promise.resolve(new Response(JSON.stringify(bootstrap()), { status: 200, headers: { "content-type": "application/json" } }));
+    }) as unknown as typeof fetch;
+    const client = new AccountClient(receiverAwareFetch);
+    await expect(client.bootstrap()).resolves.toEqual(bootstrap());
+    expect(receiverAwareFetch).toHaveBeenCalledOnce();
+  });
+
   it("keeps cookies implicit and forwards the rotated CSRF token to commands", async () => {
     const fetchImpl = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify(bootstrap()), { status: 200, headers: { "content-type": "application/json" } }))

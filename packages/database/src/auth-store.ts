@@ -129,7 +129,7 @@ export interface AuthStore {
   cancelDeletion(userId: string): Promise<boolean>;
   chooseStarter(input: StarterCommandInput): Promise<{ revision: number; replayed: boolean }>;
   updateCosmetic(input: CosmeticCommandInput): Promise<{ revision: number; replayed: boolean }>;
-  consumeRateLimit(input: ConsumeRateLimitInput): Promise<{ allowed: boolean; blockedUntil: Date | null }>;
+  consumeRateLimit(input: ConsumeRateLimitInput): Promise<{ allowed: boolean; attemptCount: number; blockedUntil: Date | null }>;
 }
 
 interface ConstraintError {
@@ -627,7 +627,7 @@ export class PostgresAuthStore implements AuthStore {
     return { revision: result.revision, replayed: result.replayed };
   }
 
-  public async consumeRateLimit(input: ConsumeRateLimitInput): Promise<{ allowed: boolean; blockedUntil: Date | null }> {
+  public async consumeRateLimit(input: ConsumeRateLimitInput): Promise<{ allowed: boolean; attemptCount: number; blockedUntil: Date | null }> {
     const result = await this.pool.query<{ attempt_count: number; blocked_until: Date | null } & QueryResultRow>(
       `INSERT INTO auth_rate_limits
          (action, key_hash, window_started, attempt_count, blocked_until)
@@ -644,6 +644,6 @@ export class PostgresAuthStore implements AuthStore {
       [input.action, input.keyHash, input.windowStarted, input.limit, input.blockedUntil],
     );
     const row = result.rows[0];
-    return { allowed: row.attempt_count <= input.limit, blockedUntil: row.blocked_until };
+    return { allowed: row.attempt_count <= input.limit, attemptCount: row.attempt_count, blockedUntil: row.blocked_until };
   }
 }

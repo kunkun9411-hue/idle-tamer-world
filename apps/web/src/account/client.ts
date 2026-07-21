@@ -44,8 +44,11 @@ export const getClientInstanceId = (storage: Pick<Storage, "getItem" | "setItem"
 
 export class AccountClient {
   private csrfToken = "";
+  private readonly fetchImpl: typeof fetch;
 
-  public constructor(private readonly fetchImpl: typeof fetch = fetch) {}
+  public constructor(fetchImpl: typeof fetch = fetch) {
+    this.fetchImpl = (...arguments_) => fetchImpl(...arguments_);
+  }
 
   public async bootstrap(): Promise<AccountBootstrapResponse> {
     const response = await this.fetchImpl("/api/v1/bootstrap", { credentials: "include", headers: { accept: "application/json" } });
