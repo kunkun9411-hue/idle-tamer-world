@@ -42,12 +42,12 @@ integration("PostgreSQL 18 authoritative run store", () => {
       termsVersion: "alpha-foundation-1",
       privacyVersion: "alpha-foundation-1",
       verificationTokenHash: verificationHash,
-      verificationExpiresAt: new Date(now.getTime() + 60_000),
+      verificationExpiresAt: new Date(Date.now() + 60_000),
       contentReleaseId: "foundation-1.0.0",
       balanceReleaseId: "low-numbers-1.0.0",
     });
     if (account.status !== "created") throw new Error("run test account setup failed");
-    await authStore.verifyEmailToken(verificationHash, now);
+    await authStore.verifyEmailToken(verificationHash, new Date());
     const profile = await pool.query<{ id: string }>("SELECT id FROM player_profiles WHERE user_id = $1", [account.userId]);
     const playerId = profile.rows[0].id;
     await authStore.chooseStarter({
