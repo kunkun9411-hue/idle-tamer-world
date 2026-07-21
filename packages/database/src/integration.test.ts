@@ -5,8 +5,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 
 import { applyBalanceDelta, DatabaseCommandError, executePlayerCommand, hashCommand } from "./transaction";
 import { createDatabasePool } from "./pool";
+import { guardedTestDatabaseUrl } from "./test-database-guard";
 
-const databaseUrl = process.env.TEST_DATABASE_URL;
+const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 
 const playerId = "01900000-0000-7000-8000-000000000102";

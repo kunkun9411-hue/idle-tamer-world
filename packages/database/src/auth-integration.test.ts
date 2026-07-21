@@ -6,9 +6,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PostgresAuthStore } from "./auth-store";
 import { runAuthMaintenance } from "./auth-maintenance";
 import { createDatabasePool } from "./pool";
+import { guardedTestDatabaseUrl } from "./test-database-guard";
 import { getSupportAccountReport } from "./support-account-report";
 
-const databaseUrl = process.env.TEST_DATABASE_URL;
+const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 const hash = (value: string): Buffer => createHash("sha256").update(value).digest();
 

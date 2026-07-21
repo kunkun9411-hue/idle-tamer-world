@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
 
 import type { AccountBootstrapResponse } from "@idle-tamer/contracts";
-import { createDatabasePool, PostgresAuthStore, PostgresRunStore } from "@idle-tamer/database";
+import { createDatabasePool, guardedTestDatabaseUrl, PostgresAuthStore, PostgresRunStore } from "@idle-tamer/database";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { buildApp } from "../app";
 import { MemoryAuthMailAdapter } from "./mail";
 import { hashPassword, randomOpaqueToken, sha256 } from "./security";
 
-const databaseUrl = process.env.TEST_DATABASE_URL;
+const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 const origin = "https://idle-tamer.test";
 const password = "eine sichere PostgreSQL Testpassphrase";

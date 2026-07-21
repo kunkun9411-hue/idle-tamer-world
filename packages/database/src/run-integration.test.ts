@@ -8,9 +8,10 @@ import type { RunCommand } from "@idle-tamer/contracts";
 
 import { PostgresAuthStore } from "./auth-store";
 import { createDatabasePool } from "./pool";
+import { guardedTestDatabaseUrl } from "./test-database-guard";
 import { PostgresRunStore, RunDatabaseError } from "./run-store";
 
-const databaseUrl = process.env.TEST_DATABASE_URL;
+const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 const hash = (value: string): Buffer => createHash("sha256").update(value).digest();
 const now = new Date("2026-07-21T20:00:00.000Z");
