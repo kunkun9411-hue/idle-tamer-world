@@ -1,7 +1,7 @@
 # Block 4 – gebaute Account- und Sessionbasis
 
 - Stand: 21. Juli 2026
-- Roadmap: Block 4, Schritt 2 gebaut; Schritt 3 aktiv
+- Roadmap: Block 4, Schritt 3 geprüft; Schritt 4 aktiv
 - Auth-Vertrag: 1
 - Fehlervertrag: 2
 
@@ -64,6 +64,8 @@ Am 21. Juli 2026 wurden Migration und Seed nach einem frischen Datenbankbackup a
 - Die Löschung wird sieben Tage vorgemerkt, kann vorher abgebrochen werden und anonymisiert erst nach Fristablauf.
 - Aufbewahrung bereinigt Rate-Limits, verbrauchte Token, widerrufene Sessions und Security Events nach ihren Fristen.
 
-## Nächstes Prüfgate
+## Abgeschlossenes Prüfgate
 
-Schritt 3 erweitert die Tests auf progressive Fehlversuche, harte Rate-Limits, Tokenablauf, Sessionrotation, zweiten Browser, Einzel- und Gesamtwiderruf, Produktions-Cookies, Reverse Proxy sowie vollständige Registrierung über die Dev-Mailoutbox. Erst nach diesem Gate wird der Accountfluss manuell abgenommen.
+Schritt 3 prüft progressive Fehlversuche, harte Rate-Limits, Tokenablauf, Sessionrotation, zweiten Browser, Einzel- und Gesamtwiderruf, Produktions-Cookies, Reverse Proxy sowie vollständige Registrierung über die Dev-Mailoutbox. Der Zwei-Browser-Livetest läuft gegen die echte Domain und entfernt seinen synthetischen QA-Account anschließend wieder. Die vollständige Matrix und der dabei entdeckte Browserfehler stehen in `AUTH_SECURITY_VERIFICATION.md`.
+
+Als Nächstes wird der Accountfluss in Schritt 4 manuell abgenommen und die schreibgeschützte Supportsicht geklärt. Besitz- und Wirtschaftsaktionen bleiben weiterhin außerhalb dieses Blocks.

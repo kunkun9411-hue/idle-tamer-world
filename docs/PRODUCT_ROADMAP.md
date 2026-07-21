@@ -2,7 +2,7 @@
 
 - Stand: 21. Juli 2026
 - Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
-- Aktiver Schritt: **Schritt 3 – Prüfen**
+- Aktiver Schritt: **Schritt 4 – Abnehmen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -12,7 +12,7 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 40,6 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
+Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 46,9 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -40,13 +40,13 @@ flowchart LR
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
-| 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [ ] | [ ] | **Aktiv** |
+| 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [x] | [ ] | **Aktiv** |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **14 von 32 Schritten abgeschlossen (43,8 %)**.
+Gesamtfortschritt: **15 von 32 Schritten abgeschlossen (46,9 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -225,13 +225,15 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Definition of Done erfüllt:** Migration `000002_accounts_and_sessions`, Argon2id, gehashte Session-/CSRF-Token, PostgreSQL-Rate-Limits, Mailport, Recovery, Gerätewiderruf, Rollen, Profilkosmetik, idempotente Starterwahl, Exportanforderung und siebentägige Löschfrist sind implementiert. Der Browser nutzt echte Accounts, zeigt die begrenzte Autorität offen an und öffnet lokale Spielstände ausschließlich im serverseitig zugewiesenen Account-Namespace. Details: `backend/AUTH_IMPLEMENTATION.md`.
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
-- [ ] Brute-Force-, Rate-Limit- und Session-Fixation-Fälle testen
-- [ ] abgelaufene, widerrufene und parallele Sessions prüfen
-- [ ] Account auf zweitem Browser laden und Zustand vergleichen
-- [ ] doppelte Namen, ungültige Eingaben und gesperrte Accounts testen
-- [ ] Cookies, CORS, CSRF-Schutz und Produktionskonfiguration prüfen
+- [x] Brute-Force-, Rate-Limit- und Session-Fixation-Fälle testen
+- [x] abgelaufene, widerrufene und parallele Sessions prüfen
+- [x] Account auf zweitem Browser laden und Zustand vergleichen
+- [x] doppelte Namen, ungültige Eingaben und gesperrte Accounts testen
+- [x] Cookies, CORS, CSRF-Schutz und Produktionskonfiguration prüfen
+
+**Definition of Done erfüllt:** 73 Unit- und Vertragstests, 14 isolierte PostgreSQL-Integrationsfälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Ablauf mit zwei getrennten Browserkontexten sind grün. Geprüft sind unter anderem Login- und Reset-Limits, progressive Fehlversuchsverzögerung, CSRF-Rotation, Session-Fixation, Ablauf und Widerruf, gesperrte Accounts, doppelte Namen, Produktions-Cookies und derselbe Starter samt Account-Namespace auf Browser A und B. Der Live-Test deckte außerdem eine falsche Browser-`fetch`-Bindung auf; der behobene Client läuft jetzt über den echten HTTPS-Proxy. Details: `backend/AUTH_SECURITY_VERIFICATION.md`.
 
 ### Schritt 4 – Abnehmen ⬜
 

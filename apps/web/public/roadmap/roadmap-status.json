@@ -1,7 +1,7 @@
 {
-  "updated": "21. Juli 2026 · Block 4 Account-Bau abgeschlossen",
+  "updated": "21. Juli 2026 · Block 4 Sicherheitsprüfung abgeschlossen",
   "activeBlock": 4,
-  "activeStep": 3,
+  "activeStep": 4,
   "blocks": [
     {
       "id": 1,
@@ -55,7 +55,7 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "Auth-, Session-, Profil-, Starter- und Datenschutzvertrag freigegeben" },
         { "name": "Bauen", "done": true, "note": "Accounts, Sessions, Recovery, Bootstrap, Starter und getrennte Saves stehen" },
-        { "name": "Prüfen", "done": false, "note": "Missbrauch, Sessions, Cookies, Limits und zweites Gerät testen" },
+        { "name": "Prüfen", "done": true, "note": "Missbrauch, Limits, Rotation, Cookies und zwei echte Browser grün" },
         { "name": "Abnehmen", "done": false, "note": "Accountfluss und Supportsicht freigeben" }
       ]
     },

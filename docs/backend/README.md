@@ -10,7 +10,8 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 6. [`BLOCK4_AUTH_PLAN.md`](BLOCK4_AUTH_PLAN.md) – Welche Account-, Session-, Recovery-, Datenschutz- und Autoritätsregeln baut Block 4?
 7. [`AUTH_API_CONTRACT.md`](AUTH_API_CONTRACT.md) – Welche Auth- und Account-Endpunkte, DTOs und Fehler sind verbindlich?
 8. [`AUTH_SCHEMA_PLAN.md`](AUTH_SCHEMA_PLAN.md) – Welche Tabellen, Constraints, Indizes und Löschtransaktionen ergänzt Migration 000002?
-9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion, wie wird sie betrieben und was wird in Schritt 3 geprüft?
+9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion und wie wird sie betrieben?
+10. [`AUTH_SECURITY_VERIFICATION.md`](AUTH_SECURITY_VERIFICATION.md) – Welche Missbrauchs-, PostgreSQL-, Cookie- und Zwei-Browser-Fälle sind nachgewiesen?
 
 ## Verbindlicher Kurzstand
 
@@ -37,7 +38,7 @@ Block 4 verwendet daneben Auth-Vertrag 1. Er führt einen ehrlichen Account-Boot
 - [x] Exportanforderung, siebentägige Löschfrist und stündlicher Retentionjob
 - [x] Browser-Accountclient mit strikt getrennten lokalen Save-Namespaces
 
-Block 4 befindet sich jetzt im Prüfgate. Die vorhandenen Tests beweisen bereits den HTTP-Hauptfluss und die echten PostgreSQL-Transaktionen; Missbrauchsmatrix, Zweitbrowser und vollständige Proxy-/Cookie-Abnahme folgen bewusst in Schritt 3.
+Block 4 befindet sich jetzt im Abnahmegate. Missbrauchsmatrix, PostgreSQL-Lebenszyklen, Zweitbrowser sowie Proxy-, Cookie-, Origin- und CSRF-Grenzen sind in Schritt 3 nachgewiesen. Schritt 4 spielt den freizugebenden Accountfluss noch einmal aus Spielersicht durch und klärt die minimale schreibgeschützte Supportsicht.
 
 ## Abgenommener Stand von Block 3
 

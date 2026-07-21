@@ -333,6 +333,14 @@ describe("account HTTP flow", () => {
     const accountExport = await app.inject({ method: "POST", url: "/api/v1/account/export", headers: { cookie, origin, "x-csrf-token": csrfToken }, payload: {} });
     expect(accountExport.statusCode).toBe(202);
     expect(accountExport.json()).toMatchObject({ status: "pending" });
+
+    for (let authenticatedAttempt = 35; authenticatedAttempt <= 120; authenticatedAttempt += 1) {
+      const sessions = await app.inject({ method: "GET", url: "/api/v1/auth/sessions", headers: { cookie } });
+      expect(sessions.statusCode).toBe(200);
+    }
+    const authenticatedCeiling = await app.inject({ method: "GET", url: "/api/v1/auth/sessions", headers: { cookie } });
+    expect(authenticatedCeiling.statusCode).toBe(429);
+    expect(authenticatedCeiling.json()).toMatchObject({ code: "RATE_LIMITED" });
     await app.close();
   }, 10_000);
 
