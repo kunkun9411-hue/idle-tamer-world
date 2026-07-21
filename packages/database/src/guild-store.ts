@@ -361,7 +361,7 @@ export class PostgresGuildStore implements GuildStore {
         }
         await client.query("INSERT INTO guild_membership_history (guild_id, player_id, action, actor_player_id) VALUES ($1, $2, 'leave', $2)", [current.guild_id, player.player_id]);
         await client.query("DELETE FROM guild_members WHERE guild_id = $1 AND player_id = $2", [current.guild_id, player.player_id]);
-        await client.query("UPDATE player_social_state SET guild_join_available_at = $2 + interval '24 hours' WHERE player_id = $1", [player.player_id, now]);
+        await client.query("UPDATE player_social_state SET guild_join_available_at = $2::timestamptz + interval '24 hours' WHERE player_id = $1", [player.player_id, now]);
         player.guild_join_available_at = new Date(now.getTime() + 24 * 60 * 60 * 1_000);
         event = { type: "guild.left", payload: { guildId: current.guild_id, joinAvailableAt: player.guild_join_available_at.toISOString() } };
       } else if (command.type === "guild.leadership_transfer") {
@@ -389,7 +389,7 @@ export class PostgresGuildStore implements GuildStore {
         if (!targetRole || targetRole === "leader" || (current.role === "officer" && targetRole !== "member")) throw new GuildDatabaseError("FORBIDDEN", "Dieses Mitglied kannst du nicht entfernen.");
         await client.query("INSERT INTO guild_membership_history (guild_id, player_id, action, actor_player_id) VALUES ($1, $2, 'kick', $3)", [current.guild_id, command.playerId, player.player_id]);
         await client.query("DELETE FROM guild_members WHERE guild_id = $1 AND player_id = $2", [current.guild_id, command.playerId]);
-        await client.query("UPDATE player_social_state SET guild_join_available_at = $2 + interval '24 hours', revision = revision + 1 WHERE player_id = $1", [command.playerId, now]);
+        await client.query("UPDATE player_social_state SET guild_join_available_at = $2::timestamptz + interval '24 hours', revision = revision + 1 WHERE player_id = $1", [command.playerId, now]);
         event = { type: "guild.member_kicked", payload: { playerId: command.playerId } };
       } else if (command.type === "guild.policy_set") {
         if (!current) throw new GuildDatabaseError("VALIDATION", "Du bist in keiner Gilde.");
@@ -412,7 +412,7 @@ export class PostgresGuildStore implements GuildStore {
         await client.query("UPDATE guild_invites SET status = 'expired', responded_at = $4 WHERE guild_id = $1 AND player_id = $2 AND status = 'pending' AND expires_at <= $3", [current.guild_id, targetId, now, now]);
         const invite = await client.query<{ id: string } & QueryResultRow>(
           `INSERT INTO guild_invites (guild_id, player_id, invited_by_player_id, expires_at)
-           VALUES ($1, $2, $3, $4 + interval '7 days') ON CONFLICT (guild_id, player_id) WHERE status = 'pending'
+           VALUES ($1, $2, $3, $4::timestamptz + interval '7 days') ON CONFLICT (guild_id, player_id) WHERE status = 'pending'
            DO UPDATE SET invited_by_player_id = EXCLUDED.invited_by_player_id, expires_at = EXCLUDED.expires_at
            RETURNING id`,
           [current.guild_id, targetId, player.player_id, now],
@@ -475,7 +475,7 @@ export class PostgresGuildStore implements GuildStore {
         const duplicate = await client.query("SELECT 1 FROM guild_votes WHERE guild_id = $1 AND kind = $2 AND payload->>'subject' = $3 AND status = 'open' AND closes_at > $4", [current.guild_id, command.kind, command.subject, now]);
         if (duplicate.rowCount) throw new GuildDatabaseError("VALIDATION", "Zu diesem Thema läuft bereits eine Abstimmung.");
         const vote = await client.query<{ id: string } & QueryResultRow>(
-          "INSERT INTO guild_votes (guild_id, kind, payload, created_by_player_id, closes_at) VALUES ($1, $2, $3::jsonb, $4, $5 + interval '24 hours') RETURNING id",
+          "INSERT INTO guild_votes (guild_id, kind, payload, created_by_player_id, closes_at) VALUES ($1, $2, $3::jsonb, $4, $5::timestamptz + interval '24 hours') RETURNING id",
           [current.guild_id, command.kind, JSON.stringify({ subject: command.subject }), player.player_id, now],
         );
         await client.query("INSERT INTO guild_vote_ballots (vote_id, player_id, choice) VALUES ($1, $2, 'yes')", [vote.rows[0].id, player.player_id]);
@@ -553,7 +553,7 @@ export class PostgresGuildStore implements GuildStore {
         const dealt = damage > before ? before : damage;
         const after = before - dealt;
         await client.query("INSERT INTO guild_boss_attacks (guild_id, period_key, player_id, command_id, damage, created_at) VALUES ($1, $2, $3, $4, $5, $6)", [current.guild_id, weekKey, player.player_id, envelope.commandId, dealt.toString(), now]);
-        await client.query("UPDATE guild_bosses SET hp = $3, defeated_at = CASE WHEN $3 = 0 THEN $4 ELSE NULL END, rewarded_by_command_id = CASE WHEN $3 = 0 THEN $5 ELSE NULL END, updated_at = $4 WHERE guild_id = $1 AND period_key = $2", [current.guild_id, weekKey, after.toString(), now, envelope.commandId]);
+        await client.query("UPDATE guild_bosses SET hp = $3::numeric, defeated_at = CASE WHEN $3::numeric = 0 THEN $4 ELSE NULL END, rewarded_by_command_id = CASE WHEN $3::numeric = 0 THEN $5 ELSE NULL END, updated_at = $4 WHERE guild_id = $1 AND period_key = $2", [current.guild_id, weekKey, after.toString(), now, envelope.commandId]);
         if (after === 0n) await guildBalanceDelta(client, { guildId: current.guild_id, playerId: player.player_id, commandId: envelope.commandId, delta: BigInt(GUILD_BOSS.defeatRewardDna), reason: "guild.boss_defeated" });
         event = { type: "guild.boss_attacked", payload: { damage: dealt.toString(), remainingHp: after.toString(), defeated: after === 0n } };
       } else if (command.type === "guild.expedition_start") {
@@ -579,7 +579,7 @@ export class PostgresGuildStore implements GuildStore {
         event = { type: "guild.expedition_claimed", payload: { expeditionId: command.expeditionId, guildDna: claimed.rows[0].reward_dna } };
       } else if (command.type === "guild.chat_send") {
         if (!current) throw new GuildDatabaseError("VALIDATION", "Du bist in keiner Gilde.");
-        const recent = await client.query<{ count: string } & QueryResultRow>("SELECT count(*)::text AS count FROM guild_chat_messages WHERE player_id = $1 AND created_at > $2 - interval '10 seconds'", [player.player_id, now]);
+        const recent = await client.query<{ count: string } & QueryResultRow>("SELECT count(*)::text AS count FROM guild_chat_messages WHERE player_id = $1 AND created_at > $2::timestamptz - interval '10 seconds'", [player.player_id, now]);
         if (Number(recent.rows[0].count) >= 4) throw new GuildDatabaseError("VALIDATION", "Bitte sende Nachrichten etwas langsamer.");
         const moderated = chatBlocked(command.body);
         const inserted = await client.query<{ id: string } & QueryResultRow>(

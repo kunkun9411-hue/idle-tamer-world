@@ -137,7 +137,7 @@ integration("PostgreSQL 18 guild and social store", () => {
     await expect(execute(leader.userId, claimedTask.snapshot.revision, { type: "guild.task_claim", taskId: "daily-victories" })).rejects.toMatchObject({ code: "VALIDATION" });
     const started = await execute(leader.userId, claimedTask.snapshot.revision, { type: "guild.expedition_start" });
     const expeditionId = started.snapshot.membership!.expedition!.expeditionId;
-    await pool.query("UPDATE guild_expeditions SET completes_at = $2 WHERE id = $1", [expeditionId, new Date(now.getTime() - 1_000)]);
+    await pool.query("UPDATE guild_expeditions SET started_at = $2, completes_at = $3 WHERE id = $1", [expeditionId, new Date(now.getTime() - 120_000), new Date(now.getTime() - 1_000)]);
     const expeditionState = await guildStore.bootstrap(leader.userId, now);
     expect(expeditionState.snapshot.membership?.expedition?.status).toBe("claimable");
     const claimed = await execute(leader.userId, expeditionState.snapshot.revision, { type: "guild.expedition_claim", expeditionId });
