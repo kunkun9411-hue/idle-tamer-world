@@ -2,7 +2,7 @@
 
 - Stand: 21. Juli 2026
 - Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
-- Aktiver Schritt: **Schritt 1 – Planen**
+- Aktiver Schritt: **Schritt 2 – Bauen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -12,7 +12,7 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 37,5 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
+Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 40,6 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -40,13 +40,13 @@ flowchart LR
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
-| 4 | Accounts, Sessions und Bootstrap | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
+| 4 | Accounts, Sessions und Bootstrap | [x] | [ ] | [ ] | [ ] | **Aktiv** |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **12 von 32 Schritten abgeschlossen (37,5 %)**.
+Gesamtfortschritt: **13 von 32 Schritten abgeschlossen (40,6 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -200,24 +200,28 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Block 4 – Accounts, Sessions und Bootstrap
 
-**Ergebnis:** Ein Spieler kann einen echten Account erstellen, sich sicher anmelden und denselben autoritativen Grundspielstand auf einem zweiten Browser laden.
+**Ergebnis:** Ein Spieler kann einen echten Account erstellen, sich sicher anmelden und dasselbe serverautoritative Profil samt Starterwahl auf einem zweiten Browser laden. Die übrigen Spielbereiche werden erst in ihren eigenen Blöcken online autoritativ.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] Registrierungs-, Login-, Logout- und Wiederherstellungsablauf festlegen
-- [ ] Sessiondauer, Geräteverwaltung und Widerruf definieren
-- [ ] Spielername, Avatar, Rahmen und Accountstatus modellieren
-- [ ] Bootstrap-DTO und Fehlerzustände festziehen
-- [ ] Datenschutz-, Export- und Löschanforderungen dokumentieren
+- [x] Registrierungs-, Login-, Logout- und Wiederherstellungsablauf festlegen
+- [x] Sessiondauer, Geräteverwaltung und Widerruf definieren
+- [x] Spielername, Avatar, Rahmen und Accountstatus modellieren
+- [x] Bootstrap-DTO und Fehlerzustände festziehen
+- [x] Datenschutz-, Export- und Löschanforderungen dokumentieren
+
+**Gate erfüllt:** `backend/BLOCK4_AUTH_PLAN.md` legt Accountzustände, Argon2id, Cookie- und CSRF-Regeln, konkrete Sessionfristen, Gerätewiderruf, Enumeration- und Rate-Limit-Schutz, Recovery, Rollen, Profil, Starterwahl, Export und Löschung fest. `backend/AUTH_API_CONTRACT.md` definiert Auth-Vertrag 1 und `backend/AUTH_SCHEMA_PLAN.md` die additive Migration 000002. Block 4 synchronisiert bewusst nur Account, Profil und Starter; die UI kennzeichnet den übrigen Spielstand bis Block 5 und 6 weiterhin als lokal.
 
 ### Schritt 2 – Bauen ⬜
 
 - [ ] Benutzer, Zugangsdaten, Sessions und Profile implementieren
 - [ ] sichere Passwort-Hashes und HTTP-only Session-Cookies verwenden
-- [ ] Registrierung, Login, Logout und Sessionwiderruf umsetzen
-- [ ] `GET /api/game/state` als autoritativen Bootstrap bauen
+- [ ] Registrierung, E-Mailbestätigung, Login, Logout, Recovery und Sessionwiderruf umsetzen
+- [ ] `GET /api/v1/bootstrap` als ehrlichen Account-Bootstrap mit Autoritätsmatrix bauen
 - [ ] Starterwahl als erstes echtes idempotentes Spielkommando migrieren
 - [ ] Rollenbasis für Spieler, Support, Moderator und Admin einführen
+- [ ] Export- und Löschanforderung samt Retentionjob umsetzen
+- [ ] Account-Client anbinden und lokale Saves strikt nach `playerId` trennen
 
 ### Schritt 3 – Prüfen ⬜
 
@@ -230,7 +234,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 ### Schritt 4 – Abnehmen ⬜
 
 - [ ] neuer Account erreicht sicher die Starterwahl
-- [ ] erneuter Login liefert exakt denselben Serverzustand
+- [ ] erneuter Login liefert exakt dasselbe Accountprofil und dieselbe Starterwahl
 - [ ] Logout und Widerruf beenden die Session zuverlässig
 - [ ] Support kann Accountstatus nachvollziehen, aber keine Werte heimlich verändern
 - [ ] Authentifizierungsablauf dokumentieren und freigeben
@@ -431,11 +435,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir arbeiten jetzt an **Block 4, Schritt 1 – Planen**:
+Wir arbeiten jetzt an **Block 4, Schritt 2 – Bauen**:
 
-1. Registrierung, Login, Logout, Sessionerneuerung und Accountlöschung als Zustandsdiagramm festziehen.
-2. Passwort-Hashing, Cookie-Regeln, CSRF-Schutz, Rate-Limits und Recovery-Grenzen entscheiden.
-3. Bootstrap-Antwort, Starterwahl und den Übergang vom lokalen zum autoritativen Spielstand normieren.
-4. Tabellen, API-Verträge, Datenschutz- und Abnahmekriterien für den Bauschritt freigeben.
+1. Migration `000002_accounts_and_sessions` samt PostgreSQL-Integrationstests bauen.
+2. Passwort-, Token-, Cookie-, CSRF-, Rate-Limit- und Maildienste implementieren.
+3. Registrierung, Verifikation, Login, Geräteverwaltung, Recovery und Account-Bootstrap umsetzen.
+4. Profil, idempotente Starterwahl, Export, Löschung und playergebundene lokale Saves anbinden.
 
 Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.

@@ -9,6 +9,8 @@
 
 Dieses Dokument friert die Grenze zwischen dem abgenommenen Browser-Client und dem kommenden PostgreSQL-Backend ein. Die ausführbaren TypeScript-Typen in `packages/contracts/src/api-contract.ts` bleiben die technische Quelle.
 
+Block 4 ergänzt Registrierung, Sessions und einen getrennten Account-Bootstrap über **Auth-Vertrag 1**. Diese Routen stehen in `backend/AUTH_API_CONTRACT.md` und verändern API-Protokoll 8 nicht. `GET /api/game/state` wird erst aktiviert, wenn die jeweils ausgewiesenen Spielbereiche tatsächlich serverautoritativ sind; bis dahin behauptet kein Full-State-DTO, lokale Werte seien online gespeichert.
+
 ## Endpunkte
 
 | Methode | Pfad | Zweck |

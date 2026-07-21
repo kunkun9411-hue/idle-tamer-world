@@ -4,15 +4,15 @@ Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur
 
 ## Wo wir stehen
 
-- Gesamtfortschritt: **12 von 32 Schritten (37,5 %)**
+- Gesamtfortschritt: **13 von 32 Schritten (40,6 %)**
 - Clientversion: **0.2.0**
 - Abgeschlossen: **Block 1 bis Block 3**
 - Nächster Arbeitsblock: **Block 4 – Accounts, Sessions und Bootstrap**
-- Nächster Arbeitsschritt: **Schritt 1 – Planen**
+- Nächster Arbeitsschritt: **Schritt 2 – Bauen**
 - Noch nicht begonnen: Account-, Session- oder Authentifizierungsimplementierung
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
-Die Roadmap wird durch den Stabilisierungscheckpoint nicht künstlich weitergezählt. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang nur das geprüfte Backend-Fundament.
+Die Roadmap wurde nach dem abgeschlossenen Auth-Planungsgate auf 13/32 erhöht. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang das geprüfte Backend-Fundament. Es existiert noch kein öffentlich nutzbarer Accountendpunkt.
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
@@ -125,14 +125,14 @@ Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öf
 
 ## Exakter nächster Arbeitsauftrag
 
-Weiter geht es ausschließlich mit **Block 4, Schritt 1 – Planen**:
+Weiter geht es ausschließlich mit **Block 4, Schritt 2 – Bauen**:
 
-1. Registrierung, Login, Logout, Sessionerneuerung, Geräteverwaltung, Widerruf und Accountlöschung als Zustandsmodell festlegen.
-2. Passwort-Hashing, HTTP-only Cookies, CSRF-Schutz, Rate-Limits, Wiederherstellung und Sperren verbindlich entscheiden.
-3. Bootstrap-Antwort, Profil, Starterwahl und den Übergang vom lokalen zum serverautoritativen Spielstand normieren.
-4. SQL-Tabellen, API-Verträge, Datenschutz, Export/Löschung und Abnahmekriterien freigeben.
+1. Migration `000002_accounts_and_sessions` mit Constraints, Rollen, Tokens, Sessions, Limits und Security Events bauen.
+2. Argon2id, Cookie-, CSRF-, Rate-Limit-, Mail- und Recoverydienste implementieren.
+3. Registrierung, E-Mailbestätigung, Login, Geräteverwaltung und `GET /api/v1/bootstrap` umsetzen.
+4. Profil, idempotente Starterwahl, Export/Löschung und nach `playerId` getrennte lokale Saves anbinden.
 
-Erst nach dieser Planung beginnt Block 4, Schritt 2 mit Code. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal; sie werden nicht nebenbei halb migriert.
+Die Bauverträge stehen in `backend/BLOCK4_AUTH_PLAN.md`, `backend/AUTH_API_CONTRACT.md` und `backend/AUTH_SCHEMA_PLAN.md`. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal; der Browser zeigt deshalb ehrlich „Account online · Spielstand lokal“.
 
 ## Relevante Unterlagen
 
@@ -143,6 +143,9 @@ Erst nach dieser Planung beginnt Block 4, Schritt 2 mit Code. Der Run, Gold, Dro
 - `backend/DEV_SERVER.md` – Betrieb des Entwicklungsservers
 - `backend/OPERATIONS_PLAN.md` – Umgebungen, Backups und Restore
 - `backend/SCHEMA_REVIEW.md` – Tabellen- und Transaktionsregeln
+- `backend/BLOCK4_AUTH_PLAN.md` – Accountzustände, Sicherheit, Recovery, Datenschutz und Baufolge
+- `backend/AUTH_API_CONTRACT.md` – Auth-Vertrag 1, Bootstrap, DTOs und Fehler
+- `backend/AUTH_SCHEMA_PLAN.md` – Zielmigration 000002 und SQL-Abnahme
 - `API_CONTRACT_V8.md` – Client-/Serververtrag
 - `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
 - `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server

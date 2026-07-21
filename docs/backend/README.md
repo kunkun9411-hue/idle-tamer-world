@@ -7,6 +7,9 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 3. [`OPERATIONS_PLAN.md`](OPERATIONS_PLAN.md) – Wie unterscheiden sich Entwicklungs-, Test- und Produktionsumgebung und wie funktionieren Backup, Restore und Rollback?
 4. [`LOCAL_DEVELOPMENT.md`](LOCAL_DEVELOPMENT.md) – Wie werden PostgreSQL, Migration, Seed, API und echte Integrationstests gestartet?
 5. [`DEV_SERVER.md`](DEV_SERVER.md) – Wie ist der echte Entwicklungsserver aufgebaut, abgesichert und zu prüfen?
+6. [`BLOCK4_AUTH_PLAN.md`](BLOCK4_AUTH_PLAN.md) – Welche Account-, Session-, Recovery-, Datenschutz- und Autoritätsregeln baut Block 4?
+7. [`AUTH_API_CONTRACT.md`](AUTH_API_CONTRACT.md) – Welche Auth- und Account-Endpunkte, DTOs und Fehler sind verbindlich?
+8. [`AUTH_SCHEMA_PLAN.md`](AUTH_SCHEMA_PLAN.md) – Welche Tabellen, Constraints, Indizes und Löschtransaktionen ergänzt Migration 000002?
 
 ## Verbindlicher Kurzstand
 
@@ -21,6 +24,8 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 - keine ORM, kein Redis und kein separater Worker im ersten Fundament
 
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
+
+Block 4 verwendet daneben Auth-Vertrag 1. Er führt einen ehrlichen Account-Bootstrap ein, ohne den noch lokalen Run- und Sammlungszustand als serverautoritativ auszugeben. Der vollständige Spielvertrag 8 wird dadurch nicht still verändert.
 
 ## Abgenommener Stand von Block 3
 

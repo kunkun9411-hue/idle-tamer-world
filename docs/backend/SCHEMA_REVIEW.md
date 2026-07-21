@@ -31,6 +31,8 @@ Dieses Review macht aus den bisherigen Konzepttabellen einen eindeutigen Bauvert
 
 Block 3 baut nur Identitätshüllen, Profilrevision, Kommandolog, Ledger und die für den ersten Beispieltransfer nötigen Bestände. Gilden-, PvP-, Handels- und Moderationstabellen bleiben bis zu ihrem Roadmap-Block reine Verträge.
 
+Die verbindliche additive Erweiterung für Block 4 ist in `AUTH_SCHEMA_PLAN.md` beschrieben. Migration `000002_accounts_and_sessions` ergänzt Credentials, Sessions, Rollen, Tokens, Policy-Zustimmungen, Namenshistorie und zeitlich sichere Namensreservierungen, kosmetische Entitlements, Auth-Limits, Security Events und Exportjobs. Sie legt keine Run-, Monster- oder Zeitjobtabellen vorzeitig an.
+
 ## Schlüssel und Constraints der ersten Migrationen
 
 ### Identität und Profil

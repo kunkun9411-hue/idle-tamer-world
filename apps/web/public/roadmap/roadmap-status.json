@@ -1,7 +1,7 @@
 {
-  "updated": "21. Juli 2026 · Version 0.2 stabilisiert",
+  "updated": "21. Juli 2026 · Block 4 Planung abgenommen",
   "activeBlock": 4,
-  "activeStep": 1,
+  "activeStep": 2,
   "blocks": [
     {
       "id": 1,
@@ -49,11 +49,11 @@
       "id": 4,
       "kicker": "Jetzt aktiv",
       "title": "Accounts & Bootstrap",
-      "summary": "Sichere Accounts, Sessions und derselbe autoritative Spielstand auf jedem Browser.",
+      "summary": "Sichere Accounts, Sessions sowie dasselbe autoritative Profil und derselbe Starter auf jedem Browser.",
       "visual": "account",
       "accent": "amber",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Auth-, Session-, Profil- und Datenschutzabläufe festlegen" },
+        { "name": "Planen", "done": true, "note": "Auth-, Session-, Profil-, Starter- und Datenschutzvertrag freigegeben" },
         { "name": "Bauen", "done": false, "note": "Registrierung, Login, Bootstrap und Starterkommando bauen" },
         { "name": "Prüfen", "done": false, "note": "Sessions, Cookies, Limits und zweites Gerät testen" },
         { "name": "Abnehmen", "done": false, "note": "Accountfluss und Supportsicht freigeben" }

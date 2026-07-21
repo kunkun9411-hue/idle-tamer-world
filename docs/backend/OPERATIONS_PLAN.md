@@ -24,7 +24,7 @@ Nur `.env.example` wird versioniert. Echte `.env`-Dateien, Dumps, Session-Token 
 | `LOG_LEVEL` | strukturierte Logstufe |
 | `FEATURE_GUILDS`, `FEATURE_GUILD_DNA`, `FEATURE_LIVE_EVENTS`, `FEATURE_PVP` | neue Onlinebereiche standardmäßig geschlossen |
 
-Getrennte Migrationsrolle, Browserursprung, Proxyvertrauen und Session-Secrets kommen mit Block 4 hinzu, bevor Accounts von außen erreichbar werden. Sie werden nicht als scheinbar fertige Variablen vorweggenommen.
+Getrennte Migrationsrolle, Browserursprung, Proxyvertrauen und Auth-Secrets kommen im Bauschritt von Block 4 hinzu, bevor Accounts von außen erreichbar werden. Ihre Regeln sind in `BLOCK4_AUTH_PLAN.md` festgelegt; echte Werte werden weiterhin nicht vorweggenommen oder versioniert.
 
 Content-, Balance-, API- und Fehlervertragsversionen stammen aus versioniertem Code und dürfen nicht per Umgebungsvariable auseinanderlaufen.
 

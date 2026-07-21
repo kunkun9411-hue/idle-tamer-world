@@ -51,12 +51,20 @@ Für Browser-Accounts sind sichere HTTP-only Session-Cookies sinnvoller als selb
 
 Monsterdefinitionen, Evolutionslinien, Encounter, Bossrotationen, Zonenprotokolle und Balancing bleiben zunächst versioniert im Servercode. Die Datenbank speichert Instanzen und Fortschritt, keine willkürlich vom Client gelieferten Basiswerte.
 
-## API-Kommandos der ersten Migration
+## Accountgrenze in Block 4
+
+- `GET /api/v1/bootstrap` für Session, Profil, Starterwahl und die sichtbare Autoritätsmatrix
+- Auth- und Accountendpunkte aus `backend/AUTH_API_CONTRACT.md`
+- idempotente Accountkommandos für Starter, Anzeigename, Avatar und Rahmen
+
+Run, Wirtschaft und Sammlung bleiben dabei ausdrücklich lokal. Der Client zeigt diesen Zustand an und trennt lokale Saves nach der serverseitigen Spielerkennung.
+
+## Spielkommandos der späteren Migration
 
 - `GET /api/game/state`
 - `POST /api/game/commands` mit typisiertem Kommando-Umschlag
 
-Alle schreibenden Requests laufen in einer Datenbanktransaktion. `expectedRevision` verhindert verlorene parallele Updates; die eindeutige `commandId` verhindert doppelte Zahlungen bei Netzwerk-Retries. Der Server antwortet immer mit der neuen Revision und einem vollständigen autoritativen Spielzustand.
+Alle schreibenden Requests laufen in einer Datenbanktransaktion. `expectedRevision` verhindert verlorene parallele Updates; die eindeutige `commandId` verhindert doppelte Zahlungen bei Netzwerk-Retries. Ein vollständiger autoritativer Spielzustand wird erst ausgegeben, wenn der jeweilige Bereich tatsächlich serverseitig migriert wurde.
 
 Der bestehende Kommandokatalog in API-Protokoll 8 deckt bereits Starterwahl, Einsammeln, Leveln, Training, Evolution, Zonenwahl, Inkubation, Brutbeschleunigung, Hyperlevel, Gem-Ausrüstung, Ziel-Claims, Zeit-Expeditionen, Herstellung, Systempost, Einstellungen, Forschung, Prestige sowie Avatar- und Rahmenwechsel ab. Bootstrap und Kommandoantwort tragen zusätzlich eine eigene Balance-Vertragsversion und die Release-ID `low-numbers-1.0.0`. Für den echten Server werden dieselben Namen verwendet; nur `LocalGameService` wird durch den HTTP-Transport ersetzt.
 
@@ -72,9 +80,9 @@ Der Server speichert Zeitstempel statt sekündlicher Datenbankupdates. Beim näc
 
 ## Reihenfolge
 
-1. PostgreSQL, Migrationen, Account und Session-Cookie.
-2. `GET /api/game/state`, Offline-Zusammenfassung und serverseitige Save-Version.
-3. Starterwahl, Zonenfortschritt, Kampfspeicher, Inventar und Level-Up auf Kommandos umziehen.
+1. PostgreSQL, Migrationen, Account, Session-Cookie und ehrlicher Account-Bootstrap mit ausgewiesenen Autoritätsbereichen.
+2. Starterwahl, Anzeigename, Avatar und Rahmen serverautoritativ machen; Run und Sammlung bleiben sichtbar lokal.
+3. In Block 5 Run, Zonenfortschritt, Kampfspeicher und Level-Up auf den vollständigen Game-Bootstrap und Kommandos umziehen.
 4. Eierdrops, Pity, Inkubation, Fragmente, Evolution, Hyperlevel und Gem-Drops serverautoritativ machen.
 5. Gem-Ausrüstung, Prestige, Offline-Berechnung und kosmetische Freischaltungen umziehen.
 6. Erst danach PvP, Gilden, Chat, Handel und Gilden-DNA aktivieren.
