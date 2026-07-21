@@ -6,6 +6,7 @@ import type { Pool, PoolClient, QueryResultRow } from "pg";
 import { applyBalanceDelta, hashCommand, withTransaction } from "./transaction";
 import { executeProgressionCommand, ProgressionCommandError, type MutableProgressionCommandContext } from "./run-progression-commands";
 import { incrementActivity, loadCollectionSnapshot, type PendingProgressionLoot } from "./run-progression-snapshot";
+import { incrementGuildTaskProgress, loadGuildBonuses } from "./guild-store";
 
 export class RunDatabaseError extends Error {
   public constructor(
@@ -158,6 +159,7 @@ const loadContext = async (client: PoolClient, userId: string): Promise<RunConte
     ? supportMonster?.rows[0]?.evolution === "evolved" ? supportDefinition.evolution.combatRole ?? supportDefinition.combatRole : supportDefinition.combatRole
     : undefined;
   const synergy = getZoneSynergy(row.current_zone_id, leadRole, supportRole);
+  const guildBonuses = await loadGuildBonuses(client, row.player_id);
   return {
     playerId: row.player_id,
     revision: safeRevision(row.revision),
@@ -181,7 +183,7 @@ const loadContext = async (client: PoolClient, userId: string): Promise<RunConte
       zoneAttackPercent: synergy?.attackPercent ?? 0,
       zoneHpPercent: synergy?.hpPercent ?? 0,
       prestigeCount: row.prestige_count,
-      goldMultiplier: (1 + row.research_extraction * 0.1) * (1 + row.prestige_count * 0.001),
+      goldMultiplier: (1 + row.research_extraction * 0.1) * (1 + row.prestige_count * 0.001) * guildBonuses.goldMultiplier,
     },
     supportMonsterDefinitionId: row.support_monster_definition_id,
     prestigeCount: row.prestige_count,
@@ -252,6 +254,7 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
     };
     await incrementActivity(client, context.playerId, "victory", settlement.victoriesAdded);
     await incrementActivity(client, context.playerId, "boss_victory", settlement.outcomes.filter((outcome) => outcome.boss).length);
+    await incrementGuildTaskProgress(client, context.playerId, "victory", settlement.victoriesAdded, now);
     if (context.pending) {
       context.pending.gold += settlement.goldAdded;
       context.pending.slots += settlement.victoriesAdded;

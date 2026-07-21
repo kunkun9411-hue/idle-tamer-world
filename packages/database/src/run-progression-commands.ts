@@ -19,6 +19,7 @@ import type { PoolClient, QueryResultRow } from "pg";
 
 import { applyBalanceDelta, DatabaseCommandError } from "./transaction";
 import { incrementActivity } from "./run-progression-snapshot";
+import { incrementGuildTaskProgress } from "./guild-store";
 
 export class ProgressionCommandError extends Error {
   public constructor(public readonly code: "INSUFFICIENT_BALANCE" | "VALIDATION", message: string) {
@@ -236,8 +237,14 @@ export const executeProgressionCommand = async (
     const running = await client.query("SELECT 1 FROM incubation_jobs WHERE player_id = $1 AND status = 'running'", [context.playerId]);
     if (running.rowCount) invalid("Die Brutstation ist bereits belegt.");
     const researchResult = await client.query<{ level: number } & QueryResultRow>("SELECT level FROM research_levels WHERE player_id = $1 AND definition_id = 'incubation'", [context.playerId]);
+    const guildIncubation = await client.query<{ level: number } & QueryResultRow>(
+      `SELECT n.level FROM guild_members m JOIN guild_dna_nodes n ON n.guild_id = m.guild_id
+        WHERE m.player_id = $1 AND n.gene_id = 'incubation-spiral'`,
+      [context.playerId],
+    );
     await delta(client, context, "egg", command.definitionId, -1n, command.type);
-    const completesAt = new Date(context.now.getTime() + incubationDurationMs(researchResult.rows[0]?.level ?? 0));
+    const guildReduction = (guildIncubation.rows[0]?.level ?? 0) * 0.0025;
+    const completesAt = new Date(context.now.getTime() + Math.max(BALANCE.hatch.minDurationMs, Math.round(incubationDurationMs(researchResult.rows[0]?.level ?? 0) * (1 - guildReduction))));
     const inserted = await client.query<{ id: string } & QueryResultRow>(
       "INSERT INTO incubation_jobs (player_id, definition_id, started_at, completes_at) VALUES ($1, $2, $3, $4) RETURNING id",
       [context.playerId, command.definitionId, context.now, completesAt],
@@ -279,6 +286,7 @@ export const executeProgressionCommand = async (
       await delta(client, context, "fragment", job.definition_id, BigInt(fragments), command.type);
     }
     await incrementActivity(client, context.playerId, "hatch");
+    await incrementGuildTaskProgress(client, context.playerId, "hatch", 1, context.now);
     return { event: { type: "incubation.hatched", payload: { incubationId: job.id, monsterUid: existing.rows[0].id, definitionId: job.definition_id, kind, fragments } } };
   }
 
@@ -351,6 +359,7 @@ export const executeProgressionCommand = async (
     context.gold = await delta(client, context, "wallet", "gold", BigInt(Math.round(definition.reward.gold * multiplier)), command.type);
     for (const [itemId, amount] of Object.entries(definition.reward.items ?? {})) if (amount) await delta(client, context, "item", itemId, BigInt(Math.round(amount * multiplier)), command.type);
     await incrementActivity(client, context.playerId, "expedition_complete");
+    await incrementGuildTaskProgress(client, context.playerId, "expedition_complete", 1, context.now);
     return { event: { type: "expedition.claimed", payload: { expeditionId: command.expeditionId, gold: Math.round(definition.reward.gold * multiplier) } } };
   }
 

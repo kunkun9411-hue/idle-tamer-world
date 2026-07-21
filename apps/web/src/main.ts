@@ -2,9 +2,11 @@ import "./styles.css";
 import "./styles-v2.css";
 import "./styles-game-first.css";
 import "./styles-progression-v3.css";
-import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, RunCommandResponse } from "@idle-tamer/contracts";
+import "./styles-guild.css";
+import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, GuildCommand, GuildSnapshot, RunCommandResponse } from "@idle-tamer/contracts";
 import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId, RunApiError } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
+import { GUILD_EXPEDITION, GUILD_GENES, GUILD_TASKS } from "@idle-tamer/content";
 import { elementLabel, getMonster, getMonsterForm, MONSTERS } from "./game/content";
 import { findEncounter, getEncounter } from "./game/encounters";
 import { canCraft, CRAFTING_RECIPES, getCraftingRecipe } from "./game/crafting";
@@ -70,6 +72,9 @@ let activeView: View = "expedition";
 let showLogin = true;
 let accountBootstrap: AccountBootstrapResponse | null = null;
 let onlineRun: AuthoritativeRunSnapshot | null = null;
+let guildSnapshot: GuildSnapshot | null = null;
+let guildSyncBusy = false;
+let lastGuildSync = 0;
 let runSyncBusy = false;
 let lastRunSync = 0;
 let authMode: "login" | "register" = "login";
@@ -104,6 +109,43 @@ const timeFormatter = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute
 
 function isRunOnline(): boolean {
   return accountApiEnabled && Boolean(accountBootstrap?.authority.server.includes("run"));
+}
+
+function isGuildOnline(): boolean {
+  return accountApiEnabled && Boolean(accountBootstrap?.features.guilds);
+}
+
+async function synchronizeGuild(): Promise<void> {
+  if (!isGuildOnline() || guildSyncBusy) return;
+  guildSyncBusy = true;
+  lastGuildSync = performance.now();
+  try {
+    guildSnapshot = (await accountClient.bootstrapGuild()).snapshot;
+    if (activeView === "guild") render();
+  } catch (error) {
+    showNotice("Gildenserver nicht erreichbar", error instanceof Error ? error.message : "Die Gildendaten konnten nicht geladen werden.", "warning");
+  } finally {
+    guildSyncBusy = false;
+  }
+}
+
+async function sendGuildCommand(command: GuildCommand): Promise<boolean> {
+  if (!guildSnapshot || guildSyncBusy) return false;
+  guildSyncBusy = true;
+  try {
+    const response = await accountClient.guildCommand(command, guildSnapshot.revision, clientInstanceId);
+    guildSnapshot = response.snapshot;
+    return true;
+  } catch (error) {
+    if (error instanceof AccountApiError && error.problem.code === "CONFLICT") {
+      guildSyncBusy = false;
+      await synchronizeGuild();
+    }
+    showNotice("Gildenaktion abgelehnt", error instanceof Error ? error.message : "Die Aktion konnte nicht bestätigt werden.", "warning");
+    return false;
+  } finally {
+    guildSyncBusy = false;
+  }
 }
 
 function applyOnlineRun(snapshot: AuthoritativeRunSnapshot): void {
@@ -168,6 +210,10 @@ function runSingleAction(key: string, action: () => void): void {
 
 function formatNumber(value: number): string {
   return formatGameNumber(value, game.settings.numberFormat);
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/gu, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character] ?? character);
 }
 
 function activeCacheCapacity(): number {
@@ -730,6 +776,7 @@ function setView(view: View): void {
   combatFocusMode = false;
   window.scrollTo({ top: 0, behavior: "auto" });
   render();
+  if (view === "guild") void synchronizeGuild();
 }
 
 function enterLocalPrototype(): void {
@@ -784,6 +831,7 @@ function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
   battle = createBattleState();
   render();
   if (serverStarter) void synchronizeOnlineRun(true);
+  if (bootstrap.features.guilds) void synchronizeGuild();
   return true;
 }
 
@@ -1461,10 +1509,38 @@ function researchView(): string {
   return `<section class="page">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${game.resources.cores} KERNE VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => { const level = game.research[research.id]; const cost = researchCost(level); const isMax = level >= research.maxLevel; return `<article class="research-card panel"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || game.resources.cores < cost ? "disabled" : ""}>${isMax ? "MAXIMAL" : `ERFORSCHEN · ${cost} P`}</button></article>`; }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section></section>`;
 }
 
+function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
+  return `<section class="panel guild-friends-panel"><div class="section-heading"><span><small>ACCOUNTWEIT</small><h2>Freunde</h2></span></div><form id="friend-request-form"><input name="displayName" maxlength="20" placeholder="Tamer-Name" required><button class="secondary-button">ANFRAGEN</button></form><div>${friends.length ? friends.map((friend) => `<article><span class="profile-medallion frame-${friend.frameId}"><i>${escapeHtml(friend.displayName.slice(0, 1))}</i></span><div><b>${escapeHtml(friend.displayName)}</b><small>${friend.status === "accepted" ? "FREUND" : friend.status === "pending_incoming" ? "ANFRAGE ERHALTEN" : "ANFRAGE GESENDET"}</small></div>${friend.status === "pending_incoming" ? `<button data-friend-accept="${friend.playerId}">ANNEHMEN</button>` : ""}${friend.status === "accepted" ? `<button data-friend-remove="${friend.playerId}">LÖSEN</button>` : ""}<button class="danger-text" data-player-block="${friend.playerId}">BLOCKIEREN</button></article>`).join("") : `<small>Noch keine Kontakte.</small>`}</div></section>`;
+}
+
 function guildView(): string {
-  const rank = rankForVictories(game.totalVictories);
-  const genes = ["Ökonomie", "Kampf", "Hyper", "Expedition", "Forschung", "Elemente"];
-  return `<section class="page guild-page"><div class="guild-hero"><span class="guild-lock">${icon("guild")}</span><span class="eyebrow">ONLINE-SYSTEM · KONZEPTVORSCHAU</span><h1>Gilden-DNA</h1><p>Ein gemeinsamer permanenter Fortschritt, dessen Entscheidungen als lebende Doppelhelix sichtbar werden. Keine lokalen Fake-Mitglieder, keine erfundenen Ressourcen.</p><div class="guild-tags"><span>GEMEINSAME ZIELE</span><span>GILDENBOSSE</span><span>CHROMOSOMEN</span><span>ABSTIMMUNGEN</span></div></div><div class="dna-layout panel"><div class="dna-visual"><div class="dna-axis"></div><div class="dna-helix">${genes.map((gene, index) => `<div class="dna-gene" style="--gene-index:${index}"><i></i><span><small>GEN 0${index + 1}</small>${gene}</span><i></i></div>`).join("")}</div></div><div class="dna-copy"><span class="eyebrow">CHROMOSOM 01 · GRUNDLAGEN</span><h2>Spezialisierung statt endloser Kampfkraft.</h2><p>Frühe Gene verbessern Gold, Bosse, Hyper-Fortschritt und Expeditionen. Spätere Chromosomen konzentrieren sich auf Komfort, neue Mechaniken und abnehmende Prozentboni.</p><ul><li><span>${icon("check")}</span>Gildenleitung, Offiziere oder Mitgliederabstimmung</li><li><span>${icon("check")}</span>Sichtbar leuchtende freigeschaltete Segmente</li><li><span>${icon("check")}</span>Neue Themen als zusätzliche Chromosomen</li><li><span>${icon("shield")}</span>Ressourcen und Rechte ausschließlich serverseitig</li></ul><div class="locked-callout"><span>FREISCHALTUNG</span><b>RANG 10 + ONLINE-ACCOUNT</b><small>Dein aktueller Rang: ${rank}</small></div></div></div></section>`;
+  if (!isGuildOnline()) return `<section class="page guild-page">${pageHeading("ONLINE-SYSTEM", "Gilden-DNA", "Das Gildensystem ist auf dieser Umgebung noch nicht freigeschaltet.", "FEATURE-FLAG AUS")}<div class="locked-callout"><b>FEATURE-FLAG GUILDS IST AUS</b></div></section>`;
+  if (!guildSnapshot) return `<section class="page guild-page">${pageHeading("SERVERAUTORITATIV", "Gilden-DNA", "Mitgliedschaften, Gene und Chat werden geladen.", "LIVE-SYNC")}<div class="guild-loading panel"><span class="status-orb fighting"></span><b>DNA-ARCHIV WIRD SYNCHRONISIERT</b></div></section>`;
+  const membership = guildSnapshot.membership;
+  if (!membership) {
+    const joinLocked = Date.parse(guildSnapshot.joinAvailableAt) > Date.now();
+    return `<section class="page guild-page">${pageHeading("BLOCK 7 · ONLINE", "Finde deine Gilde", "Gründe eine eigene Gemeinschaft oder tritt einer offenen Gilde bei. Mitgliedschaft, Rollen und Ressourcen liegen ausschließlich in PostgreSQL.", `${guildSnapshot.directory.length} GILDEN SICHTBAR`)}
+      ${joinLocked ? `<div class="guild-cooldown panel">${icon("shield")}<span><b>GILDENWECHSEL-SPERRE</b><small>Neuer Beitritt ab ${new Date(guildSnapshot.joinAvailableAt).toLocaleString("de-DE")}.</small></span></div>` : ""}
+      ${guildSnapshot.invitations.length ? `<section class="guild-invitations panel"><span class="eyebrow">OFFENE EINLADUNGEN</span>${guildSnapshot.invitations.map((invite) => `<article><span class="guild-tag">${escapeHtml(invite.guildTag)}</span><div><b>${escapeHtml(invite.guildName)}</b><small>von ${escapeHtml(invite.invitedByDisplayName)} · gültig bis ${new Date(invite.expiresAt).toLocaleDateString("de-DE")}</small></div><button data-guild-invite-accept="${invite.inviteId}" ${joinLocked ? "disabled" : ""}>ANNEHMEN</button><button class="danger-text" data-guild-invite-decline="${invite.inviteId}">ABLEHNEN</button></article>`).join("")}</section>` : ""}
+      <div class="guild-onboarding-grid"><form id="guild-create-form" class="panel guild-create-card"><span class="eyebrow">NEUE GILDE</span><h2>Eigenes Chromosom gründen</h2><label>Name<input name="name" minlength="3" maxlength="32" placeholder="Etherwacht" required></label><label>Tag<input name="tag" minlength="2" maxlength="5" placeholder="ETW" required></label><label>Beschreibung<textarea name="description" maxlength="240" placeholder="Wofür steht eure Gilde?"></textarea></label><button class="primary-button" ${joinLocked || guildSyncBusy ? "disabled" : ""}>GILDE GRÜNDEN ${icon("arrow")}</button></form>
+      <section class="guild-directory"><span class="eyebrow">OFFENE GILDEN</span>${guildSnapshot.directory.length ? guildSnapshot.directory.map((guild) => `<article class="panel guild-directory-card"><span class="guild-tag">${escapeHtml(guild.tag)}</span><div><h3>${escapeHtml(guild.name)}</h3><p>${guild.memberCount}/${guild.memberLimit} Mitglieder · DNA-Stufe ${guild.dnaLevel}</p></div><button class="secondary-button" data-guild-join="${guild.guildId}" ${joinLocked || guild.joinPolicy !== "open" || guild.memberCount >= guild.memberLimit ? "disabled" : ""}>BEITRETEN</button></article>`).join("") : `<div class="empty-state panel"><b>Noch keine Gilde gegründet.</b><small>Du kannst die erste Doppelhelix der Welt beginnen.</small></div>`}</section></div>${guildFriendsMarkup(guildSnapshot.friends)}</section>`;
+  }
+
+  const canManage = membership.role === "leader" || membership.role === "officer";
+  const bossHp = Number(membership.boss.hp);
+  const bossMax = Math.max(1, Number(membership.boss.maxHp));
+  const bossReady = !membership.boss.defeated && (!membership.boss.nextAttackAt || Date.parse(membership.boss.nextAttackAt) <= Date.now());
+  return `<section class="page guild-page guild-page--active">
+    <header class="guild-command-hero panel"><div><span class="eyebrow">[${escapeHtml(membership.tag)}] · ${membership.role.toUpperCase()}</span><h1>${escapeHtml(membership.name)}</h1><p>${escapeHtml(membership.description || "Gemeinsame Resonanz ohne Beschreibung.")}</p></div><div class="guild-command-stats"><span><small>MITGLIEDER</small><b>${membership.memberCount}/${membership.memberLimit}</b></span><span><small>GILDEN-DNA</small><b>${membership.dnaBalance}</b></span><span><small>DEIN DNA-VORRAT</small><b>${membership.personalDna}</b></span></div><div class="guild-command-actions"><button class="secondary-button" data-guild-donate="10" ${Number(membership.personalDna) < 10 ? "disabled" : ""}>10 DNA SPENDEN</button><button class="text-button danger-text" id="guild-leave">GILDE VERLASSEN</button></div></header>
+    <section class="guild-management-bar panel"><span><b>${membership.joinPolicy === "open" ? "OFFENER BEITRITT" : "NUR EINLADUNG"}</b><small>Offiziere dürfen einladen und Gene investieren. Jedes Mitglied darf eine DNA-Abstimmung anstoßen.</small></span>${canManage ? `<form id="guild-invite-form"><input name="displayName" minlength="3" maxlength="20" placeholder="Tamer einladen" required><button class="secondary-button">EINLADEN</button></form>` : ""}<form id="guild-vote-form"><select name="subject">${GUILD_GENES.map((gene) => `<option value="${gene.id}">${escapeHtml(gene.name)}</option>`).join("")}</select><button class="secondary-button">DNA-ABSTIMMUNG</button></form>${membership.role === "leader" ? `<button data-guild-policy="${membership.joinPolicy === "open" ? "invite" : "open"}">${membership.joinPolicy === "open" ? "AUF EINLADUNG STELLEN" : "BEITRITT ÖFFNEN"}</button>` : ""}</section>
+    <div class="guild-live-grid"><section class="panel guild-dna-live"><div class="section-heading"><span><small>CHROMOSOM 01</small><h2>Lebende Gilden-DNA</h2></span><strong>${membership.genes.reduce((sum, gene) => sum + gene.level, 0)} GEN-STUFEN</strong></div><div class="dna-live-layout"><div class="dna-visual"><div class="dna-axis"></div><div class="dna-helix">${membership.genes.map((gene, index) => { const definition = GUILD_GENES.find((entry) => entry.id === gene.geneId)!; return `<div class="dna-gene ${gene.level > 0 ? "is-unlocked" : ""}" style="--gene-index:${index};--gene-color:${definition.color}"><i></i><span><small>LV ${gene.level}/${gene.maxLevel}</small>${escapeHtml(definition.chromosome)}</span><i></i></div>`; }).join("")}</div></div><div class="guild-gene-list">${membership.genes.map((gene) => { const definition = GUILD_GENES.find((entry) => entry.id === gene.geneId)!; return `<article class="guild-gene-card ${gene.level > 0 ? "is-active" : ""}" style="--gene-color:${definition.color}"><span><small>${escapeHtml(definition.chromosome)}</small><b>${escapeHtml(definition.name)}</b><em>${escapeHtml(definition.description)}</em></span><strong>+${(definition.effectPerLevel * gene.level).toFixed(2).replace(".00", "").replace(".", ",")}${definition.effectUnit}</strong><button data-guild-gene="${gene.geneId}" ${!canManage || gene.nextCost === null || BigInt(membership.dnaBalance) < BigInt(gene.nextCost ?? "0") ? "disabled" : ""}>${gene.nextCost ? `${gene.nextCost} DNA · VERBESSERN` : "MAXIMAL"}</button></article>`; }).join("")}</div></div></section>
+      <aside class="guild-activity-column"><section class="panel guild-boss-card"><span class="eyebrow">WOCHENBOSS · ${escapeHtml(membership.boss.periodKey)}</span><h2>Chromawyrm Prime</h2><p>Jedes Mitglied greift getrennt mit 30 Sekunden Abklingzeit an. Der letzte Treffer bucht die Belohnung atomar.</p><div class="guild-boss-orb"><i style="--boss-health:${Math.max(0, bossHp / bossMax * 100)}%"></i><b>${membership.boss.hp}</b><small>/ ${membership.boss.maxHp} HP</small></div><span class="guild-personal-damage">DEIN SCHADEN · ${membership.boss.personalDamage}</span><button class="primary-button" id="guild-boss-attack" ${bossReady ? "" : "disabled"}>${membership.boss.defeated ? "BOSS BESIEGT" : bossReady ? "AUTO-DUO ENTSENDEN" : "ANGRIFF LÄDT"}</button></section>
+      <section class="panel guild-task-card"><span class="eyebrow">GEMEINSAME TAGESZIELE</span>${membership.tasks.map((task) => { const definition = GUILD_TASKS.find((entry) => entry.id === task.taskId); const progress = Number(task.progress); const target = Math.max(1, Number(task.target)); return `<article><span><b>${escapeHtml(definition?.name ?? task.taskId)}</b><small>${task.progress}/${task.target} · +${task.rewardDna} DNA</small></span><i><em style="width:${Math.min(100, progress / target * 100)}%"></em></i><button data-guild-task="${task.taskId}" ${!task.completed || task.claimed ? "disabled" : ""}>${task.claimed ? "GEBORGEN" : "BERGEN"}</button></article>`; }).join("")}</section>
+      <section class="panel guild-expedition-card"><span class="eyebrow">GEMEINSAME EXPEDITION</span><h2>${GUILD_EXPEDITION.name}</h2>${membership.expedition ? `<p>${membership.expedition.status === "active" ? `Rückkehr ${new Date(membership.expedition.completesAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}` : membership.expedition.status === "claimable" ? `${membership.expedition.rewardDna} DNA bereit` : "Heute geborgen"}</p><button class="primary-button" data-guild-expedition-claim="${membership.expedition.expeditionId}" ${membership.expedition.status !== "claimable" ? "disabled" : ""}>${membership.expedition.status === "claimable" ? "RÜCKKEHR BERGEN" : membership.expedition.status === "claimed" ? "ABGESCHLOSSEN" : "EXPEDITION LÄUFT"}</button>` : `<p>Ein gemeinsamer Fünf-Minuten-Auftrag pro Tag. Die Belohnung fließt direkt und prüfbar ins Gilden-Ledger.</p><button class="primary-button" id="guild-expedition-start" ${!canManage ? "disabled" : ""}>EXPEDITION STARTEN</button>`}</section>
+      ${membership.votes.length ? `<section class="panel guild-vote-card"><span class="eyebrow">OFFENE ABSTIMMUNGEN</span>${membership.votes.map((vote) => `<article><b>${vote.kind === "gene_upgrade" ? `Gen: ${escapeHtml(GUILD_GENES.find((gene) => gene.id === vote.subject)?.name ?? vote.subject)}` : `Beitritt: ${escapeHtml(vote.subject)}`}</b><small>JA ${vote.yes} · NEIN ${vote.no} · ${vote.eligibleVoters} Stimmberechtigte</small><span><button data-guild-vote="${vote.voteId}" data-guild-vote-choice="yes" ${vote.myChoice === "yes" ? "disabled" : ""}>JA</button><button data-guild-vote="${vote.voteId}" data-guild-vote-choice="no" ${vote.myChoice === "no" ? "disabled" : ""}>NEIN</button>${canManage ? `<button data-guild-vote-resolve="${vote.voteId}">AUSWERTEN</button>` : ""}</span></article>`).join("")}</section>` : ""}</aside></div>
+    <div class="guild-social-grid"><section class="panel guild-member-panel"><div class="section-heading"><span><small>ROSTER</small><h2>Mitglieder</h2></span></div>${membership.members.map((member) => `<article class="guild-member-row"><span class="profile-medallion frame-${member.frameId}"><i>${escapeHtml(member.displayName.slice(0, 1))}</i></span><div><b>${escapeHtml(member.displayName)}</b><small>${member.role.toUpperCase()} · ${member.contribution} DNA</small></div>${canManage && member.playerId !== accountBootstrap?.profile.playerId && member.role !== "leader" ? `<button data-guild-role="${member.playerId}" data-guild-role-value="${member.role === "officer" ? "member" : "officer"}">${member.role === "officer" ? "ZUM MITGLIED" : "ZUM OFFIZIER"}</button>${membership.role === "leader" ? `<button data-guild-leadership="${member.playerId}">LEITUNG</button>` : ""}<button class="danger-text" data-guild-kick="${member.playerId}">ENTFERNEN</button>` : ""}</article>`).join("")}</section>
+      <section class="panel guild-chat-panel"><div class="section-heading"><span><small>MODERIERT · LETZTE 50</small><h2>Gildenchat</h2></span></div><div class="guild-chat-log">${membership.chat.length ? membership.chat.map((message) => `<article><span><b>${escapeHtml(message.displayName)}</b><small>${new Date(message.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}</small></span><p>${escapeHtml(message.body)}</p></article>`).join("") : `<small>Noch keine Nachricht. Begrüße deine Gilde.</small>`}</div><form id="guild-chat-form"><input name="body" maxlength="280" autocomplete="off" placeholder="Nachricht an [${escapeHtml(membership.tag)}]" required><button class="primary-button">SENDEN</button></form></section>${guildFriendsMarkup(guildSnapshot.friends)}</div>
+  </section>`;
 }
 
 function prestigeView(): string {
@@ -1760,12 +1836,56 @@ function bindModalKeyboard(): void {
   });
 }
 
+async function runGuildAction(command: GuildCommand, success: string): Promise<void> {
+  if (!await sendGuildCommand(command)) return;
+  showNotice("Gildenserver bestätigt", success, "success");
+  render();
+}
+
+async function submitGuildCreate(form: HTMLFormElement): Promise<void> {
+  const data = new FormData(form);
+  await runGuildAction({
+    type: "guild.create",
+    name: String(data.get("name") ?? ""),
+    tag: String(data.get("tag") ?? ""),
+    description: String(data.get("description") ?? ""),
+  }, "Deine Gilde und ihr erstes Chromosom wurden angelegt.");
+}
+
+async function submitGuildChat(form: HTMLFormElement): Promise<void> {
+  const data = new FormData(form);
+  if (await sendGuildCommand({ type: "guild.chat_send", body: String(data.get("body") ?? "") })) {
+    form.reset();
+    render();
+  }
+}
+
+async function submitFriendRequest(form: HTMLFormElement): Promise<void> {
+  const data = new FormData(form);
+  await runGuildAction({ type: "friend.request", displayName: String(data.get("displayName") ?? "") }, "Freundschaftsanfrage wurde zugestellt.");
+}
+
+async function submitGuildInvite(form: HTMLFormElement): Promise<void> {
+  const data = new FormData(form);
+  await runGuildAction({ type: "guild.invite", displayName: String(data.get("displayName") ?? "") }, "Die Gildeneinladung ist sieben Tage gültig.");
+}
+
+async function submitGuildVote(form: HTMLFormElement): Promise<void> {
+  const data = new FormData(form);
+  await runGuildAction({ type: "guild.vote_create", kind: "gene_upgrade", subject: String(data.get("subject") ?? "") }, "Die DNA-Abstimmung läuft für 24 Stunden. Deine Ja-Stimme ist gesetzt.");
+}
+
 function bindEvents(): void {
   app.addEventListener("submit", (event) => {
     if (!(event.target instanceof HTMLFormElement)) return;
     event.preventDefault();
     if (event.target.id === "login-form") void signIn(event.target);
     if (event.target.id === "register-form") void registerAccount(event.target);
+    if (event.target.id === "guild-create-form") void submitGuildCreate(event.target);
+    if (event.target.id === "guild-chat-form") void submitGuildChat(event.target);
+    if (event.target.id === "friend-request-form") void submitFriendRequest(event.target);
+    if (event.target.id === "guild-invite-form") void submitGuildInvite(event.target);
+    if (event.target.id === "guild-vote-form") void submitGuildVote(event.target);
   });
   app.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
@@ -1797,6 +1917,28 @@ function bindEvents(): void {
     if (target.dataset.setting) return run(`setting:${target.dataset.setting}`, () => updatePlayerSetting(target.dataset.setting as keyof PlayerSettings, target.dataset.settingValue ?? ""));
     if (target.dataset.systemMessage) return run(`message:${target.dataset.systemMessage}`, () => claimSystemMessage(target.dataset.systemMessage ?? ""));
     if (target.dataset.research) return run(`research:${target.dataset.research}`, () => buyResearch(target.dataset.research as ResearchId));
+    if (target.dataset.guildJoin) return run(`guild-join:${target.dataset.guildJoin}`, () => void runGuildAction({ type: "guild.join", guildId: target.dataset.guildJoin ?? "" }, "Du bist der Gilde beigetreten."));
+    if (target.dataset.guildDonate) return run("guild-donate", () => void runGuildAction({ type: "guild.donate", amount: Number(target.dataset.guildDonate) }, "Deine DNA-Spende wurde im Gilden-Ledger gebucht."));
+    if (target.dataset.guildGene) return run(`guild-gene:${target.dataset.guildGene}`, () => void runGuildAction({ type: "guild.gene_upgrade", geneId: target.dataset.guildGene ?? "" }, "Das Gen leuchtet jetzt eine Stufe stärker."));
+    if (target.dataset.guildTask) return run(`guild-task:${target.dataset.guildTask}`, () => void runGuildAction({ type: "guild.task_claim", taskId: target.dataset.guildTask ?? "" }, "Die gemeinsame Aufgabe wurde genau einmal geborgen."));
+    if (target.dataset.guildRole) return run(`guild-role:${target.dataset.guildRole}`, () => void runGuildAction({ type: "guild.role_set", playerId: target.dataset.guildRole ?? "", role: target.dataset.guildRoleValue === "officer" ? "officer" : "member" }, "Die Gildenrolle wurde geändert."));
+    if (target.dataset.guildKick) return run(`guild-kick:${target.dataset.guildKick}`, () => {
+      if (window.confirm("Dieses Mitglied wirklich aus der Gilde entfernen?")) void runGuildAction({ type: "guild.kick", playerId: target.dataset.guildKick ?? "" }, "Das Mitglied wurde entfernt und erhält eine Wechselsperre.");
+    });
+    if (target.dataset.guildLeadership) return run(`guild-leadership:${target.dataset.guildLeadership}`, () => {
+      if (window.confirm("Gildenleitung dauerhaft an dieses Mitglied übertragen? Du wirst Offizier.")) void runGuildAction({ type: "guild.leadership_transfer", playerId: target.dataset.guildLeadership ?? "" }, "Die neue Gildenleitung ist eingesetzt.");
+    });
+    if (target.dataset.guildPolicy) return run("guild-policy", () => void runGuildAction({ type: "guild.policy_set", joinPolicy: target.dataset.guildPolicy === "invite" ? "invite" : "open" }, "Die Beitrittsregel wurde geändert."));
+    if (target.dataset.guildInviteAccept) return run(`guild-invite-accept:${target.dataset.guildInviteAccept}`, () => void runGuildAction({ type: "guild.invite_accept", inviteId: target.dataset.guildInviteAccept ?? "" }, "Du bist der eingeladenen Gilde beigetreten."));
+    if (target.dataset.guildInviteDecline) return run(`guild-invite-decline:${target.dataset.guildInviteDecline}`, () => void runGuildAction({ type: "guild.invite_decline", inviteId: target.dataset.guildInviteDecline ?? "" }, "Die Einladung wurde abgelehnt."));
+    if (target.dataset.guildVote) return run(`guild-vote:${target.dataset.guildVote}`, () => void runGuildAction({ type: "guild.vote_cast", voteId: target.dataset.guildVote ?? "", choice: target.dataset.guildVoteChoice === "no" ? "no" : "yes" }, "Deine Stimme ist serverseitig gespeichert."));
+    if (target.dataset.guildVoteResolve) return run(`guild-vote-resolve:${target.dataset.guildVoteResolve}`, () => void runGuildAction({ type: "guild.vote_resolve", voteId: target.dataset.guildVoteResolve ?? "" }, "Die Abstimmung wurde nach der aktuellen Mehrheit ausgewertet."));
+    if (target.dataset.guildExpeditionClaim) return run(`guild-expedition-claim:${target.dataset.guildExpeditionClaim}`, () => void runGuildAction({ type: "guild.expedition_claim", expeditionId: target.dataset.guildExpeditionClaim ?? "" }, "Die Expeditions-DNA wurde ins unveränderliche Ledger gebucht."));
+    if (target.dataset.friendAccept) return run(`friend-accept:${target.dataset.friendAccept}`, () => void runGuildAction({ type: "friend.accept", playerId: target.dataset.friendAccept ?? "" }, "Die Freundschaft ist bestätigt."));
+    if (target.dataset.friendRemove) return run(`friend-remove:${target.dataset.friendRemove}`, () => void runGuildAction({ type: "friend.remove", playerId: target.dataset.friendRemove ?? "" }, "Die Freundschaft wurde gelöst."));
+    if (target.dataset.playerBlock) return run(`player-block:${target.dataset.playerBlock}`, () => {
+      if (window.confirm("Diesen Spieler blockieren? Freundschaft und sichtbare Chatnachrichten werden ausgeblendet.")) void runGuildAction({ type: "player.block", playerId: target.dataset.playerBlock ?? "" }, "Der Spieler wurde blockiert.");
+    });
 
     switch (target.id) {
       case "auth-mode-login": authMode = "login"; authMessage = ""; return render();
@@ -1818,6 +1960,11 @@ function bindEvents(): void {
       case "close-hatch-notice": hatchNotice = ""; return render();
       case "start-prestige": return openPrestigeScene();
       case "confirm-prestige": return run("prestige", confirmPrestige);
+      case "guild-boss-attack": return run("guild-boss", () => void runGuildAction({ type: "guild.boss_attack" }, "Dein Duo hat den Wochenboss getroffen."));
+      case "guild-expedition-start": return run("guild-expedition-start", () => void runGuildAction({ type: "guild.expedition_start" }, "Die gemeinsame Expedition ist unterwegs."));
+      case "guild-leave": return run("guild-leave", () => {
+        if (window.confirm("Gilde wirklich verlassen? Danach gilt eine 24-stündige Wechselsperre.")) void runGuildAction({ type: "guild.leave" }, "Du hast die Gilde verlassen. Die Wechselsperre ist sichtbar aktiv.");
+      });
       case "close-ui-notice": return dismissNotice();
       case "client-state-action": {
         const url = new URL(window.location.href);
@@ -1869,6 +2016,7 @@ function frame(now: number): void {
     }
   }
   if (isRunOnline() && !showLogin && now - lastRunSync >= 5_000 && !runSyncBusy) void synchronizeOnlineRun();
+  if (isGuildOnline() && !showLogin && activeView === "guild" && now - lastGuildSync >= 5_000 && !guildSyncBusy) void synchronizeGuild();
   requestAnimationFrame(frame);
 }
 

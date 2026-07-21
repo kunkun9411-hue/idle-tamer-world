@@ -92,4 +92,23 @@ describe("AccountClient", () => {
     await expect(client.bootstrapRun()).resolves.toMatchObject({ snapshot: { pendingGold: "26" } });
     await expect(client.runCommand({ type: "cache.claim" }, 2, crypto.randomUUID())).resolves.toMatchObject({ event: { payload: { gold: "26" } } });
   });
+
+  it("uses the social revision and sends no client-owned guild balance", async () => {
+    const guildBootstrap = { guildContractVersion: 1 as const, snapshot: { revision: 3, serverTime: bootstrap().serverTime, membership: null, directory: [], friends: [], blockedPlayerIds: [], invitations: [], joinAvailableAt: bootstrap().serverTime } };
+    const guildResponse = { ...guildBootstrap, accepted: true as const, replayed: false, event: { type: "guild.donated", payload: { amount: 10 } } };
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify(bootstrap()), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(guildBootstrap), { status: 200 }))
+      .mockImplementationOnce(async (_url: string, init: RequestInit) => {
+        expect(new Headers(init.headers).get("x-csrf-token")).toBe("csrf-token");
+        const body = JSON.parse(String(init.body));
+        expect(body).toMatchObject({ expectedRevision: 3, command: { type: "guild.donate", amount: 10 } });
+        expect(body.command).not.toHaveProperty("guildBalance");
+        return new Response(JSON.stringify(guildResponse), { status: 200 });
+      });
+    const client = new AccountClient(fetchImpl as unknown as typeof fetch);
+    await client.bootstrap();
+    await client.bootstrapGuild();
+    await expect(client.guildCommand({ type: "guild.donate", amount: 10 }, 3, crypto.randomUUID())).resolves.toMatchObject({ accepted: true });
+  });
 });

@@ -1,5 +1,6 @@
 import {
   AUTH_CONTRACT_VERSION,
+  GUILD_CONTRACT_VERSION,
   RUN_CONTRACT_VERSION,
   type AccountBootstrapResponse,
   type AccountCommand,
@@ -11,6 +12,9 @@ import {
   type RunBootstrapResponse,
   type RunCommand,
   type RunCommandResponse,
+  type GuildBootstrapResponse,
+  type GuildCommand,
+  type GuildCommandResponse,
 } from "@idle-tamer/contracts";
 
 export const ACTIVE_ACCOUNT_NAMESPACE_KEY = "idle-tamer.active-account-namespace.v1";
@@ -58,6 +62,14 @@ const parseRunResponse = async <T extends { runContractVersion: number }>(respon
     throw new RunApiError(response.status, { errorContractVersion: 1, code: "UNKNOWN", message: "Client und Run-Server verwenden unterschiedliche Verträge." });
   }
   return body as T;
+};
+
+const parseGuildResponse = async <T extends { guildContractVersion: number }>(response: Response): Promise<T> => {
+  const body = await parseResponse<T>(response);
+  if (body.guildContractVersion !== GUILD_CONTRACT_VERSION) throw new AccountApiError(409, {
+    errorContractVersion: 2, code: "CONFLICT", message: "Client und Gildenserver verwenden unterschiedliche Verträge.", correlationId: "guild-contract",
+  });
+  return body;
 };
 
 export const getClientInstanceId = (storage: Pick<Storage, "getItem" | "setItem"> = localStorage): string => {
@@ -140,6 +152,21 @@ export class AccountClient {
       body: JSON.stringify({ commandId, clientInstanceId, expectedRevision, issuedAt: new Date().toISOString(), command }),
     });
     return parseRunResponse<RunCommandResponse>(response);
+  }
+
+  public async bootstrapGuild(): Promise<GuildBootstrapResponse> {
+    const response = await this.fetchImpl("/api/v1/guild", { credentials: "include", headers: { accept: "application/json" } });
+    return parseGuildResponse<GuildBootstrapResponse>(response);
+  }
+
+  public async guildCommand(command: GuildCommand, expectedRevision: number, clientInstanceId: string, commandId = crypto.randomUUID()): Promise<GuildCommandResponse> {
+    const response = await this.fetchImpl("/api/v1/guild/commands", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json", accept: "application/json", "x-csrf-token": this.csrfToken },
+      body: JSON.stringify({ commandId, clientInstanceId, expectedRevision, issuedAt: new Date().toISOString(), command }),
+    });
+    return parseGuildResponse<GuildCommandResponse>(response);
   }
 
   public async logout(): Promise<void> {

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import cookie from "@fastify/cookie";
 import { loadServerConfig, publicRuntimeConfig, type ServerConfig } from "@idle-tamer/config";
 import { API_PROTOCOL_VERSION, AUTH_ERROR_CONTRACT_VERSION, ERROR_CONTRACT_VERSION, RUN_CONTRACT_VERSION, type ApiProblem, type AuthApiProblem } from "@idle-tamer/contracts";
-import type { AuthStore, RunStore } from "@idle-tamer/database";
+import type { AuthStore, GuildStore, RunStore } from "@idle-tamer/database";
 import Fastify from "fastify";
 
 import { AuthError } from "./auth/errors";
@@ -15,6 +15,8 @@ import { ApiError } from "./errors";
 import { createApiLogger } from "./logger";
 import { registerRunRoutes } from "./run/routes";
 import { RunService } from "./run/service";
+import { registerGuildRoutes } from "./guild/routes";
+import { GuildService } from "./guild/service";
 
 export interface DatabaseHealth {
   ping(): Promise<void>;
@@ -25,6 +27,7 @@ export interface BuildAppOptions {
   database?: DatabaseHealth;
   authStore?: AuthStore;
   runStore?: RunStore;
+  guildStore?: GuildStore;
   authMail?: AuthMailPort;
   authNow?: () => Date;
   authSleep?: (milliseconds: number) => Promise<void>;
@@ -57,6 +60,12 @@ export const buildApp = (options: BuildAppOptions = {}) => {
         authService,
         rateLimiter,
         runService: new RunService(options.runStore, options.authNow),
+        publicOrigin: config.PUBLIC_ORIGIN,
+      });
+      if (options.guildStore) await registerGuildRoutes(authApp, {
+        authService,
+        rateLimiter,
+        guildService: new GuildService(options.guildStore, options.authNow),
         publicOrigin: config.PUBLIC_ORIGIN,
       });
     });
