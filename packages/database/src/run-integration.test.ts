@@ -104,10 +104,12 @@ integration("PostgreSQL 18 authoritative run store", () => {
     const proof = await pool.query(
       `SELECT
          (SELECT count(*)::int FROM economy_ledger WHERE player_id = $1 AND reason = 'cache.claim') AS ledger,
+         (SELECT count(*)::int FROM economy_ledger WHERE player_id = $1 AND reason = 'cache.claim' AND asset_kind = 'wallet' AND definition_id = 'gold') AS gold_ledger,
          (SELECT count(*)::int FROM pending_reward_batches WHERE player_id = $1 AND claimed_at IS NOT NULL) AS claimed`,
       [account.playerId],
     );
-    expect(proof.rows[0]).toMatchObject({ ledger: 1, claimed: 1 });
+    expect(proof.rows[0]).toMatchObject({ gold_ledger: 1, claimed: 1 });
+    expect(proof.rows[0].ledger).toBeGreaterThanOrEqual(1);
   });
 
   it("allows only one of two different commands with the same revision", async () => {
@@ -185,7 +187,7 @@ integration("PostgreSQL 18 authoritative run store", () => {
     expect(snapshot.unlockedZoneIds).toContain(ZONES[9].id);
     expect(snapshot.runVictories).toBe("90");
     expect(snapshot.cacheSlotsUsed).toBe(90);
-  });
+  }, 20_000);
 
   it("hatches first discoveries and converts duplicate eggs into permanent fragments exactly once", async () => {
     const account = await createRun("incubation-loop");

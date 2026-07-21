@@ -79,28 +79,28 @@ export const loadCollectionSnapshot = async (
        FROM monster_gem_slots WHERE player_id = $1 ORDER BY monster_instance_id, shape`,
     [input.playerId],
   );
-  const [eggs, fragments, items, gems, research, activities, incubation, expeditions, milestoneClaims, objectiveClaims, messageClaims, settingsResult, periodsResult, coresResult] = await Promise.all([
-    client.query<BalanceRow>("SELECT definition_id, amount::text FROM egg_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]),
-    client.query<BalanceRow>("SELECT definition_id, amount::text FROM monster_fragments WHERE player_id = $1 ORDER BY definition_id", [input.playerId]),
-    client.query<BalanceRow>("SELECT definition_id, amount::text FROM item_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]),
-    client.query<BalanceRow>("SELECT definition_id, amount::text FROM gem_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]),
-    client.query<ResearchRow>("SELECT definition_id, level FROM research_levels WHERE player_id = $1 ORDER BY definition_id", [input.playerId]),
-    client.query<ActivityRow>("SELECT activity_id, amount::text FROM player_activity_counters WHERE player_id = $1 ORDER BY activity_id", [input.playerId]),
-    client.query<IncubationRow>("SELECT id, definition_id, started_at, completes_at FROM incubation_jobs WHERE player_id = $1 AND status = 'running'", [input.playerId]),
-    client.query<ExpeditionRow>("SELECT id, slot, definition_id, monster_instance_id, started_at, completes_at, reward_multiplier::text FROM timed_expeditions WHERE player_id = $1 AND status = 'running' ORDER BY slot", [input.playerId]),
-    client.query<{ target: number } & QueryResultRow>("SELECT target FROM player_milestone_claims WHERE player_id = $1 ORDER BY target", [input.playerId]),
-    client.query<{ claim_key: string } & QueryResultRow>("SELECT claim_key FROM player_objective_claims WHERE player_id = $1 ORDER BY claim_key", [input.playerId]),
-    client.query<{ message_id: string } & QueryResultRow>("SELECT message_id FROM player_message_claims WHERE player_id = $1 ORDER BY message_id", [input.playerId]),
-    client.query<{ sound_enabled: boolean; combat_effects: boolean; reduced_motion: boolean; number_format: "compact" | "full"; tutorial_step: number } & QueryResultRow>(
-      "SELECT sound_enabled, combat_effects, reduced_motion, number_format, tutorial_step FROM player_settings WHERE player_id = $1",
-      [input.playerId],
-    ),
-    client.query<{ daily_key: string; weekly_key: string; daily_baseline: Record<string, number>; weekly_baseline: Record<string, number> } & QueryResultRow>(
-      "SELECT daily_key, weekly_key, daily_baseline, weekly_baseline FROM player_objective_periods WHERE player_id = $1",
-      [input.playerId],
-    ),
-    client.query<{ amount: string } & QueryResultRow>("SELECT amount::text FROM wallet_balances WHERE player_id = $1 AND definition_id = 'ether_core'", [input.playerId]),
-  ]);
+  // A PoolClient executes one query at a time. Keeping this sequence explicit
+  // avoids the deprecated concurrent-client-query behaviour in node-postgres.
+  const eggs = await client.query<BalanceRow>("SELECT definition_id, amount::text FROM egg_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]);
+  const fragments = await client.query<BalanceRow>("SELECT definition_id, amount::text FROM monster_fragments WHERE player_id = $1 ORDER BY definition_id", [input.playerId]);
+  const items = await client.query<BalanceRow>("SELECT definition_id, amount::text FROM item_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]);
+  const gems = await client.query<BalanceRow>("SELECT definition_id, amount::text FROM gem_balances WHERE player_id = $1 ORDER BY definition_id", [input.playerId]);
+  const research = await client.query<ResearchRow>("SELECT definition_id, level FROM research_levels WHERE player_id = $1 ORDER BY definition_id", [input.playerId]);
+  const activities = await client.query<ActivityRow>("SELECT activity_id, amount::text FROM player_activity_counters WHERE player_id = $1 ORDER BY activity_id", [input.playerId]);
+  const incubation = await client.query<IncubationRow>("SELECT id, definition_id, started_at, completes_at FROM incubation_jobs WHERE player_id = $1 AND status = 'running'", [input.playerId]);
+  const expeditions = await client.query<ExpeditionRow>("SELECT id, slot, definition_id, monster_instance_id, started_at, completes_at, reward_multiplier::text FROM timed_expeditions WHERE player_id = $1 AND status = 'running' ORDER BY slot", [input.playerId]);
+  const milestoneClaims = await client.query<{ target: number } & QueryResultRow>("SELECT target FROM player_milestone_claims WHERE player_id = $1 ORDER BY target", [input.playerId]);
+  const objectiveClaims = await client.query<{ claim_key: string } & QueryResultRow>("SELECT claim_key FROM player_objective_claims WHERE player_id = $1 ORDER BY claim_key", [input.playerId]);
+  const messageClaims = await client.query<{ message_id: string } & QueryResultRow>("SELECT message_id FROM player_message_claims WHERE player_id = $1 ORDER BY message_id", [input.playerId]);
+  const settingsResult = await client.query<{ sound_enabled: boolean; combat_effects: boolean; reduced_motion: boolean; number_format: "compact" | "full"; tutorial_step: number } & QueryResultRow>(
+    "SELECT sound_enabled, combat_effects, reduced_motion, number_format, tutorial_step FROM player_settings WHERE player_id = $1",
+    [input.playerId],
+  );
+  const periodsResult = await client.query<{ daily_key: string; weekly_key: string; daily_baseline: Record<string, number>; weekly_baseline: Record<string, number> } & QueryResultRow>(
+    "SELECT daily_key, weekly_key, daily_baseline, weekly_baseline FROM player_objective_periods WHERE player_id = $1",
+    [input.playerId],
+  );
+  const coresResult = await client.query<{ amount: string } & QueryResultRow>("SELECT amount::text FROM wallet_balances WHERE player_id = $1 AND definition_id = 'ether_core'", [input.playerId]);
 
   const slotMap = new Map<string, Partial<Record<GemShape, string>>>();
   for (const slot of slots.rows) {
