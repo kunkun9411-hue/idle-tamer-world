@@ -50,6 +50,10 @@ Der Dev-Server schreibt Verifikations- und Recovery-Nachrichten in ein privates 
 
 Der Entwicklungs-Seed besitzt einen synthetischen Testaccount. Seine Zugangsdaten dürfen nur für die Dev-Umgebung verwendet werden und gehören nie auf spätere Release-Server.
 
+## Auf dem Entwicklungsserver nachgewiesen
+
+Am 21. Juli 2026 wurden Migration und Seed nach einem frischen Datenbankbackup auf `idle-tamer-world.de` eingespielt. Die öffentliche Proxyroute liefert den Metavertrag, verweigert einen Bootstrap ohne Sitzung kontrolliert und akzeptiert mit dem synthetischen Entwicklungsaccount Login, Bootstrap und Logout. Der Bootstrap meldet die bewusste Autoritätsgrenze `account-online-game-local`; das gesetzte Sitzungscookie trägt `Secure`, `HttpOnly`, `SameSite=Strict`, `Path=/` und eine begrenzte Lebensdauer. Nach dem Test blieb keine aktive Testsitzung zurück.
+
 ## Bereits bewiesene Bauinvarianten
 
 - Account, Profil, Rollen, Policies, Kosmetik und Name entstehen atomar.

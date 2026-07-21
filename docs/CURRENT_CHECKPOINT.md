@@ -1,6 +1,6 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Nach dem visuellen Eier-, Material-, Brut- und Prestige-Effektpaket wurde der sichtbare Client stabilisiert und der echte Zonenpfad bis Zone 10 ergänzt; der Backend-Fortschritt wurde dabei nicht vorgezogen.
+Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Nach dem visuellen Eier-, Material-, Brut- und Prestige-Effektpaket wurde der sichtbare Client stabilisiert, der echte Zonenpfad bis Zone 10 ergänzt und anschließend die Account- und Sessionbasis aus Block 4 gebaut und auf dem Entwicklungsserver bereitgestellt.
 
 ## Wo wir stehen
 
@@ -16,7 +16,7 @@ Die Roadmap steht nach dem abgeschlossenen Auth-Bauschritt bei 14/32. E-Mailstat
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
-Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. 48 Logik- und Vertragstests sowie zwölf Chromium-Abläufe prüfen jetzt unter anderem den Bossweg bis Zone 10 und die DOM-Stabilität der Kampfsteuerung. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 63 Unit- und Vertragstests, acht echte PostgreSQL-Integrationsfälle sowie zwölf Chromium-Abläufe abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
 
 Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
 
@@ -36,9 +36,11 @@ Am 20. Juli 2026 wurden HTTP-zu-HTTPS-Weiterleitung, Spiel, Roadmap und WWW-Alia
 ```text
 Internet :80/:443
         -> Caddy (TLS und Reverse Proxy)
-        -> statischer Web-Container :80, nur im Compose-Netz
+        -> /api/* an Fastify-API :3001, nur im Compose-Netz
+        -> alle übrigen Pfade an Web-Container :80, nur im Compose-Netz
 
 PostgreSQL 18
+        -> API-interne Verbindung im Compose-Netz
         -> Host 127.0.0.1:54329
         -> nicht öffentlich erreichbar
 ```
@@ -47,13 +49,15 @@ PostgreSQL 18
 - Checkout: `/srv/idle-tamer/app`
 - Serverumgebung: `/srv/idle-tamer/.env`, Modus `0600`
 - Docker: 29.6.2; Compose: 5.3.1
-- Container: PostgreSQL gesund, Web gesund, Caddy aktiv
+- Container: PostgreSQL gesund, API gesund, Web gesund, Caddy aktiv
 - Firewall: standardmäßig eingehend gesperrt; nur 22/TCP, 80/TCP, 443/TCP und 443/UDP für IPv4 und IPv6 freigegeben
 - SSH: Public-Key aktiv, Passwort und Keyboard-Interactive deaktiviert, Root nur mit Schlüssel
 - Datenbank: nur an Loopback gebunden
 - Backup-Timer: aktiv, täglicher Lauf mit 14 Tagen lokaler Aufbewahrung
 
 ## Gesicherter Stand
+
+Unmittelbar vor der Accountmigration vom 21. Juli 2026 wurde zusätzlich der Dump `/srv/idle-tamer/backups/idle-tamer-20260721T195426Z.sql.gz` erzeugt. Danach wurden Migration `000002_accounts_and_sessions`, der synthetische Entwicklungsaccount und **19 öffentliche Tabellen** auf dem laufenden Server geprüft. Die Auth-Outbox liegt in einem privaten Docker-Volume und ist weder über Caddy noch als statische Datei erreichbar.
 
 Am 20. Juli 2026 wurde vor der Pause ein neuer Sicherungssatz erstellt:
 

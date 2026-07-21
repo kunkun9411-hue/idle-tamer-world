@@ -4,7 +4,7 @@ Der Entwicklungsserver ist die reale Abnahmeumgebung für Backend-Blöcke. Er is
 
 ## Abgenommener Stand
 
-Stand 20. Juli 2026:
+Stand 21. Juli 2026:
 
 - Ubuntu 26.04 LTS, Kernel `7.0.0-28-generic`
 - Docker Engine 29 mit Compose-Plugin
@@ -12,9 +12,12 @@ Stand 20. Juli 2026:
 - Checkout unter `/srv/idle-tamer/app`
 - geheime Compose-Variablen unter `/srv/idle-tamer/.env`, Modus `0600`
 - persistentes Datenvolume `idle-tamer-local_idle-tamer-postgres`
+- privates Mail-Outbox-Volume `idle-tamer-local_idle-tamer-auth-mail`
 - Backups unter `/srv/idle-tamer/backups`
 - 2 GB Swap als Schutz vor kurzzeitigen Build-Spitzen
-- Web-Container hinter Caddy auf Port 80 und 443 für Spiel und Roadmap
+- Fastify-API und Web-Container hinter Caddy auf Port 80 und 443
+- `/api/*` wird an die API geleitet; Spiel und Roadmap werden vom Web-Container ausgeliefert
+- Migration `000002_accounts_and_sessions` und insgesamt 19 öffentliche Tabellen aktiv
 
 PostgreSQL wird nur als `127.0.0.1:54329` veröffentlicht. Ein externer Verbindungsversuch auf diesen Port wurde nach Einrichtung und nach Neustart abgewiesen.
 
@@ -44,9 +47,12 @@ Solange dieses Fenster offen ist, erreicht ein lokales Werkzeug PostgreSQL über
 ## Schnelle Betriebsprüfung
 
 ```bash
+cd /srv/idle-tamer/app
+
 docker compose \
   --env-file /srv/idle-tamer/.env \
   -f /srv/idle-tamer/app/infra/compose.yaml \
+  -f /srv/idle-tamer/app/infra/compose.server.yaml \
   ps
 
 systemctl is-active docker
@@ -55,7 +61,16 @@ ufw status
 ss -lntp
 ```
 
-Erwartet werden gesunde PostgreSQL- und Web-Container, ein aktiver Caddy-Proxy, aktive Docker- und Backup-Dienste, nur SSH/HTTP/HTTPS auf öffentlichen Interfaces und PostgreSQL ausschließlich auf Loopback.
+Erwartet werden gesunde PostgreSQL-, API- und Web-Container, ein aktiver Caddy-Proxy, aktive Docker- und Backup-Dienste, nur SSH/HTTP/HTTPS auf öffentlichen Interfaces und PostgreSQL ausschließlich auf Loopback.
+
+Die öffentliche Route kann ohne Zugangsdaten geprüft werden:
+
+```bash
+curl -fsS https://idle-tamer-world.de/api/v1/meta
+curl -sS -o /dev/null -w '%{http_code}\n' https://idle-tamer-world.de/api/v1/bootstrap
+```
+
+`meta` muss mit HTTP 200 antworten. `bootstrap` muss ohne Session-Cookie kontrolliert HTTP 401 liefern.
 
 Ein manuelles Backup startet mit:
 
@@ -68,6 +83,16 @@ journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 
 Updates erfolgen ausschließlich als Fast-Forward von `origin/main`. Vor einer Migration wird ein Backup erzeugt. Danach laufen Compose-Healthcheck, Migration und eine Datenbankstichprobe. Niemals werden Serverdateien durch `git reset --hard` oder ein Datenvolume durch `docker compose down -v` ersetzt.
 
-Die statische Web-App ist über die Server-IP auf HTTP-Port 80 und über `idle-tamer-world.de` hinter Caddy erreichbar. Caddy stellt nach aktiver DNS-Auflösung automatisch HTTPS bereit und erneuert Zertifikate. Die API und PostgreSQL bleiben intern. Diese Dev-Domain ist ausdrücklich keine Release-Infrastruktur.
+Wurde `infra/caddy/Caddyfile` durch Git ersetzt, reicht ein Reload des bestehenden Containers wegen des Read-only-Bind-Mounts nicht zuverlässig aus. Der Proxy wird dann gezielt und ohne Abhängigkeiten neu erstellt:
+
+```bash
+docker compose \
+  --env-file /srv/idle-tamer/.env \
+  -f infra/compose.yaml \
+  -f infra/compose.server.yaml \
+  up -d --no-deps --force-recreate proxy
+```
+
+Die Web-App ist über die Server-IP auf HTTP-Port 80 und über `idle-tamer-world.de` hinter Caddy erreichbar. Caddy stellt HTTPS bereit und erneuert Zertifikate. Die API ist ausschließlich über die kontrollierte `/api/*`-Proxyroute erreichbar; API-Container und PostgreSQL besitzen keine öffentliche Freigabe. Diese Dev-Domain ist ausdrücklich keine Release-Infrastruktur.
 
 Der verbindliche Pausen-, Sicherungs- und Wiedereinstiegsstand steht in `../CURRENT_CHECKPOINT.md`.
