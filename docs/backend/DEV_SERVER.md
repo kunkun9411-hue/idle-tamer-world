@@ -79,6 +79,23 @@ systemctl start idle-tamer-db-backup.service
 journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 ```
 
+## Nur-Lese-Supportsicht
+
+Support kann einen Account ausschließlich über eine exakte E-Mail-Adresse oder Benutzer-ID nachschlagen. Die Ausgabe maskiert die E-Mail und enthält Status, Rollen, Profil, Starter, Revision und minimierte Sitzungsmetadaten. Passwort-, Token-, Cookie-, CSRF- und vollständige User-Agent-Daten werden niemals ausgegeben.
+
+```bash
+cd /srv/idle-tamer/app
+
+docker compose \
+  --env-file /srv/idle-tamer/.env \
+  -f infra/compose.yaml \
+  -f infra/compose.server.yaml \
+  exec -T api \
+  pnpm --silent support:account -- --email "spieler@example.de"
+```
+
+Alternativ ist `--user-id UUID` zulässig. Das Werkzeug öffnet zusätzlich zur reinen SELECT-Implementierung eine PostgreSQL-Transaktion mit `READ ONLY`, setzt ein Fünf-Sekunden-Limit und besitzt bewusst keinen HTTP-Endpunkt. Änderungen erfolgen weiterhin nur über dokumentierte Spieler- oder spätere Moderationskommandos.
+
 ## Update-Regel
 
 Updates erfolgen ausschließlich als Fast-Forward von `origin/main`. Vor einer Migration wird ein Backup erzeugt. Danach laufen Compose-Healthcheck, Migration und eine Datenbankstichprobe. Niemals werden Serverdateien durch `git reset --hard` oder ein Datenvolume durch `docker compose down -v` ersetzt.

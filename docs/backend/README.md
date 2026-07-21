@@ -12,6 +12,7 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 8. [`AUTH_SCHEMA_PLAN.md`](AUTH_SCHEMA_PLAN.md) – Welche Tabellen, Constraints, Indizes und Löschtransaktionen ergänzt Migration 000002?
 9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion und wie wird sie betrieben?
 10. [`AUTH_SECURITY_VERIFICATION.md`](AUTH_SECURITY_VERIFICATION.md) – Welche Missbrauchs-, PostgreSQL-, Cookie- und Zwei-Browser-Fälle sind nachgewiesen?
+11. [`AUTH_ACCEPTANCE.md`](AUTH_ACCEPTANCE.md) – Wie wurde Block 4 live abgenommen und welche Grenze gilt für die geschlossene Alpha?
 
 ## Verbindlicher Kurzstand
 
@@ -38,7 +39,7 @@ Block 4 verwendet daneben Auth-Vertrag 1. Er führt einen ehrlichen Account-Boot
 - [x] Exportanforderung, siebentägige Löschfrist und stündlicher Retentionjob
 - [x] Browser-Accountclient mit strikt getrennten lokalen Save-Namespaces
 
-Block 4 befindet sich jetzt im Abnahmegate. Missbrauchsmatrix, PostgreSQL-Lebenszyklen, Zweitbrowser sowie Proxy-, Cookie-, Origin- und CSRF-Grenzen sind in Schritt 3 nachgewiesen. Schritt 4 spielt den freizugebenden Accountfluss noch einmal aus Spielersicht durch und klärt die minimale schreibgeschützte Supportsicht.
+Block 4 ist für die geschlossene Alpha vollständig abgenommen. Missbrauchsmatrix, PostgreSQL-Lebenszyklen, Zweitbrowser sowie Proxy-, Cookie-, Origin- und CSRF-Grenzen sind nachgewiesen. Ein echter Spielerlogin und ein vollständiger synthetischer Live-Ablauf bestätigen Starterpersistenz, Widerruf, Löschabbruch und Logout. Die Supportsicht ist serverintern, maskiert und technisch nur lesend. Externer Transaktionsmailversand bleibt bewusst ein Gate vor der öffentlichen Beta.
 
 ## Abgenommener Stand von Block 3
 

@@ -4,19 +4,19 @@ Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur
 
 ## Wo wir stehen
 
-- Gesamtfortschritt: **15 von 32 Schritten (46,9 %)**
+- Gesamtfortschritt: **16 von 32 Schritten (50 %)**
 - Clientversion: **0.2.0**
-- Abgeschlossen: **Block 1 bis Block 3**
-- Nächster Arbeitsblock: **Block 4 – Accounts, Sessions und Bootstrap**
-- Nächster Arbeitsschritt: **Schritt 4 – Abnehmen**
-- Neu geprüft: Missbrauchsgrenzen, Token, Rotation, Cookies, zwei Browser und der echte HTTPS-Proxy
+- Abgeschlossen: **Block 1 bis Block 4**
+- Nächster Arbeitsblock: **Block 5 – Serverautoritärer Run und Wirtschaft**
+- Nächster Arbeitsschritt: **Schritt 1 – Planen**
+- Neu abgenommen: echter Spielerlogin, vollständiger Live-Accountfluss und serverinterne Nur-Lese-Supportsicht
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
-Die Roadmap steht nach dem abgeschlossenen Auth-Prüfschritt bei 15/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl sind serverautoritativ und über zwei getrennte Browserkontexte nachgewiesen. Run, Gold, Drops, Inventar, Brut und Dauerfortschritt bleiben bis Block 5 und 6 lokal; ihre Saves liegen jedoch strikt in einem vom Server vergebenen Account-Namespace. Die Oberfläche weist diese Grenze als „Account online · Spielstand lokal“ aus.
+Die Roadmap steht nach der vollständigen Abnahme von Block 4 bei 16/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl sind serverautoritativ und über einen echten Spieleraccount sowie einen vollständigen Zwei-Browser-Liveablauf nachgewiesen. Run, Gold, Drops, Inventar, Brut und Dauerfortschritt bleiben bis Block 5 und 6 lokal; ihre Saves liegen jedoch strikt in einem vom Server vergebenen Account-Namespace. Die Oberfläche weist diese Grenze als „Account online · Spielstand lokal“ aus.
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
-Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 73 Unit- und Vertragstests, 14 isolierte PostgreSQL-Integrationsfälle, zwölf reguläre Chromium-Abläufe sowie einen zusätzlichen Zwei-Browser-Livetest abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 76 Unit- und Vertragstests, 15 isolierte PostgreSQL-Integrationsfälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
 
 Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
 
@@ -129,12 +129,13 @@ Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öf
 
 ## Exakter nächster Arbeitsauftrag
 
-Weiter geht es ausschließlich mit **Block 4, Schritt 4 – Abnehmen**:
+Weiter geht es ausschließlich mit **Block 5, Schritt 1 – Planen**:
 
-1. einen neuen Account vollständig von Registrierung über Dev-Mailbox bis Starterwahl durchspielen.
-2. erneuten Login, Einzelwiderruf, Gesamtabmeldung und Löschabbruch als manuellen Freigabefluss prüfen.
-3. eine minimale schreibgeschützte Supportsicht für Account- und Sessionstatus festlegen oder die Freigabe bewusst verschieben.
-4. Auth-Ablauf, bekannte Alpha-Grenzen und Freigabeentscheidung abschließend dokumentieren.
+1. serverseitiges Kampftick- und Zeitstempelmodell festlegen.
+2. Run-, Team-, Zonen- und Kampfspeichertabellen finalisieren.
+3. Reward-Batches und atomaren Sammelablauf definieren.
+4. große Zahlen und API-Stringtransport verbindlich festlegen.
+5. Cheating- und Parallel-Request-Fälle als Testspezifikation schreiben.
 
 Implementierung und Grenzen stehen in `backend/AUTH_IMPLEMENTATION.md`, `backend/AUTH_API_CONTRACT.md` und `backend/AUTH_SCHEMA_PLAN.md`. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal.
 
@@ -150,6 +151,7 @@ Implementierung und Grenzen stehen in `backend/AUTH_IMPLEMENTATION.md`, `backend
 - `backend/BLOCK4_AUTH_PLAN.md` – Accountzustände, Sicherheit, Recovery, Datenschutz und Baufolge
 - `backend/AUTH_API_CONTRACT.md` – Auth-Vertrag 1, Bootstrap, DTOs und Fehler
 - `backend/AUTH_SCHEMA_PLAN.md` – Zielmigration 000002 und SQL-Abnahme
+- `backend/AUTH_ACCEPTANCE.md` – Block-4-Abnahme, Supportsicht und bekannte Alpha-Grenzen
 - `API_CONTRACT_V8.md` – Client-/Serververtrag
 - `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
 - `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server

@@ -2,7 +2,7 @@
 
 - Stand: 21. Juli 2026
 - Geprüfter Implementierungscommit: `86020a2`
-- Ergebnis: Schritt 3 erfüllt, Schritt 4 aktiv
+- Ergebnis: Schritt 3 erfüllt; Schritt 4 anschließend abgenommen
 - Umgebung: isolierte PostgreSQL-18-Testdatenbank plus `https://idle-tamer-world.de`
 
 ## Nachgewiesene Schutzgrenzen
@@ -49,6 +49,6 @@ Der Client kapselt `fetch` nun in einer empfängerlosen Funktion. Ein eigener Re
 
 Temporäre Testdatenbank, Docker-Testimage, Arbeitskopie und Live-QA-Account wurden nach der Prüfung entfernt.
 
-## Offenes Abnahmegate
+## Abnahme abgeschlossen
 
-Schritt 4 prüft den gesamten Accountfluss noch einmal aus Spielersicht, gibt ihn frei und klärt eine minimale schreibgeschützte Supportsicht. Der serverautoritative Run und die Wirtschaft beginnen weiterhin erst in Block 5.
+Schritt 4 hat den gesamten Accountfluss aus Spielersicht freigegeben und eine minimale serverinterne Nur-Lese-Supportsicht ergänzt. Der vollständige Nachweis und die bekannte Mailgrenze stehen in `AUTH_ACCEPTANCE.md`. Der serverautoritative Run und die Wirtschaft beginnen weiterhin erst in Block 5.

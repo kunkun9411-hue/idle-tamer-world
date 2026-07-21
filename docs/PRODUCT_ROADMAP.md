@@ -1,8 +1,8 @@
 # Idle Tamer – Arbeitsroadmap
 
 - Stand: 21. Juli 2026
-- Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
-- Aktiver Schritt: **Schritt 4 – Abnehmen**
+- Aktiver Block: **Block 5 – Serverautoritärer Run und Wirtschaft**
+- Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -12,7 +12,7 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 46,9 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
+Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 50 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -40,13 +40,13 @@ flowchart LR
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
-| 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [x] | [ ] | **Aktiv** |
-| 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
+| 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [x] | [x] | **Fertig** |
+| 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **15 von 32 Schritten abgeschlossen (46,9 %)**.
+Gesamtfortschritt: **16 von 32 Schritten abgeschlossen (50 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -235,15 +235,17 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Definition of Done erfüllt:** 73 Unit- und Vertragstests, 14 isolierte PostgreSQL-Integrationsfälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Ablauf mit zwei getrennten Browserkontexten sind grün. Geprüft sind unter anderem Login- und Reset-Limits, progressive Fehlversuchsverzögerung, CSRF-Rotation, Session-Fixation, Ablauf und Widerruf, gesperrte Accounts, doppelte Namen, Produktions-Cookies und derselbe Starter samt Account-Namespace auf Browser A und B. Der Live-Test deckte außerdem eine falsche Browser-`fetch`-Bindung auf; der behobene Client läuft jetzt über den echten HTTPS-Proxy. Details: `backend/AUTH_SECURITY_VERIFICATION.md`.
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] neuer Account erreicht sicher die Starterwahl
-- [ ] erneuter Login liefert exakt dasselbe Accountprofil und dieselbe Starterwahl
-- [ ] Logout und Widerruf beenden die Session zuverlässig
-- [ ] Support kann Accountstatus nachvollziehen, aber keine Werte heimlich verändern
-- [ ] Authentifizierungsablauf dokumentieren und freigeben
+- [x] neuer Account erreicht sicher die Starterwahl
+- [x] erneuter Login liefert exakt dasselbe Accountprofil und dieselbe Starterwahl
+- [x] Logout und Widerruf beenden die Session zuverlässig
+- [x] Support kann Accountstatus nachvollziehen, aber keine Werte heimlich verändern
+- [x] Authentifizierungsablauf dokumentieren und freigeben
 
-**Gate:** Identität und Basiszustand funktionieren online. Besitz- und Wirtschaftsaktionen folgen erst in den nächsten Blöcken.
+**Definition of Done erfüllt:** Ein echter Testeraccount wurde registriert, über die private Alpha-Mailbox bestätigt und erfolgreich eingeloggt. Ein separater synthetischer Live-Account durchlief Registrierung, Verifikation, Starterwahl, denselben Zustand in zwei Browsern, Fremdsitzungswiderruf, Löschvormerkung, Löschabbruch und Logout; Account und Mailboxeintrag wurden danach vollständig entfernt. Die serverinterne Supportsicht läuft in einer technisch erzwungenen PostgreSQL-`READ ONLY`-Transaktion, maskiert die E-Mail und gibt weder Credentials noch Token-, Cookie- oder CSRF-Material aus. Block 4 ist für die geschlossene Alpha freigegeben. Externer Mailversand samt SPF, DKIM und DMARC bleibt ein Gate vor der öffentlichen Beta. Details: `backend/AUTH_ACCEPTANCE.md`.
+
+**Gate erfüllt:** Identität und Basiszustand funktionieren online. Besitz- und Wirtschaftsaktionen folgen in Block 5 und 6.
 
 ---
 

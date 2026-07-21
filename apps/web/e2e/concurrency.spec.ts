@@ -28,7 +28,10 @@ test("an external tab update blocks stale autosaves and reloads the latest state
   }, STORAGE_KEY);
 
   await expect(page.getByTestId("client-conflict")).toContainText("Neuerer Spielstand gefunden");
-  await page.locator("#client-state-action").click();
+  await Promise.all([
+    page.waitForEvent("load"),
+    page.locator("#client-state-action").click(),
+  ]);
   await expect(page.getByTestId("login-screen")).toBeVisible();
   await expect.poll(() => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}").resources?.gold, STORAGE_KEY)).toBe(9_876);
 });

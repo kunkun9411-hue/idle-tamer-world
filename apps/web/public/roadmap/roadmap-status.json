@@ -1,7 +1,7 @@
 {
-  "updated": "21. Juli 2026 · Block 4 Sicherheitsprüfung abgeschlossen",
-  "activeBlock": 4,
-  "activeStep": 4,
+  "updated": "21. Juli 2026 · Block 4 für die geschlossene Alpha abgenommen",
+  "activeBlock": 5,
+  "activeStep": 1,
   "blocks": [
     {
       "id": 1,
@@ -47,7 +47,7 @@
     },
     {
       "id": 4,
-      "kicker": "Jetzt aktiv",
+      "kicker": "Identität",
       "title": "Accounts & Bootstrap",
       "summary": "Sichere Accounts, Sessions sowie dasselbe autoritative Profil und derselbe Starter auf jedem Browser.",
       "visual": "account",
@@ -56,12 +56,12 @@
         { "name": "Planen", "done": true, "note": "Auth-, Session-, Profil-, Starter- und Datenschutzvertrag freigegeben" },
         { "name": "Bauen", "done": true, "note": "Accounts, Sessions, Recovery, Bootstrap, Starter und getrennte Saves stehen" },
         { "name": "Prüfen", "done": true, "note": "Missbrauch, Limits, Rotation, Cookies und zwei echte Browser grün" },
-        { "name": "Abnehmen", "done": false, "note": "Accountfluss und Supportsicht freigeben" }
+        { "name": "Abnehmen", "done": true, "note": "Echter Spielerlogin, voller Live-Ablauf und Nur-Lese-Supportsicht freigegeben" }
       ]
     },
     {
       "id": 5,
-      "kicker": "Serverautorität",
+      "kicker": "Jetzt aktiv",
       "title": "Run & Wirtschaft",
       "summary": "Kampf, Gold, Level, Zonen und Beute werden ausschließlich vom Server berechnet.",
       "visual": "economy",
