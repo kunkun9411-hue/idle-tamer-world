@@ -2,8 +2,8 @@ import "./styles.css";
 import "./styles-v2.css";
 import "./styles-game-first.css";
 import "./styles-progression-v3.css";
-import type { AccountBootstrapResponse } from "@idle-tamer/contracts";
-import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId } from "./account/client";
+import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, RunCommandResponse } from "@idle-tamer/contracts";
+import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId, RunApiError } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
 import { elementLabel, getMonster, getMonsterForm, MONSTERS } from "./game/content";
 import { findEncounter, getEncounter } from "./game/encounters";
@@ -68,6 +68,9 @@ const game = service.state;
 let activeView: View = "expedition";
 let showLogin = true;
 let accountBootstrap: AccountBootstrapResponse | null = null;
+let onlineRun: AuthoritativeRunSnapshot | null = null;
+let runSyncBusy = false;
+let lastRunSync = 0;
 let authMode: "login" | "register" = "login";
 let authBusy = false;
 let authMessage = "";
@@ -98,6 +101,84 @@ let clientUiState: ClientUiState = import.meta.env.DEV && ["loading", "online", 
 
 const timeFormatter = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 
+function isRunOnline(): boolean {
+  return accountApiEnabled && Boolean(accountBootstrap?.authority.server.includes("run"));
+}
+
+function safeRunNumber(value: string, label: string): number {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error(`${label} liegt außerhalb des sicheren Browserbereichs.`);
+  return parsed;
+}
+
+function applyOnlineRun(snapshot: AuthoritativeRunSnapshot): void {
+  const previous = onlineRun;
+  const combatChanged = !previous
+    || previous.currentZoneId !== snapshot.currentZoneId
+    || previous.activeMonster.level !== snapshot.activeMonster.level
+    || previous.runVictories !== snapshot.runVictories
+    || JSON.stringify(previous.zoneProgress) !== JSON.stringify(snapshot.zoneProgress);
+  onlineRun = snapshot;
+  game.resources.gold = safeRunNumber(snapshot.gold, "Gold");
+  game.pendingGold = safeRunNumber(snapshot.pendingGold, "Kampfspeicher-Gold");
+  game.cacheSlotsUsed = snapshot.cacheSlotsUsed;
+  game.currentZoneId = snapshot.currentZoneId;
+  game.unlockedZoneIds = [...snapshot.unlockedZoneIds];
+  game.highestZoneNumber = snapshot.highestZoneNumber;
+  game.zoneProgress = Object.fromEntries(Object.entries(snapshot.zoneProgress).map(([zoneId, progress]) => [zoneId, {
+    stage: progress.stage,
+    clears: safeRunNumber(progress.clears, `${zoneId}-Abschlüsse`),
+  }]));
+  game.runVictories = safeRunNumber(snapshot.runVictories, "Run-Siege");
+  game.totalVictories = safeRunNumber(snapshot.totalVictories, "Gesamtsiege");
+  const active = game.roster.find((monster) => monster.definitionId === snapshot.activeMonster.definitionId) ?? game.roster[0];
+  if (active) {
+    active.level = snapshot.activeMonster.level;
+    active.hyperLevel = 0;
+    active.evolution = "rookie";
+    active.gemSlots = {};
+    game.activeMonsterUid = active.uid;
+  }
+  if (combatChanged) battle = createBattleState();
+  service.save();
+}
+
+async function synchronizeOnlineRun(showReport = false): Promise<void> {
+  if (!isRunOnline() || !accountBootstrap?.onboarding.starterDefinitionId || runSyncBusy) return;
+  runSyncBusy = true;
+  lastRunSync = performance.now();
+  try {
+    const response = await accountClient.bootstrapRun();
+    applyOnlineRun(response.snapshot);
+    if (showReport && (response.settlement.victoriesAdded > 0 || response.snapshot.cacheSlotsUsed > 0)) showOfflineReport = true;
+    clientUiState = "online";
+    render();
+  } catch (error) {
+    clientUiState = error instanceof RunApiError && error.status === 401 ? "local" : "offline";
+    showNotice("Online-Run nicht erreichbar", error instanceof Error ? error.message : "Der Run-Server antwortet nicht.", "warning");
+  } finally {
+    runSyncBusy = false;
+  }
+}
+
+async function sendOnlineRunCommand(command: Parameters<AccountClient["runCommand"]>[0]): Promise<RunCommandResponse | null> {
+  if (!onlineRun || runSyncBusy) return null;
+  runSyncBusy = true;
+  try {
+    const response = await accountClient.runCommand(command, onlineRun.revision, clientInstanceId);
+    applyOnlineRun(response.snapshot);
+    clientUiState = "online";
+    return response;
+  } catch (error) {
+    runSyncBusy = false;
+    if (error instanceof RunApiError && error.problem.code === "CONFLICT") await synchronizeOnlineRun();
+    showNotice("Run-Aktion abgelehnt", error instanceof Error ? error.message : "Die Aktion konnte nicht bestätigt werden.", "warning");
+    return null;
+  } finally {
+    runSyncBusy = false;
+  }
+}
+
 function interactionActive(): boolean {
   return pointerInteractionActive || keyboardInteractionActive;
 }
@@ -111,6 +192,10 @@ function runSingleAction(key: string, action: () => void): void {
 
 function formatNumber(value: number): string {
   return formatGameNumber(value, game.settings.numberFormat);
+}
+
+function activeCacheCapacity(): number {
+  return isRunOnline() ? onlineRun?.cacheCapacity ?? 90 : cacheCapacity(game.research.extraction);
 }
 
 function eggImage(definitionId = "mystery"): string {
@@ -149,12 +234,13 @@ function activeMonster(): MonsterInstance | null {
 function createBattleState(): BattleState | null {
   const player = activeMonster();
   if (!player) return null;
+  const online = isRunOnline();
   const zoneProgress = game.zoneProgress[game.currentZoneId] ?? { stage: 1, clears: 0 };
   const enemy = enemyForZone(game.currentZoneId, zoneProgress.stage, game.runVictories, zoneProgress.clears);
-  const enemyValues = enemyStats(enemy.definitionId, enemy.level, game.prestigeCount);
+  const enemyValues = enemyStats(enemy.definitionId, enemy.level, online ? 0 : game.prestigeCount);
   const now = performance.now();
-  const synergy = activeZoneSynergy(game);
-  const maxHp = playerMaxHp(player, game.research.vitality, synergy?.hpPercent, game.prestigeCount);
+  const synergy = online ? null : activeZoneSynergy(game);
+  const maxHp = playerMaxHp(player, online ? 0 : game.research.vitality, synergy?.hpPercent, online ? 0 : game.prestigeCount);
   return {
     enemyDefinitionId: enemy.definitionId,
     enemyLevel: enemy.level,
@@ -193,7 +279,8 @@ function tickBattle(now: number): void {
   if (now >= battle.playerNextAttackAt) {
     const player = activeMonster();
     if (!player) return;
-    const damage = playerAttack(player, game.research.power, activeZoneSynergy(game)?.attackPercent, game.prestigeCount) + Math.floor(Math.random() * 5);
+    const online = isRunOnline();
+    const damage = playerAttack(player, online ? 0 : game.research.power, online ? 0 : activeZoneSynergy(game)?.attackPercent, online ? 0 : game.prestigeCount) + (online ? 0 : Math.floor(Math.random() * 5));
     battle.enemyHp = Math.max(0, battle.enemyHp - damage);
     battle.playerNextAttackAt = now + 1_650;
     const impactedBattle = battle;
@@ -209,9 +296,15 @@ function tickBattle(now: number): void {
     }, 420);
 
     if (battle.enemyHp <= 0) {
-      const result = service.recordVictory(battle.enemyDefinitionId, battle.enemyLevel);
       battle.status = "victory";
       battle.recoveryUntil = now + 1_800;
+      if (isRunOnline()) {
+        addLog("Kampf beendet. Der Server bestätigt Fortschritt und Beute unabhängig vom Browser.");
+        void synchronizeOnlineRun();
+        refreshCombatUi(now, true);
+        return;
+      }
+      const result = service.recordVictory(battle.enemyDefinitionId, battle.enemyLevel);
       if (result.unlockedZoneId) addLog(`Zonenboss besiegt! ${getZone(result.unlockedZoneId).name} wurde freigeschaltet.`);
       else if (result.bossDefeated) addLog(`Zonenboss besiegt! Evolutionskern${result.gemId ? " und Gem" : ""} im Kampfspeicher.`);
       else if (result.cacheFull) addLog("Sieg gezählt. Der Kampfspeicher ist voll – bitte Beute einsammeln.");
@@ -224,8 +317,9 @@ function tickBattle(now: number): void {
   }
 
   if (now >= battle.enemyNextAttackAt) {
-    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel, game.prestigeCount);
-    const damage = values.attack + Math.floor(Math.random() * 3);
+    const online = isRunOnline();
+    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel, online ? 0 : game.prestigeCount);
+    const damage = values.attack + (online ? 0 : Math.floor(Math.random() * 3));
     battle.playerHp = Math.max(0, battle.playerHp - damage);
     battle.enemyNextAttackAt = now + 1_900;
     const impactedBattle = battle;
@@ -271,21 +365,30 @@ function applyQaState(preset: QaPreset): void {
   showNotice("QA-Status gesetzt", `Entwicklungs-Preset „${preset}“ wurde lokal angewendet.`, "success");
 }
 
-function collectCache(): void {
+async function collectCache(): Promise<void> {
   const gold = game.pendingGold;
   const eggs = game.pendingEggs.length;
   const items = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const gems = game.pendingGems.length;
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "cache.claim" });
+    if (response) showNotice("Beute serverseitig gesichert", `${response.event.payload.gold ?? gold} Gold wurden exakt einmal gebucht.`, "success");
+    return;
+  }
   if (service.collectCache()) showNotice("Beute gesichert", `${gold} Gold, ${eggs} Eier, ${items} Materialien und ${gems} Gems wurden übertragen.`, "success");
 }
 
-function collectOfflineRewards(): void {
+async function collectOfflineRewards(): Promise<void> {
   showOfflineReport = false;
   const gold = game.pendingGold;
   const eggs = game.pendingEggs.length;
   const items = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const gems = game.pendingGems.length;
-  if (service.collectCache()) {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "cache.claim" });
+    if (response) showNotice("Willkommen zurück", `${response.event.payload.gold ?? gold} serverseitig berechnetes Gold wurde eingesammelt.`, "success");
+    else render();
+  } else if (service.collectCache()) {
     showNotice("Willkommen zurück", `${gold} Gold, ${eggs} Eier, ${items} Materialien und ${gems} Gems wurden eingesammelt.`, "success");
   } else {
     render();
@@ -305,14 +408,24 @@ function toggleCombatFocus(): void {
   render();
 }
 
-function levelUp(uid: string): void {
-  if (!service.levelUp(uid)) return;
+async function levelUp(uid: string): Promise<void> {
   const monster = game.roster.find((entry) => entry.uid === uid);
+  if (isRunOnline()) {
+    if (!monster || monster.definitionId !== onlineRun?.activeMonster.definitionId) {
+      showNotice("Noch nicht online verfügbar", "Weitere Monsterlevel folgen mit der serverseitigen Sammlung in Block 6.", "warning");
+      return;
+    }
+    const response = await sendOnlineRunCommand({ type: "monster.level_up", definitionId: monster.definitionId });
+    if (response) showNotice("Run-Level serverseitig erhöht", `${getMonsterForm(monster).name} ist jetzt Level ${response.event.payload.level}.`, "success");
+    return;
+  }
+  if (!service.levelUp(uid)) return;
   if (uid === game.activeMonsterUid) battle = createBattleState();
   showNotice("Run-Level erhöht", `${monster ? getMonsterForm(monster).name : "Monster"} ist jetzt Level ${monster?.level ?? "–"}.`);
 }
 
 function trainWithData(uid: string): void {
+  if (isRunOnline()) return showNotice("Sammlung noch lokal", "Trainingsdaten werden erst in Block 6 serverautoritativ mit Run-Leveln verbunden.", "warning");
   if (!service.trainWithData(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
@@ -363,7 +476,12 @@ function makeSupport(uid: string): void {
     : `${support ? getMonsterForm(support).name : "Das Monster"} ist im zweiten Expeditionsplatz. Für diese Zone passt die Rollenkombination noch nicht.`);
 }
 
-function selectZone(zoneId: string): void {
+async function selectZone(zoneId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "zone.select", zoneId });
+    if (response) showNotice("Expeditionsziel serverseitig geändert", `${getZone(zoneId).name} ist jetzt deine aktive Zone.`, "success");
+    return;
+  }
   if (!service.selectZone(zoneId)) return;
   battle = createBattleState();
   showNotice("Expeditionsziel geändert", `${getZone(zoneId).name} ist jetzt deine aktive Zone.`);
@@ -392,6 +510,7 @@ async function chooseStarter(definitionId: string): Promise<void> {
   battle = createBattleState();
   const starter = activeMonster();
   showNotice("Resonanz verbunden", `${starter ? getMonsterForm(starter).name : "Dein Rookie"} ist dein erster Partner.`, "success");
+  if (accountApiEnabled) await synchronizeOnlineRun();
 }
 
 function startIncubation(definitionId: string): void {
@@ -449,11 +568,13 @@ function buyResearch(id: ResearchId): void {
 }
 
 function claimMilestone(target: number): void {
+  if (isRunOnline()) return showNotice("Storybelohnung wartet auf Block 6", "Gold und Besitz dürfen nicht mehr aus einem lokalen Claim entstehen.", "warning");
   const milestone = MILESTONES.find((entry) => entry.target === target);
   if (service.claimMilestone(target)) showNotice("Story-Belohnung geborgen", `${milestone?.title ?? "Meilenstein"} wurde deinem Account gutgeschrieben.`, "success");
 }
 
 function claimObjective(objectiveId: string): void {
+  if (isRunOnline()) return showNotice("Auftragsclaim wartet auf Block 6", "Der Online-Run akzeptiert keine lokal berechneten Goldbelohnungen.", "warning");
   const objective = OBJECTIVES.find((entry) => entry.id === objectiveId);
   if (!service.claimObjective(objectiveId)) return;
   showNotice("Belohnung geborgen", `${objective?.title ?? "Auftrag"} wurde deinem Inventar gutgeschrieben.`, "success");
@@ -467,6 +588,7 @@ function startTimedExpedition(slot: number, definitionId: string, monsterUid: st
 }
 
 function claimTimedExpedition(expeditionId: string): void {
+  if (isRunOnline()) return showNotice("Expedition noch lokal", "Zeitjobs und ihre Belohnungen werden in Block 6 sicher auf den Server verschoben.", "warning");
   const expedition = game.expeditions.find((entry) => entry.id === expeditionId);
   const definition = expedition ? getExpedition(expedition.definitionId) : undefined;
   const result = service.claimExpedition(expeditionId);
@@ -476,6 +598,7 @@ function claimTimedExpedition(expeditionId: string): void {
 }
 
 function craftRecipe(recipeId: string): void {
+  if (isRunOnline()) return showNotice("Herstellung noch lokal", "Rezepte dürfen serverseitiges Gold erst nach der Besitzmigration in Block 6 ausgeben.", "warning");
   const recipe = getCraftingRecipe(recipeId);
   if (!service.craftItem(recipeId)) return;
   const output = recipe ? ITEMS.find((item) => item.id === recipe.output.itemId) : undefined;
@@ -494,6 +617,7 @@ function advanceTutorial(skip = false): void {
 }
 
 function claimSystemMessage(messageId: string): void {
+  if (isRunOnline()) return showNotice("Systembelohnung wartet auf Block 6", "Lokale Nachrichten können kein serverseitiges Gold erzeugen.", "warning");
   const message = SYSTEM_MESSAGES.find((entry) => entry.id === messageId);
   if (!service.claimSystemMessage(messageId)) return;
   showNotice("Systempost bestätigt", `${message?.title ?? "Nachricht"} wurde abgeschlossen.`, "success");
@@ -504,6 +628,7 @@ function openPrestigeScene(): void {
 }
 
 function confirmPrestige(): void {
+  if (isRunOnline()) return showNotice("Prestige folgt in Block 6", "Der Online-Run wird erst zurückgesetzt, wenn Dauerfortschritt und Kerne serverautoritativ sind.", "warning");
   if (prestigeActivating || prestigeCoreReward(game.runVictories, game.highestZoneNumber) <= 0) return;
   prestigeActivating = true;
   render();
@@ -583,6 +708,7 @@ function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
   showOfflineReport = Boolean(serverStarter && (loaded.offlineSeconds > 0 || game.cacheSlotsUsed > 0));
   battle = createBattleState();
   render();
+  if (serverStarter) void synchronizeOnlineRun(true);
   return true;
 }
 
@@ -863,7 +989,7 @@ function loginShell(): string {
         <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
         ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" data-testid="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
         ${accountForm}
-        <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>${accountApiEnabled ? "Account online · Spielstand lokal" : "Lokaler UI-Testmodus"}</strong><small>${accountApiEnabled ? "Profil, Sitzung und Starter liegen bereits sicher auf dem Server. Run, Gold und Sammlung folgen in Block 5 und 6." : "Der Entwicklungsbrowser nutzt weiterhin den schnellen lokalen Testzugang."}</small></div></div>
+        <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>${accountApiEnabled ? "Account & Run online · Sammlung lokal" : "Lokaler UI-Testmodus"}</strong><small>${accountApiEnabled ? "Kampfzeit, Gold, Run-Level und Zonen werden vom Server bestätigt. Eier, Gems und Dauerfortschritt folgen in Block 6." : "Der Entwicklungsbrowser nutzt weiterhin den schnellen lokalen Testzugang."}</small></div></div>
         <small class="login-panel__version">CLIENT V0.2 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
       </section>
     </main>
@@ -969,7 +1095,7 @@ function expeditionView(): string {
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
-  const capacity = cacheCapacity(game.research.extraction);
+  const capacity = activeCacheCapacity();
   const eggGuarantee = Math.max(1, BALANCE.drops.eggPityMisses + 1 - game.eggPity);
   const zone = getZone(game.currentZoneId);
   const zoneNumber = ZONES.findIndex((entry) => entry.id === zone.id) + 1;
@@ -1081,7 +1207,7 @@ function inventoryView(): string {
   const active = activeMonster();
   const totalItems = Object.values(game.inventory).reduce((sum, amount) => sum + amount, 0);
   return `<section class="page">${pageHeading("BEUTE · MATERIALIEN", "Inventar", "Hier landet alles, was du aus dem Kampfspeicher einsammelst. Materialien sind nach Einsatz und Quelle getrennt.", `${totalItems} MATERIALIEN · ${Object.values(game.eggInventory).reduce((sum, amount) => sum + amount, 0)} EIER`)}
-    <div class="inventory-summary panel"><div><span class="eyebrow">KAMPFSPEICHER</span><strong>${game.cacheSlotsUsed} / ${cacheCapacity(game.research.extraction)} Plätze belegt</strong><small>${Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0)} Materialien, ${game.pendingEggs.length} Eier und ${game.pendingGems.length} Gems warten auf Abholung.</small></div><button class="primary-button" id="collect-cache" ${game.cacheSlotsUsed === 0 && game.pendingGold === 0 && game.pendingGems.length === 0 ? "disabled" : ""}>BEUTE EINSAMMELN ${icon("arrow")}</button></div>
+    <div class="inventory-summary panel"><div><span class="eyebrow">KAMPFSPEICHER</span><strong>${game.cacheSlotsUsed} / ${activeCacheCapacity()} Plätze belegt</strong><small>${Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0)} Materialien, ${game.pendingEggs.length} Eier und ${game.pendingGems.length} Gems warten auf Abholung.</small></div><button class="primary-button" id="collect-cache" ${game.cacheSlotsUsed === 0 && game.pendingGold === 0 && game.pendingGems.length === 0 ? "disabled" : ""}>BEUTE EINSAMMELN ${icon("arrow")}</button></div>
     <div class="item-grid">${ITEMS.map((item) => `<article class="item-card panel item-card--${item.rarity.toLowerCase()}"><span class="item-card__icon"><img src="${item.image}" alt=""></span><div><span class="eyebrow">${item.rarity.toUpperCase()}</span><h2>${item.name}</h2><p>${item.description}</p><small>QUELLE · ${item.source}</small></div><b class="item-count">${game.inventory[item.id]}×</b>${item.action === "train" && active ? `<button class="secondary-button" data-train="${active.uid}" ${game.inventory[item.id] <= 0 ? "disabled" : ""}>${getMonsterForm(active).name} TRAINIEREN</button>` : item.action === "accelerate" ? `<button class="secondary-button" id="accelerate-incubation" ${!game.incubation || game.inventory[item.id] <= 0 ? "disabled" : ""}>BRUTZEIT −60s</button>` : item.id === "ether_dust" ? `<span class="item-reserved">ROHSTOFF · ETHERWERKSTATT</span>` : `<span class="item-reserved">VERBRAUCH · EVOLUTION</span>`}</article>`).join("")}</div>
     ${craftingWorkbench()}
     <div class="inventory-gem-callout panel"><div><span class="eyebrow">GEM-AUSRÜSTUNG</span><strong>${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} Gems im Inventar</strong><small>Dreieck verstärkt Angriff, Quadrat verstärkt Leben, Raute verstärkt beides. Fünf Farben und drei Seltenheiten sind vorbereitet.</small></div><div>${GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).slice(0, 5).map((gem) => `<img src="${gem.image}" alt="${gem.name}" title="${gem.name}">`).join("")}</div><button class="secondary-button" data-view="habitat">GEMS AUSRÜSTEN</button></div>
@@ -1328,7 +1454,7 @@ function offlineReport(): string {
       <span>${icon("inventory")}<small>MATERIALIEN</small><b>+${offlineMaterialCount}</b></span>
       <span>${icon("shield")}<small>SPEICHERPLÄTZE</small><b>+${loaded.offlineSlots}</b></span>
     </div>
-    <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${cacheCapacity(game.research.extraction)}</span></div>
+    <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${activeCacheCapacity()}</span></div>
     <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
   </section></div>`;
@@ -1355,7 +1481,7 @@ function refreshCombatUi(now = performance.now(), structural = false): void {
   const bossStage = progress.stage >= zone.stages;
   const chapter = currentChapter(game.totalVictories);
   const pendingFindCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0) + game.pendingGems.length;
-  const capacity = cacheCapacity(game.research.extraction);
+  const capacity = activeCacheCapacity();
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
   const attackProgress = battle.status === "fighting" ? Math.max(3, Math.min(100, 100 - ((battle.playerNextAttackAt - now) / 1_650) * 100)) : 100;
 
@@ -1665,6 +1791,7 @@ function frame(now: number): void {
       render();
     }
   }
+  if (isRunOnline() && !showLogin && now - lastRunSync >= 5_000 && !runSyncBusy) void synchronizeOnlineRun();
   requestAnimationFrame(frame);
 }
 

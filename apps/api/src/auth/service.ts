@@ -437,9 +437,9 @@ export class AuthService {
         requiredAction: record.starterDefinitionId ? null : "starter_choice",
       },
       authority: {
-        mode: "account-online-game-local",
-        server: ["account", "profile", "starter"],
-        local: ["run", "economy", "collection", "incubation", "expeditions", "research", "prestige"],
+        mode: "run-online-collection-local",
+        server: ["account", "profile", "starter", "run", "economy"],
+        local: ["collection", "incubation", "expeditions", "research", "prestige"],
         localStorageNamespace: record.localStorageNamespace,
       },
       features: this.config.features,

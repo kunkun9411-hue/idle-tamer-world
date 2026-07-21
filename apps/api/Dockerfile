@@ -10,6 +10,7 @@ COPY packages/config/package.json packages/config/package.json
 COPY packages/content/package.json packages/content/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/database/package.json packages/database/package.json
+COPY packages/game-core/package.json packages/game-core/package.json
 
 RUN pnpm install --frozen-lockfile
 
@@ -18,6 +19,7 @@ COPY packages/config packages/config
 COPY packages/content packages/content
 COPY packages/contracts packages/contracts
 COPY packages/database packages/database
+COPY packages/game-core packages/game-core
 
 EXPOSE 3001
 

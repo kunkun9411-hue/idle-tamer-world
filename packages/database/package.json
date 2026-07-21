@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "test:integration": "vitest run src/integration.test.ts && vitest run src/auth-integration.test.ts",
+    "test:integration": "vitest run src/integration.test.ts && vitest run src/auth-integration.test.ts && vitest run src/run-integration.test.ts",
     "db:migrate": "node-pg-migrate --migrations-dir migrations up",
     "db:rollback": "node-pg-migrate --migrations-dir migrations down",
     "db:seed": "tsx src/seed.ts",
@@ -15,7 +15,9 @@
     "support:account": "tsx src/support-account-cli.ts"
   },
   "dependencies": {
+    "@idle-tamer/content": "workspace:*",
     "@idle-tamer/contracts": "workspace:*",
+    "@idle-tamer/game-core": "workspace:*",
     "node-pg-migrate": "^9.0.0",
     "pg": "^8.22.0"
   },

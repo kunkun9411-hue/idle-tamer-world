@@ -53,6 +53,13 @@ test("one account keeps the same profile and starter across two real browser con
     await expect(firstPage.getByTestId("starter-dialog"), first.diagnostics.join("\n")).toBeVisible({ timeout: 20_000 });
     await firstPage.getByTestId("starter-pyrook").click();
     await expect(firstPage.getByTestId("combat-scene")).toBeVisible();
+    await expect(firstPage.locator("[data-level]").first()).toBeEnabled({ timeout: 20_000 });
+    await firstPage.locator("[data-level]").first().click();
+    await expect.poll(() => firstPage.evaluate(async () => {
+      const response = await fetch("/api/v1/run", { credentials: "include" });
+      const body = await response.json() as { snapshot?: { activeMonster?: { level?: number } } };
+      return { status: response.status, level: body.snapshot?.activeMonster?.level };
+    })).toEqual({ status: 200, level: 2 });
     const firstNamespace = await firstPage.evaluate((key) => localStorage.getItem(key), ACTIVE_ACCOUNT_NAMESPACE_KEY);
     expect(firstNamespace).toMatch(/^[0-9a-f-]{36}$/u);
 
@@ -60,6 +67,11 @@ test("one account keeps the same profile and starter across two real browser con
     const secondPage = second.page;
     await expect(secondPage.getByTestId("combat-scene"), second.diagnostics.join("\n")).toBeVisible({ timeout: 20_000 });
     await expect(secondPage.getByTestId("starter-dialog")).toHaveCount(0);
+    await expect.poll(() => secondPage.evaluate(async () => {
+      const response = await fetch("/api/v1/run", { credentials: "include" });
+      const body = await response.json() as { snapshot?: { activeMonster?: { definitionId?: string; level?: number } } };
+      return { status: response.status, monster: body.snapshot?.activeMonster?.definitionId, level: body.snapshot?.activeMonster?.level };
+    })).toEqual({ status: 200, monster: "pyrook", level: 2 });
     const secondNamespace = await secondPage.evaluate((key) => localStorage.getItem(key), ACTIVE_ACCOUNT_NAMESPACE_KEY);
     expect(secondNamespace).toBe(firstNamespace);
 

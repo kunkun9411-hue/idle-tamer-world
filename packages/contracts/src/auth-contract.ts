@@ -5,8 +5,8 @@ export const AUTH_ERROR_CONTRACT_VERSION = 2 as const;
 
 export type AccountRole = "player" | "support" | "moderator" | "admin";
 export type AccountStatus = "pending_verification" | "active" | "locked" | "deletion_pending" | "deleted";
-export type ServerAuthorityScope = "account" | "profile" | "starter";
-export type LocalAuthorityScope = "run" | "economy" | "collection" | "incubation" | "expeditions" | "research" | "prestige";
+export type ServerAuthorityScope = "account" | "profile" | "starter" | "run" | "economy";
+export type LocalAuthorityScope = "collection" | "incubation" | "expeditions" | "research" | "prestige";
 
 export interface AccountBootstrapResponse {
   authContractVersion: typeof AUTH_CONTRACT_VERSION;
@@ -41,7 +41,7 @@ export interface AccountBootstrapResponse {
     requiredAction: "starter_choice" | null;
   };
   authority: {
-    mode: "account-online-game-local";
+    mode: "run-online-collection-local";
     server: ServerAuthorityScope[];
     local: LocalAuthorityScope[];
     localStorageNamespace: string;

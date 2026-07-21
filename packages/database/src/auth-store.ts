@@ -596,6 +596,30 @@ export class PostgresAuthStore implements AuthStore {
         [input.playerId, input.definitionId, input.userId],
       );
       if (updated.rowCount !== 1) throw new Error("STARTER_ALREADY_CHOSEN");
+      await client.query(
+        `INSERT INTO player_runs (player_id, active_monster_definition_id)
+         VALUES ($1, $2)
+         ON CONFLICT (player_id) DO NOTHING`,
+        [input.playerId, input.definitionId],
+      );
+      await client.query(
+        `INSERT INTO player_run_levels (player_id, monster_definition_id)
+         VALUES ($1, $2)
+         ON CONFLICT (player_id, monster_definition_id) DO NOTHING`,
+        [input.playerId, input.definitionId],
+      );
+      await client.query(
+        `INSERT INTO player_zone_progress (player_id, zone_id)
+         VALUES ($1, 'violet-rim')
+         ON CONFLICT (player_id, zone_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO wallet_balances (player_id, definition_id, amount)
+         VALUES ($1, 'gold', 100)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
       return { starterDefinitionId: input.definitionId };
     });
     return { revision: result.revision, replayed: result.replayed };

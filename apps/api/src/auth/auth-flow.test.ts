@@ -262,7 +262,7 @@ describe("account HTTP flow", () => {
     const bootstrap = await app.inject({ method: "GET", url: "/api/v1/bootstrap", headers: { cookie } });
     expect(bootstrap.statusCode).toBe(200);
     expect(bootstrap.json()).toMatchObject({
-      authority: { mode: "account-online-game-local" },
+      authority: { mode: "run-online-collection-local" },
       onboarding: { requiredAction: "starter_choice" },
       profile: { avatarId: "wanderer", frameId: "silver" },
     });

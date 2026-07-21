@@ -1,11 +1,16 @@
 import {
   AUTH_CONTRACT_VERSION,
+  RUN_CONTRACT_VERSION,
   type AccountBootstrapResponse,
   type AccountCommand,
   type AccountCommandResponse,
   type AuthApiProblem,
   type LoginResponse,
   type RegisterRequest,
+  type ApiProblem,
+  type RunBootstrapResponse,
+  type RunCommand,
+  type RunCommandResponse,
 } from "@idle-tamer/contracts";
 
 export const ACTIVE_ACCOUNT_NAMESPACE_KEY = "idle-tamer.active-account-namespace.v1";
@@ -15,6 +20,13 @@ export class AccountApiError extends Error {
   public constructor(public readonly status: number, public readonly problem: AuthApiProblem) {
     super(problem.message);
     this.name = "AccountApiError";
+  }
+}
+
+export class RunApiError extends Error {
+  public constructor(public readonly status: number, public readonly problem: ApiProblem) {
+    super(problem.message);
+    this.name = "RunApiError";
   }
 }
 
@@ -32,6 +44,20 @@ const parseResponse = async <T>(response: Response): Promise<T> => {
     throw new AccountApiError(response.status, problem);
   }
   return response.json() as Promise<T>;
+};
+
+const parseRunResponse = async <T extends { runContractVersion: number }>(response: Response): Promise<T> => {
+  const body = await response.json().catch(() => null) as T | ApiProblem | null;
+  if (!response.ok) {
+    const problem = body && "code" in body
+      ? body as ApiProblem
+      : { errorContractVersion: 1 as const, code: "UNKNOWN" as const, message: "Der Run-Server ist vorübergehend nicht erreichbar." };
+    throw new RunApiError(response.status, problem);
+  }
+  if (!body || !("runContractVersion" in body) || body.runContractVersion !== RUN_CONTRACT_VERSION) {
+    throw new RunApiError(response.status, { errorContractVersion: 1, code: "UNKNOWN", message: "Client und Run-Server verwenden unterschiedliche Verträge." });
+  }
+  return body as T;
 };
 
 export const getClientInstanceId = (storage: Pick<Storage, "getItem" | "setItem"> = localStorage): string => {
@@ -99,6 +125,21 @@ export class AccountClient {
     const payload = await parseResponse<AccountCommandResponse>(response);
     this.acceptBootstrap(payload.bootstrap);
     return payload;
+  }
+
+  public async bootstrapRun(): Promise<RunBootstrapResponse> {
+    const response = await this.fetchImpl("/api/v1/run", { credentials: "include", headers: { accept: "application/json" } });
+    return parseRunResponse<RunBootstrapResponse>(response);
+  }
+
+  public async runCommand(command: RunCommand, expectedRevision: number, clientInstanceId: string, commandId = crypto.randomUUID()): Promise<RunCommandResponse> {
+    const response = await this.fetchImpl("/api/v1/run/commands", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json", accept: "application/json", "x-csrf-token": this.csrfToken },
+      body: JSON.stringify({ commandId, clientInstanceId, expectedRevision, issuedAt: new Date().toISOString(), command }),
+    });
+    return parseRunResponse<RunCommandResponse>(response);
   }
 
   public async logout(): Promise<void> {

@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 
 import cookie from "@fastify/cookie";
 import { loadServerConfig, publicRuntimeConfig, type ServerConfig } from "@idle-tamer/config";
-import { API_PROTOCOL_VERSION, AUTH_ERROR_CONTRACT_VERSION, ERROR_CONTRACT_VERSION, type ApiProblem, type AuthApiProblem } from "@idle-tamer/contracts";
-import type { AuthStore } from "@idle-tamer/database";
+import { API_PROTOCOL_VERSION, AUTH_ERROR_CONTRACT_VERSION, ERROR_CONTRACT_VERSION, RUN_CONTRACT_VERSION, type ApiProblem, type AuthApiProblem } from "@idle-tamer/contracts";
+import type { AuthStore, RunStore } from "@idle-tamer/database";
 import Fastify from "fastify";
 
 import { AuthError } from "./auth/errors";
@@ -13,6 +13,8 @@ import { registerAuthRoutes } from "./auth/routes";
 import { AuthService } from "./auth/service";
 import { ApiError } from "./errors";
 import { createApiLogger } from "./logger";
+import { registerRunRoutes } from "./run/routes";
+import { RunService } from "./run/service";
 
 export interface DatabaseHealth {
   ping(): Promise<void>;
@@ -22,6 +24,7 @@ export interface BuildAppOptions {
   config?: ServerConfig;
   database?: DatabaseHealth;
   authStore?: AuthStore;
+  runStore?: RunStore;
   authMail?: AuthMailPort;
   authNow?: () => Date;
   authSleep?: (milliseconds: number) => Promise<void>;
@@ -48,7 +51,15 @@ export const buildApp = (options: BuildAppOptions = {}) => {
       features: publicRuntimeConfig(config).features,
     }, options.authNow);
     const rateLimiter = new AuthRateLimiter(options.authStore, config.RATE_LIMIT_HMAC_SECRET, options.authNow, options.authSleep);
-    void app.register(async (authApp) => registerAuthRoutes(authApp, { service: authService, rateLimiter, publicOrigin: config.PUBLIC_ORIGIN }));
+    void app.register(async (authApp) => {
+      await registerAuthRoutes(authApp, { service: authService, rateLimiter, publicOrigin: config.PUBLIC_ORIGIN });
+      if (options.runStore) await registerRunRoutes(authApp, {
+        authService,
+        rateLimiter,
+        runService: new RunService(options.runStore, options.authNow),
+        publicOrigin: config.PUBLIC_ORIGIN,
+      });
+    });
   }
 
   app.addHook("onSend", async (request, reply) => {
@@ -111,6 +122,7 @@ export const buildApp = (options: BuildAppOptions = {}) => {
 
   app.get("/api/v1/meta", async () => ({
     protocolVersion: API_PROTOCOL_VERSION,
+    runContractVersion: RUN_CONTRACT_VERSION,
     ...publicRuntimeConfig(config),
   }));
 

@@ -4,8 +4,17 @@
   "version": "0.2.0",
   "type": "module",
   "exports": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
   "dependencies": {
     "@idle-tamer/content": "workspace:*",
     "@idle-tamer/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

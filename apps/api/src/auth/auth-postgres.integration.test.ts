@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import type { AccountBootstrapResponse } from "@idle-tamer/contracts";
-import { createDatabasePool, PostgresAuthStore } from "@idle-tamer/database";
+import { createDatabasePool, PostgresAuthStore, PostgresRunStore } from "@idle-tamer/database";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { buildApp } from "../app";
@@ -47,6 +47,7 @@ integration("full auth HTTP lifecycle on PostgreSQL 18", () => {
       config,
       database: { ping: async () => undefined },
       authStore: store,
+      runStore: new PostgresRunStore(pool),
       authMail: new MemoryAuthMailAdapter(),
       authSleep: async () => undefined,
       logger: false,
@@ -273,5 +274,60 @@ integration("full auth HTTP lifecycle on PostgreSQL 18", () => {
       payload: { identifier: account.email, password: newPassword, rememberMe: false, clientInstanceId: randomUUID() },
     });
     expect(newPasswordLogin.statusCode).toBe(200);
+  }, 30_000);
+
+  it("serves and claims the authoritative run without accepting client rewards", async () => {
+    const account = await createActiveAccount("online-run");
+    const session = await login(account.email, "Mozilla/5.0 Windows Chrome/140");
+    const choose = await app.inject({
+      method: "POST",
+      url: "/api/v1/account/commands",
+      headers: { cookie: session.cookie, origin, "x-csrf-token": session.bootstrap.csrfToken },
+      payload: {
+        commandId: randomUUID(),
+        clientInstanceId: randomUUID(),
+        expectedRevision: 0,
+        issuedAt: new Date().toISOString(),
+        command: { type: "starter.choose", definitionId: "pyrook" },
+      },
+    });
+    expect(choose.statusCode).toBe(200);
+    const playerId = choose.json().bootstrap.profile.playerId as string;
+    await pool.query("UPDATE player_run_levels SET level = 100 WHERE player_id = $1", [playerId]);
+    await pool.query("UPDATE player_runs SET next_combat_at = clock_timestamp() - interval '2 minutes' WHERE player_id = $1", [playerId]);
+
+    const bootstrap = await app.inject({ method: "GET", url: "/api/v1/run", headers: { cookie: session.cookie } });
+    expect(bootstrap.statusCode).toBe(200);
+    expect(bootstrap.json()).toMatchObject({ runContractVersion: 1, snapshot: { gold: "100", cacheSlotsUsed: expect.any(Number) } });
+    expect(bootstrap.json().snapshot.cacheSlotsUsed).toBeGreaterThan(0);
+
+    const commandId = randomUUID();
+    const payload = {
+      commandId,
+      clientInstanceId: randomUUID(),
+      expectedRevision: bootstrap.json().snapshot.revision,
+      issuedAt: new Date().toISOString(),
+      command: { type: "cache.claim", gold: "999999999999999999", victories: 999 },
+    };
+    const claimed = await app.inject({
+      method: "POST",
+      url: "/api/v1/run/commands",
+      headers: { cookie: session.cookie, origin, "x-csrf-token": session.bootstrap.csrfToken },
+      payload,
+    });
+    expect(claimed.statusCode).toBe(200);
+    expect(claimed.json()).toMatchObject({ accepted: true, replayed: false, event: { type: "cache.claimed" } });
+    expect(BigInt(claimed.json().snapshot.gold)).toBe(100n + BigInt(claimed.json().event.payload.gold));
+
+    const replayed = await app.inject({
+      method: "POST",
+      url: "/api/v1/run/commands",
+      headers: { cookie: session.cookie, origin, "x-csrf-token": session.bootstrap.csrfToken },
+      payload,
+    });
+    expect(replayed.statusCode).toBe(200);
+    expect(replayed.json()).toMatchObject({ replayed: true, snapshot: { gold: claimed.json().snapshot.gold } });
+    await expect(pool.query("SELECT count(*)::int AS count FROM economy_ledger WHERE player_id = $1 AND reason = 'cache.claim'", [playerId]))
+      .resolves.toMatchObject({ rows: [{ count: 1 }] });
   }, 30_000);
 });

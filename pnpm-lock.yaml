@@ -89,9 +89,15 @@ importers:
 
   packages/database:
     dependencies:
+      '@idle-tamer/content':
+        specifier: workspace:*
+        version: link:../content
       '@idle-tamer/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@idle-tamer/game-core':
+        specifier: workspace:*
+        version: link:../game-core
       node-pg-migrate:
         specifier: ^9.0.0
         version: 9.0.0(@types/pg@8.20.0)(pg@8.22.0)
@@ -123,6 +129,16 @@ importers:
       '@idle-tamer/contracts':
         specifier: workspace:*
         version: link:../contracts
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(tsx@4.23.1)
 
 packages:
 
