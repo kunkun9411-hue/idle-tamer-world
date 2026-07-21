@@ -16,7 +16,9 @@ Die Roadmap steht bei 19/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmet
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
-Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 84 lokale Unit-, Vertrags- und Browsertests, 22 isolierte PostgreSQL-18-Fälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest mit serverseitigem Run-Level abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 87 lokale Unit-, Vertrags- und Browsertests, 22 isolierte PostgreSQL-18-Fälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest mit serverseitigem Run-Level abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+
+Bei der ersten Spielerprüfung von Block 5 wurde ein Snapshotfehler gefunden: Die fünfsekündliche Run-Synchronisierung setzte lokale Gem-Slots, Hyperlevel und Evolution zurück. Die Grenze ist korrigiert. Autoritative Snapshots ändern nur Run-Daten; lokale Sammlungsdaten bleiben erhalten und werden im Online-Kampf bis Block 6 nicht angerechnet. Durch den alten Fehler verwaiste Foundation-Gems werden automatisch ins lokale Inventar zurückgelegt.
 
 Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
 

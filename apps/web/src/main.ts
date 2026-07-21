@@ -16,6 +16,7 @@ import { isAvatarUnlocked, isFrameUnlocked, LocalGameService } from "./game/game
 import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { formatGameNumber } from "./game/number-scale";
+import { applyAuthoritativeRunSnapshot, combatMonsterForAuthority } from "./game/online-run-state";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
 import { applyQaPreset, type QaPreset } from "./game/qa-tools";
 import {
@@ -105,12 +106,6 @@ function isRunOnline(): boolean {
   return accountApiEnabled && Boolean(accountBootstrap?.authority.server.includes("run"));
 }
 
-function safeRunNumber(value: string, label: string): number {
-  const parsed = Number(value);
-  if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error(`${label} liegt außerhalb des sicheren Browserbereichs.`);
-  return parsed;
-}
-
 function applyOnlineRun(snapshot: AuthoritativeRunSnapshot): void {
   const previous = onlineRun;
   const combatChanged = !previous
@@ -119,26 +114,7 @@ function applyOnlineRun(snapshot: AuthoritativeRunSnapshot): void {
     || previous.runVictories !== snapshot.runVictories
     || JSON.stringify(previous.zoneProgress) !== JSON.stringify(snapshot.zoneProgress);
   onlineRun = snapshot;
-  game.resources.gold = safeRunNumber(snapshot.gold, "Gold");
-  game.pendingGold = safeRunNumber(snapshot.pendingGold, "Kampfspeicher-Gold");
-  game.cacheSlotsUsed = snapshot.cacheSlotsUsed;
-  game.currentZoneId = snapshot.currentZoneId;
-  game.unlockedZoneIds = [...snapshot.unlockedZoneIds];
-  game.highestZoneNumber = snapshot.highestZoneNumber;
-  game.zoneProgress = Object.fromEntries(Object.entries(snapshot.zoneProgress).map(([zoneId, progress]) => [zoneId, {
-    stage: progress.stage,
-    clears: safeRunNumber(progress.clears, `${zoneId}-Abschlüsse`),
-  }]));
-  game.runVictories = safeRunNumber(snapshot.runVictories, "Run-Siege");
-  game.totalVictories = safeRunNumber(snapshot.totalVictories, "Gesamtsiege");
-  const active = game.roster.find((monster) => monster.definitionId === snapshot.activeMonster.definitionId) ?? game.roster[0];
-  if (active) {
-    active.level = snapshot.activeMonster.level;
-    active.hyperLevel = 0;
-    active.evolution = "rookie";
-    active.gemSlots = {};
-    game.activeMonsterUid = active.uid;
-  }
+  applyAuthoritativeRunSnapshot(game, snapshot);
   if (combatChanged) battle = createBattleState();
   service.save();
 }
@@ -231,8 +207,13 @@ function activeMonster(): MonsterInstance | null {
   return game.roster.find((monster) => monster.uid === game.activeMonsterUid) ?? game.roster[0] ?? null;
 }
 
+function activeCombatMonster(): MonsterInstance | null {
+  const monster = activeMonster();
+  return monster ? combatMonsterForAuthority(monster, isRunOnline()) : null;
+}
+
 function createBattleState(): BattleState | null {
-  const player = activeMonster();
+  const player = activeCombatMonster();
   if (!player) return null;
   const online = isRunOnline();
   const zoneProgress = game.zoneProgress[game.currentZoneId] ?? { stage: 1, clears: 0 };
@@ -277,7 +258,7 @@ function tickBattle(now: number): void {
   if (battle.status !== "fighting") return;
 
   if (now >= battle.playerNextAttackAt) {
-    const player = activeMonster();
+    const player = activeCombatMonster();
     if (!player) return;
     const online = isRunOnline();
     const damage = playerAttack(player, online ? 0 : game.research.power, online ? 0 : activeZoneSynergy(game)?.attackPercent, online ? 0 : game.prestigeCount) + (online ? 0 : Math.floor(Math.random() * 5));
@@ -433,6 +414,7 @@ function trainWithData(uid: string): void {
 }
 
 function evolveMonster(uid: string): void {
+  if (isRunOnline()) return showNotice("Evolution folgt in Block 6", "Evolution und ihre Materialien bleiben erhalten, bis die Sammlung serverautoritativ ist.", "warning");
   if (!service.evolve(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
@@ -440,6 +422,7 @@ function evolveMonster(uid: string): void {
 }
 
 function upgradeHyper(uid: string): void {
+  if (isRunOnline()) return showNotice("Hyperlevel folgt in Block 6", "Fragmente werden erst ausgegeben, wenn der Dauerfortschritt sicher auf dem Server liegt.", "warning");
   if (!service.upgradeHyper(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
@@ -447,6 +430,7 @@ function upgradeHyper(uid: string): void {
 }
 
 function equipGem(uid: string, gemId: string): void {
+  if (isRunOnline()) return showNotice("Gem-Ausrüstung folgt in Block 6", "Deine Gems bleiben im Inventar. Einsetzen und Kampfwirkung werden gemeinsam serverautoritativ freigeschaltet.", "warning");
   if (!service.equipGem(uid, gemId)) return;
   if (uid === game.activeMonsterUid) battle = createBattleState();
   const gem = getGem(gemId);
@@ -1084,7 +1068,7 @@ function combatObjectiveMarkup(): string {
 }
 
 function expeditionView(): string {
-  const player = activeMonster();
+  const player = activeCombatMonster();
   if (!player || !battle) return starterGate();
   const playerDefinition = getMonsterForm(player);
   const playerLineage = getMonster(player.definitionId);
@@ -1155,8 +1139,9 @@ function gemLoadout(monster: MonsterInstance): string {
   const shapes: GemShape[] = ["triangle", "square", "diamond"];
   const available = GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0);
   const bonuses = monsterGemBonuses(monster);
+  const onlineLocked = isRunOnline();
   return `<section class="gem-workbench panel">
-    <div class="gem-workbench__heading"><div><span class="eyebrow">GEM-AUSRÜSTUNG · PERMANENT</span><h2>${definition.name}s Grundwerte</h2><p>Jede Form besitzt drei feste Slots. Die Form liefert die Basis, der Gem verstärkt sie.</p></div><span><small>AKTIVER BONUS</small><b>+${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP</b></span></div>
+    <div class="gem-workbench__heading"><div><span class="eyebrow">GEM-AUSRÜSTUNG · ${onlineLocked ? "BLOCK 6" : "PERMANENT"}</span><h2>${definition.name}s Grundwerte</h2><p>${onlineLocked ? "Deine lokalen Gems bleiben sicher erhalten. Einsetzen und Kampfwirkung werden mit der Sammlung serverautoritativ freigeschaltet." : "Jede Form besitzt drei feste Slots. Die Form liefert die Basis, der Gem verstärkt sie."}</p></div><span><small>${onlineLocked ? "LOKALER ARCHIVBONUS" : "AKTIVER BONUS"}</small><b>+${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP</b></span></div>
     <div class="gem-loadout">${shapes.map((shape) => {
       const gemId = monster.gemSlots[shape];
       const gem = gemId ? getGem(gemId) : undefined;
@@ -1176,7 +1161,8 @@ function monsterCard(monster: MonsterInstance): string {
   const fragments = game.fragments[monster.definitionId] ?? 0;
   const evolutionReady = canEvolve(monster, game.inventory.evolution_core, fragments);
   const bonuses = monsterGemBonuses(monster);
-  return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span><small>ATK</small><b>${monsterAttack(monster, game.prestigeCount)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP${game.prestigeCount > 0 ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS` : ""}</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>EVOLUTION</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>DATEN +1 <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
+  const onlineLocked = isRunOnline();
+  return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span><small>ATK</small><b>${monsterAttack(monster, game.prestigeCount)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP${onlineLocked ? " · WIRKUNG AB BLOCK 6" : game.prestigeCount > 0 ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS` : ""}</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>${onlineLocked ? "EVOLUTION · BLOCK 6" : "EVOLUTION"}</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>${onlineLocked ? "DATEN · BLOCK 6" : "DATEN +1"} <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>${onlineLocked ? "HYPER · BLOCK 6" : "HYPER +1"} <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
 }
 
 function incubationView(): string {
@@ -1471,7 +1457,7 @@ function setLiveText(name: string, value: string): void {
 
 function refreshCombatUi(now = performance.now(), structural = false): void {
   if (showLogin || activeView !== "expedition" || !battle) return;
-  const player = activeMonster();
+  const player = activeCombatMonster();
   const battlefield = document.querySelector<HTMLElement>(".combat-battlefield");
   if (!player || !battlefield) return;
 

@@ -282,7 +282,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] lange Laufzeiten, 50- bis 70-stellige Zahlen und Migrations-Rollback simulieren
 - [x] kompletter Account-, Starter-, Run-Level- und Zweitbrowserpfad live prüfen
 
-**Gate erfüllt:** 84 lokale Tests, 22 echte PostgreSQL-Fälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Zweitbrowserlauf sind grün. Die Produktionsroute verwirft manipulierte Gold-/Siegfelder, begrenzt Nachholung auf 90 Kämpfe und bucht Claims exakt einmal. Nachweise: `backend/RUN_SECURITY_VERIFICATION.md`.
+**Gate erfüllt:** 87 lokale Tests, 22 echte PostgreSQL-Fälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Zweitbrowserlauf sind grün. Die Produktionsroute verwirft manipulierte Gold-/Siegfelder, begrenzt Nachholung auf 90 Kämpfe und bucht Claims exakt einmal. Nachweise: `backend/RUN_SECURITY_VERIFICATION.md`.
 
 ### Schritt 4 – Abnehmen ⬜
 

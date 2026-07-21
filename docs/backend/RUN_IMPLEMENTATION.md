@@ -44,6 +44,8 @@ Gold, Level, Stage, Siege, Speicherbelegung und Zonenfreischaltungen werden aus 
 
 Systeme aus Block 6, die Online-Gold oder dauerhaften Besitz verändern würden, sind für einen Online-Account sichtbar gesperrt. Dazu gehören derzeit lokale Missionsbelohnungen, Expeditionserträge, Herstellung, Brut, Gems, Forschung und Prestige. So gibt es keine zweite, heimliche Wirtschaftsquelle.
 
+Der Run-Snapshot überschreibt ausschließlich Run-Werte. Hyperlevel, Evolution und Gem-Slots des lokalen Sammlungsarchivs werden nicht gelöscht. Für die Kampfdarstellung entsteht stattdessen eine unverändernde Rookie-Kopie ohne lokale Dauerboni, damit die Animation der Serverberechnung entspricht. Ein Regressionstest repariert außerdem Foundation-Gems, die durch den früheren zu breiten Snapshot-Merge aus Slot und Inventar verschwunden waren.
+
 ## Deployment
 
 Vor der Migration wurde auf dem Entwicklungsserver der Dump `idle-tamer-20260721T212419Z.sql.gz` erzeugt. Danach wurde `000003_authoritative_run` angewendet und nur API sowie Web wurden neu gebaut. Der Live-Stand meldet `runContractVersion: 1`; API, Web und PostgreSQL sind gesund.

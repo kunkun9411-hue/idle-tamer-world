@@ -21,7 +21,7 @@
 
 ## Testbilanz
 
-- 84 lokale Unit-, Vertrags- und Browsertests in `pnpm check:all`
+- 87 lokale Unit-, Vertrags- und Browsertests in `pnpm check:all`
 - 22 Fälle auf einer frisch migrierten PostgreSQL-18-Datenbank
   - 4 Fundament- und Ledgerfälle
   - 7 Auth-Store-Fälle
@@ -43,6 +43,8 @@ Der Live-Test verwendet einen kurzlebigen, verifizierten QA-Account aus der priv
 6. Löschvormerkung, erneute Anmeldung, Abbruch und Logout funktionieren weiterhin mit dem neuen Wirtschaftsstand.
 
 Der Test deckte zwei Test-Race-Conditions auf: Die Monsteransicht musste nach dem neuen Tutorial explizit geöffnet werden, und nach einem Reload musste der Login auf den abgeschlossenen Bootstrap warten, bevor Formularfelder gefüllt werden. Beide Abläufe sind jetzt über sichtbare, spielernahe Zustände synchronisiert.
+
+Die erste manuelle Spielerprüfung deckte zusätzlich einen zu breiten Client-Merge auf: Jeder Run-Poll löschte lokale Gem-Slots, Hyperlevel und Evolution. Drei neue Regressionstests beweisen, dass Run-Werte aktualisiert, Sammlungswerte erhalten, verwaiste Start-Gems repariert und lokale Dauerboni im serverautoritativen Kampf trotzdem nicht angerechnet werden.
 
 Nach dem grünen Lauf wurden QA-Account, Run, Reward-Batches, Ledgerzeilen, Kommandos und private Mailboxeinträge entfernt. Die isolierte Testdatenbank wurde ebenfalls gelöscht.
 
