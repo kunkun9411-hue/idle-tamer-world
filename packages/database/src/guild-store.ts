@@ -553,7 +553,7 @@ export class PostgresGuildStore implements GuildStore {
         const dealt = damage > before ? before : damage;
         const after = before - dealt;
         await client.query("INSERT INTO guild_boss_attacks (guild_id, period_key, player_id, command_id, damage, created_at) VALUES ($1, $2, $3, $4, $5, $6)", [current.guild_id, weekKey, player.player_id, envelope.commandId, dealt.toString(), now]);
-        await client.query("UPDATE guild_bosses SET hp = $3::numeric, defeated_at = CASE WHEN $3::numeric = 0 THEN $4 ELSE NULL END, rewarded_by_command_id = CASE WHEN $3::numeric = 0 THEN $5 ELSE NULL END, updated_at = $4 WHERE guild_id = $1 AND period_key = $2", [current.guild_id, weekKey, after.toString(), now, envelope.commandId]);
+        await client.query("UPDATE guild_bosses SET hp = $3::numeric, defeated_at = CASE WHEN $3::numeric = 0 THEN $4::timestamptz ELSE NULL END, rewarded_by_command_id = CASE WHEN $3::numeric = 0 THEN $5::uuid ELSE NULL END, updated_at = $4::timestamptz WHERE guild_id = $1 AND period_key = $2", [current.guild_id, weekKey, after.toString(), now, envelope.commandId]);
         if (after === 0n) await guildBalanceDelta(client, { guildId: current.guild_id, playerId: player.player_id, commandId: envelope.commandId, delta: BigInt(GUILD_BOSS.defeatRewardDna), reason: "guild.boss_defeated" });
         event = { type: "guild.boss_attacked", payload: { damage: dealt.toString(), remainingHp: after.toString(), defeated: after === 0n } };
       } else if (command.type === "guild.expedition_start") {

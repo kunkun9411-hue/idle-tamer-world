@@ -172,7 +172,8 @@ integration("PostgreSQL 18 guild and social store", () => {
     const memberState = await guildStore.bootstrap(member.userId, now);
     const accepted = await execute(member.userId, memberState.snapshot.revision, { type: "friend.accept", playerId: leader.playerId });
     expect(accepted.snapshot.friends[0].status).toBe("accepted");
-    const blocked = await execute(leader.userId, requested.snapshot.revision, { type: "player.block", playerId: member.playerId });
+    const leaderLatest = await guildStore.bootstrap(leader.userId, now);
+    const blocked = await execute(leader.userId, leaderLatest.snapshot.revision, { type: "player.block", playerId: member.playerId });
     expect(blocked.snapshot.blockedPlayerIds).toContain(member.playerId);
     await expect(execute(member.userId, accepted.snapshot.revision, { type: "friend.request", displayName: leader.displayName })).rejects.toMatchObject({ code: "FORBIDDEN" });
     const memberLatest = await guildStore.bootstrap(member.userId, now);
