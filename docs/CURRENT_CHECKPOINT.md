@@ -1,22 +1,22 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Nach dem visuellen Eier-, Material-, Brut- und Prestige-Effektpaket wurde der sichtbare Client stabilisiert, der echte Zonenpfad bis Zone 10 ergänzt und anschließend die Account- und Sessionbasis aus Block 4 gebaut und auf dem Entwicklungsserver bereitgestellt.
+Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Account- und Sessionbasis aus Block 4 sind abgenommen; Block 5 hat den sichtbaren Run, Kampfzeit, Gold, normale Level, Zonen und Kampfspeicher inzwischen bis einschließlich Schritt 3 auf den Server migriert und live geprüft.
 
 ## Wo wir stehen
 
-- Gesamtfortschritt: **16 von 32 Schritten (50 %)**
+- Gesamtfortschritt: **19 von 32 Schritten (59,4 %)**
 - Clientversion: **0.2.0**
 - Abgeschlossen: **Block 1 bis Block 4**
-- Nächster Arbeitsblock: **Block 5 – Serverautoritärer Run und Wirtschaft**
-- Nächster Arbeitsschritt: **Schritt 1 – Planen**
-- Neu abgenommen: echter Spielerlogin, vollständiger Live-Accountfluss und serverinterne Nur-Lese-Supportsicht
+- Aktiver Arbeitsblock: **Block 5 – Serverautoritärer Run und Wirtschaft**
+- Nächster Arbeitsschritt: **Schritt 4 – Abnehmen**
+- Neu fertig: **Block 5, Schritte 1 bis 3 – Planen, Bauen und Prüfen**
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
-Die Roadmap steht nach der vollständigen Abnahme von Block 4 bei 16/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl sind serverautoritativ und über einen echten Spieleraccount sowie einen vollständigen Zwei-Browser-Liveablauf nachgewiesen. Run, Gold, Drops, Inventar, Brut und Dauerfortschritt bleiben bis Block 5 und 6 lokal; ihre Saves liegen jedoch strikt in einem vom Server vergebenen Account-Namespace. Die Oberfläche weist diese Grenze als „Account online · Spielstand lokal“ aus.
+Die Roadmap steht bei 19/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl bleiben serverautoritativ. Neu kommen Kampfzeit, Gold, Run-Level, Zone, Stage, Siege und der Kampfspeicher hinzu. Der Browser stellt Kämpfe dar und sendet nur Sammel-, Level- und Zonenabsichten; lokale Savewerte werden nicht als Runfortschritt importiert. Sammlung, Eier, Fragmente, Hyperlevel, Evolutionen, Gems, Forschung, Zeitjobs und Prestige bleiben ehrlich als lokale Block-6-Systeme getrennt.
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
-Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 76 Unit- und Vertragstests, 15 isolierte PostgreSQL-Integrationsfälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 84 lokale Unit-, Vertrags- und Browsertests, 22 isolierte PostgreSQL-18-Fälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest mit serverseitigem Run-Level abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
 
 Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
 
@@ -57,7 +57,7 @@ PostgreSQL 18
 
 ## Gesicherter Stand
 
-Unmittelbar vor der Accountmigration vom 21. Juli 2026 wurde zusätzlich der Dump `/srv/idle-tamer/backups/idle-tamer-20260721T195426Z.sql.gz` erzeugt. Danach wurden Migration `000002_accounts_and_sessions`, der synthetische Entwicklungsaccount und **19 öffentliche Tabellen** auf dem laufenden Server geprüft. Die Auth-Outbox liegt in einem privaten Docker-Volume und ist weder über Caddy noch als statische Datei erreichbar.
+Unmittelbar vor der Runmigration vom 21. Juli 2026 wurde der Dump `/srv/idle-tamer/backups/idle-tamer-20260721T212419Z.sql.gz` erzeugt. Danach wurden Migration `000003_authoritative_run`, **23 öffentliche Tabellen** und die vollständige Zuordnung jedes vorhandenen Starterprofils zu einem autoritativen Run geprüft. Die Auth-Outbox liegt in einem privaten Docker-Volume und ist weder über Caddy noch als statische Datei erreichbar. Alle kurzlebigen Block-5-QA-Accounts und ihre Outboxeinträge wurden nach der Prüfung entfernt.
 
 Am 20. Juli 2026 wurde vor der Pause ein neuer Sicherungssatz erstellt:
 
@@ -129,15 +129,14 @@ Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öf
 
 ## Exakter nächster Arbeitsauftrag
 
-Weiter geht es ausschließlich mit **Block 5, Schritt 1 – Planen**:
+Weiter geht es ausschließlich mit **Block 5, Schritt 4 – Abnehmen**:
 
-1. serverseitiges Kampftick- und Zeitstempelmodell festlegen.
-2. Run-, Team-, Zonen- und Kampfspeichertabellen finalisieren.
-3. Reward-Batches und atomaren Sammelablauf definieren.
-4. große Zahlen und API-Stringtransport verbindlich festlegen.
-5. Cheating- und Parallel-Request-Fälle als Testspezifikation schreiben.
+1. echten Hauptkampf nach Reload und in einem zweiten Browser aus Spielersicht prüfen.
+2. Gold, Level, Stage und Speicher sichtbar mit den Serverantworten abgleichen.
+3. absichtlich einen Revisionskonflikt erzeugen und die Neusynchronisierung bewerten.
+4. Wirtschafts-Supportsicht sowie die sichtbare Block-6-Grenze freigeben.
 
-Implementierung und Grenzen stehen in `backend/AUTH_IMPLEMENTATION.md`, `backend/AUTH_API_CONTRACT.md` und `backend/AUTH_SCHEMA_PLAN.md`. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal.
+Plan, Vertrag, Umsetzung und Prüfnachweise stehen in `backend/BLOCK5_RUN_PLAN.md`, `backend/RUN_API_CONTRACT.md`, `backend/RUN_IMPLEMENTATION.md` und `backend/RUN_SECURITY_VERIFICATION.md`. Schritt 4 ist eine bewusste Spielerabnahme und wurde nicht automatisch vorweggenommen.
 
 ## Relevante Unterlagen
 
@@ -152,6 +151,10 @@ Implementierung und Grenzen stehen in `backend/AUTH_IMPLEMENTATION.md`, `backend
 - `backend/AUTH_API_CONTRACT.md` – Auth-Vertrag 1, Bootstrap, DTOs und Fehler
 - `backend/AUTH_SCHEMA_PLAN.md` – Zielmigration 000002 und SQL-Abnahme
 - `backend/AUTH_ACCEPTANCE.md` – Block-4-Abnahme, Supportsicht und bekannte Alpha-Grenzen
+- `backend/BLOCK5_RUN_PLAN.md` – Serverzeit, Runregeln, Reward-Batches und Autoritätsgrenze
+- `backend/RUN_API_CONTRACT.md` – Run-Vertrag 1 und Transaktionskommandos
+- `backend/RUN_IMPLEMENTATION.md` – gebaute Run-, Datenbank- und Clientarchitektur
+- `backend/RUN_SECURITY_VERIFICATION.md` – PostgreSQL-, Manipulations- und Live-Nachweise
 - `API_CONTRACT_V8.md` – Client-/Serververtrag
 - `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
 - `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server

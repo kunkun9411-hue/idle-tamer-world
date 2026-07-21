@@ -2,7 +2,7 @@
 
 - Stand: 21. Juli 2026
 - Aktiver Block: **Block 5 – Serverautoritärer Run und Wirtschaft**
-- Aktiver Schritt: **Schritt 1 – Planen**
+- Aktiver Schritt: **Schritt 4 – Abnehmen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -41,12 +41,12 @@ flowchart LR
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
 | 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [x] | [x] | **Fertig** |
-| 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | **Aktiv** |
+| 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [ ] | **Aktiv · Abnahme offen** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **16 von 32 Schritten abgeschlossen (50 %)**.
+Gesamtfortschritt: **19 von 32 Schritten abgeschlossen (59,4 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -253,30 +253,36 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Ergebnis:** Kampf, Gold, Level, Zonen und Kampfspeicher werden ausschließlich vom Server berechnet und in PostgreSQL gespeichert.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] serverseitiges Kampftick- und Zeitstempelmodell festlegen
-- [ ] Run-, Team-, Zonen- und Kampfspeichertabellen finalisieren
-- [ ] Reward-Batches und atomaren Sammelablauf definieren
-- [ ] große Zahlen und API-Stringtransport verbindlich festlegen
-- [ ] Cheating- und Parallel-Request-Fälle als Testspezifikation schreiben
+- [x] serverseitiges Kampftick- und Zeitstempelmodell festlegen
+- [x] Run-, Level-, Zonen- und Kampfspeichertabellen finalisieren
+- [x] Reward-Batches und atomaren Sammelablauf definieren
+- [x] große Zahlen und API-Stringtransport verbindlich festlegen
+- [x] Cheating- und Parallel-Request-Fälle als Testspezifikation schreiben
 
-### Schritt 2 – Bauen ⬜
+**Gate erfüllt:** `backend/BLOCK5_RUN_PLAN.md` legt Serverzeit, deterministische Kampfabrechnung, den 90-Plätze-Speicher, exakte Reward-Batches, Run-Revisionen und die Block-6-Grenze fest. `backend/RUN_API_CONTRACT.md` friert Run-Vertrag 1 ein.
 
-- [ ] Front, Support, Zone, Stage und Freischaltungen migrieren
-- [ ] serverseitige Kampfbewertung und Belohnungserzeugung bauen
-- [ ] Kampfspeicher mit serverseitigen Reward-Batches umsetzen
-- [ ] Gold, Run-Level und Upgrade-Kosten serverautoritativ machen
-- [ ] Sammeln, Leveln und Zonenwahl als Transaktionskommandos migrieren
-- [ ] Client für diesen Block auf `HttpGameService` umschalten
+### Schritt 2 – Bauen ✅
 
-### Schritt 3 – Prüfen ⬜
+- [x] aktives Run-Monster, Zone, Stage und Freischaltungen migrieren
+- [x] serverseitige Kampfbewertung und Belohnungserzeugung bauen
+- [x] Kampfspeicher mit serverseitigen Reward-Batches umsetzen
+- [x] Gold, Run-Level und Upgrade-Kosten serverautoritativ machen
+- [x] Sammeln, Leveln und Zonenwahl als Transaktionskommandos migrieren
+- [x] Kampfszene und Monsteransicht auf den Run-API-Vertrag umschalten
 
-- [ ] Client darf keine Siege, Drops oder resultierenden Bestände festlegen
-- [ ] wiederholtes Sammeln und parallele Level-Ups zahlen nicht doppelt
-- [ ] negative Goldbestände und ungültige Teamkombinationen verhindern
-- [ ] lange Laufzeiten, große Zahlen und Serverneustart simulieren
-- [ ] kompletter Run bis zur Prestige-Freischaltung als API-Test
+**Gate erfüllt:** Migration `000003_authoritative_run`, Run-Store und Fastify-Routen speichern den sichtbaren Run in PostgreSQL. Der Browser sendet nur Absichten und übernimmt den vollständigen autoritativen Snapshot; lokale Systeme dürfen kein Online-Gold mehr verändern. Details stehen in `backend/RUN_IMPLEMENTATION.md`.
+
+### Schritt 3 – Prüfen ✅
+
+- [x] Client darf keine Siege, Kampfzeit oder resultierenden Bestände festlegen
+- [x] wiederholtes Sammeln und parallele Kommandos zahlen nicht doppelt
+- [x] negative Goldbestände, falsche Monster und gesperrte Zonen verhindern
+- [x] lange Laufzeiten, 50- bis 70-stellige Zahlen und Migrations-Rollback simulieren
+- [x] kompletter Account-, Starter-, Run-Level- und Zweitbrowserpfad live prüfen
+
+**Gate erfüllt:** 84 lokale Tests, 22 echte PostgreSQL-Fälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Zweitbrowserlauf sind grün. Die Produktionsroute verwirft manipulierte Gold-/Siegfelder, begrenzt Nachholung auf 90 Kämpfe und bucht Claims exakt einmal. Nachweise: `backend/RUN_SECURITY_VERIFICATION.md`.
 
 ### Schritt 4 – Abnehmen ⬜
 
@@ -441,11 +447,11 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir arbeiten jetzt an **Block 4, Schritt 2 – Bauen**:
+Wir arbeiten jetzt an **Block 5, Schritt 4 – Abnehmen**:
 
-1. Migration `000002_accounts_and_sessions` samt PostgreSQL-Integrationstests bauen.
-2. Passwort-, Token-, Cookie-, CSRF-, Rate-Limit- und Maildienste implementieren.
-3. Registrierung, Verifikation, Login, Geräteverwaltung, Recovery und Account-Bootstrap umsetzen.
-4. Profil, idempotente Starterwahl, Export, Löschung und playergebundene lokale Saves anbinden.
+1. Hauptkampf als Spieler über Reload und einen zweiten Browser abnehmen.
+2. Gold, Run-Level, Stage und Kampfspeicher sichtbar mit dem Serverstand vergleichen.
+3. einen absichtlichen Revisionskonflikt auslösen und die automatische Neusynchronisierung bewerten.
+4. Wirtschafts-Supportsicht und die noch lokale Block-6-Grenze abnehmen.
 
-Die SQL-Details stehen in `DATABASE_BLUEPRINT.md`, die Servergrenze in `ONLINE_ARCHITECTURE.md`, die Content-Veröffentlichung in `CONTENT_PIPELINE.md` und die abgeschlossene lokale Abnahme in `PRE_BACKEND_ROADMAP.md`.
+Plan, Vertrag, Umsetzung und Prüfnachweise stehen in `backend/BLOCK5_RUN_PLAN.md`, `backend/RUN_API_CONTRACT.md`, `backend/RUN_IMPLEMENTATION.md` und `backend/RUN_SECURITY_VERIFICATION.md`.

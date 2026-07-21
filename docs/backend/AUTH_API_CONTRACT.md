@@ -95,10 +95,8 @@ interface LoginResponse {
 ## Account-Bootstrap
 
 ```ts
-type ServerAuthorityScope = "account" | "profile" | "starter";
+type ServerAuthorityScope = "account" | "profile" | "starter" | "run" | "economy";
 type LocalAuthorityScope =
-  | "run"
-  | "economy"
   | "collection"
   | "incubation"
   | "expeditions"
@@ -138,7 +136,7 @@ interface AccountBootstrapResponse {
     requiredAction: "starter_choice" | null;
   };
   authority: {
-    mode: "account-online-game-local";
+    mode: "run-online-collection-local";
     server: ServerAuthorityScope[];
     local: LocalAuthorityScope[];
     localStorageNamespace: string;
@@ -314,7 +312,7 @@ interface AuthApiProblem {
 | keine Session | Login/Registrierung |
 | Verifikation offen | neutrale Bestätigung und Resend mit Cooldown |
 | aktive Session, kein Starter | Starterdialog aus zehn Linien |
-| aktive Session, Starter vorhanden | Kampf und „Account online · Spielstand lokal“ |
+| aktive Session, Starter vorhanden | Kampf und „Account & Run online · Sammlung lokal“ |
 | Session abgelaufen | Login, lokaler Save bleibt unangetastet |
 | Revision veraltet | Account-Bootstrap neu laden, nie blind wiederholen |
 | Löschung vorgemerkt | nur Status, Export und Abbruch |

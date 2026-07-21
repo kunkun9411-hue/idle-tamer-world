@@ -32,6 +32,7 @@ const login = async (context: BrowserContext): Promise<LivePage> => {
   });
   if (!apiProbe.ok) throw new Error(`live API probe failed: ${apiProbe.status} ${apiProbe.error}`);
   await expect(page.getByTestId("login-screen")).toBeVisible();
+  await expect(page.getByTestId("login-submit")).toBeEnabled();
   await page.locator("#login-identifier").fill(liveEmail as string);
   await page.locator("#login-password").fill(livePassword as string);
   await page.getByTestId("login-submit").click();
@@ -53,6 +54,8 @@ test("one account keeps the same profile and starter across two real browser con
     await expect(firstPage.getByTestId("starter-dialog"), first.diagnostics.join("\n")).toBeVisible({ timeout: 20_000 });
     await firstPage.getByTestId("starter-pyrook").click();
     await expect(firstPage.getByTestId("combat-scene")).toBeVisible();
+    await firstPage.getByRole("button", { name: "ÜBERSPRINGEN" }).click();
+    await firstPage.getByRole("button", { name: "Monster", exact: true }).click();
     await expect(firstPage.locator("[data-level]").first()).toBeEnabled({ timeout: 20_000 });
     await firstPage.locator("[data-level]").first().click();
     await expect.poll(() => firstPage.evaluate(async () => {
@@ -115,6 +118,7 @@ test("one account keeps the same profile and starter across two real browser con
 
     await firstPage.reload();
     await expect(firstPage.getByTestId("login-screen")).toBeVisible();
+    await expect(firstPage.getByTestId("login-submit")).toBeEnabled();
     await firstPage.locator("#login-identifier").fill(liveEmail as string);
     await firstPage.locator("#login-password").fill(livePassword as string);
     await firstPage.getByTestId("login-submit").click();

@@ -13,6 +13,10 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion und wie wird sie betrieben?
 10. [`AUTH_SECURITY_VERIFICATION.md`](AUTH_SECURITY_VERIFICATION.md) – Welche Missbrauchs-, PostgreSQL-, Cookie- und Zwei-Browser-Fälle sind nachgewiesen?
 11. [`AUTH_ACCEPTANCE.md`](AUTH_ACCEPTANCE.md) – Wie wurde Block 4 live abgenommen und welche Grenze gilt für die geschlossene Alpha?
+12. [`BLOCK5_RUN_PLAN.md`](BLOCK5_RUN_PLAN.md) – Welche Serverzeit-, Kampf-, Reward- und Autoritätsregeln gelten für Block 5?
+13. [`RUN_API_CONTRACT.md`](RUN_API_CONTRACT.md) – Welche Run-Endpunkte und Transaktionskommandos definiert Vertrag 1?
+14. [`RUN_IMPLEMENTATION.md`](RUN_IMPLEMENTATION.md) – Wie sind Run, PostgreSQL, API und Client umgesetzt und live ausgerollt?
+15. [`RUN_SECURITY_VERIFICATION.md`](RUN_SECURITY_VERIFICATION.md) – Welche Doppelclaim-, Großzahl-, Manipulations- und Live-Fälle sind bewiesen?
 
 ## Verbindlicher Kurzstand
 
@@ -28,7 +32,19 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
 
-Block 4 verwendet daneben Auth-Vertrag 1. Er führt einen ehrlichen Account-Bootstrap ein, ohne den noch lokalen Run- und Sammlungszustand als serverautoritativ auszugeben. Der vollständige Spielvertrag 8 wird dadurch nicht still verändert.
+Block 4 verwendet daneben Auth-Vertrag 1. Block 5 ergänzt Run-Vertrag 1: Kampfzeit, Gold, normale Level, Zonen und Kampfspeicher sind online; Sammlung und Dauerfortschritt bleiben bis Block 6 lokal. Der vollständige Spielvertrag 8 wird dadurch nicht still verändert.
+
+## Gebauter Stand von Block 5 bis Schritt 3
+
+- [x] additive Migration `000003_authoritative_run` und Backfill vorhandener Starterprofile
+- [x] deterministische Kampfabrechnung aus Serverzeit und servereigenem Zustand
+- [x] 90-Plätze-Kampfspeicher mit genau einem offenen Reward-Batch
+- [x] Goldclaim und Run-Level als atomare, idempotente Ledgerkommandos
+- [x] Zonenfreischaltung und Zonenwahl mit eigener Run-Revision
+- [x] Browser synchronisiert Run-Snapshots und sperrt lokale Online-Goldquellen
+- [x] PostgreSQL-, Manipulations-, Parallel- und Zweitbrowserprüfung grün
+
+Block 5, Schritt 4 bleibt als Spielerabnahme offen. Der technische Stand ist auf der Dev-Domain aktiv; Block-6-Systeme werden noch nicht als online ausgegeben.
 
 ## Gebauter Stand von Block 4
 

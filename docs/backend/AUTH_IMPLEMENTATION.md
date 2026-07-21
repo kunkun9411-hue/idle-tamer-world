@@ -52,7 +52,7 @@ Der Entwicklungs-Seed besitzt einen synthetischen Testaccount. Seine Zugangsdate
 
 ## Auf dem Entwicklungsserver nachgewiesen
 
-Am 21. Juli 2026 wurden Migration und Seed nach einem frischen Datenbankbackup auf `idle-tamer-world.de` eingespielt. Die öffentliche Proxyroute liefert den Metavertrag, verweigert einen Bootstrap ohne Sitzung kontrolliert und akzeptiert mit dem synthetischen Entwicklungsaccount Login, Bootstrap und Logout. Der Bootstrap meldet die bewusste Autoritätsgrenze `account-online-game-local`; das gesetzte Sitzungscookie trägt `Secure`, `HttpOnly`, `SameSite=Strict`, `Path=/` und eine begrenzte Lebensdauer. Nach dem Test blieb keine aktive Testsitzung zurück.
+Am 21. Juli 2026 wurden Migration und Seed nach einem frischen Datenbankbackup auf `idle-tamer-world.de` eingespielt. Die öffentliche Proxyroute liefert den Metavertrag, verweigert einen Bootstrap ohne Sitzung kontrolliert und akzeptiert mit dem synthetischen Entwicklungsaccount Login, Bootstrap und Logout. Bei der Block-4-Abnahme meldete der Bootstrap die damalige Grenze `account-online-game-local`; seit Block 5 lautet sie `run-online-collection-local`. Das gesetzte Sitzungscookie trägt `Secure`, `HttpOnly`, `SameSite=Strict`, `Path=/` und eine begrenzte Lebensdauer. Nach dem Test blieb keine aktive Testsitzung zurück.
 
 ## Bereits bewiesene Bauinvarianten
 

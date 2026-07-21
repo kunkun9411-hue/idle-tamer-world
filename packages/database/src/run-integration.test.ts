@@ -3,6 +3,8 @@ import { createHash, randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
+import { ZONES } from "@idle-tamer/content";
+
 import { PostgresAuthStore } from "./auth-store";
 import { createDatabasePool } from "./pool";
 import { PostgresRunStore, RunDatabaseError } from "./run-store";
@@ -153,5 +155,34 @@ integration("PostgreSQL 18 authoritative run store", () => {
     await expect(runStore.executeCommand(account.userId, command(1, "cache.claim"), now)).rejects.toMatchObject({ code: "VALIDATION" });
     await expect(pool.query("SELECT count(*)::int AS count FROM economy_ledger WHERE player_id = $1 AND reason = 'cache.claim'", [account.playerId])).resolves.toMatchObject({ rows: [{ count: 1 }] });
     await expect(pool.query("SELECT count(*)::int AS count FROM game_commands WHERE player_id = $1 AND command_type = 'zone.select'", [account.playerId])).resolves.toMatchObject({ rows: [{ count: 0 }] });
+  });
+
+  it("plays the authoritative run through the Zone 10 prestige boundary", async () => {
+    const account = await createRun("prestige-boundary");
+    await pool.query("UPDATE player_run_levels SET level = 1000000 WHERE player_id = $1", [account.playerId]);
+    const firstCombatAt = new Date("2026-07-22T00:00:00.000Z");
+    await pool.query("UPDATE player_runs SET next_combat_at = $2 WHERE player_id = $1", [account.playerId, firstCombatAt]);
+
+    let snapshot = (await runStore.bootstrap(account.userId, firstCombatAt)).snapshot;
+    for (let zoneIndex = 0; zoneIndex < 9; zoneIndex += 1) {
+      if (zoneIndex > 0) {
+        const selected = await runStore.executeCommand(
+          account.userId,
+          command(snapshot.revision, "zone.select", { zoneId: ZONES[zoneIndex].id }),
+          new Date(snapshot.serverTime),
+        );
+        snapshot = selected.snapshot;
+      }
+      const victoriesNeeded = zoneIndex === 0 ? 9 : 10;
+      for (let victory = 0; victory < victoriesNeeded; victory += 1) {
+        snapshot = (await runStore.bootstrap(account.userId, new Date(snapshot.nextCombatAt))).snapshot;
+      }
+      expect(snapshot.zoneProgress[ZONES[zoneIndex].id]).toMatchObject({ stage: 1, clears: "1" });
+    }
+
+    expect(snapshot.highestZoneNumber).toBe(10);
+    expect(snapshot.unlockedZoneIds).toContain(ZONES[9].id);
+    expect(snapshot.runVictories).toBe("90");
+    expect(snapshot.cacheSlotsUsed).toBe(90);
   });
 });

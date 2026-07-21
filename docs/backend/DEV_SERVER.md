@@ -17,7 +17,7 @@ Stand 21. Juli 2026:
 - 2 GB Swap als Schutz vor kurzzeitigen Build-Spitzen
 - Fastify-API und Web-Container hinter Caddy auf Port 80 und 443
 - `/api/*` wird an die API geleitet; Spiel und Roadmap werden vom Web-Container ausgeliefert
-- Migration `000002_accounts_and_sessions` und insgesamt 19 öffentliche Tabellen aktiv
+- Migrationen bis `000003_authoritative_run` und insgesamt 23 öffentliche Tabellen aktiv
 
 PostgreSQL wird nur als `127.0.0.1:54329` veröffentlicht. Ein externer Verbindungsversuch auf diesen Port wurde nach Einrichtung und nach Neustart abgewiesen.
 
