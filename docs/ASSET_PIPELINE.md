@@ -11,7 +11,7 @@
 
 Imagegen erzeugt zunächst einen hochauflösenden Chroma-Master. Der installierte Freistellungsprozess entfernt den Key. `scripts/prepare_sprite.py` trimmt nur die transparente Fläche, erhält acht Pixel Sicherheitsabstand und exportiert deterministisch auf einer 200×200-Leinwand.
 
-Die aktuelle HD-v2-Serie umfasst zehn Rookie-Starter, 30 Normalgegner und fünf Bosse. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. Die Prestige-Szene ergänzt ein 1600×900-Heiligtum und einen transparenten 512×768-Ether-Kristall. Elf Eier, fünf Kernmaterialien, ein Inkubator und vier Effekt-Layer vervollständigen den ersten spielrelevanten Gegenstandssatz. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller 117 Runtime-Bilder.
+Die aktuelle HD-v2-Serie umfasst zehn ursprüngliche Rookie-Starter, 30 momentan als Normalgegner abgelegte Kreaturendesigns und fünf Bosse. Die 30 Designs werden später zu zusätzlichen sammelbaren Rookie-Linien mit Evolutionen migriert; ihre derzeitige Ordnerbezeichnung ist kein dauerhaftes Produktmodell. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. Die Prestige-Szene ergänzt ein 1600×900-Heiligtum und einen transparenten 512×768-Ether-Kristall. Elf Eier, fünf Kernmaterialien, ein Inkubator und vier Effekt-Layer vervollständigen den ersten spielrelevanten Gegenstandssatz. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller Runtime-Bilder.
 
 ## Ordner
 

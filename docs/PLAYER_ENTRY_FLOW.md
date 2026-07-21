@@ -27,7 +27,7 @@ Der reproduzierbare 24-Schritte-Abnahmeablauf für Login, Kampf, Brut, Entwicklu
 
 ## Neue Accounts
 
-Besitzt ein Account noch kein Monster, öffnet sich nach dem Login zuerst die Starterwahl. Nach der Wahl folgt derselbe Offline-Bericht und anschließend die Hauptkampfszene. So bleibt die Reihenfolge für bestehende und neue Accounts nachvollziehbar.
+Besitzt ein Account noch kein Monster, öffnet sich nach dem Login zuerst die Starterwahl. Nach der Wahl beginnt direkt die Hauptkampfszene: Ohne vorherigen Partner konnte keine Offline-Beute entstehen. Nur bestehende Accounts mit mindestens einem Monster sehen vor dem Kampf den Offline-Bericht.
 
 ## Backend-Schnittstellen
 

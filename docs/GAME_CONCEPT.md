@@ -52,12 +52,12 @@ Die Brutstation paart keine Eltern. Sie inkubiert gefundene Eier. Der erste Schl
 
 ## Monster und Evolution
 
-Der aktuelle, verbindliche Umfang besteht aus zehn Linien mit jeweils zwei permanenten Formen:
+Der aktuell vollständig implementierte Umfang besteht aus zehn Linien mit jeweils zwei permanenten Formen:
 
 1. Rookie – als Starter wählbar oder aus einem Ei erhältlich
 2. Evolution – ab Rookie-Level 20 für drei Evolutionskerne und 30 Art-Fragmente
 
-Die Evolution bleibt bei Prestige erhalten und verändert Name, Design, Rolle und Basiswerte. Gems multiplizieren diese Basiswerte anschließend, bevor Run-Level und Hyperlevel angewendet werden. Weitere Entwicklungsstufen sind eine spätere Erweiterungsoption, aber noch keine feste Zusage. Zehn HD-Rookie-Sprites, 30 Gegner und fünf Bosse sind bereits eingebunden. Elemente: Feuer, Wasser, Erde, Blitz, Eis, Licht und Dunkelheit. Rollen können Tank, Nahkampf, Fernkampf, Unterstützung, Heilung, Kontrolle oder Burst-Schaden sein.
+Die Evolution bleibt bei Prestige erhalten und verändert Name, Design, Rolle und Basiswerte. Gems multiplizieren diese Basiswerte anschließend, bevor Run-Level und Hyperlevel angewendet werden. Weitere Entwicklungsstufen sind eine spätere Erweiterungsoption, aber noch keine feste Zusage. Das verbindliche Sammlungsziel sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 derzeit technisch als Normalgegner geführten Designs. Die fünf Bosse bleiben davon getrennt. Elemente: Feuer, Wasser, Erde, Blitz, Eis, Licht und Dunkelheit. Rollen können Tank, Nahkampf, Fernkampf, Unterstützung, Heilung, Kontrolle oder Burst-Schaden sein.
 
 ## Prestige und PvP
 

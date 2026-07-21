@@ -1,19 +1,24 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026. Auf ausdrücklichen Wunsch wurde danach ausschließlich das visuelle Eier-, Material-, Brut- und Prestige-Effektpaket V1 ergänzt; der Backend-Fortschritt wurde dabei nicht vorgezogen.
+Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Nach dem visuellen Eier-, Material-, Brut- und Prestige-Effektpaket wurde der sichtbare Client stabilisiert und der echte Zonenpfad bis Zone 10 ergänzt; der Backend-Fortschritt wurde dabei nicht vorgezogen.
 
 ## Wo wir stehen
 
 - Gesamtfortschritt: **12 von 32 Schritten (37,5 %)**
+- Clientversion: **0.2.0**
 - Abgeschlossen: **Block 1 bis Block 3**
 - Nächster Arbeitsblock: **Block 4 – Accounts, Sessions und Bootstrap**
 - Nächster Arbeitsschritt: **Schritt 1 – Planen**
 - Noch nicht begonnen: Account-, Session- oder Authentifizierungsimplementierung
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
-Die Roadmap wird durch diese Pause nicht künstlich weitergezählt. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang nur das geprüfte Backend-Fundament.
+Die Roadmap wird durch den Stabilisierungscheckpoint nicht künstlich weitergezählt. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang nur das geprüfte Backend-Fundament.
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
+
+Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. 48 Logik- und Vertragstests sowie zwölf Chromium-Abläufe prüfen jetzt unter anderem den Bossweg bis Zone 10 und die DOM-Stabilität der Kampfsteuerung. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+
+Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
 
 ## Live erreichbar
 
@@ -132,6 +137,8 @@ Erst nach dieser Planung beginnt Block 4, Schritt 2 mit Code. Der Run, Gold, Dro
 ## Relevante Unterlagen
 
 - `PRODUCT_ROADMAP.md` – Status, Reihenfolge und Gates
+- `VERSION_0_2_STABILIZATION.md` – P0-Ursache, Zonenpfad, QA und 40-Linien-Entscheidung
+- `RELEASE_LIFECYCLE.md` – Alpha, Beta, Gamma, Beta Release und Launch 1.0
 - `backend/README.md` – Backend-Einstieg und abgenommener Stand
 - `backend/DEV_SERVER.md` – Betrieb des Entwicklungsservers
 - `backend/OPERATIONS_PLAN.md` – Umgebungen, Backups und Restore

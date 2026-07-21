@@ -19,7 +19,7 @@ describe("Foundation 1.0 content contract", () => {
     expect(ENEMIES).toHaveLength(30);
     expect(BOSSES).toHaveLength(5);
     expect(GEMS).toHaveLength(45);
-    expect(ZONES).toHaveLength(3);
+    expect(ZONES).toHaveLength(10);
 
     expectUnique("monster", MONSTERS.map((entry) => entry.id));
     expectUnique("encounter", ENCOUNTERS.map((entry) => entry.id));
@@ -50,6 +50,9 @@ describe("Foundation 1.0 content contract", () => {
       for (const id of [...zone.enemyPool, ...zone.bossPool]) expect(encounterIds.has(id), `${zone.id} -> ${id}`).toBe(true);
       if (zone.unlockAfterZoneId) expect(zoneIds.has(zone.unlockAfterZoneId), `${zone.id}.unlockAfterZoneId`).toBe(true);
       expectUnique(`${zone.id} synergy`, zone.synergies.map((entry) => entry.id));
+    }
+    for (let index = 1; index < ZONES.length; index += 1) {
+      expect(ZONES[index].unlockAfterZoneId, `${ZONES[index].id} unlock chain`).toBe(ZONES[index - 1].id);
     }
     for (const expedition of EXPEDITIONS) expect(zoneIds.has(expedition.zoneId), `${expedition.id}.zoneId`).toBe(true);
     for (const milestone of MILESTONES) if (milestone.reward.eggId) expect(monsterIds.has(milestone.reward.eggId), `${milestone.title}.eggId`).toBe(true);

@@ -15,10 +15,45 @@ test("fresh account reaches starter choice and the focused auto battle", async (
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
-  await expect(page.getByTestId("offline-report")).toBeVisible();
-  await page.locator("#offline-continue").click();
+  await expect(page.getByTestId("offline-report")).toHaveCount(0);
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await expect(page.getByText("Violetter Saum").first()).toBeVisible();
+  await expect(page.getByTestId("qa-panel")).toHaveCount(0);
+});
+
+test("combat controls stay mounted and the first click opens its panel", async ({ page }) => {
+  const state = createInitialState();
+  const starter = createMonster("pyrook", 8, 1, 0, "rookie", () => "stable-pyrook");
+  state.roster = [starter];
+  state.activeMonsterUid = starter.uid;
+  state.pendingGold = 50;
+  state.cacheSlotsUsed = 1;
+  state.tutorialStep = 4;
+
+  await page.addInitScript(({ key, save }) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(save));
+  }, { key: STORAGE_KEY, save: state });
+  await page.goto("/");
+  await page.getByTestId("login-submit").click();
+  await page.locator("#offline-continue").click();
+  await expect(page.getByTestId("combat-scene")).toBeVisible();
+
+  const replacements = await page.evaluate(async () => {
+    let control = document.querySelector('[data-combat-panel="loot"]');
+    let replacementCount = 0;
+    for (let sample = 0; sample < 20; sample += 1) {
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
+      const current = document.querySelector('[data-combat-panel="loot"]');
+      if (current !== control) replacementCount += 1;
+      control = current;
+    }
+    return replacementCount;
+  });
+  expect(replacements).toBe(0);
+
+  await page.locator('[data-combat-panel="loot"]').click();
+  await expect(page.locator(".combat-panel--loot")).toHaveClass(/is-open/);
+  await expect(page.locator("#collect-cache")).toBeEnabled();
 });
 
 test("loading and revision-conflict states are visible and recoverable", async ({ page }) => {
@@ -88,7 +123,10 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await page.locator('[data-view="incubation"]').first().click();
   await page.locator('[data-incubate="pyrook"]').click();
   await expect(page.getByText("RESONANZAUFBAU")).toBeVisible();
-  for (let charge = 0; charge < 5; charge += 1) await page.locator("#accelerate-incubation").click();
+  for (let charge = 0; charge < 5; charge += 1) {
+    await page.locator("#accelerate-incubation").click();
+    await page.waitForTimeout(320);
+  }
   await expect(page.locator("#hatch-egg")).toBeEnabled();
   await page.locator("#hatch-egg").click();
   await expect(page.getByText("Fragmente gewonnen")).toBeVisible();

@@ -33,8 +33,7 @@ test("login and starter choice remain operable by keyboard", async ({ page }) =>
   await page.locator("#open-starter").click();
   await page.getByTestId("starter-pyrook").focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByTestId("offline-report")).toBeVisible();
-  await page.keyboard.press("Escape");
+  await expect(page.getByTestId("offline-report")).toHaveCount(0);
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 });
 

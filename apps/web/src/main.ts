@@ -15,6 +15,7 @@ import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { formatGameNumber } from "./game/number-scale";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
+import { applyQaPreset, type QaPreset } from "./game/qa-tools";
 import {
   activeZoneSynergy,
   enemyForZone,
@@ -61,7 +62,6 @@ let showLogin = true;
 let showOfflineReport = false;
 let battle: BattleState | null = createBattleState();
 let lastFrame = performance.now();
-let lastRender = 0;
 let lastSave = performance.now();
 let hatchNotice = "";
 let uiNotice: UiNotice | null = null;
@@ -70,12 +70,30 @@ let prestigeActivating = false;
 let starterDialogOpen = false;
 let activeCombatPanel: CombatPanel | null = null;
 let combatFocusMode = false;
+let pointerInteractionActive = false;
+let keyboardInteractionActive = false;
+let renderDeferred = false;
+let combatStructuralRefreshDeferred = false;
+let lastDynamicRefresh = 0;
+const actionLocks = new Map<string, number>();
 const requestedUiState = new URLSearchParams(window.location.search).get("ui-state");
+const qaEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_QA === "true";
 let clientUiState: ClientUiState = import.meta.env.DEV && ["loading", "online", "offline", "conflict", "error"].includes(requestedUiState ?? "")
   ? requestedUiState as ClientUiState
   : "local";
 
 const timeFormatter = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
+
+function interactionActive(): boolean {
+  return pointerInteractionActive || keyboardInteractionActive;
+}
+
+function runSingleAction(key: string, action: () => void): void {
+  const now = performance.now();
+  if ((actionLocks.get(key) ?? 0) > now) return;
+  actionLocks.set(key, now + 300);
+  action();
+}
 
 function formatNumber(value: number): string {
   return formatGameNumber(value, game.settings.numberFormat);
@@ -83,6 +101,11 @@ function formatNumber(value: number): string {
 
 function eggImage(definitionId = "mystery"): string {
   return `/assets/eggs/${definitionId}.png`;
+}
+
+function zoneBackgroundUrl(backgroundKey: string): string {
+  const assetId = backgroundKey.replace("zone.", "");
+  return `/assets/zones/${assetId}-v2.webp`;
 }
 
 function playUiTone(tone: NoticeTone): void {
@@ -148,6 +171,7 @@ function tickBattle(now: number): void {
     const recovered = battle.status === "recovering";
     battle = createBattleState();
     if (recovered) addLog("Belias hat dein Monster neu mit der Ether-Welt verbunden.");
+    refreshCombatUi(now);
     return;
   }
   if (battle.status !== "fighting") return;
@@ -161,14 +185,14 @@ function tickBattle(now: number): void {
     const impactedBattle = battle;
     impactedBattle.enemyHit = true;
     impactedBattle.enemyDamageTaken = damage;
-    render();
+    addLog(`${getMonsterForm(player).name} trifft für ${damage}.`);
+    refreshCombatUi(now);
     window.setTimeout(() => {
       if (battle !== impactedBattle) return;
       battle.enemyHit = false;
       battle.enemyDamageTaken = 0;
-      render();
+      refreshCombatUi(performance.now());
     }, 420);
-    addLog(`${getMonsterForm(player).name} trifft für ${damage}.`);
 
     if (battle.enemyHp <= 0) {
       const result = service.recordVictory(battle.enemyDefinitionId, battle.enemyLevel);
@@ -180,7 +204,7 @@ function tickBattle(now: number): void {
       else if (result.eggDefinitionId) addLog(`Sieg! +${result.gold} Gold und ein ${getMonster(result.eggDefinitionId).name}-Ei im Speicher.`);
       else if (result.items.length > 0) addLog(`Sieg! +${result.gold} Gold und ${result.items.map((drop) => ITEMS.find((item) => item.id === drop.itemId)?.name).filter(Boolean).join(", ")}.`);
       else addLog(`Sieg! +${result.gold} Gold im Speicher.`);
-      render();
+      refreshCombatUi(now, true);
       return;
     }
   }
@@ -193,18 +217,19 @@ function tickBattle(now: number): void {
     const impactedBattle = battle;
     impactedBattle.playerHit = true;
     impactedBattle.playerDamageTaken = damage;
-    render();
+    addLog(`${combatantName(battle.enemyDefinitionId)} kontert für ${damage}.`);
+    refreshCombatUi(now);
     window.setTimeout(() => {
       if (battle !== impactedBattle) return;
       battle.playerHit = false;
       battle.playerDamageTaken = 0;
-      render();
+      refreshCombatUi(performance.now());
     }, 420);
-    addLog(`${combatantName(battle.enemyDefinitionId)} kontert für ${damage}.`);
     if (battle.playerHp <= 0) {
       battle.status = "recovering";
       battle.recoveryUntil = now + 3_000;
       addLog("Signal abgebrochen. Drei Sekunden Regeneration – kein Verlust.");
+      refreshCombatUi(now);
     }
   }
 }
@@ -212,12 +237,24 @@ function tickBattle(now: number): void {
 function showNotice(title: string, message: string, tone: NoticeTone = "violet"): void {
   uiNotice = { title, message, tone };
   window.clearTimeout(noticeTimer);
-  noticeTimer = window.setTimeout(() => {
-    uiNotice = null;
-    render();
-  }, 3_600);
+  noticeTimer = window.setTimeout(dismissNotice, 3_600);
   playUiTone(tone);
   render();
+}
+
+function dismissNotice(): void {
+  uiNotice = null;
+  document.querySelector(".ui-notice")?.remove();
+}
+
+function applyQaState(preset: QaPreset): void {
+  if (!qaEnabled) return;
+  applyQaPreset(game, preset);
+  if (preset === "prestige") activeView = "prestige";
+  else if (preset === "zone-next" || preset === "zone-10" || preset === "combat") activeView = "expedition";
+  battle = createBattleState();
+  service.save();
+  showNotice("QA-Status gesetzt", `Entwicklungs-Preset „${preset}“ wurde lokal angewendet.`, "success");
 }
 
 function collectCache(): void {
@@ -322,7 +359,7 @@ function chooseStarter(definitionId: string): void {
   if (!service.chooseStarter(definitionId)) return;
   starterDialogOpen = false;
   showLogin = false;
-  showOfflineReport = true;
+  showOfflineReport = false;
   activeView = "expedition";
   battle = createBattleState();
   const starter = activeMonster();
@@ -552,6 +589,18 @@ function clientStatusMarkup(): string {
   return `<aside class="client-state-banner client-state-banner--${clientUiState}" role="alert" data-testid="client-${clientUiState}"><span>${icon(clientUiState === "conflict" ? "shield" : "spark")}</span><div><strong>${copy.title}</strong><small>${copy.message}</small></div><button class="secondary-button" id="client-state-action">${actionLabel}</button></aside>`;
 }
 
+function qaPanel(): string {
+  if (!qaEnabled || showLogin) return "";
+  return `<aside class="qa-panel" aria-label="Lokale Entwicklungswerkzeuge" data-testid="qa-panel">
+    <span><b>DEV QA</b><small>nur lokaler Build</small></span>
+    <button data-qa="zone-next">+ ZONE</button>
+    <button data-qa="zone-10">ZONE 10</button>
+    <button data-qa="resources">RESSOURCEN</button>
+    <button data-qa="combat">KAMPF</button>
+    <button data-qa="prestige">PRESTIGE</button>
+  </aside>`;
+}
+
 function topShell(content: string): string {
   const rank = rankForVictories(game.totalVictories);
   return `
@@ -574,17 +623,17 @@ function topShell(content: string): string {
       <main>${content}</main>
       <footer><div><span>VISUAL BUILD V2</span><i></i><span>SAVE V${game.version}</span><i></i><span>API PROTOKOLL ${API_PROTOCOL_VERSION}</span></div>${syncIndicator()}<button class="text-button" id="reset-game">Spielstand zurücksetzen</button></footer>
     </div>
-    ${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
+    ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
 }
 
 function combatShell(content: string): string {
   return `
     <div class="combat-shell combat-shell--${game.currentZoneId} ${combatFocusMode ? "is-focus-mode" : ""}">${content}</div>
-    ${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
+    ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
 }
 
 function prestigeShell(content: string): string {
-  return `<div class="prestige-shell">${content}</div>${clientStatusMarkup()}${uiNoticeMarkup()}`;
+  return `<div class="prestige-shell">${content}</div>${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}`;
 }
 
 function loginShell(): string {
@@ -615,18 +664,22 @@ function loginShell(): string {
           <button class="primary-button primary-button--large login-submit" type="submit" data-testid="login-submit" ${clientUiState === "loading" ? "disabled" : ""}>${clientUiState === "loading" ? "SPIELSTAND WIRD GELADEN …" : `EINLOGGEN ${icon("arrow")}`}</button>
         </form>
         <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>Lokaler Prototyp-Zugang</strong><small>Der Formularvertrag ist für die spätere Account-API vorbereitet. Aktuell bleibt der Spielstand in diesem Browser.</small></div></div>
-        <small class="login-panel__version">CLIENT V0.1 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
+        <small class="login-panel__version">CLIENT V0.2 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
       </section>
     </main>
     ${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
 }
 
 function combatZoneTabs(): string {
-  return `<nav class="combat-zone-tabs" aria-label="Expeditionszonen">${ZONES.map((zone, index) => {
+  const currentIndex = Math.max(0, ZONES.findIndex((zone) => zone.id === game.currentZoneId));
+  const startIndex = Math.max(0, Math.min(currentIndex - 1, ZONES.length - 3));
+  const visibleZones = ZONES.slice(startIndex, startIndex + 3);
+  return `<nav class="combat-zone-tabs" aria-label="Expeditionszonen">${visibleZones.map((zone, localIndex) => {
+    const index = startIndex + localIndex;
     const unlocked = game.unlockedZoneIds.includes(zone.id);
     const progress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
     return `<button class="combat-zone-tab ${zone.id === game.currentZoneId ? "is-active" : ""}" data-zone="${zone.id}" ${unlocked ? "" : "disabled"} style="--zone-accent:${zone.accent}" aria-label="${zone.name}${unlocked ? `, Stage ${progress.stage}` : ", verschlossen"}">
-      <span>0${index + 1}</span><div><strong>${zone.name}</strong><small>${unlocked ? `STAGE ${progress.stage}/${zone.stages}` : "VERSCHLOSSEN"}</small></div><i></i>
+      <span>${String(index + 1).padStart(2, "0")}</span><div><strong>${zone.name}</strong><small>${unlocked ? `STAGE ${progress.stage}/${zone.stages}` : "VERSCHLOSSEN"}</small></div><i></i>
     </button>`;
   }).join("")}</nav>`;
 }
@@ -660,7 +713,7 @@ function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {
     { panel: "monsters", label: "Front", iconName: "profile" },
     { panel: "log", label: "Kampflog", iconName: "expedition" },
   ];
-  return `<nav class="combat-control-dock" aria-label="Kampfoptionen">${controls.map((control) => `<button class="${activeCombatPanel === control.panel ? "is-active" : ""}" data-combat-panel="${control.panel}" aria-pressed="${activeCombatPanel === control.panel}" title="${control.label}">${icon(control.iconName)}<span>${control.label}</span>${control.badge ? `<i>${control.badge}</i>` : ""}</button>`).join("")}<button class="combat-focus-button ${combatFocusMode ? "is-active" : ""}" id="combat-focus-toggle" aria-pressed="${combatFocusMode}" title="${combatFocusMode ? "HUD einblenden" : "Fokusmodus"}">${icon("eye")}<span>${combatFocusMode ? "HUD ein" : "Fokus"}</span></button></nav>`;
+  return `<nav class="combat-control-dock" aria-label="Kampfoptionen">${controls.map((control) => `<button class="${activeCombatPanel === control.panel ? "is-active" : ""}" data-combat-panel="${control.panel}" aria-pressed="${activeCombatPanel === control.panel}" title="${control.label}">${icon(control.iconName)}<span>${control.label}</span><i data-live="control-badge-${control.panel}" ${control.badge ? "" : "hidden"}>${control.badge ?? ""}</i></button>`).join("")}<button class="combat-focus-button ${combatFocusMode ? "is-active" : ""}" id="combat-focus-toggle" aria-pressed="${combatFocusMode}" title="${combatFocusMode ? "HUD einblenden" : "Fokusmodus"}">${icon("eye")}<span>${combatFocusMode ? "HUD ein" : "Fokus"}</span></button></nav>`;
 }
 
 function tutorialCoach(): string {
@@ -675,31 +728,48 @@ function tutorialCoach(): string {
   return `<aside class="tutorial-coach panel" role="dialog" aria-label="Kurze Spieleinführung"><span>${icon("spark")}</span><div><small>${step.kicker}</small><strong>${step.title}</strong><p>${step.copy}</p><i>${steps.map((_, index) => `<em class="${index <= game.tutorialStep ? "is-active" : ""}"></em>`).join("")}</i></div><div><button class="text-button" id="skip-tutorial">ÜBERSPRINGEN</button><button class="primary-button" id="advance-tutorial">${game.tutorialStep === 3 ? "VERSTANDEN" : "WEITER"}</button></div></aside>`;
 }
 
+function combatPlayerMarkup(player: MonsterInstance, currentBattle: BattleState): string {
+  const definition = getMonsterForm(player);
+  const hpPercent = Math.max(0, (currentBattle.playerHp / currentBattle.playerMaxHp) * 100);
+  return `<div class="nameplate"><div><span><small>DEINE RESONANZ</small><strong>${definition.name}</strong></span><b>LV ${player.level}<i>H${player.hyperLevel}</i></b></div><div class="hp-track"><i style="width:${hpPercent}%"></i></div><small>${currentBattle.playerHp} / ${currentBattle.playerMaxHp} HP</small></div>${monsterAvatar(player, "left", currentBattle.playerHit && game.settings.combatEffects)}${currentBattle.playerHit && game.settings.combatEffects ? `<span class="impact-number impact-number--player">−${currentBattle.playerDamageTaken}</span>` : ""}`;
+}
+
+function combatEnemyMarkup(currentBattle: BattleState, bossStage: boolean): string {
+  const definition = getEncounter(currentBattle.enemyDefinitionId);
+  const hpPercent = Math.max(0, (currentBattle.enemyHp / currentBattle.enemyMaxHp) * 100);
+  return `<div class="nameplate"><div><span><small>${bossStage ? "ZONENBOSS" : "WILDSIGNAL"}</small><strong>${definition.name}</strong></span><b>LV ${currentBattle.enemyLevel}</b></div><div class="hp-track hp-track--enemy"><i style="width:${hpPercent}%"></i></div><small>${currentBattle.enemyHp} / ${currentBattle.enemyMaxHp} HP</small></div>${encounterAvatar(definition.id, "right", currentBattle.enemyHit && game.settings.combatEffects)}${currentBattle.enemyHit && game.settings.combatEffects ? `<span class="impact-number impact-number--enemy">−${currentBattle.enemyDamageTaken}</span>` : ""}`;
+}
+
+function combatObjectiveMarkup(): string {
+  const claimable = MILESTONES.find((milestone) => game.totalVictories >= milestone.target && !game.claimedMilestones.includes(milestone.target));
+  const upcoming = nextMilestone(game.totalVictories);
+  const previousTarget = upcoming ? [...MILESTONES].reverse().find((milestone) => milestone.target < upcoming.target)?.target ?? 0 : 0;
+  const missionPercent = upcoming ? Math.min(100, ((game.totalVictories - previousTarget) / (upcoming.target - previousTarget)) * 100) : 100;
+  const readyObjectives = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
+  const prestigeZoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
+  const prestigeReward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
+  const prestigeProgress = prestigeZoneReady ? Math.min(100, game.runVictories) : Math.min(100, (game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber) * 100);
+  const milestone = claimable
+    ? `<div><small>STORY-BELOHNUNG BEREIT</small><strong>${claimable.title}</strong><span>${claimable.reward.gold} Gold${claimable.reward.eggId ? ` · ${getMonster(claimable.reward.eggId).name}-Ei` : ""}</span></div><button class="primary-button" data-milestone="${claimable.target}">BERGEN</button>`
+    : upcoming
+      ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>`
+      : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`;
+  return `${milestone}<button class="combat-objectives-link" data-view="objectives"><span>${icon("objectives")}</span><div><small>AUFTRAGSZENTRALE</small><strong>${readyObjectives > 0 ? `${readyObjectives} BELOHNUNG${readyObjectives === 1 ? "" : "EN"} BEREIT` : "TÄGLICH · WÖCHENTLICH · ERFOLGE"}</strong></div></button><button class="combat-prestige" id="start-prestige"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button>`;
+}
+
 function expeditionView(): string {
   const player = activeMonster();
   if (!player || !battle) return starterGate();
   const playerDefinition = getMonsterForm(player);
   const playerLineage = getMonster(player.definitionId);
-  const enemyDefinition = getEncounter(battle.enemyDefinitionId);
   const support = game.roster.find((monster) => monster.uid === game.supportMonsterUid) ?? null;
   const zoneSynergy = activeZoneSynergy(game);
-  const playerHpPercent = Math.max(0, (battle.playerHp / battle.playerMaxHp) * 100);
-  const enemyHpPercent = Math.max(0, (battle.enemyHp / battle.enemyMaxHp) * 100);
   const chapter = currentChapter(game.totalVictories);
   const claimable = MILESTONES.find((milestone) => game.totalVictories >= milestone.target && !game.claimedMilestones.includes(milestone.target));
-  const upcoming = nextMilestone(game.totalVictories);
-  const previousTarget = upcoming ? [...MILESTONES].reverse().find((milestone) => milestone.target < upcoming.target)?.target ?? 0 : 0;
-  const missionPercent = upcoming ? Math.min(100, ((game.totalVictories - previousTarget) / (upcoming.target - previousTarget)) * 100) : 100;
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
   const capacity = cacheCapacity(game.research.extraction);
-  const prestigeZoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
-  const prestigeReward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
-  const prestigeProgress = prestigeZoneReady
-    ? Math.min(100, game.runVictories)
-    : Math.min(100, (game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber) * 100);
-  const readyObjectives = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
   const eggGuarantee = Math.max(1, BALANCE.drops.eggPityMisses + 1 - game.eggPity);
   const zone = getZone(game.currentZoneId);
   const zoneNumber = ZONES.findIndex((entry) => entry.id === zone.id) + 1;
@@ -710,36 +780,36 @@ function expeditionView(): string {
 
   return `
     <main class="combat-main" data-testid="combat-scene">
-      <section class="combat-battlefield battle-stage battle-stage--${zone.id} battle-stage--${battle.status}">
+      <section class="combat-battlefield battle-stage battle-stage--${zone.id} battle-stage--${battle.status}" style="--battle-background:url('${zoneBackgroundUrl(zone.backgroundKey)}')">
         <div class="battle-stage__sky" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="combat-vignette" aria-hidden="true"></div>
         <header class="combat-top-hud">
           <div class="combat-brand">${brandMarkup()}</div>
           ${combatZoneTabs()}
-          <div class="combat-account"><div class="resources"><span title="Run-Gold">${resourceIcon("gold")}<b>${formatNumber(game.resources.gold)}</b></span><span title="Prestige-Kerne">${resourceIcon("cores")}<b>${formatNumber(game.resources.cores)}</b></span></div><span class="rank-chip"><small>RANG</small>${rank}</span><button class="profile-chip" data-view="profile" title="Profil öffnen">${accountAvatar()}</button></div>
+          <div class="combat-account"><div class="resources"><span title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span><span title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span></div><span class="rank-chip"><small>RANG</small><b data-live="rank">${rank}</b></span><button class="profile-chip" data-view="profile" title="Profil öffnen">${accountAvatar()}</button></div>
         </header>
         ${combatRail()}
-        <section class="combat-story-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}"><span class="combat-story-hud__chapter">${String(chapter.chapter).padStart(2, "0")}</span><div><small>AKTUELLES SIGNAL · RUN ${game.runVictories}</small><strong>${chapter.title}</strong><p>${chapter.story}</p></div></section>
-        <div class="combat-world-label"><small>ZONE ${String(zoneNumber).padStart(2, "0")} · ${bossStage ? "BOSS-SIGNAL" : `STAGE ${zoneProgress.stage}/${zone.stages}`}</small><strong>${zone.name}</strong><span>${zone.subtitle}</span></div>
-        ${battle.status !== "fighting" ? `<div class="battle-state-banner battle-state-banner--${battle.status}"><small>${battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT"}</small><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION"}</strong></div>` : ""}
+        <section class="combat-story-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}"><span class="combat-story-hud__chapter" data-live="story-chapter">${String(chapter.chapter).padStart(2, "0")}</span><div><small data-live="story-run">AKTUELLES SIGNAL · RUN ${game.runVictories}</small><strong data-live="story-title">${chapter.title}</strong><p data-live="story-copy">${chapter.story}</p></div></section>
+        <div class="combat-world-label"><small data-live="zone-stage">ZONE ${String(zoneNumber).padStart(2, "0")} · ${bossStage ? "BOSS-SIGNAL" : `STAGE ${zoneProgress.stage}/${zone.stages}`}</small><strong data-live="zone-name">${zone.name}</strong><span data-live="zone-subtitle">${zone.subtitle}</span></div>
+        <div class="battle-state-banner battle-state-banner--${battle.status}" data-live="battle-banner" ${battle.status === "fighting" ? "hidden" : ""}><small>${battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT"}</small><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION"}</strong></div>
         <div class="combat-duel">
-          <div class="fighter fighter--player"><div class="nameplate"><div><span><small>DEINE RESONANZ</small><strong>${playerDefinition.name}</strong></span><b>LV ${player.level}<i>H${player.hyperLevel}</i></b></div><div class="hp-track"><i style="width:${playerHpPercent}%"></i></div><small>${battle.playerHp} / ${battle.playerMaxHp} HP</small></div>${monsterAvatar(player, "left", battle.playerHit && game.settings.combatEffects)}${battle.playerHit && game.settings.combatEffects ? `<span class="impact-number impact-number--player">−${battle.playerDamageTaken}</span>` : ""}</div>
+          <div class="fighter fighter--player">${combatPlayerMarkup(player, battle)}</div>
           <div class="versus"><span>VS</span><small>AUTO</small></div>
-          <div class="fighter fighter--enemy"><div class="nameplate"><div><span><small>${bossStage ? "ZONENBOSS" : "WILDSIGNAL"}</small><strong>${enemyDefinition.name}</strong></span><b>LV ${battle.enemyLevel}</b></div><div class="hp-track hp-track--enemy"><i style="width:${enemyHpPercent}%"></i></div><small>${battle.enemyHp} / ${battle.enemyMaxHp} HP</small></div>${encounterAvatar(enemyDefinition.id, "right", battle.enemyHit && game.settings.combatEffects)}${battle.enemyHit && game.settings.combatEffects ? `<span class="impact-number impact-number--enemy">−${battle.enemyDamageTaken}</span>` : ""}</div>
+          <div class="fighter fighter--enemy">${combatEnemyMarkup(battle, bossStage)}</div>
         </div>
-        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small>${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span>${resourceIcon("gold")}<small>GOLD</small><b>${formatNumber(game.pendingGold)}</b></span><span>${resourceIcon("eggs")}<small>EIER</small><b>${game.pendingEggs.length}</b></span><span>${icon("inventory")}<small>FUNDE</small><b>${pendingFindCount}</b></span></div><div class="combat-capacity"><i style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "disabled" : ""}>${cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`}</button></aside>
+        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span>${icon("inventory")}<small>FUNDE</small><b data-live="pending-finds">${pendingFindCount}</b></span></div><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "disabled" : ""}>${cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`}</button></aside>
         <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
-        <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}">${claimable ? `<div><small>STORY-BELOHNUNG BEREIT</small><strong>${claimable.title}</strong><span>${claimable.reward.gold} Gold${claimable.reward.eggId ? ` · ${getMonster(claimable.reward.eggId).name}-Ei` : ""}</span></div><button class="primary-button" data-milestone="${claimable.target}">BERGEN</button>` : upcoming ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>` : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`}<button class="combat-objectives-link" data-view="objectives"><span>${icon("objectives")}</span><div><small>AUFTRAGSZENTRALE</small><strong>${readyObjectives > 0 ? `${readyObjectives} BELOHNUNG${readyObjectives === 1 ? "" : "EN"} BEREIT` : "TÄGLICH · WÖCHENTLICH · ERFOLGE"}</strong></div></button><button class="combat-prestige" id="start-prestige"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button></section>
+        <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}" data-live="combat-objectives">${combatObjectiveMarkup()}</section>
         ${combatMonsterSelector()}
-        <section class="combat-console-hud combat-panel--log ${activeCombatPanel === "log" ? "is-open" : ""}"><div class="combat-console-status"><span class="status-orb ${battle.status}"></span><div><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT"}</strong><small>${battle.log[0]}</small></div></div><div class="combat-attack-cycle"><span><small>NÄCHSTE AKTION</small><b>${playerDefinition.name}</b></span><div><i style="width:${playerAttackProgress}%"></i></div></div><small class="combat-save-state"><i></i>${service.lastSaveResult.ok ? "LOKAL GESICHERT" : "SPEICHERFEHLER"}</small></section>
+        <section class="combat-console-hud combat-panel--log ${activeCombatPanel === "log" ? "is-open" : ""}"><div class="combat-console-status"><span class="status-orb ${battle.status}" data-live="battle-status-orb"></span><div><strong data-live="battle-status">${battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT"}</strong><small data-live="battle-log">${battle.log[0]}</small></div></div><div class="combat-attack-cycle"><span><small>NÄCHSTE AKTION</small><b>${playerDefinition.name}</b></span><div><i data-live="attack-progress" style="width:${playerAttackProgress}%"></i></div></div><small class="combat-save-state"><i></i>${service.lastSaveResult.ok ? "LOKAL GESICHERT" : "SPEICHERFEHLER"}</small></section>
         ${combatControlDock(Boolean(claimable), cacheEmpty)}
         ${tutorialCoach()}
       </section>
     </main>`;
 }
 
-function pageHeading(kicker: string, title: string, copy: string, meta: string): string {
-  return `<div class="page-heading"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${copy}</p></div><span class="page-heading__meta">${meta}</span></div>`;
+function pageHeading(kicker: string, title: string, copy: string, meta: string, metaLiveName?: string): string {
+  return `<div class="page-heading"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${copy}</p></div><span class="page-heading__meta"${metaLiveName ? ` data-live="${metaLiveName}"` : ""}>${meta}</span></div>`;
 }
 
 function habitatView(): string {
@@ -789,7 +859,7 @@ function incubationView(): string {
   const remaining = incubation ? Math.max(0, Math.ceil((incubation.hatchAt - Date.now()) / 1000)) : 0;
   const eggEntries = Object.entries(game.eggInventory).filter(([, amount]) => amount > 0);
   const progress = incubation ? Math.min(100, ((Date.now() - incubation.startedAt) / (incubation.hatchAt - incubation.startedAt)) * 100) : 0;
-  return `<section class="page">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-running" src="${eggImage(incubation.definitionId)}" alt="${getMonster(incubation.definitionId).name}-Ei"><b>${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p>${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button>${ready ? "" : `<button class="secondary-button" id="accelerate-incubation" ${game.inventory.incubator_charge <= 0 ? "disabled" : ""}>BRUTLADUNG −60s · ${game.inventory.incubator_charge}×</button>`}</div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-idle" src="${eggImage()}" alt="Unbestimmtes Monsterei">${hatchNotice ? '<img class="hatch-vfx" src="/assets/effects/hatch/ether-hatch-burst-v1.png" alt="">' : ""}</div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p></div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
+  return `<section class="page">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-running" src="${eggImage(incubation.definitionId)}" alt="${getMonster(incubation.definitionId).name}-Ei"><b data-live="incubation-percent">${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p data-live="incubation-copy">${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i data-live="incubation-progress" style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button><button class="secondary-button" id="accelerate-incubation" ${ready ? "hidden disabled" : game.inventory.incubator_charge <= 0 ? "disabled" : ""}>BRUTLADUNG −60s · ${game.inventory.incubator_charge}×</button></div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-idle" src="${eggImage()}" alt="Unbestimmtes Monsterei">${hatchNotice ? '<img class="hatch-vfx" src="/assets/effects/hatch/ether-hatch-burst-v1.png" alt="">' : ""}</div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p></div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
 }
 
 function eggCard(definitionId: string, amount: number): string {
@@ -892,7 +962,7 @@ function activeExpeditionCard(slot: number): string {
   const now = Date.now();
   const ready = now >= expedition.completesAt;
   const progress = Math.min(100, ((now - expedition.startedAt) / (expedition.completesAt - expedition.startedAt)) * 100);
-  return `<article class="dispatch-slot panel ${ready ? "is-ready" : "is-running"}">
+  return `<article class="dispatch-slot panel ${ready ? "is-ready" : "is-running"}" data-expedition-id="${expedition.id}">
     <div class="dispatch-slot__monster">${monsterAvatar(monster)}</div>
     <div class="dispatch-slot__copy"><small>SLOT ${String(slot).padStart(2, "0")} · ${getZone(definition.zoneId).name}</small><strong>${definition.name}</strong><p>${getMonsterForm(monster).name} · LV ${monster.level} · ${Math.round((expedition.rewardMultiplier - 1) * 100)}% Bonus</p></div>
     <span class="dispatch-slot__timer"><small>${ready ? "RÜCKKEHR BESTÄTIGT" : "RESTZEIT"}</small><b>${expeditionRemainingLabel(expedition.completesAt, now)}</b></span>
@@ -933,7 +1003,7 @@ function dispatchView(): string {
   const freeSlot = Array.from({ length: EXPEDITION_SLOT_COUNT }, (_, index) => index + 1)
     .find((slot) => !game.expeditions.some((entry) => entry.slot === slot));
   const ready = game.expeditions.filter((entry) => entry.completesAt <= Date.now()).length;
-  return `<section class="page dispatch-page">${pageHeading("ZEIT · SAMMLUNG", "Monster-Expeditionen", "Nicht eingesetzte Monster übernehmen zeitbasierte Aufträge. Rollen, Elemente und Evolutionen erhöhen die Belohnung, ohne den Hauptkampf zu unterbrechen.", `${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV · ${ready} BEREIT`)}
+  return `<section class="page dispatch-page">${pageHeading("ZEIT · SAMMLUNG", "Monster-Expeditionen", "Nicht eingesetzte Monster übernehmen zeitbasierte Aufträge. Rollen, Elemente und Evolutionen erhöhen die Belohnung, ohne den Hauptkampf zu unterbrechen.", `${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV · ${ready} BEREIT`, "dispatch-ready")}
     <section class="dispatch-rules panel"><span>${icon("shield")}</span><div><strong>Klare Bindung statt Doppelverwendung</strong><small>Front, Support und bereits entsandte Monster stehen nicht zur Auswahl. Start- und Endzeit werden gespeichert; Reload und Offline-Zeit erzeugen keine zweite Belohnung.</small></div><button class="secondary-button" data-view="expedition">ZUM HAUPTKAMPF</button></section>
     <div class="dispatch-slots">${Array.from({ length: EXPEDITION_SLOT_COUNT }, (_, index) => activeExpeditionCard(index + 1)).join("")}</div>
     <div class="subsection-heading"><div><span class="eyebrow">VERFÜGBARE SIGNALE</span><h2>Auftragsbrett</h2></div><span>6 MISSIONEN · 3 ZONEN</span></div>
@@ -1064,7 +1134,178 @@ function offlineReport(): string {
   </section></div>`;
 }
 
+function liveElement<T extends HTMLElement>(name: string): T | null {
+  return document.querySelector<T>(`[data-live="${name}"]`);
+}
+
+function setLiveText(name: string, value: string): void {
+  const element = liveElement(name);
+  if (element && element.textContent !== value) element.textContent = value;
+}
+
+function refreshCombatUi(now = performance.now(), structural = false): void {
+  if (showLogin || activeView !== "expedition" || !battle) return;
+  const player = activeMonster();
+  const battlefield = document.querySelector<HTMLElement>(".combat-battlefield");
+  if (!player || !battlefield) return;
+
+  const zone = getZone(game.currentZoneId);
+  const zoneNumber = ZONES.findIndex((entry) => entry.id === zone.id) + 1;
+  const progress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
+  const bossStage = progress.stage >= zone.stages;
+  const chapter = currentChapter(game.totalVictories);
+  const pendingFindCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0) + game.pendingGems.length;
+  const capacity = cacheCapacity(game.research.extraction);
+  const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
+  const attackProgress = battle.status === "fighting" ? Math.max(3, Math.min(100, 100 - ((battle.playerNextAttackAt - now) / 1_650) * 100)) : 100;
+
+  battlefield.className = `combat-battlefield battle-stage battle-stage--${zone.id} battle-stage--${battle.status}`;
+  battlefield.style.setProperty("--battle-background", `url('${zoneBackgroundUrl(zone.backgroundKey)}')`);
+  const playerFighter = document.querySelector<HTMLElement>(".fighter--player");
+  const enemyFighter = document.querySelector<HTMLElement>(".fighter--enemy");
+  if (playerFighter) playerFighter.innerHTML = combatPlayerMarkup(player, battle);
+  if (enemyFighter) enemyFighter.innerHTML = combatEnemyMarkup(battle, bossStage);
+
+  const banner = liveElement("battle-banner");
+  if (banner) {
+    banner.className = `battle-state-banner battle-state-banner--${battle.status}`;
+    banner.hidden = battle.status === "fighting";
+    const small = banner.querySelector("small");
+    const strong = banner.querySelector("strong");
+    if (small) small.textContent = battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT";
+    if (strong) strong.textContent = battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION";
+  }
+
+  setLiveText("zone-stage", `ZONE ${String(zoneNumber).padStart(2, "0")} · ${bossStage ? "BOSS-SIGNAL" : `STAGE ${progress.stage}/${zone.stages}`}`);
+  setLiveText("zone-name", zone.name);
+  setLiveText("zone-subtitle", zone.subtitle);
+  setLiveText("story-chapter", String(chapter.chapter).padStart(2, "0"));
+  setLiveText("story-run", `AKTUELLES SIGNAL · RUN ${game.runVictories}`);
+  setLiveText("story-title", chapter.title);
+  setLiveText("story-copy", chapter.story);
+  setLiveText("run-gold", formatNumber(game.resources.gold));
+  setLiveText("prestige-cores", formatNumber(game.resources.cores));
+  setLiveText("rank", String(rankForVictories(game.totalVictories)));
+  setLiveText("cache-slots", `${game.cacheSlotsUsed}/${capacity}`);
+  setLiveText("pending-gold", formatNumber(game.pendingGold));
+  setLiveText("pending-eggs", String(game.pendingEggs.length));
+  setLiveText("pending-finds", String(pendingFindCount));
+  setLiveText("battle-status", battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT");
+  setLiveText("battle-log", battle.log[0] ?? "Kampf läuft.");
+
+  const attackBar = liveElement("attack-progress");
+  if (attackBar) attackBar.style.width = `${attackProgress}%`;
+  const cacheBar = liveElement("cache-progress");
+  if (cacheBar) cacheBar.style.width = `${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%`;
+  const statusOrb = liveElement("battle-status-orb");
+  if (statusOrb) statusOrb.className = `status-orb ${battle.status}`;
+  const lootHud = document.querySelector<HTMLElement>(".combat-loot-hud");
+  lootHud?.classList.toggle("is-empty", cacheEmpty);
+  lootHud?.classList.toggle("has-loot", !cacheEmpty);
+  const collectButton = document.querySelector<HTMLButtonElement>("#collect-cache");
+  if (collectButton) {
+    collectButton.disabled = cacheEmpty;
+    collectButton.innerHTML = cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`;
+  }
+  const lootBadge = liveElement("control-badge-loot");
+  if (lootBadge) {
+    lootBadge.hidden = cacheEmpty;
+    lootBadge.textContent = cacheEmpty ? "" : String(game.cacheSlotsUsed);
+  }
+  const missionBadge = liveElement("control-badge-missions");
+  if (missionBadge && structural) {
+    const claimableMilestone = MILESTONES.some((milestone) => game.totalVictories >= milestone.target && !game.claimedMilestones.includes(milestone.target));
+    missionBadge.hidden = !claimableMilestone;
+    missionBadge.textContent = claimableMilestone ? "!" : "";
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>(".combat-zone-tab[data-zone]")) {
+    const definition = ZONES.find((entry) => entry.id === button.dataset.zone);
+    if (!definition) continue;
+    const unlocked = game.unlockedZoneIds.includes(definition.id);
+    const zoneProgress = game.zoneProgress[definition.id] ?? { stage: 1, clears: 0 };
+    button.disabled = !unlocked;
+    button.classList.toggle("is-active", definition.id === game.currentZoneId);
+    button.setAttribute("aria-label", `${definition.name}${unlocked ? `, Stage ${zoneProgress.stage}` : ", verschlossen"}`);
+    const label = button.querySelector("small");
+    if (label) label.textContent = unlocked ? `STAGE ${zoneProgress.stage}/${definition.stages}` : "VERSCHLOSSEN";
+  }
+
+  if (structural) {
+    if (interactionActive()) {
+      combatStructuralRefreshDeferred = true;
+    } else {
+      const objectivePanel = liveElement("combat-objectives");
+      if (objectivePanel) objectivePanel.innerHTML = combatObjectiveMarkup();
+      combatStructuralRefreshDeferred = false;
+    }
+  }
+}
+
+function refreshIncubationUi(now = Date.now()): void {
+  if (showLogin || activeView !== "incubation" || !game.incubation) return;
+  const incubation = game.incubation;
+  const ready = now >= incubation.hatchAt;
+  const remaining = Math.max(0, Math.ceil((incubation.hatchAt - now) / 1_000));
+  const duration = Math.max(1, incubation.hatchAt - incubation.startedAt);
+  const progress = Math.min(100, ((now - incubation.startedAt) / duration) * 100);
+  setLiveText("incubation-percent", `${Math.round(progress)}%`);
+  setLiveText("incubation-copy", ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`);
+  const progressBar = liveElement("incubation-progress");
+  if (progressBar) progressBar.style.width = `${progress}%`;
+  const hatchButton = document.querySelector<HTMLButtonElement>("#hatch-egg");
+  if (hatchButton) {
+    hatchButton.disabled = !ready;
+    hatchButton.innerHTML = ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`;
+  }
+  const chargeButton = document.querySelector<HTMLButtonElement>("#accelerate-incubation");
+  if (chargeButton) {
+    chargeButton.hidden = ready;
+    chargeButton.disabled = ready || game.inventory.incubator_charge <= 0;
+    chargeButton.textContent = `BRUTLADUNG −60s · ${game.inventory.incubator_charge}×`;
+  }
+}
+
+function refreshDispatchUi(now = Date.now()): void {
+  if (showLogin || activeView !== "dispatch") return;
+  let readyCount = 0;
+  for (const card of document.querySelectorAll<HTMLElement>(".dispatch-slot[data-expedition-id]")) {
+    const expedition = game.expeditions.find((entry) => entry.id === card.dataset.expeditionId);
+    if (!expedition) continue;
+    const ready = now >= expedition.completesAt;
+    if (ready) readyCount += 1;
+    const duration = Math.max(1, expedition.completesAt - expedition.startedAt);
+    const progress = Math.min(100, ((now - expedition.startedAt) / duration) * 100);
+    card.classList.toggle("is-ready", ready);
+    card.classList.toggle("is-running", !ready);
+    const timerLabel = card.querySelector<HTMLElement>(".dispatch-slot__timer small");
+    const timerValue = card.querySelector<HTMLElement>(".dispatch-slot__timer b");
+    const progressBar = card.querySelector<HTMLElement>(".dispatch-slot__progress i");
+    const claimButton = card.querySelector<HTMLButtonElement>("[data-claim-expedition]");
+    if (timerLabel) timerLabel.textContent = ready ? "RÜCKKEHR BESTÄTIGT" : "RESTZEIT";
+    if (timerValue) timerValue.textContent = expeditionRemainingLabel(expedition.completesAt, now);
+    if (progressBar) progressBar.style.width = `${progress}%`;
+    if (claimButton) {
+      claimButton.disabled = !ready;
+      claimButton.className = ready ? "primary-button" : "secondary-button";
+      claimButton.textContent = ready ? "RÜCKKEHR BERGEN" : "EXPEDITION LÄUFT";
+    }
+  }
+  setLiveText("dispatch-ready", `${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV · ${readyCount} BEREIT`);
+}
+
+function refreshDynamicUi(now = performance.now()): void {
+  refreshCombatUi(now);
+  refreshIncubationUi(Date.now());
+  refreshDispatchUi(Date.now());
+}
+
 function render(): void {
+  if (interactionActive()) {
+    renderDeferred = true;
+    return;
+  }
+  renderDeferred = false;
   const combatActive = !showLogin && activeView === "expedition";
   const prestigeActive = !showLogin && activeView === "prestige";
   document.documentElement.classList.toggle("user-reduced-motion", game.settings.reducedMotion);
@@ -1080,8 +1321,13 @@ function render(): void {
     const content = views[activeView]();
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
-  bindEvents();
   bindModalKeyboard();
+}
+
+function flushDeferredUi(): void {
+  if (interactionActive()) return;
+  if (renderDeferred) render();
+  if (combatStructuralRefreshDeferred) refreshCombatUi(performance.now(), true);
 }
 
 function bindModalKeyboard(): void {
@@ -1112,62 +1358,106 @@ function bindModalKeyboard(): void {
 }
 
 function bindEvents(): void {
-  document.querySelectorAll<HTMLElement>("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view as View)));
-  document.querySelectorAll<HTMLElement>("[data-combat-panel]").forEach((button) => button.addEventListener("click", () => toggleCombatPanel(button.dataset.combatPanel as CombatPanel)));
-  document.querySelector("#combat-focus-toggle")?.addEventListener("click", toggleCombatFocus);
-  document.querySelectorAll<HTMLElement>("[data-home]").forEach((button) => button.addEventListener("click", () => { showLogin = true; showOfflineReport = false; starterDialogOpen = false; window.scrollTo({ top: 0, behavior: "smooth" }); render(); }));
-  document.querySelector<HTMLFormElement>("#login-form")?.addEventListener("submit", (event) => { event.preventDefault(); signIn(); });
-  document.querySelector("#collect-cache")?.addEventListener("click", collectCache);
-  document.querySelector("#offline-collect")?.addEventListener("click", collectOfflineRewards);
-  document.querySelector("#offline-continue")?.addEventListener("click", () => { showOfflineReport = false; render(); window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" })); });
-  document.querySelectorAll<HTMLElement>("[data-level]").forEach((button) => button.addEventListener("click", () => levelUp(button.dataset.level ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-train]").forEach((button) => button.addEventListener("click", () => trainWithData(button.dataset.train ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-evolve]").forEach((button) => button.addEventListener("click", () => evolveMonster(button.dataset.evolve ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-hyper]").forEach((button) => button.addEventListener("click", () => upgradeHyper(button.dataset.hyper ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-equip-gem]").forEach((button) => button.addEventListener("click", () => equipGem(button.dataset.monster ?? "", button.dataset.equipGem ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-unequip-gem]").forEach((button) => button.addEventListener("click", () => unequipGem(button.dataset.monster ?? "", button.dataset.unequipGem ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-active]").forEach((button) => button.addEventListener("click", () => makeActive(button.dataset.active ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-support]").forEach((button) => button.addEventListener("click", () => makeSupport(button.dataset.support ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-zone]").forEach((button) => button.addEventListener("click", () => selectZone(button.dataset.zone ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-starter]").forEach((button) => button.addEventListener("click", () => chooseStarter(button.dataset.starter ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-avatar]").forEach((button) => button.addEventListener("click", () => setAvatar(button.dataset.avatar ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-frame]").forEach((button) => button.addEventListener("click", () => setFrame(button.dataset.frame ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-incubate]").forEach((button) => button.addEventListener("click", () => startIncubation(button.dataset.incubate ?? "")));
-  document.querySelector("#hatch-egg")?.addEventListener("click", hatchIncubation);
-  document.querySelector("#accelerate-incubation")?.addEventListener("click", accelerateIncubation);
-  document.querySelector("#open-starter")?.addEventListener("click", () => { starterDialogOpen = true; render(); });
-  ["close-starter", "close-starter-alt"].forEach((id) => document.querySelector(`#${id}`)?.addEventListener("click", () => { starterDialogOpen = false; render(); }));
-  document.querySelector("#close-hatch-notice")?.addEventListener("click", () => { hatchNotice = ""; render(); });
-  document.querySelectorAll<HTMLElement>("[data-milestone]").forEach((button) => button.addEventListener("click", () => claimMilestone(Number(button.dataset.milestone))));
-  document.querySelectorAll<HTMLElement>("[data-objective]").forEach((button) => button.addEventListener("click", () => claimObjective(button.dataset.objective ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-start-expedition]").forEach((button) => button.addEventListener("click", () => startTimedExpedition(Number(button.dataset.expeditionSlot), button.dataset.startExpedition ?? "", button.dataset.expeditionMonster ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-claim-expedition]").forEach((button) => button.addEventListener("click", () => claimTimedExpedition(button.dataset.claimExpedition ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-craft]").forEach((button) => button.addEventListener("click", () => craftRecipe(button.dataset.craft ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-setting]").forEach((button) => button.addEventListener("click", () => updatePlayerSetting(button.dataset.setting as keyof PlayerSettings, button.dataset.settingValue ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-system-message]").forEach((button) => button.addEventListener("click", () => claimSystemMessage(button.dataset.systemMessage ?? "")));
-  document.querySelectorAll<HTMLElement>("[data-research]").forEach((button) => button.addEventListener("click", () => buyResearch(button.dataset.research as ResearchId)));
-  document.querySelector("#start-prestige")?.addEventListener("click", openPrestigeScene);
-  document.querySelector("#confirm-prestige")?.addEventListener("click", confirmPrestige);
-  document.querySelector("#close-ui-notice")?.addEventListener("click", () => { uiNotice = null; render(); });
-  document.querySelector("#client-state-action")?.addEventListener("click", () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("ui-state");
-    window.history.replaceState({}, "", url);
-    if (clientUiState === "conflict") return window.location.reload();
-    clientUiState = "local";
-    render();
+  app.addEventListener("submit", (event) => {
+    if (!(event.target instanceof HTMLFormElement) || event.target.id !== "login-form") return;
+    event.preventDefault();
+    runSingleAction("login", signIn);
   });
-  document.querySelector("#advance-tutorial")?.addEventListener("click", () => advanceTutorial(false));
-  document.querySelector("#skip-tutorial")?.addEventListener("click", () => advanceTutorial(true));
-  document.querySelector("#reset-game")?.addEventListener("click", () => { if (!window.confirm("Lokalen Idle-Tamer-Spielstand wirklich löschen?")) return; resetGame(); window.location.reload(); });
+  app.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
+    if (!target || target.disabled) return;
+    const run = (key: string, action: () => void): void => runSingleAction(key, action);
+
+    if (target.dataset.qa) return run(`qa:${target.dataset.qa}`, () => applyQaState(target.dataset.qa as QaPreset));
+    if (target.dataset.view) return setView(target.dataset.view as View);
+    if (target.dataset.combatPanel) return toggleCombatPanel(target.dataset.combatPanel as CombatPanel);
+    if (target.hasAttribute("data-home")) {
+      showLogin = true;
+      showOfflineReport = false;
+      starterDialogOpen = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return render();
+    }
+    if (target.dataset.level) return run(`level:${target.dataset.level}`, () => levelUp(target.dataset.level ?? ""));
+    if (target.dataset.train) return run(`train:${target.dataset.train}`, () => trainWithData(target.dataset.train ?? ""));
+    if (target.dataset.evolve) return run(`evolve:${target.dataset.evolve}`, () => evolveMonster(target.dataset.evolve ?? ""));
+    if (target.dataset.hyper) return run(`hyper:${target.dataset.hyper}`, () => upgradeHyper(target.dataset.hyper ?? ""));
+    if (target.dataset.equipGem) return run(`equip:${target.dataset.monster}:${target.dataset.equipGem}`, () => equipGem(target.dataset.monster ?? "", target.dataset.equipGem ?? ""));
+    if (target.dataset.unequipGem) return run(`unequip:${target.dataset.monster}:${target.dataset.unequipGem}`, () => unequipGem(target.dataset.monster ?? "", target.dataset.unequipGem ?? ""));
+    if (target.dataset.active) return run(`active:${target.dataset.active}`, () => makeActive(target.dataset.active ?? ""));
+    if (target.dataset.support) return run(`support:${target.dataset.support}`, () => makeSupport(target.dataset.support ?? ""));
+    if (target.dataset.zone) return run(`zone:${target.dataset.zone}`, () => selectZone(target.dataset.zone ?? ""));
+    if (target.dataset.starter) return run("starter", () => chooseStarter(target.dataset.starter ?? ""));
+    if (target.dataset.avatar) return run(`avatar:${target.dataset.avatar}`, () => setAvatar(target.dataset.avatar ?? ""));
+    if (target.dataset.frame) return run(`frame:${target.dataset.frame}`, () => setFrame(target.dataset.frame ?? ""));
+    if (target.dataset.incubate) return run(`incubate:${target.dataset.incubate}`, () => startIncubation(target.dataset.incubate ?? ""));
+    if (target.dataset.milestone) return run(`milestone:${target.dataset.milestone}`, () => claimMilestone(Number(target.dataset.milestone)));
+    if (target.dataset.objective) return run(`objective:${target.dataset.objective}`, () => claimObjective(target.dataset.objective ?? ""));
+    if (target.dataset.startExpedition) return run(`expedition-start:${target.dataset.expeditionSlot}`, () => startTimedExpedition(Number(target.dataset.expeditionSlot), target.dataset.startExpedition ?? "", target.dataset.expeditionMonster ?? ""));
+    if (target.dataset.claimExpedition) return run(`expedition-claim:${target.dataset.claimExpedition}`, () => claimTimedExpedition(target.dataset.claimExpedition ?? ""));
+    if (target.dataset.craft) return run(`craft:${target.dataset.craft}`, () => craftRecipe(target.dataset.craft ?? ""));
+    if (target.dataset.setting) return run(`setting:${target.dataset.setting}`, () => updatePlayerSetting(target.dataset.setting as keyof PlayerSettings, target.dataset.settingValue ?? ""));
+    if (target.dataset.systemMessage) return run(`message:${target.dataset.systemMessage}`, () => claimSystemMessage(target.dataset.systemMessage ?? ""));
+    if (target.dataset.research) return run(`research:${target.dataset.research}`, () => buyResearch(target.dataset.research as ResearchId));
+
+    switch (target.id) {
+      case "combat-focus-toggle": return toggleCombatFocus();
+      case "collect-cache": return run("collect-cache", collectCache);
+      case "offline-collect": return run("offline-collect", collectOfflineRewards);
+      case "offline-continue":
+        showOfflineReport = false;
+        render();
+        return window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+      case "hatch-egg": return run("hatch", hatchIncubation);
+      case "accelerate-incubation": return run("incubation-charge", accelerateIncubation);
+      case "open-starter": starterDialogOpen = true; return render();
+      case "close-starter":
+      case "close-starter-alt": starterDialogOpen = false; return render();
+      case "close-hatch-notice": hatchNotice = ""; return render();
+      case "start-prestige": return openPrestigeScene();
+      case "confirm-prestige": return run("prestige", confirmPrestige);
+      case "close-ui-notice": return dismissNotice();
+      case "client-state-action": {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("ui-state");
+        window.history.replaceState({}, "", url);
+        if (clientUiState === "conflict") return window.location.reload();
+        clientUiState = "local";
+        return render();
+      }
+      case "advance-tutorial": return run("tutorial", () => advanceTutorial(false));
+      case "skip-tutorial": return run("tutorial", () => advanceTutorial(true));
+      case "reset-game":
+        if (!window.confirm("Lokalen Idle-Tamer-Spielstand wirklich löschen?")) return;
+        resetGame();
+        return window.location.reload();
+    }
+  });
+  document.addEventListener("pointerdown", () => { pointerInteractionActive = true; }, true);
+  const releasePointer = (): void => {
+    pointerInteractionActive = false;
+    window.requestAnimationFrame(flushDeferredUi);
+  };
+  document.addEventListener("pointerup", releasePointer, true);
+  document.addEventListener("pointercancel", releasePointer, true);
+  document.addEventListener("keydown", (event) => {
+    if ((event.key === "Enter" || event.key === " ") && event.target instanceof Element && event.target.closest("button")) keyboardInteractionActive = true;
+  }, true);
+  document.addEventListener("keyup", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    keyboardInteractionActive = false;
+    window.requestAnimationFrame(flushDeferredUi);
+  }, true);
 }
 
 function frame(now: number): void {
   const delta = now - lastFrame;
   lastFrame = now;
   if (delta < 1_000) tickBattle(now);
-  const dynamicView = !showLogin && !showOfflineReport && !starterDialogOpen && (activeView === "expedition" || activeView === "incubation" || activeView === "dispatch");
-  if (dynamicView && now - lastRender >= 500) { render(); lastRender = now; }
+  if (now - lastDynamicRefresh >= 100) {
+    refreshDynamicUi(now);
+    lastDynamicRefresh = now;
+  }
   if (clientUiState !== "conflict" && now - lastSave >= 5_000) {
     const saveResult = service.save();
     lastSave = now;
@@ -1187,5 +1477,6 @@ window.addEventListener("storage", (event) => {
 window.addEventListener("beforeunload", () => {
   if (clientUiState !== "conflict") service.save();
 });
+bindEvents();
 render();
 requestAnimationFrame(frame);

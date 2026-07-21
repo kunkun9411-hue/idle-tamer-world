@@ -5,7 +5,6 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
-  await page.locator("#offline-continue").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 
   const skipTutorial = page.locator("#skip-tutorial");

@@ -6,7 +6,7 @@ Diese Übersicht ist der schnellste Einstieg. Die Inhaltsdateien sind absichtlic
 
 Datei: `packages/content/src/content.ts`
 
-Jeder Eintrag enthält Rookie-Name, Art, Element, Rolle, Basis-HP, Basisangriff, Akzentfarbe, Beschreibung, Spritepfad und die erste Evolution. `MONSTERS` muss zehn eindeutige IDs behalten. Ein Name darf geändert werden, eine veröffentlichte ID später besser nicht – sie wird in Spielständen und der Datenbank gespeichert.
+Jeder Eintrag enthält Rookie-Name, Art, Element, Rolle, Basis-HP, Basisangriff, Akzentfarbe, Beschreibung, Spritepfad und die erste Evolution. `MONSTERS` enthält in Version 0.2 noch zehn eindeutige IDs und wächst mit der bestätigten Content-Migration auf 40. Ein Name darf geändert werden, eine veröffentlichte ID später besser nicht – sie wird in Spielständen und der Datenbank gespeichert.
 
 Wichtige Felder:
 
@@ -53,7 +53,7 @@ Datei: `packages/content/src/catalog.ts`, Array `ZONES`
 - `accent`, `backgroundKey`: visuelle Anbindung
 - `synergies`: zwei Rollen plus echte Kampf-, Gold-, Ei- oder Materialboni
 
-Gegner- und Boss-IDs kommen aus `packages/content/src/encounters.ts`, nicht aus `MONSTERS`. Jeder Encounter besitzt `eggMonsterId`, wodurch die Wildform festlegt, welche sammelbare Rookie-Linie als Ei droppen kann. Die fünf stabilen Rollen sind `attacker`, `defender`, `support`, `controller` und `scout`. Die aktuelle UI zeigt drei Zonen, kann aus demselben Array aber weitere Karten erzeugen.
+Gegner- und Boss-IDs kommen derzeit aus `packages/content/src/encounters.ts`, nicht aus `MONSTERS`. Jeder Encounter besitzt `eggMonsterId`, wodurch die Wildform vorübergehend festlegt, welche der ersten zehn Linien als Ei droppt. Die 30 normalen Encounter-Designs werden später selbst zu sammelbaren Linien migriert; Bosse bleiben Encounter. Die fünf stabilen Rollen sind `attacker`, `defender`, `support`, `controller` und `scout`. Die UI zeigt immer ein Fenster aus drei Zonentabs, der Katalog enthält aber zehn linear freischaltbare Zonen.
 
 ## Avatare und Rahmen ändern
 

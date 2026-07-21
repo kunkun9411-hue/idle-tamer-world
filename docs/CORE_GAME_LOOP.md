@@ -42,9 +42,9 @@ Jedes Prestige gibt dauerhaft +0,2 % Grundwerte, +0,1 % Gold aus wiederholbaren 
 
 ## Aktueller Content-Umfang
 
-- zehn Rookie-Linien mit je einer Evolution
-- 30 normale Gegner und fünf rotierende Bosse
-- drei Zonen mit je zehn Stages und einem Boss
+- zehn vollständig implementierte Rookie-Linien mit je einer Evolution; Zielumfang 40 Linien
+- 30 derzeitige Normalgegner-Designs, die später zu zusätzlichen sammelbaren Linien ausgebaut werden, und fünf rotierende Bosse
+- zehn logisch spielbare Zonen mit je zehn Stages; sieben davon verwenden vorläufig die drei vorhandenen Weltbilder erneut
 - vier Materialien
 - 45 Gems: drei Formen, fünf Farben, drei Seltenheiten
 - sechs Avatare und fünf Rahmen

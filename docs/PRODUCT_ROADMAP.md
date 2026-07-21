@@ -1,10 +1,18 @@
 # Idle Tamer – Arbeitsroadmap
 
-- Stand: 20. Juli 2026
+- Stand: 21. Juli 2026
 - Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
 - Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
+
+## Version-0.2-Stabilisierung
+
+Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt nicht mehr fortlaufend ihren vollständigen DOM neu, Erstklicks sind stabil, frische Accounts starten nach der Starterwahl direkt im Kampf und der reale Zonenpfad reicht nun bis Zone 10. Lokale QA-Presets beschleunigen die Abnahme, sind im Produktionsbuild aber deaktiviert. Der Roadmap-Zähler bleibt bewusst bei 12/32, weil kein Backend-Gate vorgezogen wurde. Details: `VERSION_0_2_STABILIZATION.md`.
+
+Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
+
+Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 37,5 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -36,7 +44,7 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
-| 8 | PvP, Handel, Live Ops und Launch | [ ] | [ ] | [ ] | [ ] | Geplant |
+| 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
 Gesamtfortschritt: **12 von 32 Schritten abgeschlossen (37,5 %)**.
 
@@ -128,7 +136,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Parallel-Tab-, Reload- und veraltete-Revision-Fälle simulieren
 - [x] CI für Test, Build, Content und Assets aktivieren
 
-**Definition of Done erfüllt:** 45 Regel-, Content- und Service-Vertragstests sowie elf echte Chromium-Abläufe sind grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen, parallele Tabs und die Zone-10-Prestigesperre sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle 96 Assetverträge und den sichtbaren Kernloop.
+**Definition of Done erfüllt:** Nach dem Version-0.2-Stabilisierungscheckpoint sind 48 Regel-, Content- und Service-Vertragstests sowie zwölf echte Chromium-Abläufe grün. Desktop, Tablet und 390×844 bleiben ohne horizontales Überlaufen bedienbar; Fokusfang, AA-Kontrast, Reduced Motion, Reload-Schutz, veraltete Revisionen, parallele Tabs, DOM-stabile Kampfsteuerung und die Zone-10-Prestigesperre sind automatisiert abgesichert. Die GitHub-CI prüft Tests, Build, Roadmap, alle Assetverträge und den sichtbaren Kernloop.
 
 ### Schritt 4 – Abnehmen ✅
 
@@ -356,9 +364,9 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ---
 
-## Block 8 – PvP, Handel, Live Ops und Launch
+## Block 8 – PvP, Handel und Live-Ops-Grundlage
 
-**Ergebnis:** Wettbewerb, optionale Wirtschaft zwischen Spielern, wiederkehrende Inhalte und ein belastbarer öffentlicher Betrieb.
+**Ergebnis:** Wettbewerb, optionale Wirtschaft zwischen Spielern, wiederkehrende Inhalte und eine belastbare Betriebsgrundlage für die erste geschlossene Online-Alpha.
 
 ### Schritt 1 – Planen ⬜
 
@@ -389,14 +397,14 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ### Schritt 4 – Abnehmen ⬜
 
-- [ ] geschlossene Alpha, geschlossene Beta und offene Beta getrennt abnehmen
+- [ ] geschlossene Version-0.2-Alpha mit klarer Testgruppe abnehmen
 - [ ] Wirtschafts-, PvP- und Gildenmetriken ohne kritische Ausreißer prüfen
 - [ ] Datenschutz-, Nutzungs- und Community-Regeln veröffentlichen
 - [ ] Support-, Moderations- und Incident-Ablauf mit Testfällen üben
-- [ ] Launch Candidate einfrieren und finalen Regressionstest ausführen
-- [ ] öffentlichen Start freigeben
+- [ ] Alpha Candidate einfrieren und vollständigen Regressionstest ausführen
+- [ ] ersten Acht-Block-Zyklus abnehmen und den Beta-Zyklus aus echten Messdaten planen
 
-**Gate:** Idle Tamer ist nicht nur funktionsreich, sondern betreibbar, sicher, wiederherstellbar und moderierbar.
+**Gate:** Die Online-Alpha-Grundlage ist funktionsreich, betreibbar, sicher, wiederherstellbar und moderierbar. Sie ist noch nicht Version 1.0.
 
 ---
 

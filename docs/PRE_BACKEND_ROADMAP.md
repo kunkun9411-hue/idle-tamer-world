@@ -13,10 +13,10 @@ Vor dem ersten echten Server soll Idle Tamer lokal wie ein vollständiges kleine
 | System | Aktueller Stand |
 | --- | --- |
 | Einstieg | Login-Vorschau, Offline-Bericht, Starterwahl und direkter Kampfstart |
-| Hauptkampf | automatisches 1-gegen-1, Normaltempo, drei Zonen, 30 Gegner, fünf Bosse |
+| Hauptkampf | automatisches 1-gegen-1, Normaltempo, zehn logische Zonen, 30 vorläufige Normalgegner-Designs, fünf Bosse |
 | Teamwahl | Front, Support und zonenspezifische Rollenboni |
 | Run-Fortschritt | Gold, normale Level, Stages und Kampfspeicher |
-| Sammlung | zehn Rookie-Linien, artspezifische Eier und Erstfreischaltung |
+| Sammlung | zehn implementierte Rookie-Linien, artspezifische Eier und Erstfreischaltung; bestätigtes Ziel 40 Linien |
 | Brut | Zeitjob, Beschleunigung, Duplikate und Art-Fragmente |
 | Dauerhafte Monsterkraft | Hyperlevel, Evolution und Gem-Ausrüstung |
 | Equipment | 45 Gems, drei Slots, Drops, Inventar und Grundwertboni |

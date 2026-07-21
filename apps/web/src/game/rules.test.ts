@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MONSTERS } from "./content";
 import { BOSSES, ENEMIES } from "./encounters";
+import { ZONES } from "./catalog";
 import { LocalGameService } from "./game-service";
 import {
   createInitialState,
@@ -259,6 +260,31 @@ describe("LocalGameService command boundary", () => {
     expect(state.inventory.evolution_core).toBe(1);
     expect(Object.values(state.gemInventory).reduce((sum, amount) => sum + amount, 0)).toBe(4);
     expect(state.cacheSlotsUsed).toBe(0);
+  });
+
+  it("progresses through every boss gate from zone 1 to zone 10 before Prestige", () => {
+    const state = createInitialState();
+    const service = new LocalGameService(state, () => 1);
+    service.chooseStarter("pyrook");
+
+    for (let index = 0; index < ZONES.length - 1; index += 1) {
+      const zone = ZONES[index];
+      const nextZone = ZONES[index + 1];
+      state.currentZoneId = zone.id;
+      state.zoneProgress[zone.id].stage = zone.stages;
+      const victory = service.recordVictory(zone.bossPool[0], zone.levelOffset + zone.stages);
+      expect(victory.unlockedZoneId, `${zone.name} must unlock ${nextZone.name}`).toBe(nextZone.id);
+      expect(state.unlockedZoneIds).toContain(nextZone.id);
+    }
+
+    expect(state.highestZoneNumber).toBe(10);
+    expect(state.currentZoneId).toBe(ZONES[ZONES.length - 2].id);
+    state.currentZoneId = ZONES[9].id;
+    state.zoneProgress[ZONES[9].id].stage = ZONES[9].stages;
+    state.runVictories = 99;
+    service.recordVictory(ZONES[9].bossPool[0], ZONES[9].levelOffset + ZONES[9].stages);
+    expect(state.runVictories).toBe(100);
+    expect(service.prestige()).toBe(1);
   });
 
   it("activates zone bonuses from the front and support role combination", () => {

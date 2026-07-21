@@ -153,7 +153,7 @@ export const COMBAT_ROLE_LABELS: Record<CombatRole, string> = {
   scout: "Späher",
 };
 
-export const ZONES: ZoneDefinition[] = [
+const INITIAL_ZONES: ZoneDefinition[] = [
   {
     id: "violet-rim",
     name: "Violetter Saum",
@@ -208,6 +208,57 @@ export const ZONES: ZoneDefinition[] = [
     backgroundKey: "zone.obsidian-fjord",
   },
 ];
+
+interface FoundationZoneSeed {
+  id: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  element: Element;
+  accent: string;
+  levelOffset: number;
+  unlockAfterZoneId: string;
+  backgroundKey: string;
+  enemyPool: string[];
+  bossPool: string[];
+  primaryRoles: [CombatRole, CombatRole];
+  secondaryRoles: [CombatRole, CombatRole];
+}
+
+const FOUNDATION_ZONE_SEEDS: FoundationZoneSeed[] = [
+  { id: "ember-wastes", name: "Glutweiten", subtitle: "Aschenechos", description: "Alte Portale verbrennen hier ihre letzten Erinnerungen zu wandernden Glutstürmen.", element: "fire", accent: "#e87959", levelOffset: 21, unlockAfterZoneId: "obsidian-fjord", backgroundKey: "zone.violet-rim", enemyPool: ["emberling", "cindervex", "ashmaw", "flickerimp", "obsidrake", "deepflare", "staticress", "stormelk", "nullshell", "cryobat"], bossPool: ["pyroclast-seraph", "nihil-warden"], primaryRoles: ["attacker", "support"], secondaryRoles: ["defender", "controller"] },
+  { id: "verdant-circuit", name: "Wurzelstrom", subtitle: "Lebendes Netzwerk", description: "Ein endloses Geflecht aus Wurzeln transportiert Daten, Wasser und fremde Instinkte.", element: "earth", accent: "#79b96d", levelOffset: 28, unlockAfterZoneId: "ember-wastes", backgroundKey: "zone.glass-gardens", enemyPool: ["rootkin", "pebblit", "bloomcap", "vinecoil", "mirehorn", "eclipsprout", "glasscarab", "prismole", "rainskip", "duskweaver"], bossPool: ["crownroot-colossus", "mirrormaw-hydra"], primaryRoles: ["defender", "support"], secondaryRoles: ["attacker", "scout"] },
+  { id: "storm-array", name: "Sturmgitter", subtitle: "Geladene Horizonte", description: "Blitze springen zwischen schwebenden Antennenruinen und verändern jeden bekannten Pfad.", element: "lightning", accent: "#dfc94e", levelOffset: 35, unlockAfterZoneId: "verdant-circuit", backgroundKey: "zone.glass-gardens", enemyPool: ["zapplet", "staticress", "stormelk", "deepflare", "sunmidge", "halopeep", "currentail", "riftling", "obsidrake", "quartzling"], bossPool: ["tempest-leviathan", "pyroclast-seraph"], primaryRoles: ["scout", "controller"], secondaryRoles: ["attacker", "defender"] },
+  { id: "sunken-archive", name: "Versunkenes Archiv", subtitle: "Ertrunkene Chronik", description: "Unter schwarzem Wasser liegen Aufzeichnungen, die ihre Besucher als neue Kapitel speichern.", element: "water", accent: "#58b5d4", levelOffset: 42, unlockAfterZoneId: "storm-array", backgroundKey: "zone.obsidian-fjord", enemyPool: ["rainskip", "currentail", "mistray", "mirehorn", "deepflare", "glacifin", "glasscarab", "nullshell", "gloamite", "bloomcap"], bossPool: ["mirrormaw-hydra", "tempest-leviathan"], primaryRoles: ["controller", "support"], secondaryRoles: ["defender", "scout"] },
+  { id: "lunar-bastion", name: "Mondbastion", subtitle: "Gefrorene Festung", description: "Eine verlassene Gildenfestung kreist in ewigem Frost um einen künstlichen Mond.", element: "ice", accent: "#8ebde8", levelOffset: 49, unlockAfterZoneId: "sunken-archive", backgroundKey: "zone.obsidian-fjord", enemyPool: ["frostnip", "quartzling", "cryobat", "glacifin", "stormelk", "nullshell", "riftling", "eclipsprout", "mistray", "obsidrake"], bossPool: ["nihil-warden", "tempest-leviathan"], primaryRoles: ["defender", "controller"], secondaryRoles: ["attacker", "support"] },
+  { id: "null-cathedral", name: "Null-Kathedrale", subtitle: "Stille Protokolle", description: "Jede Resonanz wird hier geprüft, kopiert und von einem unsichtbaren Chor beantwortet.", element: "dark", accent: "#8f75ce", levelOffset: 56, unlockAfterZoneId: "lunar-bastion", backgroundKey: "zone.obsidian-fjord", enemyPool: ["gloamite", "obsidrake", "riftling", "nullshell", "duskweaver", "eclipsprout", "ashmaw", "deepflare", "cryobat", "vinecoil"], bossPool: ["nihil-warden", "mirrormaw-hydra"], primaryRoles: ["attacker", "scout"], secondaryRoles: ["defender", "support"] },
+  { id: "ether-crown", name: "Etherkrone", subtitle: "Resonanzspitze", description: "Am oberen Rand der bekannten Welt sammelt sich genug Ether für den ersten vollständigen Zeitlinienwechsel.", element: "light", accent: "#b49aff", levelOffset: 63, unlockAfterZoneId: "null-cathedral", backgroundKey: "zone.violet-rim", enemyPool: ["halopeep", "sunmidge", "glasscarab", "prismole", "staticress", "obsidrake", "eclipsprout", "deepflare", "stormelk", "frostnip"], bossPool: ["crownroot-colossus", "pyroclast-seraph", "nihil-warden"], primaryRoles: ["attacker", "controller"], secondaryRoles: ["support", "scout"] },
+];
+
+const FOUNDATION_EXPANSION_ZONES: ZoneDefinition[] = FOUNDATION_ZONE_SEEDS.map((seed, index) => {
+  const combatPower = 14 + index * 2;
+  const economyPower = 7 + index;
+  return {
+    id: seed.id,
+    name: seed.name,
+    subtitle: seed.subtitle,
+    description: seed.description,
+    element: seed.element,
+    accent: seed.accent,
+    stages: 10,
+    levelOffset: seed.levelOffset,
+    enemyPool: seed.enemyPool,
+    bossPool: seed.bossPool,
+    unlockAfterZoneId: seed.unlockAfterZoneId,
+    backgroundKey: seed.backgroundKey,
+    synergies: [
+      { id: `${seed.id}-pressure`, name: "Resonanzdruck", roles: seed.primaryRoles, description: `+${combatPower}% Angriff und +${combatPower}% Leben`, attackPercent: combatPower, hpPercent: combatPower },
+      { id: `${seed.id}-harvest`, name: "Welternte", roles: seed.secondaryRoles, description: `+${economyPower}% Gold und +${economyPower}% Materialchance`, goldPercent: economyPower, materialChanceBonus: economyPower / 100 },
+    ],
+  };
+});
+
+export const ZONES: ZoneDefinition[] = [...INITIAL_ZONES, ...FOUNDATION_EXPANSION_ZONES];
 
 export const getZone = (id: string): ZoneDefinition => ZONES.find((zone) => zone.id === id) ?? ZONES[0];
 

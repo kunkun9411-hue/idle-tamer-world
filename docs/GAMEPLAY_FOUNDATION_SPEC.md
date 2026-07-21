@@ -30,15 +30,15 @@ Dieses Dokument friert den Solo-Kern von Idle Tamer ein, bevor PostgreSQL und Se
 | Minute 30–45 | vorhandene Zonen meistern, Teamrollen vergleichen und permanenten Fortschritt vorbereiten |
 | Minute 45–60 | Brut, Hyperlevel, Evolution, Gems und Forschung als langfristige Ziele verstehen |
 
-Prestige ist kein früher Klickloop. Es wird erst nach Zone 10 und 100 Run-Siegen verfügbar. Der aktuelle Drei-Zonen-Prototyp zeigt die gesperrte Szene; ein reproduzierbares Test-Fixture bildet bereits den späteren Zone-10-Zustand ab.
+Prestige ist kein früher Klickloop. Es wird erst nach Zone 10 und 100 Run-Siegen verfügbar. Version 0.2 besitzt einen realen, linearen Pfad über zehn Zonen; die Zonen 4 bis 10 verwenden bis zur Content-Abnahme vorläufig vorhandene Gegner- und Weltassets erneut.
 
 ### Erster Tag
 
 Ein normal aktiver Spieler mit mehreren Rückkehr-Sessions soll ungefähr Folgendes erreichen können:
 
-- Fortschritt in Richtung Zone 10; die spätere reale Prestigezahl wird erst mit den Zonen 4–10 kalibriert,
+- Fortschritt in Richtung Zone 10; die reale Zeit bis zum ersten Prestige wird mit den neuen Zonen 4–10 weiter kalibriert,
 - drei bis sechs entdeckte Monsterlinien,
-- alle drei Zonen mindestens einmal betreten,
+- die ersten drei Zonen mindestens einmal betreten,
 - ein bis drei Hyperlevel auf bevorzugten Monstern,
 - mindestens eine vollständige Gem-Ausrüstung,
 - die erste Evolution als erreichbares Tagesziel, nicht als garantierter Loginbonus,

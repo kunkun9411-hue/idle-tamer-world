@@ -1,14 +1,14 @@
 # Gegner-, Boss- und Zonenrollen-Katalog
 
-## Warum Gegner getrennt von sammelbaren Monstern sind
+## Aktueller technischer Zwischenstand
 
-Die zehn Rookie-Linien sind die sammelbaren Account-Monster. Die 30 normalen Gegner und fünf Bosse bilden einen unabhängigen Encounter-Katalog. Dadurch können sie beliebig über Zonen, Events und Jahre verteilt werden, ohne automatisch 35 zusätzliche Zuchtlinien, Evolutionen und Fragmentinventare zu erzwingen.
+Die zehn ursprünglichen Rookie-Linien sind bereits sammelbare Account-Monster. Die 30 normalen Gegner liegen momentan in einem getrennten Encounter-Katalog, werden aber **nicht** als dauerhaft unabhängiger Reservepool behandelt. Die verbindliche Zielstruktur ergänzt diese 30 Designs zu den vorhandenen zehn Linien: insgesamt 40 sammelbare Rookie-Linien. Die fünf Bosse bleiben eigenständige Encounter.
 
-Jeder Gegner besitzt ein `eggMonsterId`. Wenn ein Ei droppt, verweist es auf eine der zehn sammelbaren Rookie-Linien. Die sichtbare Wildform und das mögliche Ei müssen also nicht identisch sein.
+Bis die zusätzlichen Linien Grundwerte, Rollen, Evolutionen, Eier und Fragmentverträge besitzen, verweist `eggMonsterId` technisch noch auf eine der ersten zehn Linien. Das ist eine Übergangslösung von Version 0.2, nicht die endgültige Sammlungslogik.
 
 Technische Quelle: `packages/content/src/encounters.ts`
 
-## Verteilung
+## Vorläufige Verteilung
 
 | Zone | Normale Gegner | Rotierende Bosse |
 | --- | --- | --- |
@@ -17,6 +17,8 @@ Technische Quelle: `packages/content/src/encounters.ts`
 | Obsidian-Fjord | Obsidrake, Riftling, Cryobat, Ashmaw, Nullshell, Stormelk, Duskweaver, Glacifin, Eclipsprout, Deepflare | Nihil-Wächter |
 
 Bei mehreren Bossen rotiert der Boss mit jedem Zonenabschluss. Der Saum zeigt also beim ersten Abschluss den Kronwurzel-Koloss und beim zweiten den Pyroklast-Seraph.
+
+Die Zonen 4 bis 10 verwenden diese Assets in Version 0.2 vorübergehend erneut. Bei der 40-Linien-Migration wird entschieden, welche Wild- oder Virusgegner an ihre Stelle treten.
 
 ## Expeditions-Duo
 
@@ -54,8 +56,8 @@ Die Kombination ist reihenfolgeunabhängig. Angriff in der Front plus Support im
 
 ## Assetstatus
 
-- zehn Rookie-Starter: vollständig als HD-Runtime-Sprites
-- 30 normale Gegner: vollständig als HD-Runtime-Sprites
+- zehn ursprüngliche Rookie-Linien: vollständig als HD-Runtime-Sprites
+- 30 künftige zusätzliche Rookie-Linien: HD-Sprites liegen derzeit im Enemy-Assetpfad und werden später migriert
 - fünf Bosse: vollständig als HD-Runtime-Sprites
 - alle Dateien: PNG, RGBA, transparent, exakt 200×200
 - Runtime: `apps/web/public/assets/monsters`, `apps/web/public/assets/enemies`, `apps/web/public/assets/bosses`

@@ -1,4 +1,6 @@
-# Die zehn Rookie-Linien
+# Die ersten zehn Rookie-Linien
+
+Diese zehn Linien bilden die anfängliche Starterauswahl. Das verbindliche Sammlungsziel umfasst 40 Rookie-Linien: Die 30 derzeitigen Normalgegner-Designs werden zusätzlich ausgebaut und ersetzen keine dieser zehn Linien. Ihre Evolutionen und Sammlungsdaten entstehen in einer eigenen Content-Migration nach Version 0.2.
 
 Alle Designs sind eigenständig und dürfen keine geschützten Pokémon- oder Digimon-Figuren, Logos oder charakteristischen Kostüme kopieren. Ziel ist moderne HD-Cel-Shading-Optik, nicht Pixel-Art.
 
