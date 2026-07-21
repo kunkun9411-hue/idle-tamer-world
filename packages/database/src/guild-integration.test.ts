@@ -5,6 +5,7 @@ import type { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { PostgresAuthStore } from "./auth-store";
+import { PostgresAdminStore } from "./admin-store";
 import { PostgresGuildStore } from "./guild-store";
 import { createDatabasePool } from "./pool";
 import { PostgresRunStore } from "./run-store";
@@ -20,12 +21,14 @@ integration("PostgreSQL 18 guild and social store", () => {
   let authStore: PostgresAuthStore;
   let guildStore: PostgresGuildStore;
   let runStore: PostgresRunStore;
+  let adminStore: PostgresAdminStore;
 
   beforeAll(() => {
     pool = createDatabasePool(databaseUrl as string);
     authStore = new PostgresAuthStore(pool);
     guildStore = new PostgresGuildStore(pool);
     runStore = new PostgresRunStore(pool);
+    adminStore = new PostgresAdminStore(pool);
   });
 
   beforeEach(async () => {
@@ -179,5 +182,32 @@ integration("PostgreSQL 18 guild and social store", () => {
     const memberLatest = await guildStore.bootstrap(member.userId, now);
     const report = await execute(member.userId, memberLatest.snapshot.revision, { type: "player.report", playerId: leader.playerId, reason: "harassment", details: "Integration proof" });
     expect(report.event.payload.reportId).toBeTypeOf("string");
+  });
+
+  it("authorizes and audits content releases and moderation actions", async () => {
+    const moderator = await createPlayer("admin-moderator");
+    const reporter = await createPlayer("admin-reporter");
+    const target = await createPlayer("admin-target");
+    await expect(adminStore.authorize(moderator.userId, ["admin"])).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await pool.query("INSERT INTO user_roles (user_id, role) VALUES ($1, 'admin')", [moderator.userId]);
+    await expect(adminStore.authorize(moderator.userId, ["admin"])).resolves.toBeUndefined();
+    await pool.query(
+      `INSERT INTO content_releases (content_release_id, balance_release_id, is_active, metadata)
+       VALUES ('foundation-1.0.0', 'low-numbers-1.0.0', true, '{}'::jsonb), ('foundation-1.0.1', 'low-numbers-1.0.0', false, '{"test":true}'::jsonb)
+       ON CONFLICT (content_release_id) DO UPDATE SET metadata = EXCLUDED.metadata`,
+    );
+    await expect(adminStore.previewContent(moderator.userId, "foundation-1.0.1")).resolves.toMatchObject({ validation: { activationChanged: false } });
+    await expect(adminStore.switchContent(moderator.userId, "foundation-1.0.1", "activate")).resolves.toMatchObject({ activeContentReleaseId: "foundation-1.0.1", previousContentReleaseId: "foundation-1.0.0" });
+    await expect(adminStore.switchContent(moderator.userId, "foundation-1.0.0", "rollback")).resolves.toMatchObject({ activeContentReleaseId: "foundation-1.0.0", previousContentReleaseId: "foundation-1.0.1" });
+    await expect(pool.query("SELECT action FROM content_release_audit ORDER BY created_at", [])).resolves.toMatchObject({ rows: [{ action: "preview" }, { action: "activate" }, { action: "rollback" }] });
+
+    const report = await pool.query<{ id: string }>("INSERT INTO player_reports (reporter_player_id, reported_player_id, reason, details) VALUES ($1, $2, 'harassment', 'first') RETURNING id", [reporter.playerId, target.playerId]);
+    const warned = await adminStore.moderate(moderator.userId, report.rows[0].id, "warn", "Verifizierter Integrationstest", now);
+    expect(warned).toMatchObject({ status: "resolved", action: "warn" });
+    const second = await pool.query<{ id: string }>("INSERT INTO player_reports (reporter_player_id, reported_player_id, reason, details) VALUES ($1, $2, 'spam', 'second') RETURNING id", [reporter.playerId, target.playerId]);
+    await adminStore.moderate(moderator.userId, second.rows[0].id, "mute", "24 Stunden Chatpause", now);
+    await expect(pool.query("SELECT warning_count, muted_until > $2::timestamptz AS muted FROM player_moderation_state WHERE player_id = $1", [target.playerId, now])).resolves.toMatchObject({ rows: [{ warning_count: 1, muted: true }] });
+    await expect(pool.query("SELECT count(*)::int AS count FROM moderation_actions WHERE moderator_user_id = $1", [moderator.userId])).resolves.toMatchObject({ rows: [{ count: 2 }] });
+    await expect(adminStore.moderationQueue()).resolves.toMatchObject({ reports: [] });
   });
 });

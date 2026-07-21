@@ -221,6 +221,13 @@ export const up = (pgm) => {
     );
     CREATE INDEX player_reports_open_idx ON player_reports (status, created_at) WHERE status IN ('open', 'reviewing');
 
+    CREATE TABLE player_moderation_state (
+      player_id uuid PRIMARY KEY REFERENCES player_profiles(id) ON DELETE CASCADE,
+      warning_count integer NOT NULL DEFAULT 0 CHECK (warning_count >= 0),
+      muted_until timestamptz,
+      updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+    );
+
     CREATE TABLE moderation_actions (
       id uuid PRIMARY KEY DEFAULT uuidv7(),
       moderator_user_id uuid NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
@@ -243,6 +250,7 @@ export const up = (pgm) => {
 export const down = (pgm) => {
   pgm.sql(`
     DROP TABLE moderation_actions;
+    DROP TABLE player_moderation_state;
     DROP TABLE player_reports;
     DROP TABLE player_blocks;
     DROP TABLE player_friendships;

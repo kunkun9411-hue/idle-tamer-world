@@ -1,5 +1,5 @@
 import { loadServerConfig } from "@idle-tamer/config";
-import { createDatabasePool, pingDatabase, PostgresAuthStore, PostgresGuildStore, PostgresRunStore, runAuthMaintenance } from "@idle-tamer/database";
+import { createDatabasePool, pingDatabase, PostgresAdminStore, PostgresAuthStore, PostgresGuildStore, PostgresRunStore, runAuthMaintenance } from "@idle-tamer/database";
 
 import { buildApp } from "./app";
 import { FileAuthMailAdapter } from "./auth/mail";
@@ -12,6 +12,7 @@ const app = buildApp({
   authStore: new PostgresAuthStore(pool),
   runStore: new PostgresRunStore(pool),
   guildStore: new PostgresGuildStore(pool),
+  adminStore: new PostgresAdminStore(pool),
   authMail: new FileAuthMailAdapter(config.AUTH_MAIL_OUTBOX_PATH),
 });
 

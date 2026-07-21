@@ -579,6 +579,8 @@ export class PostgresGuildStore implements GuildStore {
         event = { type: "guild.expedition_claimed", payload: { expeditionId: command.expeditionId, guildDna: claimed.rows[0].reward_dna } };
       } else if (command.type === "guild.chat_send") {
         if (!current) throw new GuildDatabaseError("VALIDATION", "Du bist in keiner Gilde.");
+        const moderation = await client.query<{ muted_until: Date | null } & QueryResultRow>("SELECT muted_until FROM player_moderation_state WHERE player_id = $1", [player.player_id]);
+        if (moderation.rows[0]?.muted_until && moderation.rows[0].muted_until > now) throw new GuildDatabaseError("FORBIDDEN", `Du kannst bis ${moderation.rows[0].muted_until.toISOString()} keine Chatnachrichten senden.`);
         const recent = await client.query<{ count: string } & QueryResultRow>("SELECT count(*)::text AS count FROM guild_chat_messages WHERE player_id = $1 AND created_at > $2::timestamptz - interval '10 seconds'", [player.player_id, now]);
         if (Number(recent.rows[0].count) >= 4) throw new GuildDatabaseError("VALIDATION", "Bitte sende Nachrichten etwas langsamer.");
         const moderated = chatBlocked(command.body);
