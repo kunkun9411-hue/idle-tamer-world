@@ -215,13 +215,12 @@ function activeCombatMonster(): MonsterInstance | null {
 function createBattleState(): BattleState | null {
   const player = activeCombatMonster();
   if (!player) return null;
-  const online = isRunOnline();
   const zoneProgress = game.zoneProgress[game.currentZoneId] ?? { stage: 1, clears: 0 };
   const enemy = enemyForZone(game.currentZoneId, zoneProgress.stage, game.runVictories, zoneProgress.clears);
-  const enemyValues = enemyStats(enemy.definitionId, enemy.level, online ? 0 : game.prestigeCount);
+  const enemyValues = enemyStats(enemy.definitionId, enemy.level, game.prestigeCount);
   const now = performance.now();
-  const synergy = online ? null : activeZoneSynergy(game);
-  const maxHp = playerMaxHp(player, online ? 0 : game.research.vitality, synergy?.hpPercent, online ? 0 : game.prestigeCount);
+  const synergy = activeZoneSynergy(game);
+  const maxHp = playerMaxHp(player, game.research.vitality, synergy?.hpPercent, game.prestigeCount);
   return {
     enemyDefinitionId: enemy.definitionId,
     enemyLevel: enemy.level,
@@ -261,7 +260,7 @@ function tickBattle(now: number): void {
     const player = activeCombatMonster();
     if (!player) return;
     const online = isRunOnline();
-    const damage = playerAttack(player, online ? 0 : game.research.power, online ? 0 : activeZoneSynergy(game)?.attackPercent, online ? 0 : game.prestigeCount) + (online ? 0 : Math.floor(Math.random() * 5));
+    const damage = playerAttack(player, game.research.power, activeZoneSynergy(game)?.attackPercent, game.prestigeCount) + (online ? 0 : Math.floor(Math.random() * 5));
     battle.enemyHp = Math.max(0, battle.enemyHp - damage);
     battle.playerNextAttackAt = now + 1_650;
     const impactedBattle = battle;
@@ -299,7 +298,7 @@ function tickBattle(now: number): void {
 
   if (now >= battle.enemyNextAttackAt) {
     const online = isRunOnline();
-    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel, online ? 0 : game.prestigeCount);
+    const values = enemyStats(battle.enemyDefinitionId, battle.enemyLevel, game.prestigeCount);
     const damage = values.attack + (online ? 0 : Math.floor(Math.random() * 3));
     battle.playerHp = Math.max(0, battle.playerHp - damage);
     battle.enemyNextAttackAt = now + 1_900;
@@ -392,10 +391,7 @@ function toggleCombatFocus(): void {
 async function levelUp(uid: string): Promise<void> {
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (isRunOnline()) {
-    if (!monster || monster.definitionId !== onlineRun?.activeMonster.definitionId) {
-      showNotice("Noch nicht online verfügbar", "Weitere Monsterlevel folgen mit der serverseitigen Sammlung in Block 6.", "warning");
-      return;
-    }
+    if (!monster) return;
     const response = await sendOnlineRunCommand({ type: "monster.level_up", definitionId: monster.definitionId });
     if (response) showNotice("Run-Level serverseitig erhöht", `${getMonsterForm(monster).name} ist jetzt Level ${response.event.payload.level}.`, "success");
     return;
@@ -405,52 +401,85 @@ async function levelUp(uid: string): Promise<void> {
   showNotice("Run-Level erhöht", `${monster ? getMonsterForm(monster).name : "Monster"} ist jetzt Level ${monster?.level ?? "–"}.`);
 }
 
-function trainWithData(uid: string): void {
-  if (isRunOnline()) return showNotice("Sammlung noch lokal", "Trainingsdaten werden erst in Block 6 serverautoritativ mit Run-Leveln verbunden.", "warning");
+async function trainWithData(uid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "monster.train", monsterUid: uid });
+    if (response) showNotice("Trainingsdaten verwendet", `Run-Level ${response.event.payload.level} wurde serverseitig bestätigt.`, "success");
+    return;
+  }
   if (!service.trainWithData(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
   showNotice("Trainingsdaten verwendet", `${monster ? getMonsterForm(monster).name : "Monster"} erhält ein kostenloses Run-Level.`, "success");
 }
 
-function evolveMonster(uid: string): void {
-  if (isRunOnline()) return showNotice("Evolution folgt in Block 6", "Evolution und ihre Materialien bleiben erhalten, bis die Sammlung serverautoritativ ist.", "warning");
+async function evolveMonster(uid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "monster.evolve", monsterUid: uid });
+    if (response) { battle = createBattleState(); showNotice("Evolution abgeschlossen", "Die neue Form wurde dauerhaft auf deinem Account verankert.", "success"); }
+    return;
+  }
   if (!service.evolve(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
   showNotice("Evolution abgeschlossen", `${monster ? getMonsterForm(monster).name : "Die neue Form"} wurde dauerhaft freigeschaltet.`, "success");
 }
 
-function upgradeHyper(uid: string): void {
-  if (isRunOnline()) return showNotice("Hyperlevel folgt in Block 6", "Fragmente werden erst ausgegeben, wenn der Dauerfortschritt sicher auf dem Server liegt.", "warning");
+async function upgradeHyper(uid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "monster.hyper_up", monsterUid: uid });
+    if (response) { battle = createBattleState(); showNotice("Permanente Resonanz", `Hyperlevel ${response.event.payload.hyperLevel} ist serverseitig gesichert.`, "success"); }
+    return;
+  }
   if (!service.upgradeHyper(uid)) return;
   const monster = game.roster.find((entry) => entry.uid === uid);
   if (uid === game.activeMonsterUid) battle = createBattleState();
   showNotice("Permanente Resonanz", `Hyperlevel ${monster?.hyperLevel ?? "–"} bleibt über jedes Prestige hinaus bestehen.`, "success");
 }
 
-function equipGem(uid: string, gemId: string): void {
-  if (isRunOnline()) return showNotice("Gem-Ausrüstung folgt in Block 6", "Deine Gems bleiben im Inventar. Einsetzen und Kampfwirkung werden gemeinsam serverautoritativ freigeschaltet.", "warning");
+async function equipGem(uid: string, gemId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "gem.equip", monsterUid: uid, gemId });
+    if (response) { battle = createBattleState(); showNotice("Gem eingesetzt", `${getGem(gemId)?.name ?? "Der Gem"} wirkt jetzt auch in der Serversimulation.`, "success"); }
+    return;
+  }
   if (!service.equipGem(uid, gemId)) return;
   if (uid === game.activeMonsterUid) battle = createBattleState();
   const gem = getGem(gemId);
   showNotice("Gem eingesetzt", `${gem?.name ?? "Der Gem"} verstärkt jetzt die Grundwerte.`, "success");
 }
 
-function unequipGem(uid: string, gemId: string): void {
+async function unequipGem(uid: string, gemId: string): Promise<void> {
+  if (isRunOnline()) {
+    const gem = getGem(gemId);
+    if (!gem) return;
+    const response = await sendOnlineRunCommand({ type: "gem.unequip", monsterUid: uid, shape: gem.shape });
+    if (response) { battle = createBattleState(); showNotice("Gem gelöst", `${gem.name} liegt wieder im serverseitigen Inventar.`, "success"); }
+    return;
+  }
   if (!service.unequipGem(uid, gemId)) return;
   if (uid === game.activeMonsterUid) battle = createBattleState();
   showNotice("Gem gelöst", `${getGem(gemId)?.name ?? "Der Gem"} liegt wieder im Inventar.`);
 }
 
-function makeActive(uid: string): void {
+async function makeActive(uid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "monster.activate", monsterUid: uid });
+    if (response) { battle = createBattleState(); showNotice("Verbindung gewechselt", "Das aktive Monster wurde serverseitig gewechselt.", "success"); }
+    return;
+  }
   if (!service.makeActive(uid)) return;
   battle = createBattleState();
   const active = activeMonster();
   showNotice("Verbindung gewechselt", `${active ? getMonsterForm(active).name : "Das Monster"} führt jetzt dein Team an.`);
 }
 
-function makeSupport(uid: string): void {
+async function makeSupport(uid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "monster.support", monsterUid: uid });
+    if (response) { battle = createBattleState(); showNotice("Support verbunden", "Das Kampfduo und sein Zonenbonus sind serverseitig aktiv.", "success"); }
+    return;
+  }
   if (!service.makeSupport(uid)) return;
   battle = createBattleState();
   const support = game.roster.find((monster) => monster.uid === uid);
@@ -497,12 +526,25 @@ async function chooseStarter(definitionId: string): Promise<void> {
   if (accountApiEnabled) await synchronizeOnlineRun();
 }
 
-function startIncubation(definitionId: string): void {
+async function startIncubation(definitionId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "incubation.start", definitionId });
+    if (response) showNotice("Inkubation gestartet", `${getMonster(definitionId).name}-Ei wird nach Serverzeit ausgebrütet.`, "success");
+    return;
+  }
   if (!service.startIncubation(definitionId)) return;
   showNotice("Inkubation gestartet", `${getMonster(definitionId).name}-Ei wurde in Brutstation 01 eingesetzt.`);
 }
 
-function hatchIncubation(): void {
+async function hatchIncubation(): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "incubation.hatch" });
+    if (!response) return;
+    const name = getMonster(String(response.event.payload.definitionId)).name;
+    hatchNotice = response.event.payload.kind === "discovery" ? `${name} wurde deiner Sammlung hinzugefügt.` : `${response.event.payload.fragments} ${name}-Fragmente wurden gutgeschrieben.`;
+    showNotice(response.event.payload.kind === "discovery" ? "Neue Resonanz entdeckt" : "Fragmente gewonnen", hatchNotice, "success");
+    return;
+  }
   const result = service.hatchIncubation();
   if (!result) return;
   const name = getMonster(result.definitionId).name;
@@ -512,7 +554,12 @@ function hatchIncubation(): void {
   showNotice(result.kind === "discovery" ? "Neue Resonanz entdeckt" : "Fragmente gewonnen", hatchNotice, "success");
 }
 
-function accelerateIncubation(): void {
+async function accelerateIncubation(): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "incubation.accelerate" });
+    if (response) showNotice("Brutladung eingesetzt", "Die serverseitige Fertigzeit wurde um 60 Sekunden verkürzt.", "success");
+    return;
+  }
   if (service.useIncubatorCharge()) showNotice("Brutladung eingesetzt", "Die Inkubation wurde um 60 Sekunden verkürzt.", "success");
 }
 
@@ -544,35 +591,57 @@ async function setFrame(frameId: string): Promise<void> {
   if (service.setFrame(frameId)) showNotice("Rahmen gewechselt", `${FRAMES.find((frame) => frame.id === frameId)?.name ?? "Rahmen"} ist jetzt aktiv.`);
 }
 
-function buyResearch(id: ResearchId): void {
+async function buyResearch(id: ResearchId): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "research.buy", researchId: id });
+    if (response) { battle = createBattleState(); showNotice("Forschung abgeschlossen", `Stufe ${response.event.payload.level} ist dauerhaft gespeichert.`, "success"); }
+    return;
+  }
   if (!service.buyResearch(id)) return;
   if (id === "power" || id === "vitality") battle = createBattleState();
   const definition = RESEARCH.find((entry) => entry.id === id);
   showNotice("Forschung abgeschlossen", `${definition?.name ?? "Projekt"} erreicht Stufe ${game.research[id]}.`, "success");
 }
 
-function claimMilestone(target: number): void {
-  if (isRunOnline()) return showNotice("Storybelohnung wartet auf Block 6", "Gold und Besitz dürfen nicht mehr aus einem lokalen Claim entstehen.", "warning");
+async function claimMilestone(target: number): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "milestone.claim", target });
+    if (response) showNotice("Story-Belohnung geborgen", `${response.event.payload.title} wurde exakt einmal gutgeschrieben.`, "success");
+    return;
+  }
   const milestone = MILESTONES.find((entry) => entry.target === target);
   if (service.claimMilestone(target)) showNotice("Story-Belohnung geborgen", `${milestone?.title ?? "Meilenstein"} wurde deinem Account gutgeschrieben.`, "success");
 }
 
-function claimObjective(objectiveId: string): void {
-  if (isRunOnline()) return showNotice("Auftragsclaim wartet auf Block 6", "Der Online-Run akzeptiert keine lokal berechneten Goldbelohnungen.", "warning");
+async function claimObjective(objectiveId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "objective.claim", objectiveId });
+    if (response) showNotice("Belohnung geborgen", "Der Auftrag wurde serverseitig geprüft und gebucht.", "success");
+    return;
+  }
   const objective = OBJECTIVES.find((entry) => entry.id === objectiveId);
   if (!service.claimObjective(objectiveId)) return;
   showNotice("Belohnung geborgen", `${objective?.title ?? "Auftrag"} wurde deinem Inventar gutgeschrieben.`, "success");
 }
 
-function startTimedExpedition(slot: number, definitionId: string, monsterUid: string): void {
+async function startTimedExpedition(slot: number, definitionId: string, monsterUid: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "expedition.start", slot, definitionId, monsterUid });
+    if (response) showNotice("Expedition gestartet", "Monster, Slot und Rückkehrzeit sind serverseitig reserviert.", "success");
+    return;
+  }
   const definition = getExpedition(definitionId);
   const monster = game.roster.find((entry) => entry.uid === monsterUid);
   if (!service.startExpedition(slot, definitionId, monsterUid)) return;
   showNotice("Expedition gestartet", `${monster ? getMonsterForm(monster).name : "Monster"} erkundet jetzt „${definition?.name ?? "unbekanntes Signal"}“.`, "success");
 }
 
-function claimTimedExpedition(expeditionId: string): void {
-  if (isRunOnline()) return showNotice("Expedition noch lokal", "Zeitjobs und ihre Belohnungen werden in Block 6 sicher auf den Server verschoben.", "warning");
+async function claimTimedExpedition(expeditionId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "expedition.claim", expeditionId });
+    if (response) showNotice("Expedition abgeschlossen", `${response.event.payload.gold} Gold und Materialien wurden serverseitig gebucht.`, "success");
+    return;
+  }
   const expedition = game.expeditions.find((entry) => entry.id === expeditionId);
   const definition = expedition ? getExpedition(expedition.definitionId) : undefined;
   const result = service.claimExpedition(expeditionId);
@@ -581,27 +650,41 @@ function claimTimedExpedition(expeditionId: string): void {
   showNotice("Expedition abgeschlossen", `${definition?.name ?? "Auftrag"}: ${result.gold} Gold${itemCount > 0 ? ` und ${itemCount} Materialien` : ""} gesichert.`, "success");
 }
 
-function craftRecipe(recipeId: string): void {
-  if (isRunOnline()) return showNotice("Herstellung noch lokal", "Rezepte dürfen serverseitiges Gold erst nach der Besitzmigration in Block 6 ausgeben.", "warning");
+async function craftRecipe(recipeId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "crafting.craft", recipeId });
+    if (response) showNotice("Herstellung abgeschlossen", "Kosten und Ergebnis wurden atomar im Ledger gebucht.", "success");
+    return;
+  }
   const recipe = getCraftingRecipe(recipeId);
   if (!service.craftItem(recipeId)) return;
   const output = recipe ? ITEMS.find((item) => item.id === recipe.output.itemId) : undefined;
   showNotice("Herstellung abgeschlossen", `${recipe?.output.amount ?? 1}× ${output?.name ?? "Material"} wurde dem Inventar hinzugefügt.`, "success");
 }
 
-function updatePlayerSetting(key: keyof PlayerSettings, rawValue: string): void {
+async function updatePlayerSetting(key: keyof PlayerSettings, rawValue: string): Promise<void> {
   const value = key === "numberFormat" ? rawValue : rawValue === "true";
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "settings.update", key, value: value as boolean | PlayerSettings["numberFormat"] });
+    if (response) showNotice("Einstellung gespeichert", "Die Einstellung gilt jetzt auf allen Geräten.", "success");
+    return;
+  }
   if (!service.setSetting(key, value as boolean | PlayerSettings["numberFormat"])) return;
   showNotice("Einstellung gespeichert", "Die Darstellung wurde sofort aktualisiert.", "success");
 }
 
-function advanceTutorial(skip = false): void {
+async function advanceTutorial(skip = false): Promise<void> {
+  if (isRunOnline()) { await sendOnlineRunCommand({ type: "tutorial.advance", skip }); render(); return; }
   if (!service.advanceTutorial(skip)) return;
   render();
 }
 
-function claimSystemMessage(messageId: string): void {
-  if (isRunOnline()) return showNotice("Systembelohnung wartet auf Block 6", "Lokale Nachrichten können kein serverseitiges Gold erzeugen.", "warning");
+async function claimSystemMessage(messageId: string): Promise<void> {
+  if (isRunOnline()) {
+    const response = await sendOnlineRunCommand({ type: "system_message.claim", messageId });
+    if (response) showNotice("Systempost bestätigt", "Die Belohnung wurde exakt einmal gutgeschrieben.", "success");
+    return;
+  }
   const message = SYSTEM_MESSAGES.find((entry) => entry.id === messageId);
   if (!service.claimSystemMessage(messageId)) return;
   showNotice("Systempost bestätigt", `${message?.title ?? "Nachricht"} wurde abgeschlossen.`, "success");
@@ -612,11 +695,19 @@ function openPrestigeScene(): void {
 }
 
 function confirmPrestige(): void {
-  if (isRunOnline()) return showNotice("Prestige folgt in Block 6", "Der Online-Run wird erst zurückgesetzt, wenn Dauerfortschritt und Kerne serverautoritativ sind.", "warning");
   if (prestigeActivating || prestigeCoreReward(game.runVictories, game.highestZoneNumber) <= 0) return;
   prestigeActivating = true;
   render();
-  window.setTimeout(() => {
+  window.setTimeout(async () => {
+    if (isRunOnline()) {
+      const response = await sendOnlineRunCommand({ type: "prestige.activate" });
+      prestigeActivating = false;
+      if (!response) return render();
+      activeView = "expedition";
+      battle = createBattleState();
+      showNotice("Neue Zeitlinie gestartet", `${response.event.payload.cores} Ether-Kern(e) gesichert. Sammlung, Hyperlevel, Evolutionen und Gems blieben erhalten.`, "success");
+      return;
+    }
     const reward = service.prestige();
     prestigeActivating = false;
     if (reward <= 0) return render();

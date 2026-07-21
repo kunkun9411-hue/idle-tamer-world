@@ -23,10 +23,20 @@ const snapshot = (): AuthoritativeRunSnapshot => ({
   totalVictories: "2",
   progressionStatus: "fighting",
   nextCombatAt: "2026-07-21T22:00:07.000Z",
+  collection: {
+    roster: [{ uid: "11111111-1111-4111-8111-111111111111", definitionId: "pyrook", level: 4, hyperLevel: 7, evolution: "evolved", generation: 1, gemSlots: { triangle: "common-crimson-triangle" } }],
+    activeMonsterUid: "11111111-1111-4111-8111-111111111111", supportMonsterUid: "",
+    eggInventory: { mossbit: "1" }, fragments: { pyrook: "10" }, inventory: { training_data: "2", evolution_core: "0", incubator_charge: "1", ether_dust: "0" },
+    gemInventory: { "common-crimson-triangle": "0" }, pendingEggs: [], pendingItems: { training_data: "0", evolution_core: "0", incubator_charge: "0", ether_dust: "0" }, pendingGems: [],
+    incubation: null, expeditions: [], research: { power: 1, vitality: 0, extraction: 0, incubation: 0 }, prestigeCount: 2, cores: "3", eggPity: 1,
+    claimedMilestones: [], activityCounters: { victory: 2, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 1, prestige: 0, expedition_start: 0, expedition_complete: 0 },
+    objectivePeriods: { dailyKey: "2026-07-21", weeklyKey: "2026-W30", dailyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 }, weeklyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 } },
+    claimedObjectives: [], settings: { soundEnabled: true, combatEffects: true, reducedMotion: false, numberFormat: "compact" }, tutorialStep: 0, claimedSystemMessages: [], lastServerSaveAt: "2026-07-21T22:00:00.000Z",
+  },
 });
 
 describe("online run state boundary", () => {
-  it("updates only run values and preserves local permanent collection state", () => {
+  it("replaces local values with the complete authoritative collection", () => {
     const state = createInitialState();
     const monster = createMonster("pyrook");
     monster.hyperLevel = 7;
@@ -37,11 +47,11 @@ describe("online run state boundary", () => {
 
     applyAuthoritativeRunSnapshot(state, snapshot());
 
-    expect(monster).toMatchObject({ level: 4, hyperLevel: 7, evolution: "evolved", gemSlots: { triangle: "common-crimson-triangle" } });
-    expect(state).toMatchObject({ resources: { gold: 83 }, pendingGold: 26, cacheSlotsUsed: 2, runVictories: 2 });
+    expect(state.roster[0]).toMatchObject({ level: 4, hyperLevel: 7, evolution: "evolved", gemSlots: { triangle: "common-crimson-triangle" } });
+    expect(state).toMatchObject({ resources: { gold: 83, cores: 3 }, pendingGold: 26, cacheSlotsUsed: 2, runVictories: 2, research: { power: 1 } });
   });
 
-  it("repairs a foundation Gem orphaned by the former online snapshot bug", () => {
+  it("treats the server Gem balance as canonical", () => {
     const state = createInitialState();
     const monster = createMonster("pyrook");
     state.roster = [monster];
@@ -51,10 +61,10 @@ describe("online run state boundary", () => {
 
     applyAuthoritativeRunSnapshot(state, snapshot());
 
-    expect(state.gemInventory["common-crimson-triangle"]).toBe(1);
+    expect(state.gemInventory["common-crimson-triangle"]).toBe(0);
   });
 
-  it("uses rookie stats in the server-authoritative fight without mutating the collection", () => {
+  it("uses permanent stats in the server-authoritative fight without cloning the collection", () => {
     const monster = createMonster("pyrook");
     monster.hyperLevel = 5;
     monster.evolution = "evolved";
@@ -62,7 +72,7 @@ describe("online run state boundary", () => {
 
     const combatMonster = combatMonsterForAuthority(monster, true);
 
-    expect(combatMonster).toMatchObject({ hyperLevel: 0, evolution: "rookie", gemSlots: {} });
+    expect(combatMonster).toBe(monster);
     expect(monster).toMatchObject({ hyperLevel: 5, evolution: "evolved", gemSlots: { square: "common-azure-square" } });
   });
 });

@@ -135,9 +135,12 @@ export const executePlayerCommand = async <T>(
     return { revision, replayed: false, value };
   });
 
-type BalanceKind = "item" | "wallet";
+type BalanceKind = "egg" | "fragment" | "gem" | "item" | "wallet";
 
 const balanceTable: Record<BalanceKind, string> = {
+  egg: "egg_balances",
+  fragment: "monster_fragments",
+  gem: "gem_balances",
   item: "item_balances",
   wallet: "wallet_balances",
 };

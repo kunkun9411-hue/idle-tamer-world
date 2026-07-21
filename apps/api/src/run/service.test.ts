@@ -26,6 +26,16 @@ const snapshot = (): AuthoritativeRunSnapshot => ({
   totalVictories: "0",
   progressionStatus: "fighting",
   nextCombatAt: new Date(now.getTime() + 7_000).toISOString(),
+  collection: {
+    roster: [{ uid: "11111111-1111-4111-8111-111111111111", definitionId: "pyrook", level: 1, hyperLevel: 0, evolution: "rookie", generation: 1, gemSlots: {} }],
+    activeMonsterUid: "11111111-1111-4111-8111-111111111111", supportMonsterUid: "",
+    eggInventory: {}, fragments: {}, inventory: { training_data: "0", evolution_core: "0", incubator_charge: "0", ether_dust: "0" }, gemInventory: {},
+    pendingEggs: [], pendingItems: { training_data: "0", evolution_core: "0", incubator_charge: "0", ether_dust: "0" }, pendingGems: [],
+    incubation: null, expeditions: [], research: { power: 0, vitality: 0, extraction: 0, incubation: 0 }, prestigeCount: 0, cores: "0", eggPity: 0,
+    claimedMilestones: [], activityCounters: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 },
+    objectivePeriods: { dailyKey: "2026-07-21", weeklyKey: "2026-W30", dailyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 }, weeklyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 } },
+    claimedObjectives: [], settings: { soundEnabled: true, combatEffects: true, reducedMotion: false, numberFormat: "compact" }, tutorialStep: 0, claimedSystemMessages: [], lastServerSaveAt: now.toISOString(),
+  },
 });
 
 const envelope = (command: object) => ({
@@ -39,7 +49,7 @@ const envelope = (command: object) => ({
 describe("RunService", () => {
   it("strips client-supplied reward and balance fields before persistence", async () => {
     const executeCommand = vi.fn(async (_userId: string, request: RunCommandEnvelope) => ({
-      runContractVersion: 1 as const,
+      runContractVersion: 2 as const,
       accepted: true as const,
       replayed: false,
       snapshot: snapshot(),

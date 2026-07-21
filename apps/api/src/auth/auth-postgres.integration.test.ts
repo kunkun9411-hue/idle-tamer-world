@@ -298,7 +298,7 @@ integration("full auth HTTP lifecycle on PostgreSQL 18", () => {
 
     const bootstrap = await app.inject({ method: "GET", url: "/api/v1/run", headers: { cookie: session.cookie } });
     expect(bootstrap.statusCode).toBe(200);
-    expect(bootstrap.json()).toMatchObject({ runContractVersion: 1, snapshot: { gold: "100", cacheSlotsUsed: expect.any(Number) } });
+    expect(bootstrap.json()).toMatchObject({ runContractVersion: 2, snapshot: { gold: "100", cacheSlotsUsed: expect.any(Number), collection: { roster: expect.any(Array) } } });
     expect(bootstrap.json().snapshot.cacheSlotsUsed).toBeGreaterThan(0);
 
     const commandId = randomUUID();

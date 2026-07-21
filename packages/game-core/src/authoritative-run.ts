@@ -20,6 +20,16 @@ export interface AuthoritativeRunState {
   totalVictories: bigint;
   progressionStatus: RunProgressionStatus;
   nextCombatAtMs: number;
+  activeHyperLevel?: number;
+  activeEvolution?: "rookie" | "evolved";
+  activeGemAttackPercent?: number;
+  activeGemHpPercent?: number;
+  researchPowerLevel?: number;
+  researchVitalityLevel?: number;
+  zoneAttackPercent?: number;
+  zoneHpPercent?: number;
+  prestigeCount?: number;
+  goldMultiplier?: number;
 }
 
 export interface BattleOutcome {
@@ -35,6 +45,7 @@ export interface RunSettlement {
   state: AuthoritativeRunState;
   victoriesAdded: number;
   goldAdded: bigint;
+  outcomes: BattleOutcome[];
 }
 
 const boundedVictories = (victories: bigint): number => Number(victories > 40_000_000n ? 40_000_000n : victories);
@@ -56,13 +67,34 @@ const enemyAt = (state: AuthoritativeRunState) => {
 
 export const authoritativeBattleOutcome = (state: AuthoritativeRunState): BattleOutcome => {
   const monster = getMonster(state.activeMonsterDefinitionId);
+  const form = state.activeEvolution === "evolved" ? monster.evolution : monster;
   const enemy = enemyAt(state);
   const encounter = findEncounter(enemy.definitionId) ?? getMonster(enemy.definitionId);
   const level = Math.max(1, state.activeMonsterLevel);
-  const playerHp = Math.round(monster.baseHp * (1 + (level - 1) * 0.14));
-  const playerAttack = Math.round(monster.baseAttack * (1 + (level - 1) * 0.11));
-  const enemyHp = Math.round(encounter.baseHp * 0.72 * (1 + (enemy.level - 1) * 0.13));
-  const enemyAttack = Math.max(4, Math.round(encounter.baseAttack * 0.44 * (1 + (enemy.level - 1) * 0.1)));
+  const hyper = Math.max(0, state.activeHyperLevel ?? 0);
+  const prestige = Math.max(0, state.prestigeCount ?? 0);
+  const playerPrestige = 1 + prestige * 0.002;
+  const enemyPrestige = 1 + Math.floor(prestige / 100) * 0.02;
+  const playerHp = Math.round(
+    form.baseHp
+    * (1 + (level - 1) * 0.14)
+    * (1 + hyper * 0.08)
+    * (1 + (state.activeGemHpPercent ?? 0) / 100)
+    * (1 + (state.researchVitalityLevel ?? 0) * 0.08)
+    * (1 + (state.zoneHpPercent ?? 0) / 100)
+    * playerPrestige,
+  );
+  const playerAttack = Math.round(
+    form.baseAttack
+    * (1 + (level - 1) * 0.11)
+    * (1 + hyper * 0.07)
+    * (1 + (state.activeGemAttackPercent ?? 0) / 100)
+    * (1 + (state.researchPowerLevel ?? 0) * 0.07)
+    * (1 + (state.zoneAttackPercent ?? 0) / 100)
+    * playerPrestige,
+  );
+  const enemyHp = Math.round(encounter.baseHp * 0.72 * (1 + (enemy.level - 1) * 0.13) * enemyPrestige);
+  const enemyAttack = Math.max(4, Math.round(encounter.baseAttack * 0.44 * (1 + (enemy.level - 1) * 0.1) * enemyPrestige));
   const playerHits = Math.max(1, Math.ceil(enemyHp / playerAttack));
   const enemyHits = Math.max(1, Math.ceil(playerHp / enemyAttack));
   const playerKillAt = PLAYER_FIRST_ATTACK_MS + (playerHits - 1) * PLAYER_ATTACK_INTERVAL_MS;
@@ -72,7 +104,7 @@ export const authoritativeBattleOutcome = (state: AuthoritativeRunState): Battle
     enemyLevel: enemy.level,
     wins: playerKillAt <= enemyKillAt,
     durationMs: Math.max(2_500, Math.min(playerKillAt, enemyKillAt)) + RECOVERY_MS,
-    gold: BigInt(9 + enemy.level * 4),
+    gold: BigInt(Math.max(1, Math.round((9 + enemy.level * 4) * (state.goldMultiplier ?? 1)))),
     boss: enemy.boss,
   };
 };
@@ -106,11 +138,12 @@ export const settleAuthoritativeRun = (
   };
   let victoriesAdded = 0;
   let goldAdded = 0n;
-  const available = Math.max(0, Math.min(AUTHORITATIVE_CACHE_CAPACITY, availableCacheSlots));
+  const outcomes: BattleOutcome[] = [];
+  const available = Math.max(0, Math.min(1_000_000, availableCacheSlots));
 
   if (available === 0) {
     state.progressionStatus = "cache_full";
-    return { state, victoriesAdded, goldAdded };
+    return { state, victoriesAdded, goldAdded, outcomes };
   }
 
   while (victoriesAdded < available && state.nextCombatAtMs <= nowMs) {
@@ -123,6 +156,7 @@ export const settleAuthoritativeRun = (
     advanceVictory(state, outcome.boss);
     victoriesAdded += 1;
     goldAdded += outcome.gold;
+    outcomes.push(outcome);
     state.progressionStatus = "fighting";
     state.nextCombatAtMs += outcome.durationMs;
   }
@@ -131,7 +165,7 @@ export const settleAuthoritativeRun = (
     state.progressionStatus = "cache_full";
     state.nextCombatAtMs = nowMs;
   }
-  return { state, victoriesAdded, goldAdded };
+  return { state, victoriesAdded, goldAdded, outcomes };
 };
 
 export const runLevelCost = (level: number): bigint => BigInt(24 + Math.max(1, level) * 16);

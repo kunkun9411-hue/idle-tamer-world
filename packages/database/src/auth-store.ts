@@ -620,6 +620,60 @@ export class PostgresAuthStore implements AuthStore {
          ON CONFLICT (player_id, definition_id) DO NOTHING`,
         [input.playerId],
       );
+      await client.query(
+        `INSERT INTO wallet_balances (player_id, definition_id, amount)
+         VALUES ($1, 'ether_core', 0)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO monster_instances (player_id, definition_id)
+         VALUES ($1, $2)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId, input.definitionId],
+      );
+      await client.query(
+        `INSERT INTO item_balances (player_id, definition_id, amount)
+         VALUES ($1, 'training_data', 2), ($1, 'incubator_charge', 1),
+                ($1, 'evolution_core', 0), ($1, 'ether_dust', 0)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO egg_balances (player_id, definition_id, amount)
+         VALUES ($1, 'mossbit', 1)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO gem_balances (player_id, definition_id, amount)
+         VALUES ($1, 'common-crimson-triangle', 1), ($1, 'common-azure-square', 1), ($1, 'common-violet-diamond', 1)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO research_levels (player_id, definition_id, level)
+         VALUES ($1, 'power', 0), ($1, 'vitality', 0), ($1, 'extraction', 0), ($1, 'incubation', 0)
+         ON CONFLICT (player_id, definition_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO player_activity_counters (player_id, activity_id, amount)
+         SELECT $1, activity_id, 0
+           FROM unnest(ARRAY['victory','boss_victory','cache_claim','hatch','monster_discovery','level_up','hyper_up','evolution','gem_equip','prestige','expedition_start','expedition_complete']) AS activity_id
+         ON CONFLICT (player_id, activity_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO player_objective_periods (player_id, daily_key, weekly_key)
+         VALUES ($1, to_char(clock_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD'), to_char(clock_timestamp() AT TIME ZONE 'UTC', 'IYYY-"W"IW'))
+         ON CONFLICT (player_id) DO NOTHING`,
+        [input.playerId],
+      );
+      await client.query(
+        `INSERT INTO player_settings (player_id) VALUES ($1) ON CONFLICT (player_id) DO NOTHING`,
+        [input.playerId],
+      );
       return { starterDefinitionId: input.definitionId };
     });
     return { revision: result.revision, replayed: result.replayed };

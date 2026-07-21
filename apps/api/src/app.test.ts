@@ -46,7 +46,7 @@ describe("Fastify foundation", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       protocolVersion: 8,
-      runContractVersion: 1,
+      runContractVersion: 2,
       contentReleaseId: "foundation-1.0.0",
       features: { guilds: false, guildDna: true, liveEvents: false, pvp: false },
     });

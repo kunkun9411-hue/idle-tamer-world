@@ -10,13 +10,13 @@ const bootstrap = (): AccountBootstrapResponse => ({
   account: { userId: "u", status: "active", emailMasked: "t***@example.test", emailVerified: true, roles: ["player"], createdAt: "2026-07-21T20:00:00.000Z" },
   profile: { playerId: "p", displayName: "Test", avatarId: "wanderer", frameId: "silver", revision: 0 },
   onboarding: { starterDefinitionId: null, availableStarterDefinitionIds: ["pyrook"], requiredAction: "starter_choice" },
-  authority: { mode: "run-online-collection-local", server: ["account", "profile", "starter", "run", "economy"], local: ["collection", "incubation", "expeditions", "research", "prestige"], localStorageNamespace: "namespace" },
+  authority: { mode: "solo-online", server: ["account", "profile", "starter", "run", "economy", "collection", "incubation", "expeditions", "research", "prestige"], local: [], localStorageNamespace: "namespace" },
   features: { guilds: false, guildDna: false, liveEvents: false, pvp: false },
   csrfToken: "csrf-token",
 });
 
 const runBootstrap = (): RunBootstrapResponse => ({
-  runContractVersion: 1,
+  runContractVersion: 2,
   snapshot: {
     revision: 2,
     serverTime: "2026-07-21T20:00:00.000Z",
@@ -35,8 +35,17 @@ const runBootstrap = (): RunBootstrapResponse => ({
     totalVictories: "2",
     progressionStatus: "fighting",
     nextCombatAt: "2026-07-21T20:00:10.000Z",
+    collection: {
+      roster: [{ uid: "11111111-1111-4111-8111-111111111111", definitionId: "pyrook", level: 1, hyperLevel: 0, evolution: "rookie", generation: 1, gemSlots: {} }],
+      activeMonsterUid: "11111111-1111-4111-8111-111111111111", supportMonsterUid: "", eggInventory: {}, fragments: {},
+      inventory: { training_data: "0", evolution_core: "0", incubator_charge: "0", ether_dust: "0" }, gemInventory: {}, pendingEggs: [], pendingItems: { training_data: "0", evolution_core: "0", incubator_charge: "0", ether_dust: "0" }, pendingGems: [],
+      incubation: null, expeditions: [], research: { power: 0, vitality: 0, extraction: 0, incubation: 0 }, prestigeCount: 0, cores: "0", eggPity: 0, claimedMilestones: [],
+      activityCounters: { victory: 2, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 },
+      objectivePeriods: { dailyKey: "2026-07-21", weeklyKey: "2026-W30", dailyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 }, weeklyBaseline: { victory: 0, boss_victory: 0, cache_claim: 0, hatch: 0, monster_discovery: 0, level_up: 0, hyper_up: 0, evolution: 0, gem_equip: 0, prestige: 0, expedition_start: 0, expedition_complete: 0 } },
+      claimedObjectives: [], settings: { soundEnabled: true, combatEffects: true, reducedMotion: false, numberFormat: "compact" }, tutorialStep: 0, claimedSystemMessages: [], lastServerSaveAt: "2026-07-21T20:00:00.000Z",
+    },
   },
-  settlement: { victoriesAdded: 2, goldAdded: "26" },
+  settlement: { victoriesAdded: 2, goldAdded: "26", eggsAdded: 0, itemsAdded: 0, gemsAdded: 0 },
 });
 
 describe("AccountClient", () => {

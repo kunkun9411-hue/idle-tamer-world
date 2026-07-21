@@ -4,6 +4,7 @@ import type { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { ZONES } from "@idle-tamer/content";
+import type { RunCommand } from "@idle-tamer/contracts";
 
 import { PostgresAuthStore } from "./auth-store";
 import { createDatabasePool } from "./pool";
@@ -63,12 +64,12 @@ integration("PostgreSQL 18 authoritative run store", () => {
     return { userId: account.userId, playerId };
   };
 
-  const command = (expectedRevision: number, type: "cache.claim" | "monster.level_up" | "zone.select", values: Record<string, string> = {}, commandId = randomUUID()) => ({
+  const command = (expectedRevision: number, type: RunCommand["type"], values: Record<string, unknown> = {}, commandId = randomUUID()) => ({
     commandId,
     clientInstanceId: randomUUID(),
     expectedRevision,
     issuedAt: now.toISOString(),
-    command: { type, ...values } as { type: "cache.claim" } | { type: "monster.level_up"; definitionId: string } | { type: "zone.select"; zoneId: string },
+    command: { type, ...values } as RunCommand,
   });
 
   it("settles elapsed battles from server time and stops exactly at cache capacity", async () => {
@@ -184,5 +185,42 @@ integration("PostgreSQL 18 authoritative run store", () => {
     expect(snapshot.unlockedZoneIds).toContain(ZONES[9].id);
     expect(snapshot.runVictories).toBe("90");
     expect(snapshot.cacheSlotsUsed).toBe(90);
+  });
+
+  it("hatches first discoveries and converts duplicate eggs into permanent fragments exactly once", async () => {
+    const account = await createRun("incubation-loop");
+    let snapshot = (await runStore.bootstrap(account.userId, now)).snapshot;
+    const started = await runStore.executeCommand(account.userId, command(snapshot.revision, "incubation.start", { definitionId: "mossbit" }), now);
+    await pool.query("UPDATE incubation_jobs SET completes_at = $2 WHERE player_id = $1 AND status = 'running'", [account.playerId, new Date(now.getTime() + 1)]);
+    const firstCommandId = randomUUID();
+    const firstHatch = command(started.snapshot.revision, "incubation.hatch", {}, firstCommandId);
+    const first = await runStore.executeCommand(account.userId, firstHatch, new Date(now.getTime() + 2));
+    const replay = await runStore.executeCommand(account.userId, firstHatch, new Date(now.getTime() + 2));
+    expect(first.event.payload).toMatchObject({ definitionId: "mossbit", kind: "discovery", fragments: 0 });
+    expect(replay.replayed).toBe(true);
+
+    await pool.query("INSERT INTO egg_balances (player_id, definition_id, amount) VALUES ($1, 'mossbit', 1) ON CONFLICT (player_id, definition_id) DO UPDATE SET amount = 1", [account.playerId]);
+    const secondStart = await runStore.executeCommand(account.userId, command(first.snapshot.revision, "incubation.start", { definitionId: "mossbit" }), new Date(now.getTime() + 3));
+    await pool.query("UPDATE incubation_jobs SET completes_at = $2 WHERE player_id = $1 AND status = 'running'", [account.playerId, new Date(now.getTime() + 4)]);
+    const second = await runStore.executeCommand(account.userId, command(secondStart.snapshot.revision, "incubation.hatch"), new Date(now.getTime() + 5));
+    expect(second.event.payload).toMatchObject({ definitionId: "mossbit", kind: "fragments", fragments: 10 });
+    expect(second.snapshot.collection.fragments.mossbit).toBe("10");
+    await expect(pool.query("SELECT count(*)::int AS count FROM monster_instances WHERE player_id = $1 AND definition_id = 'mossbit'", [account.playerId])).resolves.toMatchObject({ rows: [{ count: 1 }] });
+  });
+
+  it("keeps Hyperlevel, evolution and equipped Gems through a Zone-10 prestige reset", async () => {
+    const account = await createRun("prestige-retention");
+    const monster = await pool.query<{ id: string }>("SELECT id FROM monster_instances WHERE player_id = $1 AND definition_id = 'pyrook'", [account.playerId]);
+    await pool.query("UPDATE monster_instances SET hyper_level = 7, evolution = 'evolved' WHERE id = $1", [monster.rows[0].id]);
+    await pool.query("UPDATE player_run_levels SET level = 28 WHERE player_id = $1 AND monster_definition_id = 'pyrook'", [account.playerId]);
+    await pool.query("UPDATE player_runs SET run_victories = 100, highest_zone_number = 10, next_combat_at = $2 WHERE player_id = $1", [account.playerId, new Date(now.getTime() + 60_000)]);
+    await pool.query("INSERT INTO monster_gem_slots (player_id, monster_instance_id, shape, gem_definition_id) VALUES ($1, $2, 'triangle', 'common-crimson-triangle')", [account.playerId, monster.rows[0].id]);
+    await pool.query("UPDATE gem_balances SET amount = 0 WHERE player_id = $1 AND definition_id = 'common-crimson-triangle'", [account.playerId]);
+    const snapshot = (await runStore.bootstrap(account.userId, now)).snapshot;
+    const result = await runStore.executeCommand(account.userId, command(snapshot.revision, "prestige.activate"), now);
+    expect(result.snapshot).toMatchObject({ runVictories: "0", highestZoneNumber: 1, gold: "100", collection: { prestigeCount: 1, cores: "1" } });
+    expect(result.snapshot.collection.roster[0]).toMatchObject({ level: 1, hyperLevel: 7, evolution: "evolved", gemSlots: { triangle: "common-crimson-triangle" } });
+    const ledger = await pool.query("SELECT definition_id, delta::text FROM economy_ledger WHERE player_id = $1 AND reason = 'prestige.activate' ORDER BY definition_id", [account.playerId]);
+    expect(ledger.rows).toContainEqual({ definition_id: "ether_core", delta: "1" });
   });
 });
