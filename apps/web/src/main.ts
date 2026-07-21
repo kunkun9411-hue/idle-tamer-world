@@ -119,14 +119,16 @@ async function synchronizeGuild(): Promise<void> {
   if (!isGuildOnline() || guildSyncBusy) return;
   guildSyncBusy = true;
   lastGuildSync = performance.now();
+  let synchronized = false;
   try {
     guildSnapshot = (await accountClient.bootstrapGuild()).snapshot;
-    if (activeView === "guild") render();
+    synchronized = true;
   } catch (error) {
     showNotice("Gildenserver nicht erreichbar", error instanceof Error ? error.message : "Die Gildendaten konnten nicht geladen werden.", "warning");
   } finally {
     guildSyncBusy = false;
   }
+  if (synchronized && activeView === "guild") render();
 }
 
 async function sendGuildCommand(command: GuildCommand): Promise<boolean> {
