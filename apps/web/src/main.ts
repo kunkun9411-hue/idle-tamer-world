@@ -1141,6 +1141,7 @@ function combatRail(): string {
     ["inventory", "Inventar"],
     ["research", "Forschung"],
     ["dispatch", "Missionen"],
+    ["guild", "Gilde"],
   ];
   return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => `<button class="${view === "expedition" ? "is-active" : ""}" data-view="${view}" title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`).join("")}</nav>`;
 }
