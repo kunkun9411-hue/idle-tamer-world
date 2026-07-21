@@ -1,4 +1,32 @@
 services:
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3001
+      LOG_LEVEL: info
+      DATABASE_URL: ${DATABASE_URL}
+      PUBLIC_ORIGIN: https://idle-tamer-world.de
+      AUTH_TERMS_VERSION: alpha-foundation-1
+      AUTH_PRIVACY_VERSION: alpha-foundation-1
+      RATE_LIMIT_HMAC_SECRET: ${RATE_LIMIT_HMAC_SECRET}
+      AUTH_MAIL_OUTBOX_PATH: /var/lib/idle-tamer-mail/outbox.jsonl
+      FEATURE_GUILDS: ${FEATURE_GUILDS:-false}
+      FEATURE_GUILD_DNA: ${FEATURE_GUILD_DNA:-false}
+      FEATURE_LIVE_EVENTS: ${FEATURE_LIVE_EVENTS:-false}
+      FEATURE_PVP: ${FEATURE_PVP:-false}
+    expose:
+      - "3001"
+    volumes:
+      - idle-tamer-auth-mail:/var/lib/idle-tamer-mail
+    restart: unless-stopped
+
   web:
     build:
       context: ..
@@ -10,6 +38,8 @@ services:
   proxy:
     image: caddy:2-alpine
     depends_on:
+      api:
+        condition: service_healthy
       web:
         condition: service_healthy
     ports:
@@ -23,5 +53,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  idle-tamer-auth-mail:
   idle-tamer-caddy-data:
   idle-tamer-caddy-config:

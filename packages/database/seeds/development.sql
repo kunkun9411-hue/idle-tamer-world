@@ -34,6 +34,18 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO user_credentials (user_id, password_hash, hash_version)
+VALUES (
+  '01900000-0000-7000-8000-000000000001',
+  '$argon2id$v=19$m=65536,t=3,p=1$aWRsZS10YW1lci1kZXYtMQ$UHxDteQvvLtY0rSPhbVmLzvjd5ehREn4XUPXJdOPYFw',
+  1
+)
+ON CONFLICT (user_id) DO UPDATE
+SET password_hash = EXCLUDED.password_hash,
+    hash_version = EXCLUDED.hash_version,
+    password_changed_at = clock_timestamp(),
+    updated_at = clock_timestamp();
+
 INSERT INTO wallet_balances (player_id, definition_id, amount)
 VALUES
   ('01900000-0000-7000-8000-000000000002', 'gold', 0),

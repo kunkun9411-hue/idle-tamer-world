@@ -171,7 +171,7 @@ Sicherheitsfragen und per E-Mail versandte Klartextpasswörter sind ausgeschloss
 - Eindeutigkeit wird in PostgreSQL erzwungen
 - Änderung höchstens alle 30 Tage; frühere normalisierte Namen bleiben 90 Tage reserviert
 - Avatar und Rahmen müssen als freigeschaltete Content-IDs existieren
-- Standard: `avatar-tamer` und `frame-silver`
+- Standard: `wanderer` und `silver`; zusätzlich sind `keeper` und `violet` von Beginn an freigeschaltet
 
 Rollen sind `player`, `support`, `moderator`, `admin`. Sie stehen in einer eigenen Zuordnungstabelle und niemals im Cookie. Support darf Account- und Sessionstatus lesen, aber keine Spielwerte verändern. Moderator und Admin erhalten vor echten Werkzeugen eine gesonderte MFA-Pflicht.
 

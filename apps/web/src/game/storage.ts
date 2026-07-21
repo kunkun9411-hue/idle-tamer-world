@@ -4,6 +4,7 @@ import { createObjectivePeriods, emptyActivityCounters } from "./objectives";
 import type { EvolutionStage, GameState, ItemInventory, MonsterInstance } from "./types";
 
 export const STORAGE_KEY = "idle-tamer.save.v9";
+export const storageKeyForNamespace = (namespace: string): string => `${STORAGE_KEY}.player.${namespace}`;
 const PREVIOUS_STORAGE_KEYS = ["idle-tamer.save.v8", "idle-tamer.save.v7", "idle-tamer.save.v6", "idle-tamer.save.v5", "idle-tamer.save.v4", "idle-tamer.save.v3"];
 const LEGACY_STORAGE_KEY = "echobound.save.v1";
 
@@ -23,6 +24,7 @@ export type SaveResult =
 export interface StorageDependencies {
   storage?: Pick<Storage, "getItem" | "setItem" | "removeItem">;
   now?: () => number;
+  storageKey?: string;
 }
 
 const browserStorage = (): Pick<Storage, "getItem" | "setItem" | "removeItem"> => localStorage;
@@ -274,12 +276,14 @@ const migrateOlderState = (value: unknown): GameState | null => {
   };
 };
 
-export const loadGame = ({ storage = browserStorage(), now = Date.now }: StorageDependencies = {}): LoadedGame => {
+export const loadGame = ({ storage = browserStorage(), now = Date.now, storageKey = STORAGE_KEY }: StorageDependencies = {}): LoadedGame => {
   let state = createInitialState(now);
   let migrated = false;
   try {
-    const current = storage.getItem(STORAGE_KEY);
-    const previous = PREVIOUS_STORAGE_KEYS.map((key) => storage.getItem(key)).find((entry) => entry !== null) ?? storage.getItem(LEGACY_STORAGE_KEY);
+    const current = storage.getItem(storageKey);
+    const previous = storageKey === STORAGE_KEY
+      ? PREVIOUS_STORAGE_KEYS.map((key) => storage.getItem(key)).find((entry) => entry !== null) ?? storage.getItem(LEGACY_STORAGE_KEY)
+      : null;
     const saved = current ?? previous;
     if (saved) {
       const parsed: unknown = JSON.parse(saved);
@@ -308,14 +312,14 @@ export const loadGame = ({ storage = browserStorage(), now = Date.now }: Storage
   state.cacheSlotsUsed += offlineSlots;
   state.lastSavedAt = now();
   // Persist the consumed offline window immediately so a fast reload cannot claim it twice.
-  saveGame(state, { storage, now });
+  saveGame(state, { storage, now, storageKey });
   return { state, offlineSeconds, offlineGold, offlineSlots, offlineItems, migrated };
 };
 
-export const saveGame = (state: GameState, { storage = browserStorage(), now = Date.now }: StorageDependencies = {}): SaveResult => {
+export const saveGame = (state: GameState, { storage = browserStorage(), now = Date.now, storageKey = STORAGE_KEY }: StorageDependencies = {}): SaveResult => {
   const previousSavedAt = state.lastSavedAt;
   try {
-    const persisted = storage.getItem(STORAGE_KEY);
+    const persisted = storage.getItem(storageKey);
     if (persisted) {
       const persistedState = JSON.parse(persisted) as Partial<GameState>;
       if (typeof persistedState.lastSavedAt === "number" && persistedState.lastSavedAt > previousSavedAt) {
@@ -324,7 +328,7 @@ export const saveGame = (state: GameState, { storage = browserStorage(), now = D
     }
     const savedAt = Math.max(now(), previousSavedAt + 1);
     state.lastSavedAt = savedAt;
-    storage.setItem(STORAGE_KEY, JSON.stringify(state));
+    storage.setItem(storageKey, JSON.stringify(state));
     return { ok: true, savedAt };
   } catch {
     state.lastSavedAt = previousSavedAt;
@@ -332,8 +336,10 @@ export const saveGame = (state: GameState, { storage = browserStorage(), now = D
   }
 };
 
-export const resetGame = ({ storage = browserStorage() }: StorageDependencies = {}): void => {
-  storage.removeItem(STORAGE_KEY);
-  for (const key of PREVIOUS_STORAGE_KEYS) storage.removeItem(key);
-  storage.removeItem(LEGACY_STORAGE_KEY);
+export const resetGame = ({ storage = browserStorage(), storageKey = STORAGE_KEY }: StorageDependencies = {}): void => {
+  storage.removeItem(storageKey);
+  if (storageKey === STORAGE_KEY) {
+    for (const key of PREVIOUS_STORAGE_KEYS) storage.removeItem(key);
+    storage.removeItem(LEGACY_STORAGE_KEY);
+  }
 };

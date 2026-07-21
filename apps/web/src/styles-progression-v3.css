@@ -447,3 +447,62 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
   .ether-fragments i,
   .prestige-scene__ambient i { animation: none; }
 }
+/* Block 4 · real account entry without changing the established visual language. */
+.auth-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 18px 0 12px;
+  padding: 4px;
+  border: 1px solid rgba(226, 222, 239, .12);
+  border-radius: 12px;
+  background: rgba(7, 7, 11, .38);
+}
+
+.auth-mode-tabs button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(226, 222, 239, .58);
+  background: transparent;
+  font: 700 10px/1 inherit;
+  letter-spacing: .13em;
+  cursor: pointer;
+}
+
+.auth-mode-tabs button.is-active {
+  color: #f4f1fa;
+  background: linear-gradient(135deg, rgba(205, 198, 224, .16), rgba(157, 124, 236, .19));
+  box-shadow: inset 0 0 0 1px rgba(211, 198, 249, .14);
+}
+
+.auth-message {
+  margin-bottom: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(108, 216, 171, .25);
+  border-radius: 10px;
+  color: #bcebd7;
+  background: rgba(42, 126, 91, .12);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.auth-message--error {
+  border-color: rgba(238, 112, 127, .28);
+  color: #ffc2ca;
+  background: rgba(143, 48, 67, .13);
+}
+
+.login-policy {
+  display: flex !important;
+  grid-template-columns: none !important;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 9px;
+  color: rgba(226, 222, 239, .68);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.login-policy input { margin-top: 2px; accent-color: #a98bf2; }
+.profile-hero aside #logout-account { margin-top: 12px; color: rgba(242, 203, 211, .8); }

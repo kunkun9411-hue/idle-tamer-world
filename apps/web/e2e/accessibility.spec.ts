@@ -49,6 +49,10 @@ test("core text tokens meet WCAG AA contrast and inputs expose a focus ring", as
 
   const input = page.locator("#login-identifier");
   await page.keyboard.press("Tab");
+  await expect(page.locator("#auth-mode-login")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#auth-mode-register")).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(input).toBeFocused();
   const outline = await input.evaluate((element) => {
     const style = getComputedStyle(element);

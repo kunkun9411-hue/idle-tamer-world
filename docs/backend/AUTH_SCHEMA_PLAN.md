@@ -167,7 +167,7 @@ unlocked_at     timestamptz
 primary key (player_id, cosmetic_kind, definition_id)
 ```
 
-Bei Profilanlage werden die beiden Standard-Entitlements atomar erzeugt. Avatar- oder Rahmenwechsel prüfen Contentdefinition, Entitlement und Profilrevision in derselben Transaktion. Statische Content-IDs erhalten keinen SQL-Fremdschlüssel, werden aber gegen den aktiven Contentrelease validiert.
+Bei Profilanlage werden die vier anfänglichen Entitlements `wanderer`, `keeper`, `silver` und `violet` atomar erzeugt. Avatar- oder Rahmenwechsel prüfen Contentdefinition, Entitlement und Profilrevision in derselben Transaktion. Statische Content-IDs erhalten keinen SQL-Fremdschlüssel, werden aber gegen den aktiven Contentrelease validiert.
 
 ## `auth_rate_limits`
 

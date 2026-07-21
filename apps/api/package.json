@@ -10,7 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fastify/cookie": "11.1.2",
     "@idle-tamer/config": "workspace:*",
+    "@idle-tamer/content": "workspace:*",
     "@idle-tamer/contracts": "workspace:*",
     "@idle-tamer/database": "workspace:*",
     "fastify": "^5.10.0",

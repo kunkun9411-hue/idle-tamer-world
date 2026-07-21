@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createInitialState, createMonster } from "./rules";
-import { loadGame, saveGame, STORAGE_KEY } from "./storage";
+import { loadGame, saveGame, STORAGE_KEY, storageKeyForNamespace } from "./storage";
 
 let values: Map<string, string>;
 
@@ -190,5 +190,18 @@ describe("save schema v9", () => {
     expect(first.offlineSlots).toBe(2);
     expect(second.offlineSlots).toBe(0);
     expect(second.state.pendingGold).toBe(firstPendingGold);
+  });
+
+  it("keeps account saves isolated and never imports a guest save implicitly", () => {
+    const guest = createInitialState(() => 1_000);
+    guest.resources.gold = 999;
+    values.set(STORAGE_KEY, JSON.stringify(guest));
+    const playerKey = storageKeyForNamespace("player-a");
+
+    const account = loadGame({ storageKey: playerKey, now: () => 2_000 });
+
+    expect(account.state.resources.gold).toBe(createInitialState(() => 2_000).resources.gold);
+    expect(values.has(playerKey)).toBe(true);
+    expect(JSON.parse(values.get(STORAGE_KEY) ?? "{}").resources.gold).toBe(999);
   });
 });

@@ -4,15 +4,15 @@ Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur
 
 ## Wo wir stehen
 
-- Gesamtfortschritt: **13 von 32 Schritten (40,6 %)**
+- Gesamtfortschritt: **14 von 32 Schritten (43,8 %)**
 - Clientversion: **0.2.0**
 - Abgeschlossen: **Block 1 bis Block 3**
 - Nächster Arbeitsblock: **Block 4 – Accounts, Sessions und Bootstrap**
-- Nächster Arbeitsschritt: **Schritt 2 – Bauen**
-- Noch nicht begonnen: Account-, Session- oder Authentifizierungsimplementierung
+- Nächster Arbeitsschritt: **Schritt 3 – Prüfen**
+- Neu gebaut: echte Accounts, Sessions, Bootstrap, Recovery, Rollen, Starterkommando und getrennte lokale Saves
 - Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
 
-Die Roadmap wurde nach dem abgeschlossenen Auth-Planungsgate auf 13/32 erhöht. Der sichtbare Prototyp verwendet weiterhin `localStorage`; PostgreSQL und API bilden bislang das geprüfte Backend-Fundament. Es existiert noch kein öffentlich nutzbarer Accountendpunkt.
+Die Roadmap steht nach dem abgeschlossenen Auth-Bauschritt bei 14/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl sind nun serverautoritativ. Run, Gold, Drops, Inventar, Brut und Dauerfortschritt bleiben bis Block 5 und 6 lokal; ihre Saves liegen jedoch strikt in einem vom Server vergebenen Account-Namespace. Die Oberfläche weist diese Grenze als „Account online · Spielstand lokal“ aus.
 
 Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
 
@@ -125,14 +125,14 @@ Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öf
 
 ## Exakter nächster Arbeitsauftrag
 
-Weiter geht es ausschließlich mit **Block 4, Schritt 2 – Bauen**:
+Weiter geht es ausschließlich mit **Block 4, Schritt 3 – Prüfen**:
 
-1. Migration `000002_accounts_and_sessions` mit Constraints, Rollen, Tokens, Sessions, Limits und Security Events bauen.
-2. Argon2id, Cookie-, CSRF-, Rate-Limit-, Mail- und Recoverydienste implementieren.
-3. Registrierung, E-Mailbestätigung, Login, Geräteverwaltung und `GET /api/v1/bootstrap` umsetzen.
-4. Profil, idempotente Starterwahl, Export/Löschung und nach `playerId` getrennte lokale Saves anbinden.
+1. Brute-Force-, Rate-Limit-, Enumeration-, Session-Fixation- und Token-Ablauffälle erweitern.
+2. Cookie-, Origin-, CSRF- und Produktionskonfiguration automatisiert gegen den echten Proxy prüfen.
+3. denselben Account mit Profil und Starter in zwei getrennten Browserkontexten laden.
+4. Sessionwiderruf, Passwortreset, Löschfrist und anonymisierte Retention im realen Ablauf prüfen.
 
-Die Bauverträge stehen in `backend/BLOCK4_AUTH_PLAN.md`, `backend/AUTH_API_CONTRACT.md` und `backend/AUTH_SCHEMA_PLAN.md`. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal; der Browser zeigt deshalb ehrlich „Account online · Spielstand lokal“.
+Implementierung und Grenzen stehen in `backend/AUTH_IMPLEMENTATION.md`, `backend/AUTH_API_CONTRACT.md` und `backend/AUTH_SCHEMA_PLAN.md`. Der Run, Gold, Drops, Inventar, Brut, Fragmente, Hyperlevel, Gems, Evolution und Prestige bleiben bis zu ihren vorgesehenen Roadmap-Blöcken lokal.
 
 ## Relevante Unterlagen
 

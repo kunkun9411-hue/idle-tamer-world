@@ -1,9 +1,16 @@
 import { randomUUID } from "node:crypto";
 
+import cookie from "@fastify/cookie";
 import { loadServerConfig, publicRuntimeConfig, type ServerConfig } from "@idle-tamer/config";
-import { API_PROTOCOL_VERSION, ERROR_CONTRACT_VERSION, type ApiProblem } from "@idle-tamer/contracts";
+import { API_PROTOCOL_VERSION, AUTH_ERROR_CONTRACT_VERSION, ERROR_CONTRACT_VERSION, type ApiProblem, type AuthApiProblem } from "@idle-tamer/contracts";
+import type { AuthStore } from "@idle-tamer/database";
 import Fastify from "fastify";
 
+import { AuthError } from "./auth/errors";
+import type { AuthMailPort } from "./auth/mail";
+import { AuthRateLimiter } from "./auth/rate-limit";
+import { registerAuthRoutes } from "./auth/routes";
+import { AuthService } from "./auth/service";
 import { ApiError } from "./errors";
 import { createApiLogger } from "./logger";
 
@@ -14,6 +21,8 @@ export interface DatabaseHealth {
 export interface BuildAppOptions {
   config?: ServerConfig;
   database?: DatabaseHealth;
+  authStore?: AuthStore;
+  authMail?: AuthMailPort;
   logger?: false;
 }
 
@@ -24,7 +33,21 @@ export const buildApp = (options: BuildAppOptions = {}) => {
     ...(logger === false ? { logger: false } : { loggerInstance: logger }),
     requestIdHeader: "x-request-id",
     genReqId: () => randomUUID(),
+    trustProxy: config.NODE_ENV === "production",
   });
+
+  void app.register(cookie);
+
+  if (options.authStore && options.authMail) {
+    const authService = new AuthService(options.authStore, options.authMail, {
+      publicOrigin: config.PUBLIC_ORIGIN,
+      termsVersion: config.AUTH_TERMS_VERSION,
+      privacyVersion: config.AUTH_PRIVACY_VERSION,
+      features: publicRuntimeConfig(config).features,
+    });
+    const rateLimiter = new AuthRateLimiter(options.authStore, config.RATE_LIMIT_HMAC_SECRET);
+    void app.register(async (authApp) => registerAuthRoutes(authApp, { service: authService, rateLimiter, publicOrigin: config.PUBLIC_ORIGIN }));
+  }
 
   app.addHook("onSend", async (request, reply) => {
     reply.header("x-request-id", request.id);
@@ -35,6 +58,20 @@ export const buildApp = (options: BuildAppOptions = {}) => {
   });
 
   app.setErrorHandler(async (error, request, reply) => {
+    if (error instanceof AuthError) {
+      if (error.options.retryAfterSeconds !== undefined) reply.header("retry-after", error.options.retryAfterSeconds);
+      const problem: AuthApiProblem = {
+        errorContractVersion: AUTH_ERROR_CONTRACT_VERSION,
+        code: error.code,
+        message: error.message,
+        correlationId: request.id,
+        ...(error.reason === undefined ? {} : { reason: error.reason }),
+        ...(error.options.retryAfterSeconds === undefined ? {} : { retryAfterSeconds: error.options.retryAfterSeconds }),
+        ...(error.options.latestRevision === undefined ? {} : { latestRevision: error.options.latestRevision }),
+        ...(error.options.fieldErrors === undefined ? {} : { fieldErrors: error.options.fieldErrors }),
+      };
+      return reply.status(error.statusCode).send(problem);
+    }
     const validationError = typeof error === "object"
       && error !== null
       && "validation" in error

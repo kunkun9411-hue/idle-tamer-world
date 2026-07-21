@@ -10,6 +10,7 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 6. [`BLOCK4_AUTH_PLAN.md`](BLOCK4_AUTH_PLAN.md) – Welche Account-, Session-, Recovery-, Datenschutz- und Autoritätsregeln baut Block 4?
 7. [`AUTH_API_CONTRACT.md`](AUTH_API_CONTRACT.md) – Welche Auth- und Account-Endpunkte, DTOs und Fehler sind verbindlich?
 8. [`AUTH_SCHEMA_PLAN.md`](AUTH_SCHEMA_PLAN.md) – Welche Tabellen, Constraints, Indizes und Löschtransaktionen ergänzt Migration 000002?
+9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion, wie wird sie betrieben und was wird in Schritt 3 geprüft?
 
 ## Verbindlicher Kurzstand
 
@@ -26,6 +27,17 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
 
 Block 4 verwendet daneben Auth-Vertrag 1. Er führt einen ehrlichen Account-Bootstrap ein, ohne den noch lokalen Run- und Sammlungszustand als serverautoritativ auszugeben. Der vollständige Spielvertrag 8 wird dadurch nicht still verändert.
+
+## Gebauter Stand von Block 4
+
+- [x] additive Migration `000002_accounts_and_sessions` mit Account-Lifecycle, Rollen, Sessions, Tokens, Limits und Security Events
+- [x] Argon2id-Passphrasen, 256-Bit-Session-/CSRF-Token und sichere Cookieattribute
+- [x] Registrierung, E-Mailbestätigung, Login, Logout, Recovery und Gerätewiderruf
+- [x] ehrlicher Account-Bootstrap, Profilkosmetik und idempotente Starterwahl
+- [x] Exportanforderung, siebentägige Löschfrist und stündlicher Retentionjob
+- [x] Browser-Accountclient mit strikt getrennten lokalen Save-Namespaces
+
+Block 4 befindet sich jetzt im Prüfgate. Die vorhandenen Tests beweisen bereits den HTTP-Hauptfluss und die echten PostgreSQL-Transaktionen; Missbrauchsmatrix, Zweitbrowser und vollständige Proxy-/Cookie-Abnahme folgen bewusst in Schritt 3.
 
 ## Abgenommener Stand von Block 3
 

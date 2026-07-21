@@ -2,6 +2,8 @@ import "./styles.css";
 import "./styles-v2.css";
 import "./styles-game-first.css";
 import "./styles-progression-v3.css";
+import type { AccountBootstrapResponse } from "@idle-tamer/contracts";
+import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
 import { elementLabel, getMonster, getMonsterForm, MONSTERS } from "./game/content";
 import { findEncounter, getEncounter } from "./game/encounters";
@@ -35,7 +37,7 @@ import {
   researchCost,
   hyperLevelCost,
 } from "./game/rules";
-import { loadGame, resetGame, STORAGE_KEY } from "./game/storage";
+import { loadGame, resetGame, STORAGE_KEY, storageKeyForNamespace, type StorageDependencies } from "./game/storage";
 import { SYSTEM_MESSAGES } from "./game/system-messages";
 import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./game/types";
 
@@ -53,12 +55,24 @@ const appElement = document.querySelector<HTMLDivElement>("#app");
 if (!appElement) throw new Error("App root is missing");
 const app: HTMLDivElement = appElement;
 
-const loaded = loadGame();
-const service = new LocalGameService(loaded.state);
+const accountApiEnabled = import.meta.env.PROD || import.meta.env.VITE_ACCOUNT_API === "true";
+const accountClient = new AccountClient();
+const clientInstanceId = getClientInstanceId();
+const persistedAccountNamespace = localStorage.getItem(ACTIVE_ACCOUNT_NAMESPACE_KEY);
+const activeStorageKey = persistedAccountNamespace ? storageKeyForNamespace(persistedAccountNamespace) : STORAGE_KEY;
+const storageDependencies: StorageDependencies = { storageKey: activeStorageKey };
+const loaded = loadGame(storageDependencies);
+const service = new LocalGameService(loaded.state, Math.random, storageDependencies);
 const servicePort = new LocalGameServicePort(service);
 const game = service.state;
 let activeView: View = "expedition";
 let showLogin = true;
+let accountBootstrap: AccountBootstrapResponse | null = null;
+let authMode: "login" | "register" = "login";
+let authBusy = false;
+let authMessage = "";
+let authMessageTone: "error" | "success" = "success";
+let deletionPending = false;
 let showOfflineReport = false;
 let battle: BattleState | null = createBattleState();
 let lastFrame = performance.now();
@@ -80,7 +94,7 @@ const requestedUiState = new URLSearchParams(window.location.search).get("ui-sta
 const qaEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_QA === "true";
 let clientUiState: ClientUiState = import.meta.env.DEV && ["loading", "online", "offline", "conflict", "error"].includes(requestedUiState ?? "")
   ? requestedUiState as ClientUiState
-  : "local";
+  : accountApiEnabled ? "loading" : "local";
 
 const timeFormatter = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 
@@ -355,12 +369,26 @@ function selectZone(zoneId: string): void {
   showNotice("Expeditionsziel geändert", `${getZone(zoneId).name} ist jetzt deine aktive Zone.`);
 }
 
-function chooseStarter(definitionId: string): void {
+async function chooseStarter(definitionId: string): Promise<void> {
+  if (accountApiEnabled) {
+    if (!accountBootstrap || authBusy) return;
+    authBusy = true;
+    try {
+      const response = await accountClient.command({ type: "starter.choose", definitionId }, accountBootstrap.profile.revision, clientInstanceId);
+      accountBootstrap = response.bootstrap;
+    } catch (error) {
+      authBusy = false;
+      showNotice("Starterwahl nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      return;
+    }
+    authBusy = false;
+  }
   if (!service.chooseStarter(definitionId)) return;
   starterDialogOpen = false;
   showLogin = false;
   showOfflineReport = false;
   activeView = "expedition";
+  clientUiState = accountApiEnabled ? "online" : "local";
   battle = createBattleState();
   const starter = activeMonster();
   showNotice("Resonanz verbunden", `${starter ? getMonsterForm(starter).name : "Dein Rookie"} ist dein erster Partner.`, "success");
@@ -385,11 +413,31 @@ function accelerateIncubation(): void {
   if (service.useIncubatorCharge()) showNotice("Brutladung eingesetzt", "Die Inkubation wurde um 60 Sekunden verkürzt.", "success");
 }
 
-function setAvatar(avatarId: string): void {
+async function setAvatar(avatarId: string): Promise<void> {
+  if (accountApiEnabled) {
+    if (!accountBootstrap) return;
+    try {
+      const response = await accountClient.command({ type: "profile.avatar", avatarId }, accountBootstrap.profile.revision, clientInstanceId);
+      accountBootstrap = response.bootstrap;
+    } catch (error) {
+      showNotice("Avatar nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      return;
+    }
+  }
   if (service.setAvatar(avatarId)) showNotice("Avatar gewechselt", `${AVATARS.find((avatar) => avatar.id === avatarId)?.name ?? "Avatar"} ist jetzt aktiv.`);
 }
 
-function setFrame(frameId: string): void {
+async function setFrame(frameId: string): Promise<void> {
+  if (accountApiEnabled) {
+    if (!accountBootstrap) return;
+    try {
+      const response = await accountClient.command({ type: "profile.frame", frameId }, accountBootstrap.profile.revision, clientInstanceId);
+      accountBootstrap = response.bootstrap;
+    } catch (error) {
+      showNotice("Rahmen nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      return;
+    }
+  }
   if (service.setFrame(frameId)) showNotice("Rahmen gewechselt", `${FRAMES.find((frame) => frame.id === frameId)?.name ?? "Rahmen"} ist jetzt aktiv.`);
 }
 
@@ -484,20 +532,161 @@ function setView(view: View): void {
   render();
 }
 
-function signIn(): void {
-  if (clientUiState === "loading") return;
+function enterLocalPrototype(): void {
   showLogin = false;
   activeView = "expedition";
-  if (game.roster.length === 0) {
-    starterDialogOpen = true;
-    render();
-    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
-    return;
+  if (game.roster.length === 0) starterDialogOpen = true;
+  else {
+    showOfflineReport = true;
+    battle = createBattleState();
   }
-  showOfflineReport = true;
-  battle = createBattleState();
   render();
   window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+}
+
+function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
+  const namespace = bootstrap.authority.localStorageNamespace;
+  if (persistedAccountNamespace !== namespace) {
+    localStorage.setItem(ACTIVE_ACCOUNT_NAMESPACE_KEY, namespace);
+    window.location.reload();
+    return false;
+  }
+  accountBootstrap = bootstrap;
+  if (bootstrap.account.status === "deletion_pending") {
+    deletionPending = true;
+    showLogin = true;
+    clientUiState = "online";
+    authMessageTone = "error";
+    authMessage = "Dieser Account ist zur Löschung vorgemerkt. Der Spielzugang bleibt bis zum Abbruch gesperrt.";
+    render();
+    return false;
+  }
+  deletionPending = false;
+  game.playerName = bootstrap.profile.displayName;
+  game.profile.avatarId = bootstrap.profile.avatarId;
+  game.profile.frameId = bootstrap.profile.frameId;
+  service.save();
+  const serverStarter = bootstrap.onboarding.starterDefinitionId;
+  if (serverStarter && game.roster.length === 0) service.chooseStarter(serverStarter);
+  if (serverStarter && game.roster[0]?.definitionId !== serverStarter) {
+    clientUiState = "conflict";
+    authMessage = "Der lokale Starter passt nicht zum Account. Der lokale Spielstand wurde sicherheitshalber nicht geöffnet.";
+    authMessageTone = "error";
+    showLogin = true;
+    render();
+    return false;
+  }
+  showLogin = false;
+  clientUiState = "online";
+  activeView = "expedition";
+  starterDialogOpen = !serverStarter;
+  showOfflineReport = Boolean(serverStarter && (loaded.offlineSeconds > 0 || game.cacheSlotsUsed > 0));
+  battle = createBattleState();
+  render();
+  return true;
+}
+
+async function signIn(form: HTMLFormElement): Promise<void> {
+  if (authBusy || clientUiState === "loading") return;
+  if (!accountApiEnabled) return enterLocalPrototype();
+  const formData = new FormData(form);
+  authBusy = true;
+  authMessage = "";
+  render();
+  try {
+    const bootstrap = await accountClient.login(
+      String(formData.get("identifier") ?? ""),
+      String(formData.get("password") ?? ""),
+      formData.get("rememberMe") === "on",
+      clientInstanceId,
+    );
+    authBusy = false;
+    activateAccount(bootstrap);
+  } catch (error) {
+    authBusy = false;
+    authMessageTone = "error";
+    authMessage = error instanceof AccountApiError ? error.message : "Der Account-Server ist gerade nicht erreichbar.";
+    clientUiState = "local";
+    render();
+  }
+}
+
+async function registerAccount(form: HTMLFormElement): Promise<void> {
+  if (!accountApiEnabled || authBusy) return;
+  const formData = new FormData(form);
+  authBusy = true;
+  authMessage = "";
+  render();
+  try {
+    await accountClient.register({
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
+      displayName: String(formData.get("displayName") ?? ""),
+      clientInstanceId,
+      termsVersion: "alpha-foundation-1",
+      privacyVersion: "alpha-foundation-1",
+    });
+    authMode = "login";
+    authMessageTone = "success";
+    authMessage = "Account vorbereitet. Öffne jetzt den Bestätigungslink aus der Alpha-Mailbox.";
+  } catch (error) {
+    authMessageTone = "error";
+    authMessage = error instanceof AccountApiError ? error.message : "Die Registrierung konnte nicht abgeschlossen werden.";
+  }
+  authBusy = false;
+  render();
+}
+
+async function initializeAccount(): Promise<void> {
+  if (!accountApiEnabled) return;
+  const fragment = new URLSearchParams(window.location.hash.replace(/^#/u, ""));
+  const verificationToken = fragment.get("verify-email");
+  if (verificationToken) {
+    try {
+      await accountClient.verifyEmail(verificationToken);
+      authMessageTone = "success";
+      authMessage = "E-Mail bestätigt. Du kannst dich jetzt einloggen.";
+    } catch (error) {
+      authMessageTone = "error";
+      authMessage = error instanceof AccountApiError ? error.message : "Der Bestätigungslink konnte nicht geprüft werden.";
+    }
+    window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+  }
+  try {
+    const bootstrap = await accountClient.bootstrap();
+    activateAccount(bootstrap);
+  } catch (error) {
+    showLogin = true;
+    clientUiState = error instanceof AccountApiError && error.status === 401 ? "local" : "offline";
+    render();
+  }
+}
+
+async function logoutAccount(): Promise<void> {
+  if (!accountApiEnabled) {
+    showLogin = true;
+    return render();
+  }
+  try { await accountClient.logout(); } catch { /* local logout must still complete */ }
+  localStorage.removeItem(ACTIVE_ACCOUNT_NAMESPACE_KEY);
+  window.location.reload();
+}
+
+async function cancelAccountDeletion(): Promise<void> {
+  if (!deletionPending || authBusy) return;
+  authBusy = true;
+  try {
+    const bootstrap = await accountClient.cancelDeletion();
+    authBusy = false;
+    authMessage = "Löschung abgebrochen. Dein Account ist wieder aktiv.";
+    authMessageTone = "success";
+    activateAccount(bootstrap);
+  } catch (error) {
+    authBusy = false;
+    authMessageTone = "error";
+    authMessage = error instanceof AccountApiError ? error.message : "Die Löschung konnte nicht abgebrochen werden.";
+    render();
+  }
 }
 
 function icon(name: View | "home" | "shield" | "spark" | "arrow" | "check" | "eye"): string {
@@ -639,6 +828,20 @@ function prestigeShell(content: string): string {
 function loginShell(): string {
   const previewMonster = activeMonster() ?? createMonster("pyrook", 1);
   const previewDefinition = getMonsterForm(previewMonster);
+  const accountForm = authMode === "login" ? `
+        <form id="login-form" class="login-form">
+          <label for="login-identifier"><span>E-MAIL</span><input id="login-identifier" name="identifier" type="email" autocomplete="username" value="${accountApiEnabled ? "" : "demo@idletamer.local"}" required></label>
+          <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="${accountApiEnabled ? "" : "demo"}" required></label>
+          <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled>Passwort vergessen</button></div>
+          <button class="primary-button primary-button--large login-submit" type="submit" data-testid="login-submit" ${authBusy || clientUiState === "loading" ? "disabled" : ""}>${authBusy ? "VERBINDUNG WIRD GEPRÜFT …" : `EINLOGGEN ${icon("arrow")}`}</button>
+        </form>` : `
+        <form id="register-form" class="login-form">
+          <label for="register-email"><span>E-MAIL</span><input id="register-email" name="email" type="email" autocomplete="email" required></label>
+          <label for="register-name"><span>TAMER-NAME</span><input id="register-name" name="displayName" type="text" autocomplete="nickname" minlength="3" maxlength="20" required></label>
+          <label for="register-password"><span>PASSPHRASE · MINDESTENS 15 ZEICHEN</span><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required></label>
+          <label class="login-policy"><input name="policy" type="checkbox" required><span>Ich akzeptiere die Alpha-Nutzungsbedingungen und Datenschutzhinweise.</span></label>
+          <button class="primary-button primary-button--large login-submit" type="submit" ${authBusy ? "disabled" : ""}>${authBusy ? "ACCOUNT WIRD VORBEREITET …" : `ACCOUNT ERSTELLEN ${icon("arrow")}`}</button>
+        </form>`;
   return `
     <main class="login-screen" data-testid="login-screen">
       <div class="login-screen__backdrop" aria-hidden="true"></div>
@@ -655,15 +858,12 @@ function loginShell(): string {
       <section class="login-panel" aria-labelledby="login-title">
         <div class="login-panel__mobile-brand">${officialLogoMarkup()}</div>
         <span class="eyebrow">ACCOUNT-ZUGANG</span>
-        <h2 id="login-title">Willkommen zurück.</h2>
-        <p>Deine Expedition hat während deiner Abwesenheit weiter Ressourcen gesammelt.</p>
-        <form id="login-form" class="login-form">
-          <label for="login-identifier"><span>E-MAIL ODER TAMER-NAME</span><input id="login-identifier" name="identifier" type="text" autocomplete="username" value="demo@idletamer.local" required></label>
-          <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="demo" required></label>
-          <div class="login-form__meta"><label><input type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled>Passwort vergessen</button></div>
-          <button class="primary-button primary-button--large login-submit" type="submit" data-testid="login-submit" ${clientUiState === "loading" ? "disabled" : ""}>${clientUiState === "loading" ? "SPIELSTAND WIRD GELADEN …" : `EINLOGGEN ${icon("arrow")}`}</button>
-        </form>
-        <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>Lokaler Prototyp-Zugang</strong><small>Der Formularvertrag ist für die spätere Account-API vorbereitet. Aktuell bleibt der Spielstand in diesem Browser.</small></div></div>
+        <h2 id="login-title">${authMode === "login" ? "Willkommen zurück." : "Neue Resonanz beginnen."}</h2>
+        <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Accountprofil und dein Starter werden online gesichert. Der eigentliche Run bleibt in dieser Alpha noch lokal."}</p>
+        <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
+        ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
+        ${accountForm}
+        <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>${accountApiEnabled ? "Account online · Spielstand lokal" : "Lokaler UI-Testmodus"}</strong><small>${accountApiEnabled ? "Profil, Sitzung und Starter liegen bereits sicher auf dem Server. Run, Gold und Sammlung folgen in Block 5 und 6." : "Der Entwicklungsbrowser nutzt weiterhin den schnellen lokalen Testzugang."}</small></div></div>
         <small class="login-panel__version">CLIENT V0.2 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
       </section>
     </main>
@@ -1038,7 +1238,7 @@ function profileView(): string {
   const activeAvatar = AVATARS.find((entry) => entry.id === game.profile.avatarId) ?? AVATARS[0];
   const activeFrame = FRAMES.find((entry) => entry.id === game.profile.frameId) ?? FRAMES[0];
   return `<section class="page profile-page">${pageHeading("ACCOUNT · KOSMETIK", "Tamer-Profil", "Runder Avatar und Rahmen werden als getrennte Katalogeinträge gespeichert. So können Events, Gilden und Erfolge später neue Kombinationen freischalten.", `RANG ${rank} · ${game.totalVictories} SIEGE`)}
-    <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>ACCOUNT-ID</small><b>LOCAL-PROTOTYPE</b><span>Später vom Backend vergeben</span></aside></section>
+    <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${accountBootstrap?.profile.displayName ?? game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>ACCOUNT-STATUS</small><b>${accountBootstrap ? "ONLINE · PROFIL & STARTER" : "LOCAL-PROTOTYPE"}</b><span>${accountBootstrap?.account.emailMasked ?? "Noch ohne Backendkonto"}</span>${accountBootstrap ? '<button class="text-button" id="logout-account">ACCOUNT ABMELDEN</button>' : ""}</aside></section>
     ${systemInbox()}${playerSettings()}
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">AVATARE</span><h2>Tamer-Identität</h2></div><span>RUND · WECHSELBAR</span></div><div class="cosmetic-grid">${AVATARS.map((avatar) => { const unlocked = isAvatarUnlocked(game, avatar.id); const selected = avatar.id === game.profile.avatarId; return `<button class="cosmetic-card panel ${selected ? "is-selected" : ""}" data-avatar="${avatar.id}" ${unlocked ? "" : "disabled"} style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]}"><span class="cosmetic-avatar"><i>${avatar.glyph}</i></span><strong>${avatar.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${avatar.unlock}`}</small></button>`; }).join("")}</div></div>
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">RAHMEN</span><h2>Profilrahmen</h2></div><span>SEPARATER KATALOG</span></div><div class="frame-grid">${FRAMES.map((frame) => { const unlocked = isFrameUnlocked(game, frame.id); const selected = frame.id === game.profile.frameId; return `<button class="frame-card panel ${selected ? "is-selected" : ""}" data-frame="${frame.id}" ${unlocked ? "" : "disabled"} style="--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}"><span><i></i></span><div><strong>${frame.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${frame.unlock}`}</small></div></button>`; }).join("")}</div></div>
@@ -1051,7 +1251,7 @@ function starterGate(): string {
 
 function starterDialog(): string {
   if (!starterDialogOpen || game.roster.length > 0) return "";
-  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title" data-testid="starter-dialog"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jeder Starter besitzt eine feste erste Evolution. Werte und Namen lassen sich zentral im Monsterkatalog ändern.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}" data-testid="starter-${monster.id}">${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} Die Starterwahl wird später serverseitig einmalig bestätigt.</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
+  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title" data-testid="starter-dialog"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jeder Starter besitzt eine feste erste Evolution. Werte und Namen lassen sich zentral im Monsterkatalog ändern.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}" data-testid="starter-${monster.id}" ${authBusy ? "disabled" : ""}>${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} ${accountApiEnabled ? "Diese Wahl wird jetzt einmalig auf deinem Account gespeichert." : "Im lokalen UI-Testmodus bleibt die Wahl nur in diesem Browser."}</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
 }
 
 function researchView(): string {
@@ -1359,9 +1559,10 @@ function bindModalKeyboard(): void {
 
 function bindEvents(): void {
   app.addEventListener("submit", (event) => {
-    if (!(event.target instanceof HTMLFormElement) || event.target.id !== "login-form") return;
+    if (!(event.target instanceof HTMLFormElement)) return;
     event.preventDefault();
-    runSingleAction("login", signIn);
+    if (event.target.id === "login-form") void signIn(event.target);
+    if (event.target.id === "register-form") void registerAccount(event.target);
   });
   app.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
@@ -1371,13 +1572,7 @@ function bindEvents(): void {
     if (target.dataset.qa) return run(`qa:${target.dataset.qa}`, () => applyQaState(target.dataset.qa as QaPreset));
     if (target.dataset.view) return setView(target.dataset.view as View);
     if (target.dataset.combatPanel) return toggleCombatPanel(target.dataset.combatPanel as CombatPanel);
-    if (target.hasAttribute("data-home")) {
-      showLogin = true;
-      showOfflineReport = false;
-      starterDialogOpen = false;
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return render();
-    }
+    if (target.hasAttribute("data-home")) return setView("expedition");
     if (target.dataset.level) return run(`level:${target.dataset.level}`, () => levelUp(target.dataset.level ?? ""));
     if (target.dataset.train) return run(`train:${target.dataset.train}`, () => trainWithData(target.dataset.train ?? ""));
     if (target.dataset.evolve) return run(`evolve:${target.dataset.evolve}`, () => evolveMonster(target.dataset.evolve ?? ""));
@@ -1387,9 +1582,9 @@ function bindEvents(): void {
     if (target.dataset.active) return run(`active:${target.dataset.active}`, () => makeActive(target.dataset.active ?? ""));
     if (target.dataset.support) return run(`support:${target.dataset.support}`, () => makeSupport(target.dataset.support ?? ""));
     if (target.dataset.zone) return run(`zone:${target.dataset.zone}`, () => selectZone(target.dataset.zone ?? ""));
-    if (target.dataset.starter) return run("starter", () => chooseStarter(target.dataset.starter ?? ""));
-    if (target.dataset.avatar) return run(`avatar:${target.dataset.avatar}`, () => setAvatar(target.dataset.avatar ?? ""));
-    if (target.dataset.frame) return run(`frame:${target.dataset.frame}`, () => setFrame(target.dataset.frame ?? ""));
+    if (target.dataset.starter) return run("starter", () => void chooseStarter(target.dataset.starter ?? ""));
+    if (target.dataset.avatar) return run(`avatar:${target.dataset.avatar}`, () => void setAvatar(target.dataset.avatar ?? ""));
+    if (target.dataset.frame) return run(`frame:${target.dataset.frame}`, () => void setFrame(target.dataset.frame ?? ""));
     if (target.dataset.incubate) return run(`incubate:${target.dataset.incubate}`, () => startIncubation(target.dataset.incubate ?? ""));
     if (target.dataset.milestone) return run(`milestone:${target.dataset.milestone}`, () => claimMilestone(Number(target.dataset.milestone)));
     if (target.dataset.objective) return run(`objective:${target.dataset.objective}`, () => claimObjective(target.dataset.objective ?? ""));
@@ -1401,6 +1596,10 @@ function bindEvents(): void {
     if (target.dataset.research) return run(`research:${target.dataset.research}`, () => buyResearch(target.dataset.research as ResearchId));
 
     switch (target.id) {
+      case "auth-mode-login": authMode = "login"; authMessage = ""; return render();
+      case "auth-mode-register": authMode = "register"; authMessage = ""; return render();
+      case "cancel-account-deletion": return void cancelAccountDeletion();
+      case "logout-account": return void logoutAccount();
       case "combat-focus-toggle": return toggleCombatFocus();
       case "collect-cache": return run("collect-cache", collectCache);
       case "offline-collect": return run("offline-collect", collectOfflineRewards);
@@ -1429,7 +1628,7 @@ function bindEvents(): void {
       case "skip-tutorial": return run("tutorial", () => advanceTutorial(true));
       case "reset-game":
         if (!window.confirm("Lokalen Idle-Tamer-Spielstand wirklich löschen?")) return;
-        resetGame();
+        resetGame(storageDependencies);
         return window.location.reload();
     }
   });
@@ -1470,7 +1669,7 @@ function frame(now: number): void {
 }
 
 window.addEventListener("storage", (event) => {
-  if (event.storageArea !== localStorage || event.key !== STORAGE_KEY || event.newValue === event.oldValue) return;
+  if (event.storageArea !== localStorage || event.key !== activeStorageKey || event.newValue === event.oldValue) return;
   clientUiState = "conflict";
   render();
 });
@@ -1479,4 +1678,5 @@ window.addEventListener("beforeunload", () => {
 });
 bindEvents();
 render();
+void initializeAccount();
 requestAnimationFrame(frame);

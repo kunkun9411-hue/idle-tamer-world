@@ -2,7 +2,7 @@
 
 - Stand: 21. Juli 2026
 - Aktiver Block: **Block 4 – Accounts, Sessions und Bootstrap**
-- Aktiver Schritt: **Schritt 2 – Bauen**
+- Aktiver Schritt: **Schritt 3 – Prüfen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -40,13 +40,13 @@ flowchart LR
 | 1 | Lokale spielbare Grundversion | [x] | [x] | [x] | [x] | **Fertig** |
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
-| 4 | Accounts, Sessions und Bootstrap | [x] | [ ] | [ ] | [ ] | **Aktiv** |
+| 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [ ] | [ ] | **Aktiv** |
 | 5 | Serverautoritärer Run und Wirtschaft | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
 | 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
 
-Gesamtfortschritt: **13 von 32 Schritten abgeschlossen (40,6 %)**.
+Gesamtfortschritt: **14 von 32 Schritten abgeschlossen (43,8 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -212,16 +212,18 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** `backend/BLOCK4_AUTH_PLAN.md` legt Accountzustände, Argon2id, Cookie- und CSRF-Regeln, konkrete Sessionfristen, Gerätewiderruf, Enumeration- und Rate-Limit-Schutz, Recovery, Rollen, Profil, Starterwahl, Export und Löschung fest. `backend/AUTH_API_CONTRACT.md` definiert Auth-Vertrag 1 und `backend/AUTH_SCHEMA_PLAN.md` die additive Migration 000002. Block 4 synchronisiert bewusst nur Account, Profil und Starter; die UI kennzeichnet den übrigen Spielstand bis Block 5 und 6 weiterhin als lokal.
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] Benutzer, Zugangsdaten, Sessions und Profile implementieren
-- [ ] sichere Passwort-Hashes und HTTP-only Session-Cookies verwenden
-- [ ] Registrierung, E-Mailbestätigung, Login, Logout, Recovery und Sessionwiderruf umsetzen
-- [ ] `GET /api/v1/bootstrap` als ehrlichen Account-Bootstrap mit Autoritätsmatrix bauen
-- [ ] Starterwahl als erstes echtes idempotentes Spielkommando migrieren
-- [ ] Rollenbasis für Spieler, Support, Moderator und Admin einführen
-- [ ] Export- und Löschanforderung samt Retentionjob umsetzen
-- [ ] Account-Client anbinden und lokale Saves strikt nach `playerId` trennen
+- [x] Benutzer, Zugangsdaten, Sessions und Profile implementieren
+- [x] sichere Passwort-Hashes und HTTP-only Session-Cookies verwenden
+- [x] Registrierung, E-Mailbestätigung, Login, Logout, Recovery und Sessionwiderruf umsetzen
+- [x] `GET /api/v1/bootstrap` als ehrlichen Account-Bootstrap mit Autoritätsmatrix bauen
+- [x] Starterwahl als erstes echtes idempotentes Spielkommando migrieren
+- [x] Rollenbasis für Spieler, Support, Moderator und Admin einführen
+- [x] Export- und Löschanforderung samt Retentionjob umsetzen
+- [x] Account-Client anbinden und lokale Saves strikt nach Account-Namespace trennen
+
+**Definition of Done erfüllt:** Migration `000002_accounts_and_sessions`, Argon2id, gehashte Session-/CSRF-Token, PostgreSQL-Rate-Limits, Mailport, Recovery, Gerätewiderruf, Rollen, Profilkosmetik, idempotente Starterwahl, Exportanforderung und siebentägige Löschfrist sind implementiert. Der Browser nutzt echte Accounts, zeigt die begrenzte Autorität offen an und öffnet lokale Spielstände ausschließlich im serverseitig zugewiesenen Account-Namespace. Details: `backend/AUTH_IMPLEMENTATION.md`.
 
 ### Schritt 3 – Prüfen ⬜
 
