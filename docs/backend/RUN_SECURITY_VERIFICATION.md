@@ -38,13 +38,14 @@ Der Live-Test verwendet einen kurzlebigen, verifizierten QA-Account aus der priv
 1. Browser A meldet sich an und wählt Pyrook.
 2. Die Einführung wird beendet und Pyrook über die sichtbare Monsteransicht auf Run-Level 2 erhöht.
 3. `GET /api/v1/run` bestätigt das Level serverseitig.
-4. Browser B meldet sich mit einer eigenen Session an und sieht denselben Starter und dasselbe Run-Level.
-5. Browser A widerruft die andere Session; Browser B fällt auf Login zurück.
-6. Löschvormerkung, erneute Anmeldung, Abbruch und Logout funktionieren weiterhin mit dem neuen Wirtschaftsstand.
+4. Ein Klick auf den Foundation-Gem zeigt ehrlich die Block-6-Grenze; der Bestand bleibt vor und nach dem Klick `1×`.
+5. Browser B meldet sich mit einer eigenen Session an und sieht denselben Starter und dasselbe Run-Level.
+6. Browser A widerruft die andere Session; Browser B fällt auf Login zurück.
+7. Löschvormerkung, erneute Anmeldung, Abbruch und Logout funktionieren weiterhin mit dem neuen Wirtschaftsstand.
 
 Der Test deckte zwei Test-Race-Conditions auf: Die Monsteransicht musste nach dem neuen Tutorial explizit geöffnet werden, und nach einem Reload musste der Login auf den abgeschlossenen Bootstrap warten, bevor Formularfelder gefüllt werden. Beide Abläufe sind jetzt über sichtbare, spielernahe Zustände synchronisiert.
 
-Die erste manuelle Spielerprüfung deckte zusätzlich einen zu breiten Client-Merge auf: Jeder Run-Poll löschte lokale Gem-Slots, Hyperlevel und Evolution. Drei neue Regressionstests beweisen, dass Run-Werte aktualisiert, Sammlungswerte erhalten, verwaiste Start-Gems repariert und lokale Dauerboni im serverautoritativen Kampf trotzdem nicht angerechnet werden.
+Die erste manuelle Spielerprüfung deckte zusätzlich einen zu breiten Client-Merge auf: Jeder Run-Poll löschte lokale Gem-Slots, Hyperlevel und Evolution. Drei neue Regressionstests beweisen, dass Run-Werte aktualisiert, Sammlungswerte erhalten, verwaiste Start-Gems repariert und lokale Dauerboni im serverautoritativen Kampf trotzdem nicht angerechnet werden. Die Reparatur wurde danach sowohl vom Spieler als auch im vollständigen Live-Zweitbrowserlauf bestätigt.
 
 Nach dem grünen Lauf wurden QA-Account, Run, Reward-Batches, Ledgerzeilen, Kommandos und private Mailboxeinträge entfernt. Die isolierte Testdatenbank wurde ebenfalls gelöscht.
 

@@ -63,6 +63,11 @@ test("one account keeps the same profile and starter across two real browser con
       const body = await response.json() as { snapshot?: { activeMonster?: { level?: number } } };
       return { status: response.status, level: body.snapshot?.activeMonster?.level };
     })).toEqual({ status: 200, level: 2 });
+    const foundationGem = firstPage.locator('[data-equip-gem="common-crimson-triangle"]');
+    await expect(foundationGem).toContainText("1×");
+    await foundationGem.click();
+    await expect(firstPage.getByText("Gem-Ausrüstung folgt in Block 6", { exact: true })).toBeVisible();
+    await expect(foundationGem).toContainText("1×");
     const firstNamespace = await firstPage.evaluate((key) => localStorage.getItem(key), ACTIVE_ACCOUNT_NAMESPACE_KEY);
     expect(firstNamespace).toMatch(/^[0-9a-f-]{36}$/u);
 
