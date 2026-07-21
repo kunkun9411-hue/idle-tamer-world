@@ -11,7 +11,8 @@
     "db:migrate": "node-pg-migrate --migrations-dir migrations up",
     "db:rollback": "node-pg-migrate --migrations-dir migrations down",
     "db:seed": "tsx src/seed.ts",
-    "db:verify-restore": "tsx src/verify-restored-database.ts"
+    "db:verify-restore": "tsx src/verify-restored-database.ts",
+    "support:account": "tsx src/support-account-cli.ts"
   },
   "dependencies": {
     "@idle-tamer/contracts": "workspace:*",

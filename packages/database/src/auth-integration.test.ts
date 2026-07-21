@@ -6,6 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PostgresAuthStore } from "./auth-store";
 import { runAuthMaintenance } from "./auth-maintenance";
 import { createDatabasePool } from "./pool";
+import { getSupportAccountReport } from "./support-account-report";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const integration = databaseUrl ? describe : describe.skip;
@@ -138,6 +139,34 @@ integration("PostgreSQL 18 auth store", () => {
     await expect(store.chooseStarter(command)).resolves.toEqual({ revision: 1, replayed: false });
     await expect(store.chooseStarter(command)).resolves.toEqual({ revision: 1, replayed: true });
     await expect(store.getBootstrap(created.userId, latestSessionId)).resolves.toMatchObject({ starterDefinitionId: "pyrook", revision: 1 });
+  });
+
+  it("returns a masked read-only support report without credential or token material", async () => {
+    const created = await createAccount("support-report");
+    if (created.status !== "created") throw new Error("account setup failed");
+    await store.verifyEmailToken(hash("verify-support-report"), new Date());
+    await store.createSession({
+      userId: created.userId,
+      tokenHash: randomBytes(32),
+      csrfHash: randomBytes(32),
+      clientInstanceId: randomUUID(),
+      deviceName: "Integration Browser",
+      userAgentSummary: "Test; Integration",
+      rememberMe: true,
+      idleExpiresAt: new Date(Date.now() + 60_000),
+      absoluteExpiresAt: new Date(Date.now() + 120_000),
+    });
+
+    const report = await getSupportAccountReport(pool, { email: "support-report@example.test" });
+
+    expect(report).toMatchObject({
+      account: { status: "active", emailMasked: "su***@example.test", emailVerified: true, roles: ["player"] },
+      profile: { displayName: "Tamer support-report", starterDefinitionId: null, revision: 0 },
+      sessions: { activeCount: 1, revokedCount: 0, active: [{ deviceName: "Integration Browser", rememberMe: true }] },
+      openTokens: { verification: 0, passwordReset: 0, deletionCancellation: 0 },
+      openExportJobs: 0,
+    });
+    expect(JSON.stringify(report)).not.toMatch(/password_hash|token_hash|csrf_hash|email_normalized/iu);
   });
 
   it("anonymizes accounts only after the deletion grace period has elapsed", async () => {

@@ -22,6 +22,7 @@
     "db:down": "docker compose -f infra/compose.yaml down",
     "db:migrate": "pnpm --filter @idle-tamer/database db:migrate",
     "db:rollback": "pnpm --filter @idle-tamer/database db:rollback",
-    "db:seed": "pnpm --filter @idle-tamer/database db:seed"
+    "db:seed": "pnpm --filter @idle-tamer/database db:seed",
+    "support:account": "pnpm --filter @idle-tamer/database support:account"
   }
 }

@@ -628,7 +628,7 @@ async function registerAccount(form: HTMLFormElement): Promise<void> {
     });
     authMode = "login";
     authMessageTone = "success";
-    authMessage = "Account vorbereitet. Öffne jetzt den Bestätigungslink aus der Alpha-Mailbox.";
+    authMessage = "Account vorbereitet. Diese geschlossene Alpha verschickt noch keine externen E-Mails – das Testteam bestätigt deinen Zugang über die private Alpha-Mailbox.";
   } catch (error) {
     authMessageTone = "error";
     authMessage = error instanceof AccountApiError ? error.message : "Die Registrierung konnte nicht abgeschlossen werden.";
@@ -859,9 +859,9 @@ function loginShell(): string {
         <div class="login-panel__mobile-brand">${officialLogoMarkup()}</div>
         <span class="eyebrow">ACCOUNT-ZUGANG</span>
         <h2 id="login-title">${authMode === "login" ? "Willkommen zurück." : "Neue Resonanz beginnen."}</h2>
-        <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Accountprofil und dein Starter werden online gesichert. Der eigentliche Run bleibt in dieser Alpha noch lokal."}</p>
+        <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Accountprofil und dein Starter werden online gesichert. Bestätigungen erfolgen in der geschlossenen Alpha noch durch das Testteam."}</p>
         <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
-        ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
+        ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" data-testid="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
         ${accountForm}
         <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>${accountApiEnabled ? "Account online · Spielstand lokal" : "Lokaler UI-Testmodus"}</strong><small>${accountApiEnabled ? "Profil, Sitzung und Starter liegen bereits sicher auf dem Server. Run, Gold und Sammlung folgen in Block 5 und 6." : "Der Entwicklungsbrowser nutzt weiterhin den schnellen lokalen Testzugang."}</small></div></div>
         <small class="login-panel__version">CLIENT V0.2 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>

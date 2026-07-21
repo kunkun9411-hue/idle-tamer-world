@@ -87,6 +87,43 @@ test("one account keeps the same profile and starter across two real browser con
     await expect(secondPage.getByTestId("login-screen")).toBeVisible();
     await firstPage.reload();
     await expect(firstPage.getByTestId("combat-scene")).toBeVisible();
+
+    const deletionStatus = await firstPage.evaluate(async (password) => {
+      const bootstrap = await fetch("/api/v1/bootstrap", { credentials: "include" });
+      const { csrfToken } = await bootstrap.json() as { csrfToken: string };
+      const response = await fetch("/api/v1/account/deletion", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json", "x-csrf-token": csrfToken },
+        body: JSON.stringify({ confirmation: "DELETE", password }),
+      });
+      return response.status;
+    }, livePassword as string);
+    expect(deletionStatus).toBe(200);
+
+    await firstPage.reload();
+    await expect(firstPage.getByTestId("login-screen")).toBeVisible();
+    await firstPage.locator("#login-identifier").fill(liveEmail as string);
+    await firstPage.locator("#login-password").fill(livePassword as string);
+    await firstPage.getByTestId("login-submit").click();
+    await expect(firstPage.getByTestId("cancel-account-deletion")).toBeVisible();
+    await firstPage.getByTestId("cancel-account-deletion").click();
+    await expect(firstPage.getByTestId("combat-scene")).toBeVisible();
+
+    const logoutStatus = await firstPage.evaluate(async () => {
+      const bootstrap = await fetch("/api/v1/bootstrap", { credentials: "include" });
+      const { csrfToken } = await bootstrap.json() as { csrfToken: string };
+      const response = await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json", "x-csrf-token": csrfToken },
+        body: "{}",
+      });
+      return response.status;
+    });
+    expect(logoutStatus).toBe(204);
+    await firstPage.reload();
+    await expect(firstPage.getByTestId("login-screen")).toBeVisible();
   } finally {
     await firstContext.close();
     await secondContext.close();
