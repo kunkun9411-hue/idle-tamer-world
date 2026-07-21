@@ -45,3 +45,8 @@ export const GUILD_EXPEDITION = {
   durationMs: 5 * 60 * 1_000,
   rewardDna: 90,
 } as const;
+
+export const guildMemberScale = (memberCount: number): number => Math.max(1, Math.sqrt(Math.max(1, memberCount) / 3));
+export const guildTaskTarget = (baseTarget: number, memberCount: number): number => Math.ceil(baseTarget * guildMemberScale(memberCount));
+export const guildTaskReward = (baseReward: number, memberCount: number): number => Math.ceil(baseReward * guildMemberScale(memberCount));
+export const guildBossMaxHp = (memberCount: number): number => Math.ceil(GUILD_BOSS.baseHp * Math.max(1, Math.sqrt(Math.max(1, memberCount))));

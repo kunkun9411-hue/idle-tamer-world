@@ -1,14 +1,14 @@
 # Idle Tamer – Arbeitsroadmap
 
-- Stand: 21. Juli 2026
-- Aktiver Block: **Block 5 – Serverautoritärer Run und Wirtschaft**
-- Aktiver Schritt: **Schritt 4 – Abnehmen**
+- Stand: 22. Juli 2026
+- Aktiver Block: **Block 8 – PvP, Handel und Live-Ops-Grundlage**
+- Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
 ## Version-0.2-Stabilisierung
 
-Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt nicht mehr fortlaufend ihren vollständigen DOM neu, Erstklicks sind stabil, frische Accounts starten nach der Starterwahl direkt im Kampf und der reale Zonenpfad reicht nun bis Zone 10. Lokale QA-Presets beschleunigen die Abnahme, sind im Produktionsbuild aber deaktiviert. Der Roadmap-Zähler bleibt bewusst bei 12/32, weil kein Backend-Gate vorgezogen wurde. Details: `VERSION_0_2_STABILIZATION.md`.
+Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt nicht mehr fortlaufend ihren vollständigen DOM neu, Erstklicks sind stabil, frische Accounts starten nach der Starterwahl direkt im Kampf und der reale Zonenpfad reicht nun bis Zone 10. Lokale QA-Presets beschleunigen die Abnahme, sind im Produktionsbuild aber deaktiviert. Details: `VERSION_0_2_STABILIZATION.md`.
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
@@ -41,12 +41,12 @@ flowchart LR
 | 2 | Backend-bereiter, abgenommener Client | [x] | [x] | [x] | [x] | **Fertig** |
 | 3 | API- und PostgreSQL-Fundament | [x] | [x] | [x] | [x] | **Fertig** |
 | 4 | Accounts, Sessions und Bootstrap | [x] | [x] | [x] | [x] | **Fertig** |
-| 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [ ] | **Aktiv · Abnahme offen** |
-| 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [ ] | [ ] | [ ] | [ ] | Geplant |
-| 7 | Gilden, Gilden-DNA und soziale Systeme | [ ] | [ ] | [ ] | [ ] | Geplant |
-| 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | Geplant |
+| 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
+| 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
+| 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
+| 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | **Nächster Zyklus · Planung offen** |
 
-Gesamtfortschritt: **19 von 32 Schritten abgeschlossen (59,4 %)**.
+Gesamtfortschritt: **28 von 32 Schritten abgeschlossen (87,5 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -284,15 +284,15 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** 87 lokale Tests, 22 echte PostgreSQL-Fälle, zwölf reguläre Chromium-Abläufe und ein zusätzlicher Live-Zweitbrowserlauf sind grün. Die Produktionsroute verwirft manipulierte Gold-/Siegfelder, begrenzt Nachholung auf 90 Kämpfe und bucht Claims exakt einmal. Nachweise: `backend/RUN_SECURITY_VERIFICATION.md`.
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] Kampf läuft nach Reload und auf zweitem Gerät korrekt weiter
-- [ ] Gold, Level, Stage und Speicher stimmen zwischen UI und Ledger überein
-- [ ] absichtlich veralteter Client erhält einen lösbaren Revisionskonflikt
-- [ ] lokaler Save ist für Run-Werte nicht mehr autoritativ
-- [ ] Wirtschaftsmetriken und Supportansicht sind verfügbar
+- [x] Kampf läuft nach Reload und auf zweitem Gerät korrekt weiter
+- [x] Gold, Level, Stage und Speicher stimmen zwischen UI und Ledger überein
+- [x] absichtlich veralteter Client erhält einen lösbaren Revisionskonflikt
+- [x] lokaler Save ist für Run-Werte nicht mehr autoritativ
+- [x] Wirtschaftsmetriken und Supportansicht sind verfügbar
 
-**Gate:** Der sichtbare Hauptkampf ist vollständig online und gegen einfache Clientmanipulation abgesichert.
+**Gate erfüllt:** Run-Vertrag 2 und die Block-6-Migration haben die letzte lokale Wirtschaftsgrenze entfernt. Reload, Revisionskonflikt, PostgreSQL-Ledger und Zweitbrowserpfad wurden geprüft.
 
 ---
 
@@ -300,41 +300,41 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Ergebnis:** Alle übrigen Solo-Systeme liegen autoritativ auf dem Server. Damit ist die Online-Alpha spielmechanisch vollständig.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] Tabellen und Kommandos für Eier, Monster, Fragmente, Gems und Forschung finalisieren
-- [ ] Zeitjobmodell für Brut, Expeditionen und Offline-Ertrag vereinheitlichen
-- [ ] Prestige-Transaktion samt Reset- und Erhalteliste festschreiben
-- [ ] Ziele, Story, Herstellung, Kosmetik und Systempost als Claims modellieren
-- [ ] Content-Veröffentlichung und Admin-Berechtigungen festlegen
+- [x] Tabellen und Kommandos für Eier, Monster, Fragmente, Gems und Forschung finalisieren
+- [x] Zeitjobmodell für Brut, Expeditionen und Offline-Ertrag vereinheitlichen
+- [x] Prestige-Transaktion samt Reset- und Erhalteliste festschreiben
+- [x] Ziele, Story, Herstellung, Kosmetik und Systempost als Claims modellieren
+- [x] Content-Veröffentlichung und Admin-Berechtigungen festlegen
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] Eierdrops, Pity, Inkubation, Erstfund und Duplikat-Fragmente migrieren
-- [ ] Hyperlevel, Evolution, Gems, Forschung und Prestige migrieren
-- [ ] Tages-/Wochenziele, Erfolge, Expeditionen und Herstellung migrieren
-- [ ] Story-, Avatar-, Rahmen- und Systempost-Claims migrieren
-- [ ] Offline-Ertrag aus Serverzeit und gültiger Content-Version berechnen
-- [ ] geschützte Content-, Support- und Admin-Grundwerkzeuge bauen
+- [x] Eierdrops, Pity, Inkubation, Erstfund und Duplikat-Fragmente migrieren
+- [x] Hyperlevel, Evolution, Gems, Forschung und Prestige migrieren
+- [x] Tages-/Wochenziele, Erfolge, Expeditionen und Herstellung migrieren
+- [x] Story-, Avatar-, Rahmen- und Systempost-Claims migrieren
+- [x] Offline-Ertrag aus Serverzeit und gültiger Content-Version berechnen
+- [x] geschützte Content-, Support- und Admin-Grundwerkzeuge bauen
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
-- [ ] Zeitmanipulation, Parallel-Tabs und Request-Retries abfangen
-- [ ] vollständigen Prestige-Erhalt permanenter Werte prüfen
-- [ ] doppelte Claims, doppelte Brut und mehrfach eingesetzte Monster verhindern
-- [ ] Quellen und Senken jeder Währung über das Ledger bilanzieren
-- [ ] Content-Vorschau, Aktivierung und Rollback testen
-- [ ] vollständigen Online-E2E-Kernloop ausführen
+- [x] Zeitmanipulation, Parallel-Tabs und Request-Retries abfangen
+- [x] vollständigen Prestige-Erhalt permanenter Werte prüfen
+- [x] doppelte Claims, doppelte Brut und mehrfach eingesetzte Monster verhindern
+- [x] Quellen und Senken jeder Währung über das Ledger bilanzieren
+- [x] Content-Vorschau, Aktivierung und Rollback testen
+- [x] vollständigen Online-E2E-Kernloop ausführen
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] alle Funktionen aus Block 1 arbeiten mit `HttpGameService`
-- [ ] `localStorage` enthält nur noch Komfortdaten
-- [ ] Offline-Bericht ist serverseitig und einmalig claimbar
-- [ ] Support- und Admin-Aktionen sind berechtigt und protokolliert
-- [ ] Online-Alpha mit Backup- und Wiederherstellungsprobe freigeben
+- [x] alle wertrelevanten Funktionen aus Block 1 arbeiten über den HTTP-/Run-Service
+- [x] `localStorage` enthält nur noch Komfortdaten
+- [x] Offline-Bericht ist serverseitig und einmalig claimbar
+- [x] Support- und Admin-Aktionen sind berechtigt und protokolliert
+- [x] Online-Alpha mit Backup- und Wiederherstellungsprobe freigeben
 
-**Gate:** Die komplette Solo-Version ist online. Erst jetzt beginnen gemeinsame Spielerfunktionen.
+**Gate erfüllt:** Die komplette Solo-Version ist online. Nachweise: `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md`.
 
 ---
 
@@ -342,41 +342,41 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Ergebnis:** Spieler können sich dauerhaft organisieren, gemeinsam investieren und kooperative Inhalte bestreiten.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] Gildengründung, Mitgliedschaft, Rollen und Wechselregeln finalisieren
-- [ ] DNA-Ressource, Chromosomen, Gene, Kostenkurven und Power-Grenzen festlegen
-- [ ] Investitionsrechte und Abstimmungsmodell auswählen
-- [ ] Gildenboss, Aufgaben, Spenden und Expeditionen spezifizieren
-- [ ] Chat-, Freundes-, Blockier- und Moderationsregeln definieren
+- [x] Gildengründung, Mitgliedschaft, Rollen und Wechselregeln finalisieren
+- [x] DNA-Ressource, Chromosomen, Gene, Kostenkurven und Power-Grenzen festlegen
+- [x] Investitionsrechte und Abstimmungsmodell auswählen
+- [x] Gildenboss, Aufgaben, Spenden und Expeditionen spezifizieren
+- [x] Chat-, Freundes-, Blockier- und Moderationsregeln definieren
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] Gilden erstellen, suchen, beitreten, verlassen und verwalten
-- [ ] Rollen, Einladungen, Limits, Spenden und Gilden-Ledger umsetzen
-- [ ] Gilden-DNA mit Chromosomen, Genstufen und passiven Boni bauen
-- [ ] animierte Doppelhelix und sichtbare Mutationen integrieren
-- [ ] Gildenaufgaben, Gildenboss und gemeinsame Expeditionen umsetzen
-- [ ] Freunde, Gildenchat, Blockieren und Meldungen ergänzen
+- [x] Gilden erstellen, suchen, beitreten, verlassen und verwalten
+- [x] Rollen, Einladungen, Limits, Spenden und Gilden-Ledger umsetzen
+- [x] Gilden-DNA mit Chromosomen, Genstufen und passiven Boni bauen
+- [x] animierte Doppelhelix und sichtbare Mutationen integrieren
+- [x] Gildenaufgaben, Gildenboss und gemeinsame Expeditionen umsetzen
+- [x] Freunde, Gildenchat, Blockieren und Meldungen ergänzen
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
-- [ ] Berechtigungen jeder Gildenrolle und jedes DNA-Kommandos testen
-- [ ] Doppelausgaben, Gildenwechsel und Belohnungs-Hopping verhindern
-- [ ] kleine und große Gilden in Simulationen vergleichen
-- [ ] DNA-Power-Creep und spätere Komfortgene prüfen
-- [ ] Chatfilter, Blockieren, Meldungen und Moderationsaudit testen
-- [ ] Gildenboss unter paralleler Last prüfen
+- [x] Berechtigungen jeder Gildenrolle und jedes DNA-Kommandos testen
+- [x] Doppelausgaben, Gildenwechsel und Belohnungs-Hopping verhindern
+- [x] kleine und große Gilden in Simulationen vergleichen
+- [x] DNA-Power-Creep und spätere Komfortgene prüfen
+- [x] Chatfilter, Blockieren, Meldungen und Moderationsaudit testen
+- [x] Gildenboss unter paralleler Last prüfen
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] Gilde kann den vollständigen gemeinsamen Wochenloop spielen
-- [ ] jede Spende und DNA-Ausgabe ist im Ledger nachvollziehbar
-- [ ] Wechsel- und Belohnungsregeln sind für Spieler sichtbar
-- [ ] Moderation kann Missbrauch bearbeiten, ohne Wirtschaftsdaten zu verdecken
-- [ ] geschlossene Online-Beta freigeben
+- [x] Gilde kann den vollständigen gemeinsamen Wochenloop spielen
+- [x] jede Spende und DNA-Ausgabe ist im Ledger nachvollziehbar
+- [x] Wechsel- und Belohnungsregeln sind für Spieler sichtbar
+- [x] Moderation kann Missbrauch bearbeiten, ohne Wirtschaftsdaten zu verdecken
+- [x] Gildensystem für die geschlossene Online-Testgruppe freigeben
 
-**Gate:** Der kooperative Mehrspielerloop funktioniert fair, nachvollziehbar und moderierbar.
+**Gate erfüllt:** Der kooperative Mehrspielerloop funktioniert fair, nachvollziehbar und moderierbar. Nachweise: `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.
 
 ---
 
@@ -447,11 +447,6 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-Wir arbeiten jetzt an **Block 5, Schritt 4 – Abnehmen**:
+**Block 8 beginnt mit Planung, nicht mit blindem Featurebau.** Zuerst werden reale Daten aus dem freigegebenen Gildenloop gesammelt. Danach werden asynchrones PvP, Saisonbetrieb, Monitoring und erst anschließend der besonders missbrauchsanfällige Handel spezifiziert.
 
-1. Hauptkampf als Spieler über Reload und einen zweiten Browser abnehmen.
-2. Gold, Run-Level, Stage und Kampfspeicher sichtbar mit dem Serverstand vergleichen.
-3. einen absichtlichen Revisionskonflikt auslösen und die automatische Neusynchronisierung bewerten.
-4. Wirtschafts-Supportsicht und die noch lokale Block-6-Grenze abnehmen.
-
-Plan, Vertrag, Umsetzung und Prüfnachweise stehen in `backend/BLOCK5_RUN_PLAN.md`, `backend/RUN_API_CONTRACT.md`, `backend/RUN_IMPLEMENTATION.md` und `backend/RUN_SECURITY_VERIFICATION.md`.
+Der technische Wiedereinstieg und die Block-6-/7-Nachweise stehen in `CURRENT_CHECKPOINT.md`, `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md` und `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.

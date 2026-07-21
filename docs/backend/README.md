@@ -17,6 +17,8 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 13. [`RUN_API_CONTRACT.md`](RUN_API_CONTRACT.md) – Welche Run-Endpunkte und Transaktionskommandos definiert Vertrag 1?
 14. [`RUN_IMPLEMENTATION.md`](RUN_IMPLEMENTATION.md) – Wie sind Run, PostgreSQL, API und Client umgesetzt und live ausgerollt?
 15. [`RUN_SECURITY_VERIFICATION.md`](RUN_SECURITY_VERIFICATION.md) – Welche Doppelclaim-, Großzahl-, Manipulations- und Live-Fälle sind bewiesen?
+16. [`BLOCK6_SOLO_ONLINE_ACCEPTANCE.md`](BLOCK6_SOLO_ONLINE_ACCEPTANCE.md) – Welche Solo-Systeme sind serverautoritativ und wie wurde ihr Erhalt geprüft?
+17. [`BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`](BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md) – Welche Gilden-, DNA-, Sozial- und Moderationsregeln sind gebaut und geprüft?
 
 ## Verbindlicher Kurzstand
 
@@ -32,9 +34,9 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 
 `docs/API_CONTRACT_V8.md` bleibt der freigegebene Clientvertrag. `docs/DATABASE_BLUEPRINT.md` beschreibt die Domänen; `SCHEMA_REVIEW.md` normiert daraus die tatsächlich zu bauenden Namen und Constraints.
 
-Block 4 verwendet daneben Auth-Vertrag 1. Block 5 ergänzt Run-Vertrag 1: Kampfzeit, Gold, normale Level, Zonen und Kampfspeicher sind online; Sammlung und Dauerfortschritt bleiben bis Block 6 lokal. Der vollständige Spielvertrag 8 wird dadurch nicht still verändert.
+Block 4 verwendet Auth-Vertrag 1. Run-Vertrag 2 umfasst inzwischen den vollständigen Solozustand aus Block 5 und 6. Sozialvertrag 1 ergänzt die serverautoritativen Gilden- und Freundesfunktionen aus Block 7. Der Spielvertrag 8 bleibt die fachliche Grundlage des sichtbaren Clients.
 
-## Gebauter Stand von Block 5 bis Schritt 3
+## Abgenommener Stand von Block 5 bis 7
 
 - [x] additive Migration `000003_authoritative_run` und Backfill vorhandener Starterprofile
 - [x] deterministische Kampfabrechnung aus Serverzeit und servereigenem Zustand
@@ -43,8 +45,11 @@ Block 4 verwendet daneben Auth-Vertrag 1. Block 5 ergänzt Run-Vertrag 1: Kampfz
 - [x] Zonenfreischaltung und Zonenwahl mit eigener Run-Revision
 - [x] Browser synchronisiert Run-Snapshots und sperrt lokale Online-Goldquellen
 - [x] PostgreSQL-, Manipulations-, Parallel- und Zweitbrowserprüfung grün
+- [x] vollständige Sammlung, Zeitjobs, Forschung und Prestige über Run-Vertrag 2
+- [x] Gilden, DNA, Aufgaben, Expedition, Wochenboss, Freunde und Chat über Sozialvertrag 1
+- [x] interne Content- und Moderationswerkzeuge mit Rollen-, CSRF- und Auditgrenze
 
-Block 5, Schritt 4 bleibt als Spielerabnahme offen. Der technische Stand ist auf der Dev-Domain aktiv; Block-6-Systeme werden noch nicht als online ausgegeben.
+Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Block 8 bleibt bis zu einer eigenen Planung gesperrt.
 
 ## Gebauter Stand von Block 4
 

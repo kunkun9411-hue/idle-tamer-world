@@ -70,7 +70,8 @@ const parseCommand = (value: unknown): GuildCommand => {
       if (!["spam", "harassment", "cheating", "name", "other"].includes(String(candidate.reason))) throw new ApiError(400, "VALIDATION", "Meldegrund ist ungültig.");
       const details = typeof candidate.details === "string" ? candidate.details.trim().normalize("NFC") : "";
       if (details.length > 500) throw new ApiError(400, "VALIDATION", "Meldedetails sind zu lang.");
-      return { type: candidate.type, playerId: uuid(candidate.playerId, "Spieler"), reason: String(candidate.reason), details };
+      const messageId = candidate.messageId === undefined ? undefined : uuid(candidate.messageId, "Chatnachricht");
+      return { type: candidate.type, playerId: uuid(candidate.playerId, "Spieler"), reason: String(candidate.reason), details, ...(messageId ? { messageId } : {}) };
     }
     default: throw new ApiError(400, "VALIDATION", "Dieses Sozialkommando ist nicht verfügbar.");
   }

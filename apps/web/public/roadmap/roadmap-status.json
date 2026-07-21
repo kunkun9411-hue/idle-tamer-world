@@ -1,7 +1,7 @@
 {
-  "updated": "21. Juli 2026 · Block 5 bis Schritt 3 fertig und live geprüft",
-  "activeBlock": 5,
-  "activeStep": 4,
+  "updated": "22. Juli 2026 · Block 6 und 7 fertig, geprüft und online",
+  "activeBlock": 8,
+  "activeStep": 1,
   "blocks": [
     {
       "id": 1,
@@ -61,16 +61,16 @@
     },
     {
       "id": 5,
-      "kicker": "Jetzt aktiv",
+      "kicker": "Wirtschaft online",
       "title": "Run & Wirtschaft",
-      "summary": "Kampfzeit, Gold, Run-Level, Zonen und Kampfspeicher werden bereits ausschließlich vom Server berechnet; die Spielerabnahme ist als nächstes offen.",
+      "summary": "Kampfzeit, Gold, Run-Level, Zonen und Kampfspeicher werden ausschließlich vom Server berechnet und sind abgenommen.",
       "visual": "economy",
       "accent": "crimson",
       "steps": [
         { "name": "Planen", "done": true, "note": "Serverzeit, Kampftick, Reward-Batches, Zahlen- und Autoritätsgrenzen festgelegt" },
         { "name": "Bauen", "done": true, "note": "Run, Kampf, Speicher, Gold, Level und Zonen auf PostgreSQL migriert" },
         { "name": "Prüfen", "done": true, "note": "Parallelzugriffe, Doppelclaims, große Zahlen und Client-Manipulation grün" },
-        { "name": "Abnehmen", "done": false, "note": "Hauptkampf vollständig online freigeben" }
+        { "name": "Abnehmen", "done": true, "note": "Hauptkampf und Ledger vollständig online freigegeben" }
       ]
     },
     {
@@ -81,10 +81,10 @@
       "visual": "collection",
       "accent": "mint",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Besitz, Zeitjobs, Prestige und Contentbetrieb finalisieren" },
-        { "name": "Bauen", "done": false, "note": "Sammlung, Entwicklung, Offline und Meta-Systeme migrieren" },
-        { "name": "Prüfen", "done": false, "note": "Zeit, Claims, Ledger und Content-Rollback testen" },
-        { "name": "Abnehmen", "done": false, "note": "Vollständige Solo-Online-Alpha freigeben" }
+        { "name": "Planen", "done": true, "note": "Besitz, Zeitjobs, Prestige und Contentbetrieb finalisiert" },
+        { "name": "Bauen", "done": true, "note": "Sammlung, Entwicklung, Offline und Meta-Systeme migriert" },
+        { "name": "Prüfen", "done": true, "note": "Zeit, Claims, Ledger und Content-Rollback auf PostgreSQL 18 grün" },
+        { "name": "Abnehmen", "done": true, "note": "Vollständige Solo-Online-Alpha freigegeben" }
       ]
     },
     {
@@ -95,15 +95,15 @@
       "visual": "guild",
       "accent": "magenta",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Rollen, DNA, Kooperation und Sozialregeln definieren" },
-        { "name": "Bauen", "done": false, "note": "Gildenkern, DNA, Bosse, Freunde und Chat umsetzen" },
-        { "name": "Prüfen", "done": false, "note": "Rechte, Wechsel, Power-Creep und Moderation testen" },
-        { "name": "Abnehmen", "done": false, "note": "Kooperative geschlossene Beta freigeben" }
+        { "name": "Planen", "done": true, "note": "Rollen, DNA, Kooperation und Sozialregeln definiert" },
+        { "name": "Bauen", "done": true, "note": "Gildenkern, DNA, Boss, Expedition, Freunde und Chat online" },
+        { "name": "Prüfen", "done": true, "note": "Rechte, Wechsel, Parallelität, Power-Creep und Moderation grün" },
+        { "name": "Abnehmen", "done": true, "note": "Kooperativen Loop für geschlossene Testgruppe freigegeben" }
       ]
     },
     {
       "id": 8,
-      "kicker": "Online-Alpha-Basis",
+      "kicker": "Nächster Planungsblock",
       "title": "PvP, Handel & Live Ops",
       "summary": "Wettbewerb, Handel, Saisons, Events und die belastbare Grundlage des ersten 0.2-Zyklus.",
       "visual": "launch",

@@ -1,5 +1,5 @@
 import { BALANCE_RELEASE_ID, CONTENT_RELEASE_ID, GUILD_CONTRACT_VERSION, type GuildCommandEnvelope, type GuildCommandResponse, type GuildRole, type GuildSnapshot } from "@idle-tamer/contracts";
-import { GUILD_BOSS, GUILD_EXPEDITION, GUILD_GENES, GUILD_TASKS, guildGeneCost } from "@idle-tamer/content";
+import { GUILD_BOSS, GUILD_EXPEDITION, GUILD_GENES, GUILD_TASKS, guildBossMaxHp, guildGeneCost, guildTaskReward, guildTaskTarget } from "@idle-tamer/content";
 import { dailyPeriodKey, weeklyPeriodKey } from "@idle-tamer/game-core";
 import type { Pool, PoolClient, QueryResultRow } from "pg";
 
@@ -82,17 +82,16 @@ const membership = async (client: PoolClient, playerId: string, lock = false): P
 const ensureGuildPeriod = async (client: PoolClient, guildId: string, now: Date): Promise<void> => {
   const memberCountResult = await client.query<{ count: string } & QueryResultRow>("SELECT count(*)::text AS count FROM guild_members WHERE guild_id = $1", [guildId]);
   const memberCount = Math.max(1, Number(memberCountResult.rows[0]?.count ?? 1));
-  const scale = Math.max(1, Math.sqrt(memberCount / 3));
   const dailyKey = dailyPeriodKey(now.getTime());
   for (const task of GUILD_TASKS) {
     await client.query(
       `INSERT INTO guild_tasks (guild_id, period_key, definition_id, progress, target, reward_dna)
        VALUES ($1, $2, $3, 0, $4, $5) ON CONFLICT DO NOTHING`,
-      [guildId, dailyKey, task.id, Math.ceil(task.target * scale), Math.ceil(task.rewardDna * scale)],
+      [guildId, dailyKey, task.id, guildTaskTarget(task.target, memberCount), guildTaskReward(task.rewardDna, memberCount)],
     );
   }
   const weekKey = weeklyPeriodKey(now.getTime());
-  const maxHp = BigInt(Math.ceil(GUILD_BOSS.baseHp * Math.max(1, Math.sqrt(memberCount))));
+  const maxHp = BigInt(guildBossMaxHp(memberCount));
   await client.query(
     `INSERT INTO guild_bosses (guild_id, period_key, definition_id, hp, max_hp)
      VALUES ($1, $2, $3, $4, $4) ON CONFLICT DO NOTHING`,
@@ -621,7 +620,11 @@ export class PostgresGuildStore implements GuildStore {
         event = { type: "player.unblocked", payload: { playerId: command.playerId } };
       } else if (command.type === "player.report") {
         if (command.playerId === player.player_id) throw new GuildDatabaseError("VALIDATION", "Du kannst dich nicht selbst melden.");
-        const report = await client.query<{ id: string } & QueryResultRow>("INSERT INTO player_reports (reporter_player_id, reported_player_id, guild_id, reason, details) VALUES ($1, $2, $3, $4, $5) RETURNING id", [player.player_id, command.playerId, current?.guild_id ?? null, command.reason, command.details.trim()]);
+        if (command.messageId) {
+          const message = await client.query("SELECT 1 FROM guild_chat_messages WHERE id = $1 AND player_id = $2 AND guild_id = $3", [command.messageId, command.playerId, current?.guild_id ?? null]);
+          if (!message.rowCount) throw new GuildDatabaseError("VALIDATION", "Diese Chatnachricht kann nicht diesem Spieler zugeordnet werden.");
+        }
+        const report = await client.query<{ id: string } & QueryResultRow>("INSERT INTO player_reports (reporter_player_id, reported_player_id, guild_id, message_id, reason, details) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", [player.player_id, command.playerId, current?.guild_id ?? null, command.messageId ?? null, command.reason, command.details.trim()]);
         event = { type: "player.reported", payload: { reportId: report.rows[0].id } };
       } else {
         throw new GuildDatabaseError("VALIDATION", "Dieses Gildenkommando ist nicht verfügbar.");

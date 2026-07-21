@@ -50,7 +50,9 @@ Das neue Backend-Fundament startet nach `pnpm db:up`, `pnpm db:migrate` und `pnp
 - bildschirmfüllende Hauptkampfszene: Zonen, Ressourcen, Beute, Duo, Monsterwechsel und Navigation liegen als HUD in der Spielwelt
 - Optik V2 mit drei eigenständigen HD-Kampfumgebungen, Bodenkontakt, Trefferfeedback und einer kampfzentrierten Spielhierarchie
 - vollständiges Silber-Violett-UI-System mit Dialogen, Toasts, Leer- und Sperrzuständen
-- Vorschau der späteren, serverseitigen Gilden-DNA
+- echte Online-Gilden mit Rollen, Einladungen, Wechselregeln, Freunden und moderierbarem Chat
+- lebende Gilden-DNA mit sechs vorsichtig begrenzten Genen, Abstimmungen und append-only Ledger
+- gemeinsame Tagesziele, tägliche Expedition und paralleler Wochenboss
 
 ## Prüfen
 
@@ -111,4 +113,4 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/MONSTER_ROSTER.md` – alle zehn Linien mit Designbriefs und PixelLab-Prompts
 - `docs/ENCOUNTER_CATALOG.md` – Gegnerverteilung, Bosse und Zonen-Rollensynergien
 
-`localStorage` ist nur für diese Grundversion autoritativ. Sobald Accounts existieren, berechnet ausschließlich der Server Gold, Drops, Brutzeiten, Fragmente, Hyperlevel, Gem-Besitz, Ausrüstung, Evolutionen und Prestige.
+Für Online-Accounts berechnet und speichert ausschließlich der Server Gold, Drops, Brutzeiten, Fragmente, Hyperlevel, Gem-Besitz, Ausrüstung, Evolutionen, Prestige und Gildenzustand. `localStorage` bleibt nur für Komfortdaten und den lokalen UI-Testmodus zuständig.

@@ -158,7 +158,7 @@ export type GuildCommand =
   | { type: "friend.remove"; playerId: string }
   | { type: "player.block"; playerId: string }
   | { type: "player.unblock"; playerId: string }
-  | { type: "player.report"; playerId: string; reason: string; details: string };
+  | { type: "player.report"; playerId: string; reason: string; details: string; messageId?: string };
 
 export interface GuildCommandEnvelope {
   commandId: string;

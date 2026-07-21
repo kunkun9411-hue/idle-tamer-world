@@ -1,162 +1,95 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Dieses Dokument ist der verbindliche Wiedereinstiegspunkt nach dem Infrastruktur-Checkpoint vom 20. Juli 2026 und der Version-0.2-Stabilisierung vom 21. Juli 2026. Account- und Sessionbasis aus Block 4 sind abgenommen; Block 5 hat den sichtbaren Run, Kampfzeit, Gold, normale Level, Zonen und Kampfspeicher inzwischen bis einschließlich Schritt 3 auf den Server migriert und live geprüft.
+Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
 
-## Wo wir stehen
+## Projektstand
 
-- Gesamtfortschritt: **19 von 32 Schritten (59,4 %)**
-- Clientversion: **0.2.0**
-- Abgeschlossen: **Block 1 bis Block 4**
-- Aktiver Arbeitsblock: **Block 5 – Serverautoritärer Run und Wirtschaft**
-- Nächster Arbeitsschritt: **Schritt 4 – Abnehmen**
-- Neu fertig: **Block 5, Schritte 1 bis 3 – Planen, Bauen und Prüfen**
-- Checkpoint-Tag: `checkpoint/domain-live-backend-foundation-2026-07-20`
+- Version: `0.2.0`, erster Acht-Block-Zyklus
+- Block 1 bis 7: technisch umgesetzt, geprüft und auf dem Entwicklungsserver
+- Block 8: bewusst noch nicht begonnen; PvP, Handel und Live-Ops bleiben ein eigener Risikoblock
+- Spiel: `https://idle-tamer-world.de/`
+- Roadmap: `https://idle-tamer-world.de/roadmap/`
+- Repository: `kunkun9411-hue/idle-tamer-world`, Branch `main`
 
-Die Roadmap steht bei 19/32. E-Mailstatus, Accountstatus, Rollen, Profil, Kosmetik, Sitzungen und Starterwahl bleiben serverautoritativ. Neu kommen Kampfzeit, Gold, Run-Level, Zone, Stage, Siege und der Kampfspeicher hinzu. Der Browser stellt Kämpfe dar und sendet nur Sammel-, Level- und Zonenabsichten; lokale Savewerte werden nicht als Runfortschritt importiert. Sammlung, Eier, Fragmente, Hyperlevel, Evolutionen, Gems, Forschung, Zeitjobs und Prestige bleiben ehrlich als lokale Block-6-Systeme getrennt.
+## Was jetzt wirklich online ist
 
-Nach dem Checkpoint ergänzt: elf Ei-Assets, fünf Material-Icons, ein Ether-Inkubator und vier animierbare Effekt-Layer. Promptset und Ablage stehen in `EGG_AND_VFX_ASSET_PACK.md`.
+- sichere Accounts, Sessions, Profil, Starter und getrennte Account-Saves
+- serverzeitbasierter Kampf, Gold, Run-Level, Zonen und Kampfspeicher
+- Monsterbesitz, Eier, Brut, Fragmente, Hyperlevel, Evolution, Gems und Forschung
+- Ziele, Story, Systempost, Herstellung, Zeit-Expeditionen und Prestige
+- Gildengründung, offene Gilden und Einladungen
+- Rollen, Leitungsübergabe, Ausschluss und 24-Stunden-Wechselsperre
+- persönliche und gemeinsame DNA mit append-only Gilden-Ledger
+- sechs niedrig begrenzte Gene als animierte Doppelhelix
+- Abstimmungen, Tagesziele, tägliche Gildenexpedition und Wochenboss
+- Freundschaften, Blockieren, Gildenchat und Meldungen
+- interne, rollenbasierte Content-, Support- und Moderationswerkzeuge mit Audit
 
-Version 0.2 beseitigt den vollständigen periodischen Neuaufbau der Kampfszene, stabilisiert Erstklicks, überspringt bei frischen Accounts den leeren Offline-Bericht und ergänzt sieben spielbare Foundation-Zonen. Der aktuelle Stand wird durch 87 lokale Unit-, Vertrags- und Browsertests, 22 isolierte PostgreSQL-18-Fälle, zwölf reguläre Chromium-Abläufe sowie einen vollständigen Zwei-Browser-Livetest mit serverseitigem Run-Level abgesichert. Die lokalen QA-Presets sind im Produktionsbuild deaktiviert.
+Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen aus PostgreSQL. Online-`localStorage` enthält keine autoritative Wirtschaft.
 
-Bei der ersten Spielerprüfung von Block 5 wurde ein Snapshotfehler gefunden: Die fünfsekündliche Run-Synchronisierung setzte lokale Gem-Slots, Hyperlevel und Evolution zurück. Die Grenze ist korrigiert. Autoritative Snapshots ändern nur Run-Daten; lokale Sammlungsdaten bleiben erhalten und werden im Online-Kampf bis Block 6 nicht angerechnet. Durch den alten Fehler verwaiste Foundation-Gems werden automatisch ins lokale Inventar zurückgelegt.
+## Prüfstand
 
-Die bestätigte Sammlungsrichtung sind 40 Rookie-Linien: die zehn vorhandenen plus die 30 momentan technisch als Normalgegner geführten Designs. Ihre Migration mit Evolutionen, Eier- und Fragmentdaten ist dokumentiert, aber noch nicht vorgetäuscht umgesetzt. Details stehen in `VERSION_0_2_STABILIZATION.md`.
+- lokaler TypeScript-/Produktionsbuild grün
+- lokale Unit-, Vertrags-, Regel- und Clienttests grün
+- vollständige Integration gegen eine eigene PostgreSQL-18-Datenbank `idle_tamer_test` grün
+- Testdatenbank-Schranke lehnt jeden Namen ohne `_test` oder `_ci` ab
+- Run-Integrationen: 8/8 grün
+- Gilden-/Admin-Integrationen: 7/7 grün
+- parallele Claims, DNA-Ausgaben und Bossangriffe geprüft
+- Content-Vorschau, Aktivierung, Rollback und Audit geprüft
+- kleine/30er-Gilden sowie maximale Genboni automatisiert gegengeprüft
 
-## Live erreichbar
+Die genauen Fälle stehen in:
 
-| Ziel | Adresse |
-| --- | --- |
-| Spiel | `https://idle-tamer-world.de/` |
-| Roadmap | `https://idle-tamer-world.de/roadmap/` |
-| WWW-Alias | `https://www.idle-tamer-world.de/` |
-| Entwicklungsserver | `185.190.143.112` / `2a02:c207:3019:8470::1` |
+- `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md`
+- `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`
 
-Am 20. Juli 2026 wurden HTTP-zu-HTTPS-Weiterleitung, Spiel, Roadmap und WWW-Alias extern geprüft. HTTPS antwortete über IPv4 und IPv6 mit Status 200. Das aktive Let's-Encrypt-Zertifikat ist für `idle-tamer-world.de` ausgestellt und war bei der Prüfung bis 18. Oktober 2026 gültig; Caddy übernimmt Ausstellung und Erneuerung.
-
-## Laufende Architektur
+## Live-Infrastruktur
 
 ```text
 Internet :80/:443
-        -> Caddy (TLS und Reverse Proxy)
-        -> /api/* an Fastify-API :3001, nur im Compose-Netz
-        -> alle übrigen Pfade an Web-Container :80, nur im Compose-Netz
-
-PostgreSQL 18
-        -> API-interne Verbindung im Compose-Netz
-        -> Host 127.0.0.1:54329
-        -> nicht öffentlich erreichbar
+  -> Caddy (TLS)
+  -> /api/* an Fastify
+  -> übrige Pfade an den Web-Container
+  -> PostgreSQL 18 nur intern/Loopback
 ```
 
-- Server: Ubuntu 26.04 LTS, Kernel `7.0.0-28-generic`
-- Checkout: `/srv/idle-tamer/app`
-- Serverumgebung: `/srv/idle-tamer/.env`, Modus `0600`
-- Docker: 29.6.2; Compose: 5.3.1
-- Container: PostgreSQL gesund, API gesund, Web gesund, Caddy aktiv
-- Firewall: standardmäßig eingehend gesperrt; nur 22/TCP, 80/TCP, 443/TCP und 443/UDP für IPv4 und IPv6 freigegeben
-- SSH: Public-Key aktiv, Passwort und Keyboard-Interactive deaktiviert, Root nur mit Schlüssel
-- Datenbank: nur an Loopback gebunden
-- Backup-Timer: aktiv, täglicher Lauf mit 14 Tagen lokaler Aufbewahrung
+- Servercheckout: `/srv/idle-tamer/app`
+- Serverumgebung: `/srv/idle-tamer/.env` mit Modus `0600`
+- Compose: `infra/compose.yaml` plus `infra/compose.server.yaml`
+- täglicher Backup-Timer mit lokaler 14-Tage-Aufbewahrung
+- SSH nur mit Schlüssel; Passwortanmeldung deaktiviert
+- öffentliche Ports: 22, 80, 443 TCP und 443 UDP
 
-## Gesicherter Stand
+## Sicher arbeiten
 
-Unmittelbar vor der Runmigration vom 21. Juli 2026 wurde der Dump `/srv/idle-tamer/backups/idle-tamer-20260721T212419Z.sql.gz` erzeugt. Danach wurden Migration `000003_authoritative_run`, **23 öffentliche Tabellen** und die vollständige Zuordnung jedes vorhandenen Starterprofils zu einem autoritativen Run geprüft. Die Auth-Outbox liegt in einem privaten Docker-Volume und ist weder über Caddy noch als statische Datei erreichbar. Alle kurzlebigen Block-5-QA-Accounts und ihre Outboxeinträge wurden nach der Prüfung entfernt.
-
-Am 20. Juli 2026 wurde vor der Pause ein neuer Sicherungssatz erstellt:
-
-| Sicherung | Serverpfad | SHA-256 |
-| --- | --- | --- |
-| PostgreSQL-Dump | `/srv/idle-tamer/backups/idle-tamer-20260720T191431Z.sql.gz` | `ced0e251bb0c4e0283ae405d541f55b3ca328c1951faa961bff6e34740664f1f` |
-| Bereinigter Betriebs-Snapshot | `/srv/idle-tamer/backups/idle-tamer-ops-20260720T191430Z.tar.gz` | `d046efc228be1ff098f1ae25aa631a36d5de8795fefb80ecf8b54cac908993e0` |
-
-Der SQL-Dump wurde nicht nur entpackt: Er wurde erfolgreich in die temporäre Datenbank `idle_tamer_checkpoint_restore` eingespielt, dort mit **8 öffentlichen Tabellen** geprüft und anschließend wieder entfernt.
-
-Eine zweite Kopie liegt lokal und wird von Git ignoriert:
-
-```text
-C:\Users\xapu\Documents\idle browsergame\.runtime\checkpoints\2026-07-20
-```
-
-Der Betriebs-Snapshot enthält ausgewählte SSH-, Firewall-/Netzwerk-, Docker- und systemd-Konfigurationen sowie einen Zustandsbericht. Er enthält weder `.env`-Werte noch SSH-Privatschlüssel oder private TLS-Schlüssel. Server und lokale Kopie allein sind für eine spätere Produktion noch keine ausreichende Backupstrategie; vor echten Spielerdaten kommen verschlüsselte, automatisierte Offsite-Backups und regelmäßige Restore-Proben hinzu.
-
-## Sicherheitsrestpunkt
-
-Ein früheres Root-Passwort wurde im Chat offengelegt. SSH-Passwortanmeldung ist auf dem Server zwar wirksam deaktiviert, das Passwort sollte dennoch im Contabo-Kundenbereich beziehungsweise über die Serverkonsole erneut auf einen einzigartigen, nirgendwo dokumentierten Wert geändert werden. Es gehört weder ins Repository noch in dieses Dokument.
-
-## Sicher wieder einsteigen
-
-### 1. Lokal prüfen
-
-```powershell
-git status --short
-git fetch --tags origin
-git switch main
-git pull --ff-only
-git describe --tags --exact-match
-pnpm check
-```
-
-Erwartet werden ein sauberer Arbeitsbaum und der Tag `checkpoint/domain-live-backend-foundation-2026-07-20` am Checkpoint. Spätere Commits dürfen natürlich hinter diesem Tag liegen.
-
-### 2. Server prüfen
-
-```powershell
-ssh -i "$HOME\.ssh\cleancore_freebsd_ed25519" root@185.190.143.112
-```
-
-```bash
-cd /srv/idle-tamer/app
-git status --short
-git pull --ff-only
-
-docker compose \
-  --env-file /srv/idle-tamer/.env \
-  -f infra/compose.yaml \
-  -f infra/compose.server.yaml \
-  ps
-
-systemctl is-active docker
-systemctl is-active idle-tamer-db-backup.timer
-ufw status
-ss -lntup
-```
-
-Vor jeder Datenbankmigration:
+Vor jeder produktiven Migration:
 
 ```bash
 systemctl start idle-tamer-db-backup.service
 journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 ```
 
-Keine Wiederaufnahme darf `git reset --hard`, `docker compose down -v`, eine öffentliche PostgreSQL-Freigabe oder Secrets im Repository verwenden.
+Integrationstests ausschließlich so ausführen:
 
-## Exakter nächster Arbeitsauftrag
+```bash
+TEST_DATABASE_URL=postgres://…/idle_tamer_test pnpm test:integration
+```
 
-Weiter geht es ausschließlich mit **Block 5, Schritt 4 – Abnehmen**:
+Nie `TEST_DATABASE_URL` auf `idle_tamer` setzen. Die Anwendung prüft den Datenbanknamen zusätzlich im Testprozess.
 
-1. echten Hauptkampf nach Reload und in einem zweiten Browser aus Spielersicht prüfen.
-2. Gold, Level, Stage und Speicher sichtbar mit den Serverantworten abgleichen.
-3. absichtlich einen Revisionskonflikt erzeugen und die Neusynchronisierung bewerten.
-4. Wirtschafts-Supportsicht sowie die sichtbare Block-6-Grenze freigeben.
+## Bekannter Sicherheitsrestpunkt
 
-Plan, Vertrag, Umsetzung und Prüfnachweise stehen in `backend/BLOCK5_RUN_PLAN.md`, `backend/RUN_API_CONTRACT.md`, `backend/RUN_IMPLEMENTATION.md` und `backend/RUN_SECURITY_VERIFICATION.md`. Schritt 4 ist eine bewusste Spielerabnahme und wurde nicht automatisch vorweggenommen.
+Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist deaktiviert; das Kennwort sollte trotzdem im Contabo-Kundenbereich einzigartig gesetzt bleiben. Geheimnisse gehören weder ins Repository noch in Dokumente oder Terminalausgaben.
 
-## Relevante Unterlagen
+## Nächster sinnvoller Arbeitsauftrag
 
-- `PRODUCT_ROADMAP.md` – Status, Reihenfolge und Gates
-- `VERSION_0_2_STABILIZATION.md` – P0-Ursache, Zonenpfad, QA und 40-Linien-Entscheidung
-- `RELEASE_LIFECYCLE.md` – Alpha, Beta, Gamma, Beta Release und Launch 1.0
-- `backend/README.md` – Backend-Einstieg und abgenommener Stand
-- `backend/DEV_SERVER.md` – Betrieb des Entwicklungsservers
-- `backend/OPERATIONS_PLAN.md` – Umgebungen, Backups und Restore
-- `backend/SCHEMA_REVIEW.md` – Tabellen- und Transaktionsregeln
-- `backend/BLOCK4_AUTH_PLAN.md` – Accountzustände, Sicherheit, Recovery, Datenschutz und Baufolge
-- `backend/AUTH_API_CONTRACT.md` – Auth-Vertrag 1, Bootstrap, DTOs und Fehler
-- `backend/AUTH_SCHEMA_PLAN.md` – Zielmigration 000002 und SQL-Abnahme
-- `backend/AUTH_ACCEPTANCE.md` – Block-4-Abnahme, Supportsicht und bekannte Alpha-Grenzen
-- `backend/BLOCK5_RUN_PLAN.md` – Serverzeit, Runregeln, Reward-Batches und Autoritätsgrenze
-- `backend/RUN_API_CONTRACT.md` – Run-Vertrag 1 und Transaktionskommandos
-- `backend/RUN_IMPLEMENTATION.md` – gebaute Run-, Datenbank- und Clientarchitektur
-- `backend/RUN_SECURITY_VERIFICATION.md` – PostgreSQL-, Manipulations- und Live-Nachweise
-- `API_CONTRACT_V8.md` – Client-/Serververtrag
-- `DATABASE_BLUEPRINT.md` – langfristiges PostgreSQL-Modell
-- `ONLINE_ARCHITECTURE.md` – Grenze zwischen Client und Server
+Block 8 nicht blind beginnen. Zuerst mit den vorhandenen Accounts gemeinsam den Gilden-Wochenloop spielen und dabei reale Messwerte sammeln:
+
+1. zwei bis fünf Tester in eine Gilde bringen;
+2. Aufgaben, Spenden, Abstimmung, Expedition und Boss über mehrere Tage beobachten;
+3. Chat-/Meldeweg einmal mit Moderatorrolle üben;
+4. DNA-Tempo und kleine gegen größere Gilden anhand echter Daten bewerten;
+5. danach Block 8 planen: zuerst asynchrones PvP und Betriebsmetriken, Handel erst nach eigener Missbrauchsanalyse.
+
+Block 8 bleibt damit ein bewusstes neues Gate und wird nicht als Nebenprodukt von Block 7 vorgetäuscht.
