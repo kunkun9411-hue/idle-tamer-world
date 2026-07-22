@@ -78,4 +78,21 @@ test("generated login and offline chrome stay inside the configured viewport", a
   expect(offlineLayout.right).toBeLessThanOrEqual(offlineLayout.viewportWidth + 1);
   expect(offlineLayout.top).toBeGreaterThanOrEqual(-1);
   expect(offlineLayout.bottom).toBeLessThanOrEqual(offlineLayout.viewportHeight + 1);
+
+  const actionLayout = await page.locator(".offline-report__actions").evaluate((element) => {
+    const buttons = [...element.querySelectorAll("button")];
+    return buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+      const content = document.createRange();
+      content.selectNodeContents(button);
+      const contentRect = content.getBoundingClientRect();
+      return { width: rect.width, left: rect.left, right: rect.right, contentLeft: contentRect.left, contentRight: contentRect.right };
+    });
+  });
+  expect(actionLayout).toHaveLength(2);
+  for (const button of actionLayout) {
+    expect(button.width).toBeLessThanOrEqual(211);
+    expect(button.contentLeft).toBeGreaterThanOrEqual(button.left);
+    expect(button.contentRight).toBeLessThanOrEqual(button.right);
+  }
 });

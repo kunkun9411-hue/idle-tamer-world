@@ -1620,7 +1620,7 @@ function offlineReport(): string {
     </div>
     <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${activeCacheCapacity()}</span></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
-    <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
+    <div class="offline-report__actions"><button class="secondary-button offline-report__continue" id="offline-continue"><small>OHNE EINSAMMELN</small><strong>ZUM KAMPF</strong></button><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
   </section></div>`;
 }
 
