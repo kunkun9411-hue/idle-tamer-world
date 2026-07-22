@@ -127,3 +127,13 @@ Die drei verbindlichen Größen bleiben **1280×720**, **1024×768** und **390×
 - [x] Dateigrenzen und Migrationsreihenfolge für B.01.2 festgelegt
 
 **Gate erfüllt:** Die sichtbare Migration kann beginnen, ohne den Stil pro Szene neu zu erfinden oder Texte in generierte Bilder einzubrennen.
+
+## B.01.2 Zwischenstand
+
+- vier textfreie Silver-Ether-Chrome-Assets als optimierte Runtime-WebPs integriert;
+- Loginpanel und Offline-Bericht verwenden generierte Panel-, Aktions- und Trennerebenen;
+- sämtliche Beschriftungen, Zahlen und Backendzustände bleiben echtes HTML;
+- informationstragende Mikroschrift der beiden Referenzflächen auf mindestens 12 px angehoben;
+- Login und Offline-Bericht auf 1280×720, Tablet und 390×844 innerhalb des Viewports automatisiert geprüft.
+
+Das Bauen-Gate bleibt offen, bis Tokenebene und restliche Kernprimitive ebenfalls migriert und gemeinsam geprüft sind.

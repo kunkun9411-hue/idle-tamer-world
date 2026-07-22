@@ -158,4 +158,4 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 ## Direkt als Nächstes
 
-Aktiv ist **B.01, Schritt 2 – Bauen**. Der erste ImageGen-Runtime-Satz liegt unter `assets/ui/chrome`; als Nächstes werden diese visuellen Ebenen zusammen mit der zentralen Tokenebene in die ersten echten Kernkomponenten migriert. Login und Offline-Bericht werden die ersten Referenzflächen; Kampfnavigation und Kampfbühne bleiben anschließend B.02/B.03.
+Aktiv ist **B.01, Schritt 2 – Bauen**. Der erste ImageGen-Runtime-Satz liegt unter `assets/ui/chrome` und ist bereits in Login und Offline-Bericht eingebaut. Als Nächstes folgen zentrale Tokens und die übrigen Kernprimitive; Kampfnavigation und Kampfbühne bleiben anschließend B.02/B.03.

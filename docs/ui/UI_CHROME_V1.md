@@ -74,4 +74,4 @@ python scripts\build_asset_manifest.py
 python scripts\validate_assets.py
 ```
 
-Der UI-Katalog unter `/dev/ui-catalog.html` zeigt alle vier Dateien mit darüberliegendem echtem Text. Ein Asset mit Pseudoschrift, unruhigem Key-Rand oder nichttransparenten Ecken wird nicht freigegeben.
+Der UI-Katalog unter `/dev/ui-catalog.html` zeigt alle vier Dateien mit darüberliegendem echtem Text. Login und Offline-Bericht verwenden Panelrahmen, Aktionsrahmen und Ether-Trenner bereits in echten Spielerwegen. Ein Asset mit Pseudoschrift, unruhigem Key-Rand oder nichttransparenten Ecken wird nicht freigegeben.

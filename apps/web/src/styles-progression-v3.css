@@ -452,7 +452,7 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
-  margin: 18px 0 12px;
+  margin: 10px 0 8px;
   padding: 4px;
   border: 1px solid rgba(226, 222, 239, .12);
   border-radius: 12px;
@@ -465,7 +465,7 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
   border-radius: 8px;
   color: rgba(226, 222, 239, .58);
   background: transparent;
-  font: 700 10px/1 inherit;
+  font: 700 12px/1 inherit;
   letter-spacing: .13em;
   cursor: pointer;
 }
@@ -500,7 +500,7 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
   align-items: flex-start;
   gap: 9px;
   color: rgba(226, 222, 239, .68);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 

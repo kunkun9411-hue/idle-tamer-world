@@ -12,6 +12,9 @@ test("fresh account reaches starter choice and the focused auto battle", async (
   await page.goto("/");
   await expect(page.getByTestId("login-screen")).toBeVisible();
   await expect(page.locator('img[alt="Idle Tamer World"]').first()).toBeVisible();
+  await expect(page.locator(".login-panel__generated-frame")).toHaveAttribute("src", "/assets/ui/chrome/panel-frame-v1.webp");
+  await expect(page.locator(".login-panel__divider")).toHaveAttribute("src", "/assets/ui/chrome/ether-divider-v1.webp");
+  await expect(page.getByTestId("login-submit")).toHaveCSS("background-image", /primary-button-frame-v1\.webp/);
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
@@ -116,6 +119,9 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("offline-report")).toBeVisible();
+  await expect(page.locator(".offline-report__generated-frame")).toHaveAttribute("src", "/assets/ui/chrome/panel-frame-v1.webp");
+  await expect(page.locator(".offline-report__divider")).toHaveAttribute("src", "/assets/ui/chrome/ether-divider-v1.webp");
+  await expect(page.getByTestId("offline-collect")).toHaveCSS("background-image", /primary-button-frame-v1\.webp/);
   await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await skipTutorialIfVisible(page);

@@ -1084,14 +1084,14 @@ function loginShell(): string {
           <label for="login-identifier"><span>E-MAIL</span><input id="login-identifier" name="identifier" type="email" autocomplete="username" value="${accountApiEnabled ? "" : "demo@idletamer.local"}" required></label>
           <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="${accountApiEnabled ? "" : "demo"}" required></label>
           <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled>Passwort vergessen</button></div>
-          <button class="primary-button primary-button--large login-submit" type="submit" data-testid="login-submit" ${authBusy || clientUiState === "loading" ? "disabled" : ""}>${authBusy ? "VERBINDUNG WIRD GEPRÜFT …" : `EINLOGGEN ${icon("arrow")}`}</button>
+          <button class="primary-button primary-button--large silver-ether-action login-submit" type="submit" data-testid="login-submit" ${authBusy || clientUiState === "loading" ? "disabled" : ""}>${authBusy ? "VERBINDUNG WIRD GEPRÜFT …" : `EINLOGGEN ${icon("arrow")}`}</button>
         </form>` : `
         <form id="register-form" class="login-form">
           <label for="register-email"><span>E-MAIL</span><input id="register-email" name="email" type="email" autocomplete="email" required></label>
           <label for="register-name"><span>TAMER-NAME</span><input id="register-name" name="displayName" type="text" autocomplete="nickname" minlength="3" maxlength="20" required></label>
           <label for="register-password"><span>PASSPHRASE · MINDESTENS 15 ZEICHEN</span><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required></label>
           <label class="login-policy"><input name="policy" type="checkbox" required><span>Ich akzeptiere die Entwicklungs-Nutzungsbedingungen und Datenschutzhinweise.</span></label>
-          <button class="primary-button primary-button--large login-submit" type="submit" ${authBusy ? "disabled" : ""}>${authBusy ? "ACCOUNT WIRD VORBEREITET …" : `ACCOUNT ERSTELLEN ${icon("arrow")}`}</button>
+          <button class="primary-button primary-button--large silver-ether-action login-submit" type="submit" ${authBusy ? "disabled" : ""}>${authBusy ? "ACCOUNT WIRD VORBEREITET …" : `ACCOUNT ERSTELLEN ${icon("arrow")}`}</button>
         </form>`;
   return `
     <main class="login-screen" data-testid="login-screen">
@@ -1107,10 +1107,12 @@ function loginShell(): string {
         <div class="login-world__status"><span><i></i> AUTOMATISCHE EXPEDITION</span><small>Violetter Saum · Signal stabil</small></div>
       </section>
       <section class="login-panel" aria-labelledby="login-title">
+        <img class="silver-ether-panel-frame login-panel__generated-frame" src="/assets/ui/chrome/panel-frame-v1.webp" alt="" aria-hidden="true">
         <div class="login-panel__mobile-brand">${officialLogoMarkup()}</div>
         <span class="eyebrow">ACCOUNT-ZUGANG</span>
         <h2 id="login-title">${authMode === "login" ? "Willkommen zurück." : "Neue Resonanz beginnen."}</h2>
         <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Accountprofil und dein Starter werden online gesichert. Im internen Entwicklungsbetrieb bestätigt das Testteam neue Zugänge."}</p>
+        <img class="silver-ether-divider login-panel__divider" src="/assets/ui/chrome/ether-divider-v1.webp" alt="" aria-hidden="true">
         <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
         ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" data-testid="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
         ${accountForm}
@@ -1604,10 +1606,12 @@ function offlineReport(): string {
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const hasPendingRewards = game.pendingGold > 0 || game.pendingEggs.length > 0 || pendingMaterialCount > 0 || game.pendingGems.length > 0;
   return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
+    <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/panel-frame-v1.webp" alt="" aria-hidden="true">
     <div class="offline-report__signal"><span>${icon("spark")}</span><i></i></div>
     <span class="eyebrow">EXPEDITION FORTGESETZT</span>
     <h2 id="offline-report-title">Willkommen zurück.</h2>
     <p>Du warst <strong>${formatOfflineDuration(loaded.offlineSeconds)}</strong> offline. Dein Team hat in dieser Zeit automatisch weitergekämpft.</p>
+    <img class="silver-ether-divider offline-report__divider" src="/assets/ui/chrome/ether-divider-v1.webp" alt="" aria-hidden="true">
     <div class="offline-report__rewards">
       <span><small>ZEIT OFFLINE</small><b>${formatOfflineDuration(loaded.offlineSeconds)}</b></span>
       <span>${resourceIcon("gold")}<small>GESAMMELTES GOLD</small><b>+${formatNumber(loaded.offlineGold)}</b></span>
@@ -1615,8 +1619,8 @@ function offlineReport(): string {
       <span>${icon("shield")}<small>SPEICHERPLÄTZE</small><b>+${loaded.offlineSlots}</b></span>
     </div>
     <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${activeCacheCapacity()}</span></div>
-    <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
+    <div class="offline-report__actions"><button class="secondary-button" id="offline-continue">OHNE EINSAMMELN ZUM KAMPF</button><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
   </section></div>`;
 }
 

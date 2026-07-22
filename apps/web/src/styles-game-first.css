@@ -81,7 +81,7 @@
   width: min(470px, calc(100% - 64px));
   align-self: center;
   justify-self: center;
-  padding: clamp(32px, 4vw, 56px);
+  padding: clamp(26px, 3vw, 38px);
   border: 1px solid rgba(236, 232, 246, .12);
   border-radius: 22px;
   background: linear-gradient(150deg, rgba(27, 27, 38, .88), rgba(11, 11, 17, .96));
@@ -89,14 +89,61 @@
   backdrop-filter: blur(28px) saturate(1.08);
 }
 
+.silver-ether-panel-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  object-fit: fill;
+  opacity: .58;
+  filter: drop-shadow(0 0 22px rgba(125, 83, 227, .16));
+}
+
+.silver-ether-divider {
+  display: block;
+  width: 100%;
+  height: 34px;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: .72;
+}
+
+.login-panel > :not(.login-panel__generated-frame),
+.offline-report > :not(.offline-report__generated-frame) { position: relative; z-index: 1; }
+.login-panel__divider { height: 26px; margin: 8px 0 -5px; }
+.offline-report__divider { margin: 14px auto -5px; }
+
+.silver-ether-action {
+  min-height: 58px;
+  padding-inline: 34px;
+  border-color: transparent;
+  color: #f6f3fb;
+  background: url("/assets/ui/chrome/primary-button-frame-v1.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 14px 34px rgba(66, 40, 122, .25);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .9);
+  font-size: 12px;
+}
+
+.silver-ether-action:hover:not(:disabled) {
+  color: #fff;
+  background: url("/assets/ui/chrome/primary-button-frame-v1.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 17px 38px rgba(111, 70, 210, .34), 0 0 24px rgba(168, 139, 255, .13);
+}
+
+.silver-ether-action:disabled { filter: grayscale(.58) saturate(.55); }
+
 .login-panel__mobile-brand { display: none; }
 .login-panel__mobile-brand .official-logo { width: 126px; }
-.login-panel h2 { margin: 13px 0 9px; font: 600 clamp(31px, 3vw, 42px)/1.05 var(--display); letter-spacing: -1.4px; }
+.login-panel h2 { margin: 9px 0 7px; font: 600 clamp(31px, 3vw, 42px)/1.05 var(--display); letter-spacing: -1.4px; }
 .login-panel > p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
-.login-form { display: grid; gap: 17px; margin-top: 29px; }
+.login-form { display: grid; gap: 13px; margin-top: 20px; }
 .login-form > label > span { display: block; margin-bottom: 8px; color: rgba(236, 232, 244, .62); font-size: 8px; font-weight: 750; letter-spacing: 1.35px; }
+.login-form input[type="email"],
 .login-form input[type="text"],
 .login-form input[type="password"] { width: 100%; height: 51px; padding: 0 15px; border: 1px solid rgba(233, 228, 243, .14); border-radius: 10px; outline: 0; color: #f5f2fa; background: rgba(255, 255, 255, .035); font: 500 13px var(--display); transition: border-color .2s, background .2s, box-shadow .2s; }
+.login-form input[type="email"]:focus,
 .login-form input[type="text"]:focus,
 .login-form input[type="password"]:focus { border-color: rgba(192, 171, 255, .55); background: rgba(169, 139, 255, .055); box-shadow: 0 0 0 3px rgba(169, 139, 255, .08); }
 .login-form__meta { display: flex; align-items: center; justify-content: space-between; margin-top: -4px; }
@@ -104,14 +151,30 @@
 .login-form__meta input { accent-color: #a88bff; }
 .login-form__meta button { border: 0; color: var(--dim); background: transparent; font-size: 9px; }
 .login-submit { width: 100%; margin-top: 3px; }
-.login-panel__backend { display: flex; gap: 11px; margin-top: 24px; padding: 13px; border: 1px solid rgba(117, 223, 186, .14); border-radius: 10px; background: rgba(117, 223, 186, .035); }
+.login-panel__backend { display: flex; gap: 11px; margin-top: 14px; padding: 10px; border: 1px solid rgba(117, 223, 186, .14); border-radius: 10px; background: rgba(117, 223, 186, .035); }
 .login-panel__backend > span { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; color: var(--success); background: rgba(117, 223, 186, .08); }
 .login-panel__backend svg { width: 15px; height: 15px; }
 .login-panel__backend strong,
 .login-panel__backend small { display: block; }
 .login-panel__backend strong { color: #dcebe5; font-size: 9px; }
 .login-panel__backend small { margin-top: 3px; color: rgba(218, 232, 226, .5); font-size: 8px; line-height: 1.45; }
-.login-panel__version { display: block; margin-top: 18px; color: #4f4d59; text-align: center; font-size: 7px; font-weight: 700; letter-spacing: 1.2px; }
+.login-panel__version { position: absolute !important; left: 70px; right: 70px; bottom: 8px; display: block; margin: 0; padding: 3px 6px; border-radius: 6px; color: #8e8999; text-align: center; background: rgba(8, 8, 13, .84); font-size: 7px; font-weight: 700; letter-spacing: .08em; }
+
+/* B.01 readable entry roles: no information-bearing microtype. */
+.login-world__copy > span,
+.login-world__monster small,
+.login-world__monster span,
+.login-world__status span,
+.login-world__status small,
+.login-form > label > span,
+.login-form__meta label,
+.login-form__meta button,
+.login-panel__backend strong,
+.login-panel__backend small,
+.login-panel__version { font-size: 12px; }
+.login-form input[type="email"],
+.login-form input[type="text"],
+.login-form input[type="password"] { font-size: 14px; }
 
 /* Full-screen combat shell */
 body.is-combat-active,
@@ -441,8 +504,15 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
 .offline-report__cache small { color: #a991eb; font-size: 6px; font-weight: 750; letter-spacing: 1px; }
 .offline-report__cache strong { margin-top: 4px; color: #ddd7e7; font-size: 9px; font-weight: 600; }
 .offline-report__cache > span { min-width: 54px; padding: 7px 9px; border-radius: 7px; color: #cbbafb; background: rgba(168, 139, 255, .09); text-align: center; font-size: 9px; font-weight: 750; }
-.offline-report__actions { display: grid; grid-template-columns: 1fr 1.18fr; gap: 8px; margin-top: 16px; }
-.offline-report__note { display: block; margin-top: 13px; color: #55525e; font-size: 7px; }
+.offline-report__actions { display: grid; grid-template-columns: 1fr 1.18fr; gap: 8px; margin-top: 9px; }
+.offline-report__note { display: block; margin-top: 10px; padding: 6px 9px; border-radius: 7px; color: #aaa5b3; background: rgba(5, 5, 9, .58); font-size: 7px; line-height: 1.4; }
+
+.offline-report__rewards small,
+.offline-report__cache small,
+.offline-report__cache strong,
+.offline-report__cache > span,
+.offline-report__note { font-size: 12px; }
+.offline-report__rewards b { font-size: 16px; }
 
 @keyframes offlineFade { from { opacity: 0; } }
 @keyframes offlineLift { from { opacity: 0; transform: translateY(18px) scale(.98); } }

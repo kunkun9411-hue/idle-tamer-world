@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+import { createInitialState, createMonster } from "../src/game/rules";
+import { STORAGE_KEY } from "../src/game/storage";
+
 test("starter flow and combat HUD fit the configured viewport", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("login-submit").click();
@@ -42,4 +45,37 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
   }));
   expect(prestigeLayout.documentWidth).toBeLessThanOrEqual(prestigeLayout.innerWidth + 1);
   expect(prestigeLayout.bodyWidth).toBeLessThanOrEqual(prestigeLayout.innerWidth + 1);
+});
+
+test("generated login and offline chrome stay inside the configured viewport", async ({ page }) => {
+  const state = createInitialState(() => Date.now() - 10 * 60_000);
+  const starter = createMonster("pyrook", 5, 0, 0, "rookie", () => "responsive-pyrook");
+  state.roster = [starter];
+  state.activeMonsterUid = starter.uid;
+  state.pendingGold = 120;
+  state.cacheSlotsUsed = 1;
+  state.tutorialStep = 4;
+
+  await page.addInitScript(({ key, save }) => localStorage.setItem(key, JSON.stringify(save)), { key: STORAGE_KEY, save: state });
+  await page.goto("/");
+
+  const loginLayout = await page.locator(".login-panel").evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left, viewportWidth: innerWidth, viewportHeight: innerHeight };
+  });
+  expect(loginLayout.left).toBeGreaterThanOrEqual(-1);
+  expect(loginLayout.right).toBeLessThanOrEqual(loginLayout.viewportWidth + 1);
+  expect(loginLayout.top).toBeGreaterThanOrEqual(-1);
+  expect(loginLayout.bottom).toBeLessThanOrEqual(loginLayout.viewportHeight + 1);
+
+  await page.getByTestId("login-submit").click();
+  await expect(page.getByTestId("offline-report")).toBeVisible();
+  const offlineLayout = await page.getByTestId("offline-report").evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left, viewportWidth: innerWidth, viewportHeight: innerHeight };
+  });
+  expect(offlineLayout.left).toBeGreaterThanOrEqual(-1);
+  expect(offlineLayout.right).toBeLessThanOrEqual(offlineLayout.viewportWidth + 1);
+  expect(offlineLayout.top).toBeGreaterThanOrEqual(-1);
+  expect(offlineLayout.bottom).toBeLessThanOrEqual(offlineLayout.viewportHeight + 1);
 });
