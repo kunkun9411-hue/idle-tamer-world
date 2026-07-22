@@ -15,6 +15,8 @@ Für die feste Smartphone-Vorschau: `http://127.0.0.1:5173/dev/mobile-preview.ht
 
 Für die automatisch aus den Katalogen erzeugte Galerie aller Kreaturen und drei Zonenwelten: `http://127.0.0.1:5173/dev/asset-gallery.html`.
 
+Für den codebasierten UI-, Zustands- und Viewportkatalog: `http://127.0.0.1:5173/dev/ui-catalog.html`.
+
 Für die interaktive Projekt-Homepage mit acht Roadmap-Blöcken und automatischer Prozentanzeige: `http://127.0.0.1:5173/roadmap/`.
 
 Das neue Backend-Fundament startet nach `pnpm db:up`, `pnpm db:migrate` und `pnpm db:seed` gemeinsam mit dem Client über `pnpm dev`. Die API läuft dann auf `http://127.0.0.1:3001`; `/health/live`, `/health/ready` und `/api/v1/meta` trennen Prozesszustand, Datenbankbereitschaft und öffentliche Versionsdaten sauber voneinander.
@@ -60,6 +62,8 @@ Das neue Backend-Fundament startet nach `pnpm db:up`, `pnpm db:migrate` und `pnp
 pnpm check          # Unit-/Contenttests, Build, Roadmap und Asset-Vertrag
 pnpm test:e2e       # Desktop, Tablet, 390x844, Tastatur und Mehrtab-Fälle
 pnpm check:all      # komplette lokale Qualitätsschranke
+pnpm ui:audit       # bekannte und neue Layoutschulden auf Desktop, Tablet und Mobile
+pnpm ui:capture     # 42 Vergleichsbilder in drei festen Viewports erzeugen
 ```
 
 Die Regel-, Content- und Vertragstests decken Starterwahl, Ei-Pity, Erst- und Duplikatschlupf, Fragmente, Evolution, Zonenbosse, Inventartransfer, Save-Migration, Offline-Grenzen und Reload-Schutz, Zielperioden, Einmal-Claims, Zeit-Expeditionen, Herstellung, Einstellungen, Service-Port und den Prestige-Erhalt permanenter Werte ab. Die Playwright-Suite prüft zusätzlich den echten sichtbaren Kernpfad von Login und Offline-Claim bis Brut, Fragmenten, Hyperlevel, Evolution, Gem und Prestige – inklusive Desktop, Tablet, 390×844, Tastatur, Kontrast, reduzierter Bewegung und paralleler Tabs.
@@ -107,6 +111,8 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/ASSET_PROMPTS.md` – reproduzierbare Designprompts der ersten Monster
 - `docs/UI_SYSTEM.md` – verbindliche Farben, Komponenten und Responsive-Regeln
 - `docs/ui/SCENE_INVENTORY.md` – vollständige Szenen-, Zustands- und UX-Schuldenliste für Roadmap B
+- `docs/ui/HANDOFF.md` – schneller UI-Einstieg mit Katalog, Audit und Screenshotlauf
+- `docs/ui/AVATAR_FRAME_CONTRACT.md` – getrennter Daten- und Assetvertrag für runde Avatare und Rahmen
 - `docs/PRESTIGE_SCENE_V2.md` – Aufbau, Animation, Assets und reproduzierbare Imagegen-Prompts der Prestige-Szene
 - `docs/CONTENT_PIPELINE.md` – Dev-Konzept für Zonenpflege, Validierung und Live-Veröffentlichung
 - `docs/CUSTOMIZATION_GUIDE.md` – schnelle Übersicht: welche Werte du morgen wo änderst

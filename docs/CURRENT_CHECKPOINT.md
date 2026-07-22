@@ -6,7 +6,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 - Version: `0.2.0`, **Roadmap A – Systemfundament**
 - Block 1 bis 7: technisch umgesetzt, geprüft und auf dem Entwicklungsserver
-- Block 8: Planung abgenommen; der Bau des Übergabepakets von Roadmap A zu Roadmap B ist aktiv
+- Block 8: Planung und Übergabepaket abgenommen; die Gesamtprüfung von Roadmap A ist aktiv
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -44,6 +44,9 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - temporäre QA-Daten vollständig bereinigt; die zwei vorher vorhandenen Accounts blieben erhalten
 - A.08.1: 16 sichtbare Flächen samt Lade-, Leer-, Fehler-, Sperr- und Erfolgszuständen inventarisiert
 - reproduzierbarer UX-Befund auf 1280×720 und 390×844 dokumentiert; mobile Navigationskollision als P0 für B.02/B.03 markiert
+- A.08.2: codebasierter UI-Katalog mit 16 Flächen, zehn Zuständen, drei Viewports, Assetverträgen und bekannter Schulden-Allowlist gebaut
+- Layout-Audit in Desktop, Tablet und Mobile grün; Screenshotlauf erzeugt 42 Vergleichsbilder ohne Repository-Ballast
+- getrennten 512×512-Runtimevertrag für runde Avatare und transparente Rahmen festgezogen
 
 Die genauen Fälle stehen in:
 
@@ -90,12 +93,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Block A.08.1 ist in `ui/SCENE_INVENTORY.md` abgenommen. Jetzt folgt A.08.2:
+Planung und Bau von A.08 sind abgenommen. Jetzt folgt A.08.3:
 
-1. zentralen UI-Bauteil- und Zustandskatalog anlegen;
-2. reproduzierbare Screenshot- und Viewport-Abnahmewerkzeuge bauen;
-3. Profilbild-, Avatar- und Rahmenkonzept als Daten- und Designvertrag festziehen;
-4. Design-Tokens, Assetquellen und PixelLab-Übergaben zentral erfassbar machen;
-5. das Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen.
+1. vollständigen lokalen Gesamtcheck und alle PostgreSQL-18-Integrationen ausführen;
+2. Dev-Domain, Accounts, Run, Sammlung und Gilden erneut rauchtesten;
+3. Backup, Restore-Anleitung, Migrationen und Serverneustart prüfen;
+4. Roadmap-, Vertrags- und Versionsangaben auf Widersprüche prüfen;
+5. Repository und Servercheckout auf denselben sauberen Commit bringen.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der vorbereitete Arbeitsrahmen für die direkt folgende UI-Phase liegt in `ROADMAP_B_DESIGN_UI.md`.

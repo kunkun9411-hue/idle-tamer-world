@@ -9,6 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "ui:audit": "playwright test e2e/ui-layout-audit.spec.ts",
+    "ui:capture": "playwright test --config=playwright.capture.config.ts",
     "check:content": "vitest run src/game/content-contract.test.ts"
   },
   "dependencies": {

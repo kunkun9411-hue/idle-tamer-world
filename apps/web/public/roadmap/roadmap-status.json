@@ -1,7 +1,7 @@
 {
-  "updated": "22. Juli 2026 · A.08 Planung abgenommen · Roadmap A bei 90,6 %",
+  "updated": "22. Juli 2026 · A.08 Übergabepaket fertig · Roadmap A bei 93,8 %",
   "activeBlock": 8,
-  "activeStep": 2,
+  "activeStep": 3,
   "blocks": [
     {
       "id": 1,
@@ -110,7 +110,7 @@
       "accent": "gold",
       "steps": [
         { "name": "Planen", "done": true, "note": "16 UI-Flächen, Zustände, Verträge und B-Prioritäten abgenommen" },
-        { "name": "Bauen", "done": false, "note": "Designinventar, UI-Bauteilkatalog und technische Übergabewerkzeuge anlegen" },
+        { "name": "Bauen", "done": true, "note": "UI-Katalog, Layout-Audit, 42 Screenshots und Profilverträge stehen" },
         { "name": "Prüfen", "done": false, "note": "Gesamtregression, Dokumentkonsistenz, Backup und Dev-Betrieb prüfen" },
         { "name": "Abnehmen", "done": false, "note": "Roadmap A einfrieren und Roadmap B offiziell starten" }
       ]

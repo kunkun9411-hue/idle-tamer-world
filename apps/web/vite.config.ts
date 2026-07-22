@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         game: `${projectRoot}index.html`,
         roadmap: `${projectRoot}roadmap/index.html`,
+        uiCatalog: `${projectRoot}dev/ui-catalog.html`,
       },
     },
   },

@@ -1,0 +1,20 @@
+import { expect, test } from "@playwright/test";
+
+test("UI catalog exposes its contracts without page errors or horizontal overflow", async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+
+  await page.goto("/dev/ui-catalog.html");
+  await expect(page.getByRole("heading", { name: "Eine Oberfläche. Messbar statt geraten." })).toBeVisible();
+  await expect(page.locator(".surface-grid article")).toHaveCount(16);
+  await expect(page.locator(".state-grid article")).toHaveCount(10);
+  await expect(page.locator(".debt-grid article")).toHaveCount(2);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+
+  await page.locator('[data-viewport="mobile"]').click();
+  await expect.poll(() => page.locator(".viewport-frame").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { width: style.width, height: style.height };
+  })).toEqual({ width: "390px", height: "844px" });
+  expect(pageErrors).toEqual([]);
+});

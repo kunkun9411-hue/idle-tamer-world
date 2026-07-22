@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: /ui-capture\.spec\.ts/,
   fullyParallel: false,
   timeout: 45_000,
   workers: process.env.CI ? 1 : undefined,
@@ -15,12 +16,12 @@ export default defineConfig({
     { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] } },
     {
       name: "chromium-tablet",
-      testMatch: /responsive\.spec\.ts/,
+      testMatch: /(responsive|ui-layout-audit)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 820, height: 1_180 }, isMobile: true, hasTouch: true },
     },
     {
       name: "chromium-mobile-390",
-      testMatch: /responsive\.spec\.ts/,
+      testMatch: /(responsive|ui-layout-audit)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
     },
   ],

@@ -2,7 +2,7 @@
 
 - Stand: 22. Juli 2026
 - Aktiver Block: **Block 8 – Fundament einfrieren und an Roadmap B übergeben**
-- Aktiver Schritt: **Schritt 2 – Bauen**
+- Aktiver Schritt: **Schritt 3 – Prüfen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -44,9 +44,9 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
-| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [ ] | [ ] | [ ] | **Aktiv · Bauen** |
+| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [ ] | [ ] | **Aktiv · Prüfen** |
 
-Gesamtfortschritt: **29 von 32 Schritten abgeschlossen (90,6 %)**.
+Gesamtfortschritt: **30 von 32 Schritten abgeschlossen (93,8 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -374,7 +374,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] jede Spende und DNA-Ausgabe ist im Ledger nachvollziehbar
 - [x] Wechsel- und Belohnungsregeln sind für Spieler sichtbar
 - [x] Moderation kann Missbrauch bearbeiten, ohne Wirtschaftsdaten zu verdecken
-- [x] Gildensystem für die geschlossene Online-Testgruppe freigeben
+- [x] Gildensystem für den internen Online-Entwicklungsbetrieb freigeben
 
 **Gate erfüllt:** Der kooperative Mehrspielerloop funktioniert fair, nachvollziehbar und moderierbar. Nachweise: `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.
 
@@ -393,14 +393,14 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Roadmap-B-Arbeitsblöcke für Interface, Lesbarkeit, Profile und Responsive Design formulieren
 - [x] PvP, Handel, Events und weitere große Features eindeutig Roadmap C zuordnen
 
-### Schritt 2 – Bauen ⬜
+### Schritt 2 – Bauen ✅
 
-- [ ] zentralen UI-Bauteil- und Zustandskatalog anlegen
-- [ ] Screenshot- und Viewport-Abnahmewerkzeuge für Roadmap B vorbereiten
-- [ ] Profilbild-, Avatar- und Rahmendatenvertrag dokumentieren
-- [ ] Design-Tokens, Assetquellen und PixelLab-Übergaben zentral erfassbar machen
-- [ ] veraltete oder doppelte Entwicklungsdokumente bereinigen
-- [ ] Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen
+- [x] zentralen UI-Bauteil- und Zustandskatalog anlegen
+- [x] Screenshot- und Viewport-Abnahmewerkzeuge für Roadmap B vorbereiten
+- [x] Profilbild-, Avatar- und Rahmendatenvertrag dokumentieren
+- [x] Design-Tokens, Assetquellen und PixelLab-Übergaben zentral erfassbar machen
+- [x] veraltete oder doppelte Entwicklungsdokumente bereinigen
+- [x] Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen
 
 ### Schritt 3 – Prüfen ⬜
 
@@ -447,7 +447,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Block A.08, Schritt 2 baut jetzt das Übergabepaket.** Das abgenommene Inventar steht in `ui/SCENE_INVENTORY.md`. Als Nächstes entstehen der zentrale UI-Bauteil- und Zustandskatalog, reproduzierbare Screenshot-/Viewport-Werkzeuge sowie der Profilbild-, Avatar- und Rahmenvertrag.
+**Block A.08, Schritt 3 prüft jetzt das gesamte Systemfundament.** Das Übergabepaket startet in `ui/HANDOFF.md`; der codebasierte Katalog liegt unter `/dev/ui-catalog.html`. Als Nächstes laufen Gesamtcheck, PostgreSQL-18-Integrationen, Domain-Smoke, Backup-/Restore-Prüfung sowie Vertrags- und Commitabgleich.
 
 PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 

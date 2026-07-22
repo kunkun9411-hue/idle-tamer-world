@@ -12,6 +12,8 @@
     "preview": "pnpm --filter @idle-tamer/web preview",
     "test": "pnpm -r --if-present test",
     "test:e2e": "pnpm --filter @idle-tamer/web test:e2e",
+    "ui:audit": "pnpm --filter @idle-tamer/web ui:audit",
+    "ui:capture": "pnpm --filter @idle-tamer/web ui:capture",
     "test:integration": "pnpm --filter @idle-tamer/database test:integration",
     "check:content": "pnpm --filter @idle-tamer/web check:content",
     "check:assets": "python scripts/validate_assets.py",

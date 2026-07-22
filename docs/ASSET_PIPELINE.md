@@ -1,5 +1,7 @@
 # Asset-Pipeline – HD und PixelLab
 
+Profilbilder und getrennte Profilrahmen verwenden bewusst nicht das 200×200-Monsterformat. Ihr 512×512-Runtime- und 1024×1024-Mastervertrag steht in `ui/AVATAR_FRAME_CONTRACT.md`; die zentrale Übersicht aller UI-Assetmaße liegt im lokalen `/dev/ui-catalog.html`.
+
 ## Verbindliches Runtime-Format
 
 - PNG mit Alpha

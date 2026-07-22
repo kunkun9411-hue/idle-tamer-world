@@ -99,7 +99,7 @@ const visualTemplates = {
     <div class="visual-label">Zielbild · Übergabe von A nach B</div>
     <div class="launch-visual">
       <div class="handoff-stage">
-        <div class="handoff-roadmap is-current"><span>A</span><strong>System</strong><small>87,5 %</small></div>
+        <div class="handoff-roadmap is-current"><span>A</span><strong>System</strong><small id="handoff-a-percent">–</small></div>
         <i aria-hidden="true">→</i>
         <div class="handoff-roadmap"><span>B</span><strong>Design & UI</strong><small>NÄCHSTER FOKUS</small></div>
       </div>
@@ -183,6 +183,8 @@ const init = async () => {
   document.querySelector("#overall-percent").textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
   document.querySelector("#overall-ring").style.setProperty("--progress", `${overallPercent}%`);
   document.querySelector("#program-a-percent").textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
+  const handoffPercent = document.querySelector("#handoff-a-percent");
+  if (handoffPercent) handoffPercent.textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
   document.querySelector("#active-block-label").textContent = `0${activeBlock.id} · ${activeBlock.title}`;
   document.querySelector("#active-step-label").textContent = `${data.activeStep} · ${activeBlock.steps[data.activeStep - 1].name}`;
   document.querySelector("#completed-label").textContent = `${completedSteps} / ${totalSteps} Gates`;
