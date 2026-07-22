@@ -1301,6 +1301,17 @@
       "sha256": "243c5ecba45de490e7bac0409b1564132bf3f438ce06fac85a498382179e1315"
     },
     {
+      "id": "ui.kit.frame.corner-large-v1",
+      "kind": "ui",
+      "path": "/assets/ui/kit/frame/corner-large-v1.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 23048,
+      "sha256": "fe0b71d60bd0545efb347d8f4398967631457eea6ab8ad28667ad915f9fc27e1"
+    },
+    {
       "id": "zone.glass-gardens-v2",
       "kind": "zone",
       "path": "/assets/zones/glass-gardens-v2.webp",

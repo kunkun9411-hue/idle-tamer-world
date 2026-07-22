@@ -7,7 +7,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 - Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
 - Roadmap B: **B.01 – Inventar und Designsystem, Schritt 2 Bauen aktiv; 1/32 Gates**
-- B.01-Art: erster textfreier ImageGen-Runtime-Satz mit Panel-, Aktions-, Avatarrahmen und Ether-Trenner integriert; Login und Offline-Bericht verwenden die ersten drei Ebenen bereits live
+- B.01-Art: erster textfreier ImageGen-Runtime-Satz mit Panel-, Aktions-, Avatarrahmen und Ether-Trenner integriert; B.01.2 wurde verbindlich um einen modularen UI-Baukasten aus Rahmenstücken, Flächen, Tooltips, Ressourcen- und Systemicons erweitert
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -105,10 +105,11 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 Roadmap A ist vollständig abgeschlossen. B.01.1 hat UI-Bestand, Typografie, Grundskalen, Komponenten, textfreie Assets und Referenzansichten abgenommen. Jetzt folgt **B.01, Schritt 2 – Bauen**:
 
-1. zentrale Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
-2. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal migrieren;
-3. UI-Katalog auf die neuen Primitiven umstellen;
-4. Login und Offline-Bericht als erste echte Referenzflächen überarbeiten;
-5. globale Status-, Fokus- und Reduced-Motion-Zustände vereinheitlichen.
+1. modularen Silver-Ether-UI-Baukasten mit Ecken, Kanten, Verbindern, Flächen, Leisten und Ornamenten erzeugen;
+2. Ressourcen- und Systemicons sowie Tooltip-, Button-, Badge- und Fortschrittsfassungen ergänzen;
+3. zentrale Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
+4. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal aus den gemeinsamen Bauteilen migrieren;
+5. UI-Katalog als sichtbare Bauanleitung auf die neuen Primitiven umstellen;
+6. globale Status-, Fokus- und Reduced-Motion-Zustände vereinheitlichen.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.

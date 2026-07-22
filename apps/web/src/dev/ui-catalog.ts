@@ -10,6 +10,7 @@ import {
   UI_COMPONENT_GROUPS,
   UI_FOUNDATION_SCALES,
   UI_GENERATED_CHROME,
+  UI_MODULAR_KIT_ITEMS,
   UI_STATES,
   UI_SURFACES,
   UI_TYPOGRAPHY_ROLES,
@@ -39,7 +40,7 @@ root.innerHTML = `
   <div class="catalog-ambient" aria-hidden="true"></div>
   <header class="catalog-header">
     <a class="catalog-brand" href="/"><span></span><div><small>ETHER PROTOCOL · DEV</small><strong>IDLE TAMER UI-KATALOG</strong></div></a>
-    <nav aria-label="Katalogbereiche"><a href="#components">Bauteile</a><a href="#generated">ImageGen</a><a href="#states">Zustände</a><a href="#surfaces">Flächen</a><a href="#viewport">Viewports</a><a href="#debt">Schulden</a></nav>
+    <nav aria-label="Katalogbereiche"><a href="#components">Bauteile</a><a href="#kit">Baukasten</a><a href="#generated">ImageGen</a><a href="#states">Zustände</a><a href="#surfaces">Flächen</a><a href="#viewport">Viewports</a><a href="#debt">Schulden</a></nav>
     <a class="secondary-button" href="/roadmap/">ROADMAP</a>
   </header>
   <main class="catalog-main">
@@ -64,6 +65,8 @@ root.innerHTML = `
         <article class="catalog-demo panel"><small>IDENTITÄT</small><div class="catalog-identity" style="--avatar-a:${activeAvatar.colors[0]};--avatar-b:${activeAvatar.colors[1]};--frame-a:${activeFrame.colors[0]};--frame-b:${activeFrame.colors[1]}"><span><i>${activeAvatar.glyph}</i></span><div><b>${activeAvatar.name}</b><em>${activeFrame.name}</em><small>Avatar-ID und Rahmen-ID bleiben getrennt</small></div></div></article>
       </div>
     </section>
+
+    <section class="catalog-section" id="kit"><div class="catalog-heading"><div><span class="eyebrow">SILVER-ETHER-BAUKASTEN</span><h2>Element für Element geprüft</h2></div><p>Jedes Teil besitzt eine eigene Quelle, Runtimevariante, Einsatzrolle und Freigabe. Erst nach diesem Gate folgt das nächste Element.</p></div><div class="ui-kit-grid">${UI_MODULAR_KIT_ITEMS.map((item) => `<article class="ui-kit-card panel" data-kit-item="${item.id}"><div class="ui-kit-preview"><img src="${item.path}" alt="" loading="lazy"></div><footer><div><span>${item.id} · ${item.family.toUpperCase()}</span><h3>${item.name}</h3><p>${item.use}</p></div><small>${item.state}<br>${item.runtime}</small></footer></article>`).join("")}</div></section>
 
     <section class="catalog-section" id="generated"><div class="catalog-heading"><div><span class="eyebrow">IMAGEGEN · RUNTIME</span><h2>Generierte Identität, echter UI-Text</h2></div><p>Diese vier freigestellten Assets sind keine Mockups. Sie liegen versioniert in der Runtime; jeder sichtbare Text wird separat als HTML gerendert.</p></div><div class="generated-chrome-grid">${UI_GENERATED_CHROME.map(generatedChromePreview).join("")}</div></section>
 

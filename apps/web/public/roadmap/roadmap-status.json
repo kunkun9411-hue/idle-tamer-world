@@ -14,7 +14,7 @@
       "accent": "violet",
       "steps": [
         { "name": "Planen", "done": true, "note": "Tokens, lesbare Typografie, zehn Komponentenfamilien und textfreie Assets festgelegt" },
-        { "name": "Bauen", "done": false, "note": "Design-Tokens, ImageGen-Runtime-Assets und Kernkomponenten als echte Spielbauteile umsetzen" },
+        { "name": "Bauen", "done": false, "note": "Modularen ImageGen-UI-Baukasten, Design-Tokens, Icons und Kernkomponenten als gemeinsame Spielbauteile umsetzen" },
         { "name": "Prüfen", "done": false, "note": "Katalog, Viewports, Zustände, Kontrast und Konsistenz vergleichen" },
         { "name": "Abnehmen", "done": false, "note": "Verbindliche visuelle Basis für alle folgenden B-Blöcke freigeben" }
       ]

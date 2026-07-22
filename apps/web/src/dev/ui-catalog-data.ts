@@ -151,6 +151,18 @@ export const UI_GENERATED_CHROME = [
   { id: "ether-divider", name: "Ether-Trenner", path: "/assets/ui/chrome/ether-divider-v1.webp", runtime: "1024x256 WebP" },
 ] as const;
 
+export const UI_MODULAR_KIT_ITEMS = [
+  {
+    id: "A01",
+    family: "Rahmen",
+    name: "Große universelle Rahmenecke",
+    path: "/assets/ui/kit/frame/corner-large-v1.webp",
+    runtime: "512×512 WebP",
+    use: "Drehbares Eckmodul für große Fenster und Dialoge",
+    state: "FREIGEGEBEN",
+  },
+] as const;
+
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS
   .filter((debt) => (debt.appliesAt.minWidth === undefined || width >= debt.appliesAt.minWidth)
     && (debt.appliesAt.maxWidth === undefined || width <= debt.appliesAt.maxWidth))

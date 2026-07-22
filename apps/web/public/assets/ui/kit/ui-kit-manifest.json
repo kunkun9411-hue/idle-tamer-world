@@ -1,0 +1,24 @@
+{
+  "kitVersion": 1,
+  "style": "silver-ether",
+  "elements": [
+    {
+      "id": "A01",
+      "family": "frame",
+      "name": "Große universelle Rahmenecke",
+      "path": "/assets/ui/kit/frame/corner-large-v1.webp",
+      "source": "art-source/generated/ui-kit-v1/transparent/frame-corner-large-silver-ether-v1-master.png",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 23048,
+      "sha256": "fe0b71d60bd0545efb347d8f4398967631457eea6ab8ad28667ad915f9fc27e1",
+      "rotatable": true,
+      "connections": [
+        "horizontal",
+        "vertical"
+      ],
+      "status": "approved"
+    }
+  ]
+}

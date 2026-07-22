@@ -108,12 +108,29 @@ Die drei verbindlichen Größen bleiben **1280×720**, **1024×768** und **390×
 ## Baufolge für B.01.2
 
 1. neue Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
-2. textfreie ImageGen-Master für Panel, Aktion, Avatar und Trenner erzeugen und als Runtime-Chrome integrieren;
-3. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal als Kernprimitive migrieren;
-4. UI-Katalog gegen die neuen Primitiven und die echten generierten Ebenen stellen;
-5. Login und Offline-Bericht als erste echte Referenzflächen umstellen;
-6. globale Status- und Fokuszustände vereinheitlichen;
-7. erst danach szenenspezifische Migration an B.02 bis B.08 übergeben.
+2. modularen Silver-Ether-Baukasten aus Ecken, dünnen und dicken Kanten, Verbindern, Flächen, Leisten und Ornamenten als textfreie ImageGen-Master erzeugen;
+3. Fenster-, Karten-, Dialog-, Tooltip-, Button-, Tab-, Ressourcen- und Fortschrittsvarianten ausschließlich aus diesem Baukasten ableiten;
+4. textfreie Ressourcen- und Systemicons für Ökonomie, Monsterfortschritt, Navigation und Einstellungen in einem gemeinsamen Katalog aufbauen;
+5. alle Master freistellen, in feste Runtimevarianten überführen und im Assetmanifest mit Abmessung, Alpha, Prüfsumme und Einsatzrolle führen;
+6. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal als Kernprimitive migrieren;
+7. UI-Katalog als sichtbare Bauanleitung gegen die neuen Primitiven und generierten Ebenen stellen;
+8. Login und Offline-Bericht als erste echte Referenzflächen weiterführen;
+9. globale Status- und Fokuszustände vereinheitlichen;
+10. erst danach szenenspezifische Migration an B.02 bis B.08 übergeben.
+
+## Verbindlicher modularer UI-Baukasten
+
+Der Baukasten ist kein einzelnes Sprite-Sheet mit festem Fensterlayout. Er besteht aus einzeln kombinierbaren, textfreien Bauteilen mit klaren Größen- und Einsatzverträgen:
+
+- **Rahmengeometrie:** vier Ecken, dünne und dicke horizontale/vertikale Kanten, gerade und verzierte Verbinder, Endkappen;
+- **Flächen:** ruhige dunkle Fensterfläche, erhöhte Kartenfläche, Tooltipfläche, Eingabefläche und gesperrte Fläche;
+- **Leisten und Ornamente:** Kopf-/Fußleiste, Ether-Trenner, Fokusornament, aktiver Marker und dezente Eckakzente;
+- **Aktionen:** primärer, sekundärer, kompakter und gefährlicher Rahmen ohne Text;
+- **Information:** Ressourcenfassung, Wertplakette, Fortschrittsfassung, Badge, Tooltip-Pfeil und Statussignal;
+- **Identität:** Avatarrahmen und kleine Rang-/Rollenfassung;
+- **Icons:** Gold, Premiumwährung, Fragment, Material, Ei, Gem sowie Einstellungen, Audio, Hilfe, Post, Inventar, Forschung, Gilde und Profil.
+
+Neue B-Oberflächen müssen zuerst prüfen, ob sie aus diesen Teilen zusammengesetzt werden können. Ein neues ImageGen-Asset ist nur dann nötig, wenn eine fachlich neue Form oder ein besonderer Hero-Moment hinzukommt.
 
 ## Abnahme B.01.1
 
@@ -135,5 +152,6 @@ Die drei verbindlichen Größen bleiben **1280×720**, **1024×768** und **390×
 - sämtliche Beschriftungen, Zahlen und Backendzustände bleiben echtes HTML;
 - informationstragende Mikroschrift der beiden Referenzflächen auf mindestens 12 px angehoben;
 - Login und Offline-Bericht auf 1280×720, Tablet und 390×844 innerhalb des Viewports automatisiert geprüft.
+- der modulare Silver-Ether-Baukasten wurde als verbindlicher zusätzlicher Umfang des Baugates aufgenommen; die bestehenden vier Vollassets dienen als Stilanker für seine Produktion.
 
 Das Bauen-Gate bleibt offen, bis Tokenebene und restliche Kernprimitive ebenfalls migriert und gemeinsam geprüft sind.

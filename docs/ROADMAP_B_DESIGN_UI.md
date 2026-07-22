@@ -69,11 +69,17 @@ ImageGen liefert HD-Master, Material, Rahmen, Ornamente, Icons, Hintergründe un
 ### Schritt 2 – Bauen 🔷
 
 - Design-Tokens in einer zentralen, dokumentierten Quelle umsetzen;
+- einen vollständigen modularen Silver-Ether-UI-Baukasten erzeugen und als verbindliche visuelle Grundlage aller weiteren B-Blöcke integrieren;
+- Fenster aus kombinierbaren Eckstücken, geraden dünnen und dicken Rahmenlinien, Verbindern, Innenflächen, Kopf-/Fußleisten und Ornamenten zusammensetzen, statt pro Szene neue Vollrahmen zu erzeugen;
+- standardisierte Chrome-Sätze für Fenster, Karten, Dialoge, Tooltips, Buttons, Tabs, Ressourcenanzeigen und Fortschrittsflächen bereitstellen;
+- textfreie Ressourcen- und Systemicons für Gold, Gems, Fragmente, Materialien, Eier, Einstellungen und Kernnavigation als austauschbaren Katalog führen;
 - echte textfreie ImageGen-Assets erzeugen, freistellen, optimieren und im Runtime-Manifest führen;
 - den ersten Silver-Ether-Chrome-Satz aus Panelrahmen, Aktionsrahmen, Avatarrahmen und Ether-Trenner im UI-Katalog verwenden;
 - Kernkomponenten ohne Änderung der Spiellogik vereinheitlichen;
 - UI-Katalog auf produktionsnahe Zustände und Komponentenvarianten erweitern;
 - alte Einzelfallwerte schrittweise auf die neue Basis migrieren.
+
+**Verbindliches Ergebnis des Baugates:** Der UI-Katalog enthält einen dokumentierten Baukasten, aus dem neue Oberflächen ohne erneute Stilfindung und ohne fest eingebrannte Texte aufgebaut werden können. Vollständige, einmalig generierte Fenster dürfen nur noch als Referenz oder besondere Hero-Fläche dienen; normale Spieloberflächen verwenden die modularen Bauteile.
 
 ### Schritt 3 – Prüfen ⬜
 
