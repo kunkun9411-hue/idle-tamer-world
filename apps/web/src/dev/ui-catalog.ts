@@ -6,16 +6,18 @@ import { AVATARS, FRAMES } from "../game/catalog";
 import {
   KNOWN_UI_DEBTS,
   UI_ASSET_CONTRACTS,
+  UI_COLOR_TOKENS,
   UI_COMPONENT_GROUPS,
+  UI_FOUNDATION_SCALES,
   UI_STATES,
   UI_SURFACES,
+  UI_TYPOGRAPHY_ROLES,
   UI_VIEWPORTS,
 } from "./ui-catalog-data";
 
 const root = document.querySelector<HTMLElement>("#ui-catalog");
 if (!root) throw new Error("UI catalog root is missing.");
 
-const tokenNames = ["bg", "panel-solid", "panel-raised", "silver", "silver-2", "muted", "violet", "violet-bright", "success", "warning", "danger"];
 const activeAvatar = AVATARS[0];
 const activeFrame = FRAMES[1];
 
@@ -30,11 +32,15 @@ root.innerHTML = `
   </header>
   <main class="catalog-main">
     <section class="catalog-hero">
-      <div><span class="eyebrow">A.08 · TECHNISCHE ÜBERGABE</span><h1>Eine Oberfläche.<br><em>Messbar statt geraten.</em></h1><p>Der gemeinsame Bauteil-, Zustands- und Viewportvertrag für Roadmap B. Jede sichtbare Änderung beginnt hier und endet mit einer reproduzierbaren Abnahme.</p></div>
+      <div><span class="eyebrow">B.01 · DESIGNSYSTEM</span><h1>Eine Oberfläche.<br><em>Lesbar statt winzig.</em></h1><p>Der gemeinsame Token-, Bauteil-, Zustands- und Viewportvertrag für Roadmap B. Texte bleiben echte UI-Inhalte; generierte Bilder liefern ausschließlich textfreie visuelle Ebenen.</p></div>
       <div class="catalog-score panel"><strong>${UI_SURFACES.length}</strong><span>SPIELFLÄCHEN</span><i></i><strong>${UI_STATES.length}</strong><span>PFLICHTZUSTÄNDE</span><i></i><strong>${KNOWN_UI_DEBTS.length}</strong><span>BEKANNTE LAYOUTSCHULDEN</span></div>
     </section>
 
-    <section class="catalog-section" id="tokens"><div class="catalog-heading"><div><span class="eyebrow">SILVER ETHER</span><h2>Verbindliche Design-Tokens</h2></div><p>Monster liefern Farbe. Die Oberfläche bleibt ruhig, silbern und kontrolliert violett.</p></div><div class="token-grid">${tokenNames.map((token) => `<article><i style="--token:var(--${token})"></i><strong>--${token}</strong><small>${getComputedStyle(document.documentElement).getPropertyValue(`--${token}`).trim()}</small></article>`).join("")}</div></section>
+    <section class="catalog-section" id="tokens"><div class="catalog-heading"><div><span class="eyebrow">SILVER ETHER</span><h2>Verbindliche Design-Tokens</h2></div><p>Monster liefern Farbe. Die Oberfläche bleibt ruhig, silbern und kontrolliert violett.</p></div><div class="token-grid">${UI_COLOR_TOKENS.map((token) => `<article><i style="--token:var(--${token})"></i><strong>--${token}</strong><small>${getComputedStyle(document.documentElement).getPropertyValue(`--${token}`).trim()}</small></article>`).join("")}</div>
+      <div class="catalog-subheading"><span class="eyebrow">TYPOGRAFIE</span><h3>Neun Rollen, keine Mikroschrift</h3><p>12 px ist die Untergrenze für bedeutungstragenden Text. Spielwerte erhalten tabellarische Ziffern.</p></div>
+      <div class="type-contract-grid">${UI_TYPOGRAPHY_ROLES.map((role) => `<article class="panel"><span>${role.id.toUpperCase()}</span><strong style="--sample-size:${role.size};--sample-line:${role.lineHeight};--sample-weight:${role.weight}">${role.name}</strong><small>${role.size} · ${role.weight} · ${role.use}</small></article>`).join("")}</div>
+      <div class="foundation-grid">${UI_FOUNDATION_SCALES.map((scale) => `<article class="panel"><span>${scale.name}</span><strong>${scale.values}</strong></article>`).join("")}</div>
+    </section>
 
     <section class="catalog-section" id="components"><div class="catalog-heading"><div><span class="eyebrow">KOMPONENTEN</span><h2>Ein Bauteilkatalog, keine Einzellösungen</h2></div><p>${UI_COMPONENT_GROUPS.length} Gruppen bilden die gemeinsame Sprache der Spieloberfläche.</p></div>
       <div class="component-lab">
@@ -51,13 +57,13 @@ root.innerHTML = `
 
     <section class="catalog-section" id="surfaces"><div class="catalog-heading"><div><span class="eyebrow">SZENENINVENTAR</span><h2>16 Flächen mit klarer B-Zuständigkeit</h2></div><p>Große neue Systeme gehören weiterhin Roadmap C.</p></div><div class="surface-grid">${UI_SURFACES.map((surface) => `<article class="panel"><span>${surface.id} · ${surface.area.toUpperCase()}</span><h3>${surface.name}</h3><p>${surface.states.map((state) => UI_STATES.find((entry) => entry.id === state)?.name ?? state).join(" · ")}</p><footer>${surface.blocks.map((block) => `<b>${block}</b>`).join("")}</footer></article>`).join("")}</div></section>
 
-    <section class="catalog-section" id="assets"><div class="catalog-heading"><div><span class="eyebrow">ASSETVERTRÄGE</span><h2>Runtime, Quelle und Übergabe</h2></div><p>Profilbilder und Rahmen erhalten eigene HD-Verträge; 200×200 bleibt der Monster-Animationsvertrag.</p></div><div class="asset-contract-grid">${UI_ASSET_CONTRACTS.map((asset) => `<article class="panel"><span>${asset.id.toUpperCase()}</span><h3>${asset.name}</h3><dl><dt>Runtime</dt><dd>${asset.runtime}</dd><dt>Quelle</dt><dd>${asset.source}</dd><dt>Vertrag</dt><dd>${asset.document}</dd></dl></article>`).join("")}</div></section>
+    <section class="catalog-section" id="assets"><div class="catalog-heading"><div><span class="eyebrow">ASSETVERTRÄGE</span><h2>Runtime, Quelle und Übergabe</h2></div><p>Generierte UI-Ebenen bleiben textfrei. Namen, Zahlen, Kosten und Buttons werden immer als echte UI darübergelegt.</p></div><div class="asset-contract-grid">${UI_ASSET_CONTRACTS.map((asset) => `<article class="panel"><span>${asset.id.toUpperCase()}</span><h3>${asset.name}</h3><dl><dt>Runtime</dt><dd>${asset.runtime}</dd><dt>Quelle</dt><dd>${asset.source}</dd><dt>Text</dt><dd>${asset.textPolicy}</dd><dt>Vertrag</dt><dd>${asset.document}</dd></dl></article>`).join("")}</div></section>
 
     <section class="catalog-section" id="viewport"><div class="catalog-heading"><div><span class="eyebrow">VIEWPORT-STUDIO</span><h2>Client in festen Abnahmegrößen</h2></div><p>Für vollständige Bildserien: <code>pnpm ui:capture</code>.</p></div><div class="viewport-toolbar" role="group" aria-label="Viewport wählen">${UI_VIEWPORTS.map((viewport, index) => `<button class="${index === 0 ? "is-active" : ""}" data-viewport="${viewport.id}"><b>${viewport.name}</b><small>${viewport.width}×${viewport.height}</small></button>`).join("")}</div><div class="viewport-stage"><div class="viewport-frame" style="--preview-width:${UI_VIEWPORTS[0].width}px;--preview-height:${UI_VIEWPORTS[0].height}px"><iframe name="catalog-preview" src="/" title="Idle Tamer UI-Vorschau"></iframe></div></div></section>
 
     <section class="catalog-section" id="debt"><div class="catalog-heading"><div><span class="eyebrow">BEKANNTE UX-SCHULDEN</span><h2>Offen, messbar und zugeordnet</h2></div><p>Der Layout-Audit erlaubt nur diese bekannten Befunde. Jede neue Kollision lässt den Test fehlschlagen.</p></div><div class="debt-grid">${KNOWN_UI_DEBTS.map((debt) => `<article class="panel debt-${debt.priority.toLowerCase()}"><span>${debt.priority} · ${debt.id}</span><h3>${debt.title}</h3><p>${debt.description}</p><footer>${debt.blocks.map((block) => `<b>${block}</b>`).join("")}</footer></article>`).join("")}</div></section>
   </main>
-  <footer class="catalog-footer"><span>Idle Tamer · UI-Vertrag A.08.2</span><span>Quelle: ui-catalog-data.ts · docs/ui</span></footer>`;
+  <footer class="catalog-footer"><span>Idle Tamer · Designvertrag B.01</span><span>Quelle: ui-catalog-data.ts · docs/ui</span></footer>`;
 
 const viewportFrame = document.querySelector<HTMLElement>(".viewport-frame");
 for (const button of document.querySelectorAll<HTMLButtonElement>("[data-viewport]")) {

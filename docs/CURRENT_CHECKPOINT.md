@@ -6,7 +6,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 - Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
-- Roadmap B: **B.01 – Inventar und Designsystem, Schritt 1 Planen aktiv**
+- Roadmap B: **B.01 – Inventar und Designsystem, Schritt 2 Bauen aktiv; 1/32 Gates**
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -100,12 +100,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Roadmap A ist vollständig abgeschlossen. Jetzt folgt **B.01, Schritt 1 – Planen**:
+Roadmap A ist vollständig abgeschlossen. B.01.1 hat UI-Bestand, Typografie, Grundskalen, Komponenten, textfreie Assets und Referenzansichten abgenommen. Jetzt folgt **B.01, Schritt 2 – Bauen**:
 
-1. vorhandene Farben, Typografie, Abstände, Ebenen und Effekte gegen die 16 UI-Flächen auditieren;
-2. verbindliche Design-Tokens und Komponentenfamilien definieren;
-3. Lade-, Leer-, Fehler-, Sperr-, Erfolgs-, Fokus- und Auswahlzustände festziehen;
-4. Referenzansichten und drei Abnahme-Viewports festlegen;
-5. den Bauplan für die sichtbare Silver-Ether-Migration freigeben.
+1. zentrale Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
+2. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal migrieren;
+3. UI-Katalog auf die neuen Primitiven umstellen;
+4. Login und Offline-Bericht als erste echte Referenzflächen überarbeiten;
+5. globale Status-, Fokus- und Reduced-Motion-Zustände vereinheitlichen.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.

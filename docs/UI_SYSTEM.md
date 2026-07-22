@@ -2,7 +2,7 @@
 
 Dieses Dokument ist die verbindliche Komponentenbasis für Login, Spiel und spätere Account-Seiten. Die darüberliegende Inszenierung, Zonenwelten und Game-Feel-Regeln von Optik V2 stehen in `ART_DIRECTION_V2.md`; die feste Einstiegsreihenfolge steht in `PLAYER_ENTRY_FLOW.md`. Neue Oberflächen sollen diese Ebenen erweitern, nicht pro Feature einen eigenen Stil erfinden.
 
-Das abgenommene Inventar aller aktuellen Flächen, Zustände und bekannten UX-Schulden steht in `ui/SCENE_INVENTORY.md`.
+Das abgenommene Inventar aller aktuellen Flächen, Zustände und bekannten UX-Schulden steht in `ui/SCENE_INVENTORY.md`. Der verbindliche B.01-Token-, Typografie-, Komponenten- und Migrationsplan steht in `ui/B01_DESIGN_SYSTEM_PLAN.md`.
 
 Die verpflichtenden Lade-, Fehler-, Konflikt-, Leer-, Voll- und Maximalzustände pro Szene stehen in `GAMEPLAY_FOUNDATION_SPEC.md` und gehören zur Abnahme jeder neuen Oberfläche.
 
@@ -30,6 +30,12 @@ Idle Tamer wirkt ruhig, hochwertig und technisch, aber nicht wie ein überladene
 | Erfolg | `#73dfba` | gespeichert, abgeschlossen, online |
 
 Die Basistokens stehen am Anfang von `apps/web/src/styles.css`; V2-Oberflächen, Licht und Bewegungswerte stehen am Anfang von `apps/web/src/styles-v2.css`.
+
+B.01.2 führt zusätzlich benannte Skalen für Typografie, Abstand, Radien, Bewegung und Ebenen ein. Bedeutungstragender Text wird nicht kleiner als 12 px; Spielwerte verwenden tabellarische Ziffern. Bestehende Mikroschrift wird schrittweise über Kernkomponenten migriert und nicht durch neue Einzelfallwerte ersetzt.
+
+## Textfreie UI-Assets
+
+Generierte UI-Bilder enthalten keine Texte, Zahlen, Kosten, Stufen, Buttonnamen oder Pseudoschrift. ImageGen und PixelLab liefern ausschließlich visuelle Ebenen wie Hintergrund, Rahmen, Ornament, Icon, Material und Effekt. Sämtliche Beschriftungen werden als echtes HTML/CSS darüber gerendert. Logos sind die einzige ausdrücklich freigegebene Branding-Ausnahme. Details und Negativprompt: `ASSET_PIPELINE.md`.
 
 ## Komponenten-Inventar
 

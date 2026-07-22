@@ -1,6 +1,6 @@
 # Roadmap-A-UI-Übergabe
 
-Status: **A.08.2 abgenommen – technisches Übergabepaket für Roadmap B**
+Status: **A.08.2 abgenommen – B.01.1 Designsystemplanung abgeschlossen**
 
 ## Schnellstart
 
@@ -34,6 +34,7 @@ pnpm ui:capture
 | Welche Flächen und Probleme existieren? | `SCENE_INVENTORY.md` |
 | Welche Komponenten, Zustände und Viewports gelten? | `apps/web/src/dev/ui-catalog-data.ts` und `/dev/ui-catalog.html` |
 | Welche Farben und Basiskomponenten gelten? | `../UI_SYSTEM.md` |
+| Welche neuen Tokens und Komponenten werden zuerst gebaut? | `B01_DESIGN_SYSTEM_PLAN.md` |
 | Wie funktionieren Avatar und Rahmen? | `AVATAR_FRAME_CONTRACT.md` |
 | Welche Assetmaße gelten? | `../ASSET_PIPELINE.md`, `../PIXELLAB_ANIMATION_CONTRACT.md` und UI-Katalog |
 | Was darf UI niemals übernehmen? | `../API_CONTRACT_V8.md` und `../ONLINE_ARCHITECTURE.md` |

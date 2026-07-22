@@ -28,6 +28,19 @@
 .token-grid i { height: 58px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: var(--token); }
 .token-grid strong { font-size: 10px; }
 .token-grid small { overflow: hidden; color: var(--dim); font-size: 7px; text-overflow: ellipsis; }
+.catalog-subheading { margin: 44px 0 18px; display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 7px 24px; }
+.catalog-subheading .eyebrow { grid-column: 1 / -1; }
+.catalog-subheading h3 { margin: 0; font-size: 24px; }
+.catalog-subheading p { justify-self: end; max-width: 520px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; text-align: right; }
+.type-contract-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.type-contract-grid article { min-height: 154px; padding: 18px; display: grid; align-content: space-between; gap: 12px; overflow: hidden; }
+.type-contract-grid article > span { color: var(--violet-bright); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.type-contract-grid article > strong { overflow: hidden; font-size: min(var(--sample-size), 36px); font-weight: var(--sample-weight); line-height: var(--sample-line); text-overflow: ellipsis; white-space: nowrap; }
+.type-contract-grid article > small { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.foundation-grid { margin-top: 9px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.foundation-grid article { min-height: 100px; padding: 18px; display: grid; align-content: center; gap: 10px; }
+.foundation-grid span { color: var(--violet-bright); font-size: 12px; font-weight: 800; }
+.foundation-grid strong { color: var(--silver-2); font-size: 12px; line-height: 1.5; }
 .component-lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .catalog-demo { min-height: 190px; padding: 22px; }
 .catalog-demo > small { color: var(--violet-bright); font-size: 8px; font-weight: 800; letter-spacing: 1.4px; }
@@ -48,5 +61,5 @@
 .debt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.debt-grid article { min-height: 230px; }.debt-grid .debt-p0 { border-color: rgba(255,135,152,.35); }.debt-grid .debt-p0 > span { color: var(--danger); }.debt-grid .debt-p1 > span { color: var(--warning); }
 .catalog-footer { min-height: 90px; padding: 0 4vw; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); color: var(--dim); font-size: 8px; }
 code { color: var(--violet-bright); }
-@media (max-width: 1100px) { .catalog-header { grid-template-columns: 1fr auto; }.catalog-header nav { display: none; }.catalog-hero { grid-template-columns: 1fr; gap: 30px; padding: 90px 0; }.catalog-score { max-width: 520px; }.state-grid, .surface-grid, .asset-contract-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 700px) { .catalog-header { padding-inline: 18px; }.catalog-header > .secondary-button { display: none; }.catalog-main { width: min(100% - 28px, 1480px); }.catalog-hero { min-height: auto; padding: 76px 0 28px; }.catalog-hero h1 { font-size: 46px; letter-spacing: -2.5px; }.catalog-hero p { font-size: 13px; }.catalog-section { padding-top: 68px; }.catalog-heading { align-items: start; flex-direction: column; }.catalog-heading p { text-align: left; }.component-lab, .state-grid, .surface-grid, .asset-contract-grid, .debt-grid { grid-template-columns: 1fr; }.catalog-state-cards { grid-template-columns: 1fr; }.viewport-stage { min-height: 640px; padding: 12px; }.catalog-footer { align-items: start; flex-direction: column; justify-content: center; gap: 6px; } }
+@media (max-width: 1100px) { .catalog-header { grid-template-columns: 1fr auto; }.catalog-header nav { display: none; }.catalog-hero { grid-template-columns: 1fr; gap: 30px; padding: 90px 0; }.catalog-score { max-width: 520px; }.type-contract-grid { grid-template-columns: repeat(2, 1fr); }.foundation-grid { grid-template-columns: repeat(2, 1fr); }.state-grid, .surface-grid, .asset-contract-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .catalog-header { padding-inline: 18px; }.catalog-header > .secondary-button { display: none; }.catalog-main { width: min(100% - 28px, 1480px); }.catalog-hero { min-height: auto; padding: 76px 0 28px; }.catalog-hero h1 { font-size: 46px; letter-spacing: -2.5px; }.catalog-hero p { font-size: 13px; }.catalog-section { padding-top: 68px; }.catalog-heading, .catalog-subheading { display: flex; align-items: start; flex-direction: column; }.catalog-heading p, .catalog-subheading p { text-align: left; }.component-lab, .type-contract-grid, .foundation-grid, .state-grid, .surface-grid, .asset-contract-grid, .debt-grid { grid-template-columns: 1fr; }.catalog-state-cards { grid-template-columns: 1fr; }.viewport-stage { min-height: 640px; padding: 12px; }.catalog-footer { align-items: start; flex-direction: column; justify-content: center; gap: 6px; } }

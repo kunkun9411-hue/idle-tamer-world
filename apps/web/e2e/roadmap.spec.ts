@@ -7,9 +7,9 @@ test("public roadmap separates the completed foundation from the active design c
   await page.goto("/roadmap/");
   await expect(page.getByRole("heading", { name: "Das System steht. Jetzt wird es zum Spiel." })).toBeVisible();
   await expect(page.locator("#active-block-label")).toHaveText("B.01 · Inventar & Designsystem");
-  await expect(page.locator("#completed-label")).toHaveText("0 / 32 B-Gates");
+  await expect(page.locator("#completed-label")).toHaveText("1 / 32 B-Gates");
   await expect(page.locator("#program-a-percent")).toHaveText("100%");
-  await expect(page.locator("#program-b-percent")).toHaveText("0%");
+  await expect(page.locator("#program-b-percent")).toHaveText("3.1%");
   await expect(page.locator(".block-card")).toHaveCount(8);
   await expect(page.locator(".block-card").first()).toContainText("B.01");
 

@@ -5,9 +5,12 @@ test("UI catalog exposes its contracts without page errors or horizontal overflo
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
   await page.goto("/dev/ui-catalog.html");
-  await expect(page.getByRole("heading", { name: "Eine Oberfläche. Messbar statt geraten." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eine Oberfläche. Lesbar statt winzig." })).toBeVisible();
+  await expect(page.locator(".type-contract-grid article")).toHaveCount(9);
+  await expect(page.locator(".foundation-grid article")).toHaveCount(4);
   await expect(page.locator(".surface-grid article")).toHaveCount(16);
   await expect(page.locator(".state-grid article")).toHaveCount(10);
+  await expect(page.locator(".asset-contract-grid article")).toHaveCount(6);
   await expect(page.locator(".debt-grid article")).toHaveCount(2);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 

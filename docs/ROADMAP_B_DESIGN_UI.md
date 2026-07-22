@@ -3,7 +3,7 @@
 - Stand: 22. Juli 2026
 - Status: **aktiv**
 - Aktiver Block: **B.01 – Inventar und Designsystem**
-- Aktiver Schritt: **1 – Planen**
+- Aktiver Schritt: **2 – Bauen**
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
 Die gemessene Ausgangsbasis mit 16 Flächen, Zustandsmatrix und priorisiertem UX-Backlog steht in `ui/SCENE_INVENTORY.md`. Der eingefrorene technische Übergabevertrag und die offenen UX-Themen stehen in `ROADMAP_A_COMPLETION.md`. Beides ist verbindlicher Eingang für B.01.
@@ -16,7 +16,7 @@ Roadmap B macht aus dem technisch funktionierenden Systemfundament ein geschloss
 
 | Block | Ergebnis | 1 Planen | 2 Bauen | 3 Prüfen | 4 Abnehmen | Status |
 | --- | --- | :---: | :---: | :---: | :---: | --- |
-| B.01 | Inventar und verbindliches Designsystem | [ ] | [ ] | [ ] | [ ] | **Aktiv · Planen** |
+| B.01 | Inventar und verbindliches Designsystem | [x] | [ ] | [ ] | [ ] | **Aktiv · Bauen** |
 | B.02 | Informationsarchitektur und Navigation | [ ] | [ ] | [ ] | [ ] | Später |
 | B.03 | Kampfszene und HUD | [ ] | [ ] | [ ] | [ ] | Später |
 | B.04 | Sammlung und Entwicklung | [ ] | [ ] | [ ] | [ ] | Später |
@@ -25,7 +25,7 @@ Roadmap B macht aus dem technisch funktionierenden Systemfundament ein geschloss
 | B.07 | Responsive Design und Zugänglichkeit | [ ] | [ ] | [ ] | [ ] | Später |
 | B.08 | Gesamtpolish und Übergabe an C | [ ] | [ ] | [ ] | [ ] | Später |
 
-Gesamtfortschritt: **0 von 32 Gates abgeschlossen (0 %)**. Roadmap A bleibt separat bei 32/32 eingefroren.
+Gesamtfortschritt: **1 von 32 Gates abgeschlossen (3,1 %)**. Roadmap A bleibt separat bei 32/32 eingefroren.
 
 ## Arbeitsmodell
 
@@ -35,18 +35,21 @@ Jeder Block durchläuft **Planen → Bauen → Prüfen → Abnehmen**. Ein Gate 
 
 **Ergebnis:** Ein verbindliches Silver-Ether-Designsystem ersetzt Einzelfall-CSS als Arbeitsgrundlage. Alle folgenden B-Blöcke bauen auf denselben Tokens, Komponenten, Zuständen und Assetregeln auf.
 
-### Schritt 1 – Planen 🔷
+### Schritt 1 – Planen ✅
 
-- [ ] bestehende Silver-Ether-Farben, Flächen, Linien, Schatten und Leuchteffekte gegen alle 16 UI-Flächen auditieren
-- [ ] Typografieskala für Display, Seitentitel, UI-Text, Zahlen, Metadaten und mobile Mindestgrößen festlegen
-- [ ] Abstands-, Raster-, Radius-, Ebenen- und Bewegungs-Tokens definieren
-- [ ] Komponentenbestand inklusive Buttons, Karten, Tabs, Dialoge, Toasts, Tooltips, Inputs, Ressourcen und Fortschrittsanzeigen ordnen
-- [ ] Zustände für Laden, Leer, Fehler, Sperre, Erfolg, Auswahl, Fokus und Deaktivierung pro Kernkomponente festlegen
-- [ ] 512×512-Avatar-/Rahmenvertrag und 200×200-PixelLab-Animationsvertrag in das Designsystem übernehmen
-- [ ] Referenzansichten und Abnahme-Viewports für Vorher-/Nachher-Vergleiche bestimmen
-- [ ] B.01-Bauplan mit klaren Dateigrenzen und Migrationsreihenfolge freigeben
+- [x] bestehende Silver-Ether-Farben, Flächen, Linien, Schatten und Leuchteffekte gegen alle 16 UI-Flächen auditieren
+- [x] Typografieskala für Display, Seitentitel, UI-Text, Zahlen, Metadaten und mobile Mindestgrößen festlegen
+- [x] Abstands-, Raster-, Radius-, Ebenen- und Bewegungs-Tokens definieren
+- [x] Komponentenbestand inklusive Buttons, Karten, Tabs, Dialoge, Toasts, Tooltips, Inputs, Ressourcen und Fortschrittsanzeigen ordnen
+- [x] Zustände für Laden, Leer, Fehler, Sperre, Erfolg, Auswahl, Fokus und Deaktivierung pro Kernkomponente festlegen
+- [x] textfreie Assetregel verankern: sämtliche Beschriftungen und Zahlen bleiben echtes HTML/CSS
+- [x] 512×512-Avatar-/Rahmenvertrag und 200×200-PixelLab-Animationsvertrag in das Designsystem übernehmen
+- [x] Referenzansichten und Abnahme-Viewports für Vorher-/Nachher-Vergleiche bestimmen
+- [x] B.01-Bauplan mit klaren Dateigrenzen und Migrationsreihenfolge freigeben
 
-### Schritt 2 – Bauen ⬜
+**Gate erfüllt:** Drei echte Viewports, 16 Flächen und die beiden bestehenden CSS-Schichten wurden auditiert. Neun Typografierollen, vier Grundskalen, zehn Komponentenfamilien, eine textfreie Assetregel und die Migrationsfolge für B.01.2 sind in `ui/B01_DESIGN_SYSTEM_PLAN.md` abgenommen.
+
+### Schritt 2 – Bauen 🔷
 
 - Design-Tokens in einer zentralen, dokumentierten Quelle umsetzen;
 - Kernkomponenten ohne Änderung der Spiellogik vereinheitlichen;
@@ -126,6 +129,7 @@ Jeder Block durchläuft **Planen → Bauen → Prüfen → Abnehmen**. Ein Gate 
 - Schriftgröße, Kontrast und Informationsdichte werden an realen Viewports geprüft.
 - Avatare und Rahmen sind getrennte, serverseitig gespeicherte Katalogeinträge.
 - Monster- und Itemgrafiken bleiben HD; PixelLab-Animationen verwenden den 200×200-Vertrag.
+- Generierte UI-Assets bleiben textfrei; Beschriftungen, Zahlen und Buttonnamen werden nie in Rastergrafiken eingebrannt.
 - UI-Arbeit darf keine Gold-, Besitz-, Zeit- oder Gildenautorität zurück in den Browser verlagern.
 - Roadmap B fügt keine großen Content- oder Wettbewerbssysteme hinzu.
 
@@ -135,4 +139,4 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 ## Direkt als Nächstes
 
-Aktiv ist **B.01, Schritt 1 – Planen**. Zuerst wird der vorhandene Bestand gegen ein verbindliches Token-, Typografie-, Raster-, Komponenten- und Zustandsmodell geprüft. Erst nach dieser Entscheidung beginnt die sichtbare Migration der echten Spieloberfläche.
+Aktiv ist **B.01, Schritt 2 – Bauen**. Als Nächstes entstehen die zentrale Tokenebene und die ersten migrierten Kernkomponenten. Login und Offline-Bericht werden die ersten echten Referenzflächen; Kampfnavigation und Kampfbühne bleiben anschließend B.02/B.03.

@@ -1,9 +1,9 @@
 {
   "roadmap": "B",
   "status": "active",
-  "updated": "22. Juli 2026 · Roadmap B gestartet · B.01 Planen aktiv",
+  "updated": "22. Juli 2026 · B.01 Planung abgenommen · B.01 Bauen aktiv",
   "activeBlock": 1,
-  "activeStep": 1,
+  "activeStep": 2,
   "blocks": [
     {
       "id": 1,
@@ -13,7 +13,7 @@
       "visual": "design",
       "accent": "violet",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Bestand, Tokens, Typografie, Komponenten und Zielansichten festziehen" },
+        { "name": "Planen", "done": true, "note": "Tokens, lesbare Typografie, zehn Komponentenfamilien und textfreie Assets festgelegt" },
         { "name": "Bauen", "done": false, "note": "Design-Tokens und Kernkomponenten als echte Spielbauteile umsetzen" },
         { "name": "Prüfen", "done": false, "note": "Katalog, Viewports, Zustände, Kontrast und Konsistenz vergleichen" },
         { "name": "Abnehmen", "done": false, "note": "Verbindliche visuelle Basis für alle folgenden B-Blöcke freigeben" }

@@ -3,9 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   KNOWN_UI_DEBTS,
   UI_ASSET_CONTRACTS,
+  UI_COLOR_TOKENS,
   UI_COMPONENT_GROUPS,
+  UI_FOUNDATION_SCALES,
   UI_STATES,
   UI_SURFACES,
+  UI_TYPOGRAPHY_ROLES,
   UI_VIEWPORTS,
   knownUiDebtIdsForWidth,
 } from "./ui-catalog-data";
@@ -27,7 +30,12 @@ describe("UI handoff catalog", () => {
     const blocks = new Set(UI_SURFACES.flatMap((surface) => surface.blocks));
     expect([...blocks].sort()).toEqual(["B.01", "B.02", "B.03", "B.04", "B.05", "B.06", "B.07", "B.08"]);
     expect(UI_COMPONENT_GROUPS.every((group) => group.items.length >= 4)).toBe(true);
-    expect(UI_ASSET_CONTRACTS.map((entry) => entry.id)).toEqual(["monster", "avatar", "frame", "zone", "item"]);
+    expect(UI_COMPONENT_GROUPS).toHaveLength(10);
+    expect(UI_COLOR_TOKENS).toHaveLength(11);
+    expect(UI_TYPOGRAPHY_ROLES).toHaveLength(9);
+    expect(UI_FOUNDATION_SCALES.map((entry) => entry.id)).toEqual(["space", "radius", "motion", "layer"]);
+    expect(UI_ASSET_CONTRACTS.map((entry) => entry.id)).toEqual(["monster", "avatar", "frame", "zone", "item", "ui-decoration"]);
+    expect(UI_ASSET_CONTRACTS.every((entry) => entry.textPolicy.includes("textfrei") || entry.textPolicy.includes("keine Texte"))).toBe(true);
   });
 
   it("keeps measured layout debt explicit until its B-block resolves it", () => {

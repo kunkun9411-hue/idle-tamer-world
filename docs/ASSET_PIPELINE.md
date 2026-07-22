@@ -13,6 +13,19 @@ Profilbilder und getrennte Profilrahmen verwenden bewusst nicht das 200×200-Mon
 
 Imagegen erzeugt zunächst einen hochauflösenden Chroma-Master. Der installierte Freistellungsprozess entfernt den Key. `scripts/prepare_sprite.py` trimmt nur die transparente Fläche, erhält acht Pixel Sicherheitsabstand und exportiert deterministisch auf einer 200×200-Leinwand.
 
+## Textfreie UI-Assets
+
+Generierte Interface-Assets enthalten **keine fest eingebauten Texte, Zahlen oder Beschriftungen**. Das gilt für Hintergründe, Rahmen, Panels, Buttons, Karten, Badges, Effekte und dekorative UI-Elemente.
+
+- sichtbare Namen, Werte, Kosten, Stufen und Buttontexte werden als echtes HTML/CSS über dem Asset gerendert;
+- ImageGen- und PixelLab-Prompts für UI-Assets enthalten ausdrücklich `no text, no letters, no numbers, no typography, no watermark, no pseudo-text`;
+- ein Asset darf Form, Material, Licht, Ornament und nichtsprachliche Symbolik liefern, aber keine semantische Beschriftung;
+- Icons erhalten ihre Bedeutung durch zugängliche UI-Labels und dürfen keine Buchstaben als Ersatztext einbacken;
+- Assets mit zufälligem KI-Pseudotext werden nicht in die Runtime übernommen;
+- Logos und ausdrücklich freigegebene Branding-Grafiken sind die einzige Ausnahme und werden nicht als wiederverwendbare Interface-Komponente eingesetzt.
+
+Dadurch bleiben Übersetzung, Schriftgröße, Zahlenformat, Responsive Design und spätere Textänderungen unabhängig vom Bildmaterial.
+
 Die aktuelle HD-v2-Serie umfasst zehn ursprüngliche Rookie-Starter, 30 momentan als Normalgegner abgelegte Kreaturendesigns und fünf Bosse. Die 30 Designs werden später zu zusätzlichen sammelbaren Rookie-Linien mit Evolutionen migriert; ihre derzeitige Ordnerbezeichnung ist kein dauerhaftes Produktmodell. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. Die Prestige-Szene ergänzt ein 1600×900-Heiligtum und einen transparenten 512×768-Ether-Kristall. Elf Eier, fünf Kernmaterialien, ein Inkubator und vier Effekt-Layer vervollständigen den ersten spielrelevanten Gegenstandssatz. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller Runtime-Bilder.
 
 ## Ordner
