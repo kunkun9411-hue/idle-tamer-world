@@ -514,7 +514,7 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
 .offline-report__cache small { color: #a991eb; font-size: 6px; font-weight: 750; letter-spacing: 1px; }
 .offline-report__cache strong { margin-top: 4px; color: #ddd7e7; font-size: 9px; font-weight: 600; }
 .offline-report__cache > span { min-width: 54px; padding: 7px 9px; border-radius: 7px; color: #cbbafb; background: rgba(168, 139, 255, .09); text-align: center; font-size: 9px; font-weight: 750; }
-.offline-report__actions { display: grid; justify-items: center; gap: 8px; margin: 11px auto 0; }
+.offline-report__actions { display: grid; justify-items: center; gap: 0; margin: 11px auto 0; }
 .offline-report__actions > p { max-width: 430px; margin: 0; color: #aaa5b3; font-size: 12px; line-height: 1.45; }
 .offline-report__actions > p strong { color: #ddd5ed; font-weight: 650; }
 .offline-report__actions > button { width: 210px; min-width: 0; }
