@@ -1,7 +1,7 @@
 {
-  "updated": "22. Juli 2026 · A.08 Übergabepaket fertig · Roadmap A bei 93,8 %",
+  "updated": "22. Juli 2026 · A.08 Gesamtprüfung bestanden · Roadmap A bei 96,9 %",
   "activeBlock": 8,
-  "activeStep": 3,
+  "activeStep": 4,
   "blocks": [
     {
       "id": 1,
@@ -111,7 +111,7 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "16 UI-Flächen, Zustände, Verträge und B-Prioritäten abgenommen" },
         { "name": "Bauen", "done": true, "note": "UI-Katalog, Layout-Audit, 42 Screenshots und Profilverträge stehen" },
-        { "name": "Prüfen", "done": false, "note": "Gesamtregression, Dokumentkonsistenz, Backup und Dev-Betrieb prüfen" },
+        { "name": "Prüfen", "done": true, "note": "Gesamtregression, PG18, Domain-Smoke, Restore und Neustart grün" },
         { "name": "Abnehmen", "done": false, "note": "Roadmap A einfrieren und Roadmap B offiziell starten" }
       ]
     }

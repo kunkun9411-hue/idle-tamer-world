@@ -57,7 +57,7 @@ Vorwärtskorrekturen werden bevorzugt. Ein `down` wird nur produktiv verwendet, 
 ### Entwicklungs- und Testphase
 
 - Schema ist vollständig aus Migrationen reproduzierbar.
-- vor riskanten lokalen Datenänderungen: `pg_dump -Fc` in einen ignorierten Backupordner.
+- vor riskanten lokalen Datenänderungen: geprüfter Dump in einen ignorierten Backupordner; der Dev-Server verwendet komprimiertes Plain-SQL, CI prüft zusätzlich Custom-Format-Dumps.
 - Restore immer zuerst in eine neue leere Datenbank, niemals ungeprüft über die Quelle.
 
 ### Staging

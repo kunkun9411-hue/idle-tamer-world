@@ -6,7 +6,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 - Version: `0.2.0`, **Roadmap A – Systemfundament**
 - Block 1 bis 7: technisch umgesetzt, geprüft und auf dem Entwicklungsserver
-- Block 8: Planung und Übergabepaket abgenommen; die Gesamtprüfung von Roadmap A ist aktiv
+- Block 8: Planung, Übergabepaket und Gesamtprüfung abgenommen; die formale Abnahme von Roadmap A ist aktiv
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -47,11 +47,16 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - A.08.2: codebasierter UI-Katalog mit 16 Flächen, zehn Zuständen, drei Viewports, Assetverträgen und bekannter Schulden-Allowlist gebaut
 - Layout-Audit in Desktop, Tablet und Mobile grün; Screenshotlauf erzeugt 42 Vergleichsbilder ohne Repository-Ballast
 - getrennten 512×512-Runtimevertrag für runde Avatare und transparente Rahmen festgezogen
+- A.08.3: kompletter lokaler Check, 26 PostgreSQL-18-Integrationen und echter Domain-Smoke grün
+- frischen Serverdump in eine leere Datenbank restauriert und Health, Revision, Bestand sowie Ledger geprüft
+- vollständigen Serverneustart bestanden; Docker, Datenbank, API, Web, Proxy und Backup-Timer kamen automatisch zurück
+- A.08-QA-Account und Testgilde vollständig entfernt; exakt zwei vorher vorhandene Accounts blieben erhalten
 
 Die genauen Fälle stehen in:
 
 - `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md`
 - `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`
+- `backend/A08_FOUNDATION_VERIFICATION.md`
 
 ## Live-Infrastruktur
 
@@ -93,12 +98,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Planung und Bau von A.08 sind abgenommen. Jetzt folgt A.08.3:
+Planung, Bau und Prüfung von A.08 sind abgenommen. Jetzt folgt A.08.4:
 
-1. vollständigen lokalen Gesamtcheck und alle PostgreSQL-18-Integrationen ausführen;
-2. Dev-Domain, Accounts, Run, Sammlung und Gilden erneut rauchtesten;
-3. Backup, Restore-Anleitung, Migrationen und Serverneustart prüfen;
-4. Roadmap-, Vertrags- und Versionsangaben auf Widersprüche prüfen;
-5. Repository und Servercheckout auf denselben sauberen Commit bringen.
+1. Roadmap-A-Abschlussbericht samt offenen UX-Themen veröffentlichen;
+2. Systemfundament gegen alle acht ursprünglichen Blöcke abnehmen;
+3. Roadmap A einfrieren und Roadmap B aktivieren;
+4. öffentliche Statusseite auf B.01 umstellen;
+5. ausdrücklich festhalten, dass noch keine Alpha-Testgruppe startet.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der vorbereitete Arbeitsrahmen für die direkt folgende UI-Phase liegt in `ROADMAP_B_DESIGN_UI.md`.

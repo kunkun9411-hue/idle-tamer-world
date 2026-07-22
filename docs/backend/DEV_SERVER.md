@@ -4,7 +4,7 @@ Der Entwicklungsserver ist die reale Abnahmeumgebung für Backend-Blöcke. Er is
 
 ## Abgenommener Stand
 
-Stand 21. Juli 2026:
+Stand 22. Juli 2026:
 
 - Ubuntu 26.04 LTS, Kernel `7.0.0-28-generic`
 - Docker Engine 29 mit Compose-Plugin
@@ -17,7 +17,7 @@ Stand 21. Juli 2026:
 - 2 GB Swap als Schutz vor kurzzeitigen Build-Spitzen
 - Fastify-API und Web-Container hinter Caddy auf Port 80 und 443
 - `/api/*` wird an die API geleitet; Spiel und Roadmap werden vom Web-Container ausgeliefert
-- Migrationen bis `000003_authoritative_run` und insgesamt 23 öffentliche Tabellen aktiv
+- Migrationen bis `000005_guilds_and_social` und insgesamt 57 öffentliche Tabellen aktiv
 
 PostgreSQL wird nur als `127.0.0.1:54329` veröffentlicht. Ein externer Verbindungsversuch auf diesen Port wurde nach Einrichtung und nach Neustart abgewiesen.
 
@@ -78,6 +78,15 @@ Ein manuelles Backup startet mit:
 systemctl start idle-tamer-db-backup.service
 journalctl -u idle-tamer-db-backup.service -n 30 --no-pager
 ```
+
+Der jüngste Dump wird ausschließlich in eine neue temporäre Datenbank zurückgespielt und dort mit Healthcheck, Revision, Beispielbuchung und Ledger geprüft:
+
+```bash
+cd /srv/idle-tamer/app
+bash infra/scripts/verify-server-backup.sh
+```
+
+Das Skript verweigert die Quelldatenbank als Restoreziel und entfernt die temporäre Prüfdatenbank auch nach einem Fehler.
 
 ## Nur-Lese-Supportsicht
 

@@ -2,7 +2,7 @@
 
 - Stand: 22. Juli 2026
 - Aktiver Block: **Block 8 – Fundament einfrieren und an Roadmap B übergeben**
-- Aktiver Schritt: **Schritt 3 – Prüfen**
+- Aktiver Schritt: **Schritt 4 – Abnehmen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -44,9 +44,9 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
-| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [ ] | [ ] | **Aktiv · Prüfen** |
+| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [x] | [ ] | **Aktiv · Abnehmen** |
 
-Gesamtfortschritt: **30 von 32 Schritten abgeschlossen (93,8 %)**.
+Gesamtfortschritt: **31 von 32 Schritten abgeschlossen (96,9 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -402,14 +402,16 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] veraltete oder doppelte Entwicklungsdokumente bereinigen
 - [x] Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen
 
-### Schritt 3 – Prüfen ⬜
+### Schritt 3 – Prüfen ✅
 
-- [ ] vollständigen lokalen Gesamtcheck und PostgreSQL-18-Integrationen ausführen
-- [ ] Dev-Domain, Accounts, Run, Sammlung und Gilden im Browser erneut rauchtesten
-- [ ] Backup, Migrationen, Restore-Anleitung und Serverneustart prüfen
-- [ ] Roadmap-, Vertrags- und Versionsangaben auf Widersprüche prüfen
-- [ ] sicherstellen, dass Roadmap B keine wertrelevante Logik in den Browser verschiebt
-- [ ] Repository und Servercheckout auf denselben sauberen Commit bringen
+- [x] vollständigen lokalen Gesamtcheck und PostgreSQL-18-Integrationen ausführen
+- [x] Dev-Domain, Accounts, Run, Sammlung und Gilden im Browser erneut rauchtesten
+- [x] Backup, Migrationen, Restore-Anleitung und Serverneustart prüfen
+- [x] Roadmap-, Vertrags- und Versionsangaben auf Widersprüche prüfen
+- [x] sicherstellen, dass Roadmap B keine wertrelevante Logik in den Browser verschiebt
+- [x] Repository und Servercheckout auf denselben sauberen Commit bringen
+
+**Gate erfüllt:** Gesamtregression, 26 PostgreSQL-18-Integrationen, echter Domain-Smoke, frischer Dump samt Restore, Migrationstatus und vollständiger Serverneustart sind grün. Temporäre QA-Daten wurden entfernt; zwei bestehende Accounts blieben erhalten. Veraltete Block-6-/Block-7-Beschriftungen und Serverdokumentation wurden korrigiert. Nachweis: `backend/A08_FOUNDATION_VERIFICATION.md`.
 
 ### Schritt 4 – Abnehmen ⬜
 
@@ -447,7 +449,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Block A.08, Schritt 3 prüft jetzt das gesamte Systemfundament.** Das Übergabepaket startet in `ui/HANDOFF.md`; der codebasierte Katalog liegt unter `/dev/ui-catalog.html`. Als Nächstes laufen Gesamtcheck, PostgreSQL-18-Integrationen, Domain-Smoke, Backup-/Restore-Prüfung sowie Vertrags- und Commitabgleich.
+**Block A.08, Schritt 4 nimmt jetzt das geprüfte Systemfundament formal ab.** Als Nächstes werden Abschlussbericht und offene UX-Themen veröffentlicht, Roadmap A eingefroren, Roadmap B aktiviert und die öffentliche Statusseite auf B.01 umgestellt. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
 
 PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 
