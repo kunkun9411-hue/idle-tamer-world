@@ -136,6 +136,12 @@
   filter: brightness(1.08) drop-shadow(0 14px 20px rgba(111, 70, 210, .32));
 }
 
+.silver-ether-action:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  filter: brightness(1.12) drop-shadow(0 0 7px rgba(199, 178, 255, .48)) drop-shadow(0 13px 20px rgba(96, 60, 184, .3));
+}
+
 .silver-ether-action:disabled { filter: grayscale(.58) saturate(.55); }
 
 .login-panel__mobile-brand { display: none; }

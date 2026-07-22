@@ -126,6 +126,14 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await expect(page.getByTestId("offline-collect")).toHaveCSS("background-image", /primary-button-frame-v1\.webp/);
   await expect(page.getByTestId("offline-collect")).toHaveCSS("box-shadow", "none");
   expect(await page.getByTestId("offline-collect").evaluate((element) => getComputedStyle(element, "::after").display)).toBe("none");
+  await page.keyboard.press("Tab");
+  const collectFocus = await page.getByTestId("offline-collect").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { isFocusVisible: element.matches(":focus-visible"), outline: style.outlineStyle, filter: style.filter };
+  });
+  expect(collectFocus.isFocusVisible).toBe(true);
+  expect(collectFocus.outline).toBe("none");
+  expect(collectFocus.filter).toContain("drop-shadow");
   await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await skipTutorialIfVisible(page);

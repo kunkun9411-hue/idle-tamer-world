@@ -35,6 +35,8 @@ for (const viewport of UI_VIEWPORTS) {
     await page.getByTestId("login-submit").click();
     await expect(page.getByTestId("offline-report")).toBeVisible();
     await shot("03-offline-report");
+    await page.keyboard.press("Tab");
+    await shot("03-offline-report-focus");
     await page.getByTestId("offline-collect").hover();
     await shot("03-offline-report-hover");
     await page.getByTestId("offline-collect").click();
