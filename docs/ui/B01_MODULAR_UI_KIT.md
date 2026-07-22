@@ -61,7 +61,10 @@ Strukturelle Referenzen: [Fab – Modular Borders and Frames](https://www.fab.co
 | A04 | Dünne horizontale Rahmenkante | `art-source/generated/ui-kit-v1/transparent/frame-edge-thin-horizontal-silver-ether-v1-master.png` | `assets/ui/kit/frame/edge-thin-horizontal-v1.webp` | freigegeben |
 | A05 | Dünne vertikale Rahmenkante | verlustfreie 90°-Ableitung von A04 | `assets/ui/kit/frame/edge-thin-vertical-v1.webp` | freigegeben |
 | A06 | Kompakte Kartenrahmenecke | `art-source/generated/ui-kit-v1/transparent/frame-corner-compact-silver-ether-v1-master.png` | `assets/ui/kit/frame/corner-compact-v1.webp` | freigegeben |
+| A07 | Minimale Tooltip-Rahmenecke | `art-source/generated/ui-kit-v1/transparent/frame-corner-tooltip-silver-ether-v1-master.png` | `assets/ui/kit/frame/corner-tooltip-v1.webp` | freigegeben |
 
 A01 bis A03 besitzen im UI-Katalog zusätzlich eine sichtbare Verbindungsprobe. Sie zeigt einen vollständigen skalierbaren Fensterrahmen aus vier gedrehten Ecken, zwei horizontalen Kanten und zwei abgeleiteten vertikalen Kanten.
 
 A04 bis A06 bilden die leichte Kartenfamilie und besitzen eine eigene sichtbare Verbindungsprobe. Ihre horizontale und vertikale Kante wird nach dem 9-Slice-Prinzip nur in Längsrichtung gestreckt; die Randstärke bleibt identisch. Der technische Vertrag von A04 erzwingt außerdem eine sichtbare Höhe von höchstens 45 Prozent der A02-Höhe und mindestens 90 Prozent nutzbare Breite.
+
+A07 reduziert dieselbe Familie zur Tooltip-Hierarchie. Die Katalogprobe kombiniert A04, A05 und vier A07-Ecken mit echtem HTML-Inhalt; Rolle, Effekttext und Zahlen sind nicht in den Rasterbildern eingebrannt.

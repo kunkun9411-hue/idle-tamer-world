@@ -82,6 +82,19 @@ root.innerHTML = `
   </main>
   <footer class="catalog-footer"><span>Idle Tamer · Designvertrag B.01</span><span>Quelle: ui-catalog-data.ts · docs/ui</span></footer>`;
 
+document.querySelector<HTMLElement>("#kit")?.insertAdjacentHTML("beforeend", `
+  <article class="ui-kit-assembly ui-kit-assembly--tooltip panel" data-kit-assembly="A04-A07">
+    <div><span class="eyebrow">PRAXISPROBE · A04, A05, A07</span><h3>Tooltip mit echtem UI-Text</h3><p>Die Bildteile liefern nur Material und Kontur. Rolle, Effekt und Zahlen bleiben zugängliches, lokalisierbares HTML.</p></div>
+    <div class="ui-kit-tooltip-stage" aria-label="Tooltip-Montage aus A04, A05 und A07">
+      <img class="ui-kit-tooltip-edge-h is-top" src="/assets/ui/kit/frame/edge-thin-horizontal-v1.webp" alt=""><img class="ui-kit-tooltip-edge-h is-bottom" src="/assets/ui/kit/frame/edge-thin-horizontal-v1.webp" alt="">
+      <img class="ui-kit-tooltip-edge-v is-left" src="/assets/ui/kit/frame/edge-thin-vertical-v1.webp" alt=""><img class="ui-kit-tooltip-edge-v is-right" src="/assets/ui/kit/frame/edge-thin-vertical-v1.webp" alt="">
+      <img class="ui-kit-tooltip-corner is-top-left" src="/assets/ui/kit/frame/corner-tooltip-v1.webp" alt=""><img class="ui-kit-tooltip-corner is-top-right" src="/assets/ui/kit/frame/corner-tooltip-v1.webp" alt="">
+      <img class="ui-kit-tooltip-corner is-bottom-left" src="/assets/ui/kit/frame/corner-tooltip-v1.webp" alt=""><img class="ui-kit-tooltip-corner is-bottom-right" src="/assets/ui/kit/frame/corner-tooltip-v1.webp" alt="">
+      <div class="ui-kit-tooltip-content"><span>ROLLENBONUS</span><strong>Resonanz aktiv</strong><p>Support + Verteidigung: Barrieren halten 8 % länger.</p></div>
+    </div>
+  </article>
+`);
+
 const viewportFrame = document.querySelector<HTMLElement>(".viewport-frame");
 for (const button of document.querySelectorAll<HTMLButtonElement>("[data-viewport]")) {
   button.addEventListener("click", () => {

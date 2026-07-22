@@ -91,6 +91,18 @@ ITEMS = [
         "connections": ["right", "bottom"],
         "status": "approved",
     },
+    {
+        "id": "A07",
+        "family": "frame",
+        "name": "Minimale Tooltip-Rahmenecke",
+        "source": "frame-corner-tooltip-silver-ether-v1-master.png",
+        "output": "frame/corner-tooltip-v1.webp",
+        "target": (192, 192),
+        "padding": 6,
+        "rotatable": True,
+        "connections": ["right", "bottom"],
+        "status": "approved",
+    },
 ]
 
 

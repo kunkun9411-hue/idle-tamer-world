@@ -206,6 +206,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Drehbare leichte Ecke für Karten, Tooltips und Sekundärfenster",
     state: "FREIGEGEBEN",
   },
+  {
+    id: "A07",
+    family: "Rahmen",
+    name: "Minimale Tooltip-Rahmenecke",
+    path: "/assets/ui/kit/frame/corner-tooltip-v1.webp",
+    runtime: "192×192 WebP",
+    use: "Kurze ruhige Eckkappe für Tooltips, Hinweise und Mikropanels",
+    state: "FREIGEGEBEN",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

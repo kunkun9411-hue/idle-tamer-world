@@ -28,7 +28,7 @@ UI_KIT_ROOT = PUBLIC / "assets" / "ui" / "kit"
 UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 10}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 11}
 MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 120_000}
 
 
@@ -193,7 +193,7 @@ def main() -> None:
         raise ValueError("ui kit: unsupported manifest version or style")
     if len({element["id"] for element in ui_kit_elements}) != len(ui_kit_elements):
         raise ValueError("ui kit: duplicate element IDs")
-    expected_derivations = {"A01": None, "A02": None, "A03": "rotate-90-from-A02", "A04": None, "A05": "rotate-90-from-A04", "A06": None}
+    expected_derivations = {"A01": None, "A02": None, "A03": "rotate-90-from-A02", "A04": None, "A05": "rotate-90-from-A04", "A06": None, "A07": None}
     actual_derivations = {element["id"]: element.get("derivation") for element in ui_kit_elements}
     if actual_derivations != expected_derivations:
         raise ValueError(f"ui kit: unexpected derivations {actual_derivations}")

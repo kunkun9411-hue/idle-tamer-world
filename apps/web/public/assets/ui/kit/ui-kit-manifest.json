@@ -115,6 +115,25 @@
       ],
       "status": "approved",
       "derivation": null
+    },
+    {
+      "id": "A07",
+      "family": "frame",
+      "name": "Minimale Tooltip-Rahmenecke",
+      "path": "/assets/ui/kit/frame/corner-tooltip-v1.webp",
+      "source": "art-source/generated/ui-kit-v1/transparent/frame-corner-tooltip-silver-ether-v1-master.png",
+      "width": 192,
+      "height": 192,
+      "alpha": true,
+      "bytes": 3762,
+      "sha256": "bf941b31ad3331e2ed29f7971e0126307d1f80734ecbad97f0e15241faf1b221",
+      "rotatable": true,
+      "connections": [
+        "right",
+        "bottom"
+      ],
+      "status": "approved",
+      "derivation": null
     }
   ]
 }

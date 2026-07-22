@@ -1323,6 +1323,17 @@
       "sha256": "fe0b71d60bd0545efb347d8f4398967631457eea6ab8ad28667ad915f9fc27e1"
     },
     {
+      "id": "ui.kit.frame.corner-tooltip-v1",
+      "kind": "ui",
+      "path": "/assets/ui/kit/frame/corner-tooltip-v1.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "alpha": true,
+      "bytes": 3762,
+      "sha256": "bf941b31ad3331e2ed29f7971e0126307d1f80734ecbad97f0e15241faf1b221"
+    },
+    {
       "id": "ui.kit.frame.edge-thick-horizontal-v1",
       "kind": "ui",
       "path": "/assets/ui/kit/frame/edge-thick-horizontal-v1.webp",
