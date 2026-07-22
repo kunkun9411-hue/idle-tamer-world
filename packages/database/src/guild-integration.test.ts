@@ -14,7 +14,7 @@ import { guardedTestDatabaseUrl } from "./test-database-guard";
 const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 const hash = (value: string): Buffer => createHash("sha256").update(value).digest();
-const now = new Date("2026-07-22T01:00:00.000Z");
+const now = new Date();
 
 integration("PostgreSQL 18 guild and social store", () => {
   let pool: Pool;
@@ -50,7 +50,7 @@ integration("PostgreSQL 18 guild and social store", () => {
       termsVersion: "alpha-foundation-1",
       privacyVersion: "alpha-foundation-1",
       verificationTokenHash: verificationHash,
-      verificationExpiresAt: new Date(now.getTime() + 60_000),
+      verificationExpiresAt: new Date(now.getTime() + 5 * 60_000),
       contentReleaseId: "foundation-1.0.0",
       balanceReleaseId: "low-numbers-1.0.0",
     });
