@@ -1,10 +1,10 @@
 # Idle Tamer – Roadmap A: Systemfundament
 
 - Stand: 22. Juli 2026
-- Aktiver Block: **Block 8 – Fundament einfrieren und an Roadmap B übergeben**
-- Aktiver Schritt: **Schritt 4 – Abnehmen**
+- Status: **abgeschlossen und eingefroren**
+- Abnahme: **32 von 32 Gates erfüllt**
 - Visuelle Statusseite: `/roadmap/`
-- Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
+- Eingefrorene Statusdaten: `apps/web/public/roadmap/roadmap-a-status.json`
 
 ## Version-0.2-Stabilisierung
 
@@ -12,7 +12,7 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden **Roadmap A – Systemfundament**. Danach folgen Roadmap B für Design und UI, Roadmap C für Content und Features sowie Roadmap D für Abnahme und Prüfung. Erst nach vollständiger Roadmap D beginnt die geschlossene Alpha-Testgruppe. Die Prozentanzeige bezieht sich ausschließlich auf die 32 Gates von Roadmap A. Details: `RELEASE_LIFECYCLE.md`; der vorbereitete Arbeitsrahmen für die nächste Phase steht in `ROADMAP_B_DESIGN_UI.md`.
+Die acht Blöcke bilden die abgeschlossene **Roadmap A – Systemfundament**. Roadmap B für Design und UI ist jetzt aktiv; danach folgen Roadmap C für Content und Features sowie Roadmap D für Abnahme und Prüfung. Erst nach vollständiger Roadmap D beginnt die geschlossene Alpha-Testgruppe. Die historische Prozentanzeige von A bezieht sich ausschließlich auf ihre 32 Gates. Details: `RELEASE_LIFECYCLE.md`; der aktive Arbeitsrahmen steht in `ROADMAP_B_DESIGN_UI.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -44,9 +44,9 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
-| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [x] | [ ] | **Aktiv · Abnehmen** |
+| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [x] | [x] | **Fertig** |
 
-Gesamtfortschritt: **31 von 32 Schritten abgeschlossen (96,9 %)**.
+Gesamtfortschritt: **32 von 32 Schritten abgeschlossen (100 %)**. Roadmap A ist eingefroren; neue UI-Arbeit wird ausschließlich in Roadmap B gezählt.
 
 ## Verbindliche Arbeitsregeln
 
@@ -413,16 +413,16 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Gate erfüllt:** Gesamtregression, 26 PostgreSQL-18-Integrationen, echter Domain-Smoke, frischer Dump samt Restore, Migrationstatus und vollständiger Serverneustart sind grün. Temporäre QA-Daten wurden entfernt; zwei bestehende Accounts blieben erhalten. Veraltete Block-6-/Block-7-Beschriftungen und Serverdokumentation wurden korrigiert. Nachweis: `backend/A08_FOUNDATION_VERIFICATION.md`.
 
-### Schritt 4 – Abnehmen ⬜
+### Schritt 4 – Abnehmen ✅
 
-- [ ] Roadmap-A-Abschlussbericht mit offenen UX-Themen veröffentlichen
-- [ ] Systemfundament gegen die ursprünglichen acht Blöcke abnehmen
-- [ ] Roadmap A einfrieren und nur noch für kritische Fehler öffnen
-- [ ] Roadmap B als aktiven Design- und UI-Zyklus starten
-- [ ] öffentliche Statusseite von A.08 auf B.01 umstellen
-- [ ] ausdrücklich festhalten, dass noch keine Alpha-Testgruppe startet
+- [x] Roadmap-A-Abschlussbericht mit offenen UX-Themen veröffentlichen
+- [x] Systemfundament gegen die ursprünglichen acht Blöcke abnehmen
+- [x] Roadmap A einfrieren und nur noch für kritische Fehler öffnen
+- [x] Roadmap B als aktiven Design- und UI-Zyklus starten
+- [x] öffentliche Statusseite von A.08 auf B.01 umstellen
+- [x] ausdrücklich festhalten, dass noch keine Alpha-Testgruppe startet
 
-**Gate:** Das Systemfundament ist übergabefähig. Roadmap B beginnt mit Design, Interface, UI, Lesbarkeit, Profilbildern, Avataren und Rahmen. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
+**Gate erfüllt:** Das Systemfundament ist vollständig geprüft, dokumentiert und eingefroren. Roadmap B beginnt mit Design, Interface, UI, Lesbarkeit, Profilbildern, Avataren und Rahmen. Offene UX-Themen und die technischen Schutzgrenzen stehen in `ROADMAP_A_COMPLETION.md`. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
 
 ---
 
@@ -449,7 +449,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Block A.08, Schritt 4 nimmt jetzt das geprüfte Systemfundament formal ab.** Als Nächstes werden Abschlussbericht und offene UX-Themen veröffentlicht, Roadmap A eingefroren, Roadmap B aktiviert und die öffentliche Statusseite auf B.01 umgestellt. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
+**Roadmap A ist mit 32/32 Gates abgeschlossen.** Als Nächstes läuft Roadmap B, Block B.01, Schritt 1: Der vorhandene UI-Bestand wird zu einem verbindlichen Designsystem für die eigentliche Spieleroberfläche. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
 
 PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 

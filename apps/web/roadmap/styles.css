@@ -431,6 +431,11 @@ h1 em {
   box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 18px 44px rgba(0, 0, 0, .2);
 }
 
+.program-card.is-complete {
+  border-color: rgba(112, 223, 173, .24);
+  background: linear-gradient(155deg, rgba(22, 35, 34, .78), rgba(13, 15, 23, .94));
+}
+
 .program-card > span {
   display: grid;
   place-items: center;
@@ -449,6 +454,13 @@ h1 em {
   border-color: var(--cyan);
   background: var(--cyan);
   box-shadow: 0 0 24px rgba(91, 212, 208, .18);
+}
+
+.program-card.is-complete > span {
+  color: #0b1511;
+  border-color: var(--mint);
+  background: var(--mint);
+  box-shadow: 0 0 24px rgba(112, 223, 173, .14);
 }
 
 .program-card small {
@@ -482,6 +494,10 @@ h1 em {
 
 .program-card.is-active strong {
   color: var(--cyan);
+}
+
+.program-card.is-complete strong {
+  color: var(--mint);
 }
 
 .alpha-gate {
@@ -550,6 +566,65 @@ h1 em {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+}
+
+.roadmap-switcher {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: -8px 0 18px;
+}
+
+.roadmap-switcher button {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  color: var(--silver);
+  text-align: left;
+  background: rgba(18, 21, 31, .72);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.roadmap-switcher button:hover,
+.roadmap-switcher button[aria-pressed="true"] {
+  transform: translateY(-1px);
+  border-color: rgba(91, 212, 208, .35);
+  background: rgba(91, 212, 208, .055);
+}
+
+.roadmap-switcher button > span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line-bright);
+  border-radius: 11px;
+  color: #d9cff5;
+  font-weight: 850;
+  background: rgba(159, 122, 234, .08);
+}
+
+.roadmap-switcher button[aria-pressed="true"] > span {
+  color: #0a1314;
+  border-color: var(--cyan);
+  background: var(--cyan);
+}
+
+.roadmap-switcher strong {
+  font-size: .76rem;
+}
+
+.roadmap-switcher small {
+  color: var(--muted);
+  font-size: .59rem;
+  font-weight: 800;
+  letter-spacing: .08em;
 }
 
 .block-card {
@@ -942,7 +1017,10 @@ h1 em {
 .account-visual,
 .guild-visual,
 .launch-visual,
-.collection-visual {
+.collection-visual,
+.design-visual,
+.navigation-visual,
+.responsive-visual {
   position: absolute;
   inset: 0;
   display: grid;
@@ -951,6 +1029,152 @@ h1 em {
     radial-gradient(circle at 50% 50%, rgba(114, 165, 255, 0.1), transparent 48%),
     linear-gradient(155deg, #141924, #0b0e15);
 }
+
+.design-board {
+  display: grid;
+  gap: 28px;
+  width: min(430px, 76%);
+  padding: 30px;
+  border: 1px solid rgba(159, 122, 234, .25);
+  border-radius: 20px;
+  background: rgba(20, 21, 31, .88);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .36), inset 0 1px rgba(255, 255, 255, .05);
+}
+
+.design-palette,
+.design-components {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.design-palette i {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: #090b11;
+}
+
+.design-palette i:nth-child(2) { background: #d9dce8; }
+.design-palette i:nth-child(3) { background: var(--violet); }
+.design-palette i:nth-child(4) { background: var(--cyan); }
+.design-palette i:nth-child(5) { background: #1c2030; }
+
+.design-type {
+  display: grid;
+  gap: 4px;
+}
+
+.design-type small,
+.design-type span {
+  color: var(--muted);
+  font-size: .56rem;
+  letter-spacing: .08em;
+}
+
+.design-type strong {
+  font-size: 2.6rem;
+  font-weight: 650;
+  letter-spacing: -.06em;
+}
+
+.design-components button,
+.design-components span {
+  padding: 9px 12px;
+  border: 1px solid var(--line-bright);
+  border-radius: 8px;
+  color: var(--silver);
+  font-size: .55rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, .035);
+}
+
+.design-components button:first-child {
+  color: #0a1314;
+  border-color: var(--cyan);
+  background: var(--cyan);
+}
+
+.design-components span {
+  margin-left: auto;
+  color: var(--mint);
+  border-color: rgba(112, 223, 173, .28);
+}
+
+.navigation-map {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: 84%;
+}
+
+.navigation-map > div {
+  display: grid;
+  place-items: center;
+  min-height: 126px;
+  padding: 16px;
+  border: 1px solid rgba(91, 212, 208, .2);
+  border-radius: 16px;
+  text-align: center;
+  background: rgba(17, 24, 32, .86);
+}
+
+.navigation-map span {
+  color: var(--cyan);
+  font-size: .55rem;
+  font-weight: 850;
+}
+
+.navigation-map strong {
+  margin: 12px 0 4px;
+  font-size: .75rem;
+}
+
+.navigation-map small {
+  color: var(--muted);
+  font-size: .52rem;
+}
+
+.navigation-map > i {
+  color: var(--cyan);
+  font-style: normal;
+}
+
+.viewport-set {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 18px;
+  width: 84%;
+}
+
+.viewport {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(114, 165, 255, .26);
+  border-radius: 12px;
+  background: linear-gradient(rgba(10, 14, 20, .16), rgba(8, 10, 15, .8)), center / cover url('/assets/zones/glass-gardens-v2.webp');
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .34);
+}
+
+.viewport--desktop { width: 48%; aspect-ratio: 16 / 10; }
+.viewport--tablet { width: 27%; aspect-ratio: 4 / 5; }
+.viewport--mobile { width: 17%; aspect-ratio: 9 / 18; }
+
+.viewport span,
+.viewport i {
+  display: block;
+  height: 8px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .18);
+}
+
+.viewport span { background: var(--blue); }
+.viewport i:last-child { width: 68%; }
 
 .system-map {
   position: relative;
@@ -1376,6 +1600,18 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .roadmap-switcher {
+    grid-template-columns: 1fr;
+  }
+
+  .roadmap-switcher button {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .roadmap-switcher small {
+    grid-column: 2;
+  }
+
   .block-card {
     min-height: 225px;
   }
@@ -1404,6 +1640,24 @@ footer {
   .system-map {
     gap: 12px;
     width: 92%;
+  }
+
+  .navigation-map {
+    grid-template-columns: 1fr;
+    width: 72%;
+  }
+
+  .navigation-map > div {
+    min-height: 72px;
+  }
+
+  .navigation-map > i {
+    display: none;
+  }
+
+  .design-board {
+    width: 86%;
+    padding: 22px;
   }
 
   .system-node {

@@ -1,0 +1,121 @@
+{
+  "roadmap": "A",
+  "status": "complete",
+  "updated": "22. Juli 2026 · Roadmap A abgeschlossen und eingefroren · 32/32 Gates",
+  "activeBlock": null,
+  "activeStep": null,
+  "blocks": [
+    {
+      "id": 1,
+      "kicker": "Fundament",
+      "title": "Lokale Grundversion",
+      "summary": "Der komplette Solo-Kernloop ist spielbar, getestet und als stabiler Ausgangsstand gesichert.",
+      "visual": "battle",
+      "accent": "violet",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Kernloop, Inhalte, Ökonomie und Stil festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Kampf, Sammlung, Prestige und Meta-Systeme spielbar" },
+        { "name": "Prüfen", "done": true, "note": "33 Regeltests, Build und 96 Runtime-Assets validiert" },
+        { "name": "Abnehmen", "done": true, "note": "Grundversion dokumentiert und auf GitHub gesichert" }
+      ]
+    },
+    {
+      "id": 2,
+      "kicker": "Client",
+      "title": "Backend-bereiter Client",
+      "summary": "Der Spielclient besitzt stabile Verträge, reproduzierbare Zustände und einen abgenommenen Kernspielbogen.",
+      "visual": "client",
+      "accent": "cyan",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festgezogen" },
+        { "name": "Bauen", "done": true, "note": "E2E-Kernloop, Service-Port, UI-Zustände und Assetvertrag fertig" },
+        { "name": "Prüfen", "done": true, "note": "48 Verträge und 12 Browserfälle inklusive DOM-Stabilität grün" },
+        { "name": "Abnehmen", "done": true, "note": "Spielbogen, Prestige V2 und API-Protokoll 8 freigegeben" }
+      ]
+    },
+    {
+      "id": 3,
+      "kicker": "Fundament",
+      "title": "API & PostgreSQL",
+      "summary": "Ein deploybares Backend-Fundament mit Migrationen, Transaktionen, Ledger und Backups.",
+      "visual": "backend",
+      "accent": "blue",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Node 24, Fastify 5, PostgreSQL 18, SQL-Schema und Betrieb festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Workspace, Fastify, Migration, Seed, Ledger und PostgreSQL-18-CI stehen" },
+        { "name": "Prüfen", "done": true, "note": "PG18, Up/Down, Parallelität, Rollback, Restore, Ledger und Log-Redaction grün" },
+        { "name": "Abnehmen", "done": true, "note": "Dev-Server, PostgreSQL, Migration, Neustart, Firewall und Backups geprüft" }
+      ]
+    },
+    {
+      "id": 4,
+      "kicker": "Identität",
+      "title": "Accounts & Bootstrap",
+      "summary": "Sichere Accounts, Sessions sowie dasselbe autoritative Profil und derselbe Starter auf jedem Browser.",
+      "visual": "account",
+      "accent": "amber",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Auth-, Session-, Profil-, Starter- und Datenschutzvertrag freigegeben" },
+        { "name": "Bauen", "done": true, "note": "Accounts, Sessions, Recovery, Bootstrap, Starter und getrennte Saves stehen" },
+        { "name": "Prüfen", "done": true, "note": "Missbrauch, Limits, Rotation, Cookies und zwei echte Browser grün" },
+        { "name": "Abnehmen", "done": true, "note": "Echter Spielerlogin, voller Live-Ablauf und Nur-Lese-Supportsicht freigegeben" }
+      ]
+    },
+    {
+      "id": 5,
+      "kicker": "Wirtschaft online",
+      "title": "Run & Wirtschaft",
+      "summary": "Kampfzeit, Gold, Run-Level, Zonen und Kampfspeicher werden ausschließlich vom Server berechnet und sind abgenommen.",
+      "visual": "economy",
+      "accent": "crimson",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Serverzeit, Kampftick, Reward-Batches, Zahlen- und Autoritätsgrenzen festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Run, Kampf, Speicher, Gold, Level und Zonen auf PostgreSQL migriert" },
+        { "name": "Prüfen", "done": true, "note": "Parallelzugriffe, Doppelclaims, große Zahlen und Client-Manipulation grün" },
+        { "name": "Abnehmen", "done": true, "note": "Hauptkampf und Ledger vollständig online freigegeben" }
+      ]
+    },
+    {
+      "id": 6,
+      "kicker": "Dauerfortschritt",
+      "title": "Sammlung & Zeitjobs",
+      "summary": "Eier, Monsterentwicklung, Gems, Prestige, Offline-Ertrag und Meta-Systeme sind serverautoritativ online.",
+      "visual": "collection",
+      "accent": "mint",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Besitz, Zeitjobs, Prestige und Contentbetrieb finalisiert" },
+        { "name": "Bauen", "done": true, "note": "Sammlung, Entwicklung, Offline und Meta-Systeme migriert" },
+        { "name": "Prüfen", "done": true, "note": "Zeit, Claims, Ledger und Content-Rollback auf PostgreSQL 18 grün" },
+        { "name": "Abnehmen", "done": true, "note": "Vollständigen Solo-Online-Entwicklungsstand freigegeben" }
+      ]
+    },
+    {
+      "id": 7,
+      "kicker": "Gemeinschaft",
+      "title": "Gilden & Gilden-DNA",
+      "summary": "Gemeinsame Ziele, DNA-Investitionen, Gildenbosse, Freunde und moderierbare Kommunikation.",
+      "visual": "guild",
+      "accent": "magenta",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "Rollen, DNA, Kooperation und Sozialregeln definiert" },
+        { "name": "Bauen", "done": true, "note": "Gildenkern, DNA, Boss, Expedition, Freunde und Chat online" },
+        { "name": "Prüfen", "done": true, "note": "Rechte, Wechsel, Parallelität, Power-Creep und Moderation grün" },
+        { "name": "Abnehmen", "done": true, "note": "Kooperativen Loop für den internen Entwicklungsbetrieb freigegeben" }
+      ]
+    },
+    {
+      "id": 8,
+      "kicker": "Roadmap-A-Abschluss",
+      "title": "Fundament eingefroren & übergeben",
+      "summary": "Roadmap A ist vollständig abgenommen, technisch eingefroren und als belastbare Basis an Roadmap B übergeben.",
+      "visual": "handoff",
+      "accent": "gold",
+      "steps": [
+        { "name": "Planen", "done": true, "note": "16 UI-Flächen, Zustände, Verträge und B-Prioritäten abgenommen" },
+        { "name": "Bauen", "done": true, "note": "UI-Katalog, Layout-Audit, 42 Screenshots und Profilverträge stehen" },
+        { "name": "Prüfen", "done": true, "note": "Gesamtregression, PG18, Domain-Smoke, Restore und Neustart grün" },
+        { "name": "Abnehmen", "done": true, "note": "Abschlussbericht veröffentlicht, A eingefroren und B.01 aktiviert" }
+      ]
+    }
+  ]
+}

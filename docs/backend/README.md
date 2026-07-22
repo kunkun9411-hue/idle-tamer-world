@@ -49,7 +49,7 @@ Block 4 verwendet Auth-Vertrag 1. Run-Vertrag 2 umfasst inzwischen den vollstän
 - [x] Gilden, DNA, Aufgaben, Expedition, Wochenboss, Freunde und Chat über Sozialvertrag 1
 - [x] interne Content- und Moderationswerkzeuge mit Rollen-, CSRF- und Auditgrenze
 
-Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Block A.08 schließt das Systemfundament ab und übergibt an Roadmap B. PvP, Handel und Live-Ops werden nicht vor Roadmap C gebaut.
+Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Roadmap A ist vollständig abgenommen und eingefroren; Roadmap B arbeitet jetzt an Design und UI. PvP, Handel und Live-Ops werden nicht vor Roadmap C gebaut.
 
 ## Gebauter Stand von Block 4
 

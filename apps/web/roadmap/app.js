@@ -10,6 +10,15 @@ const accentVariables = {
 };
 
 const visualTemplates = {
+  design: () => `
+    <div class="visual-label">Zielbild · Silver-Ether-System</div>
+    <div class="design-visual">
+      <div class="design-board">
+        <div class="design-palette"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="design-type"><small>DISPLAY / 52</small><strong>ETHER</strong><span>Interface typography · readable at every scale</span></div>
+        <div class="design-components"><button>PRIMÄR</button><button>SEKUNDÄR</button><span>AKTIV</span></div>
+      </div>
+    </div>`,
   battle: () => `
     <div class="visual-label">Spielbarer Prototyp</div>
     <div class="battle-visual" style="background-image:url('/assets/zones/glass-gardens-v2.webp')">
@@ -26,6 +35,17 @@ const visualTemplates = {
           <img class="device-mon" src="/assets/monsters/voltfin_idle_right.png" alt="Voltfin in der Kampfansicht" />
           <div class="device-panel"><i></i><i></i><i></i><i></i></div>
         </div>
+      </div>
+    </div>`,
+  navigation: () => `
+    <div class="visual-label">Zielbild · klare Spielerwege</div>
+    <div class="navigation-visual">
+      <div class="navigation-map">
+        <div><span>01</span><strong>Kampf</strong><small>Hauptszene</small></div>
+        <i>→</i>
+        <div><span>02</span><strong>Sammlung</strong><small>Entwicklung</small></div>
+        <i>→</i>
+        <div><span>03</span><strong>Gilde</strong><small>Gemeinschaft</small></div>
       </div>
     </div>`,
   backend: () => `
@@ -95,13 +115,31 @@ const visualTemplates = {
         <div class="guild-badge"><img src="/assets/monsters/glimmite_idle_right.png" alt="Glimmite als Gildenwappen" /></div>
       </div>
     </div>`,
-  launch: () => `
+  responsive: () => `
+    <div class="visual-label">Zielbild · drei robuste Viewports</div>
+    <div class="responsive-visual">
+      <div class="viewport-set">
+        <div class="viewport viewport--desktop"><span></span><i></i><i></i></div>
+        <div class="viewport viewport--tablet"><span></span><i></i><i></i></div>
+        <div class="viewport viewport--mobile"><span></span><i></i><i></i></div>
+      </div>
+    </div>`,
+  handoff: () => `
     <div class="visual-label">Zielbild · Übergabe von A nach B</div>
     <div class="launch-visual">
       <div class="handoff-stage">
-        <div class="handoff-roadmap is-current"><span>A</span><strong>System</strong><small id="handoff-a-percent">–</small></div>
+        <div class="handoff-roadmap is-current"><span>A</span><strong>System</strong><small>100% · EINGEFROREN</small></div>
         <i aria-hidden="true">→</i>
-        <div class="handoff-roadmap"><span>B</span><strong>Design & UI</strong><small>NÄCHSTER FOKUS</small></div>
+        <div class="handoff-roadmap"><span>B</span><strong>Design & UI</strong><small>AKTIVER FOKUS</small></div>
+      </div>
+    </div>`,
+  launch: () => `
+    <div class="visual-label">Zielbild · Übergabe von B nach C</div>
+    <div class="launch-visual">
+      <div class="handoff-stage">
+        <div class="handoff-roadmap is-current"><span>B</span><strong>Design & UI</strong><small>GESCHLOSSENES ERLEBNIS</small></div>
+        <i aria-hidden="true">→</i>
+        <div class="handoff-roadmap"><span>C</span><strong>Content</strong><small>NÄCHSTER FOKUS</small></div>
       </div>
     </div>`,
 };
@@ -118,9 +156,19 @@ const getPercent = (block) => {
   return Math.round((completed / block.steps.length) * 100);
 };
 
+const getTotals = (data) => {
+  const total = data.blocks.reduce((sum, block) => sum + block.steps.length, 0);
+  const completed = data.blocks.reduce((sum, block) => sum + block.steps.filter((step) => step.done).length, 0);
+  return { total, completed, percent: total === 0 ? 0 : (completed / total) * 100 };
+};
+
+const formatPercent = (percent) => `${Number.isInteger(percent) ? percent : percent.toFixed(1)}%`;
+
+const getBlockCode = (data, block) => `${data.roadmap}.${String(block.id).padStart(2, "0")}`;
+
 const getState = (block, data) => {
   if (block.steps.every((step) => step.done)) return "Fertig";
-  if (block.id === data.activeBlock) return "Aktiv";
+  if (data.status === "active" && block.id === data.activeBlock) return "Aktiv";
   return "Später";
 };
 
@@ -132,12 +180,12 @@ const renderCard = (block, data, selectedId) => {
       class="block-card"
       type="button"
       data-block-id="${block.id}"
-      data-active="${block.id === data.activeBlock}"
+      data-active="${data.status === "active" && block.id === data.activeBlock}"
       aria-pressed="${block.id === selectedId}"
       style="--card-accent:${accentVariables[block.accent] ?? accentVariables.violet}"
     >
       <span class="card-top">
-        <span class="card-number">BLOCK ${String(block.id).padStart(2, "0")}</span>
+        <span class="card-number">${getBlockCode(data, block)}</span>
         <span class="card-state">${state}</span>
       </span>
       <h3>${escapeHtml(block.title)}</h3>
@@ -149,8 +197,8 @@ const renderCard = (block, data, selectedId) => {
 
 const renderDetail = (block, data) => {
   const percent = getPercent(block);
-  const isActive = block.id === data.activeBlock;
-  document.querySelector("#detail-kicker").innerHTML = `<span></span> Block ${String(block.id).padStart(2, "0")} · ${escapeHtml(block.kicker)}`;
+  const isActive = data.status === "active" && block.id === data.activeBlock;
+  document.querySelector("#detail-kicker").innerHTML = `<span></span> ${getBlockCode(data, block)} · ${escapeHtml(block.kicker)}`;
   document.querySelector("#detail-title").textContent = block.title;
   document.querySelector("#detail-percent").textContent = `${percent}%`;
   document.querySelector("#detail-summary").textContent = block.summary;
@@ -163,40 +211,55 @@ const renderDetail = (block, data) => {
     </article>`).join("");
 
   const hint = block.steps.every((step) => step.done)
-    ? "Dieser Block ist abgenommen. Er wird nur für Fehlerkorrekturen erneut geöffnet."
+    ? data.status === "complete"
+      ? "Dieser Block ist abgenommen und eingefroren. Roadmap A wird nur für kritische Fehler erneut geöffnet."
+      : "Dieser Block ist abgenommen. Er wird nur für Fehlerkorrekturen erneut geöffnet."
     : isActive
-      ? `Aktuell aktiv: Schritt ${data.activeStep} – ${block.steps[data.activeStep - 1].name}.`
-      : `Dieser Block startet nach der Abnahme von Block ${block.id - 1}.`;
+      ? `Aktuell aktiv: ${getBlockCode(data, block)}, Schritt ${data.activeStep} – ${block.steps[data.activeStep - 1].name}.`
+      : `Dieser Block startet nach der Abnahme von ${data.roadmap}.${String(block.id - 1).padStart(2, "0")}.`;
   document.querySelector("#detail-hint").textContent = hint;
 };
 
 const init = async () => {
-  const response = await fetch("/roadmap/roadmap-status.json", { cache: "no-store" });
-  if (!response.ok) throw new Error(`Status konnte nicht geladen werden (${response.status}).`);
-  const data = await response.json();
-  const totalSteps = data.blocks.reduce((sum, block) => sum + block.steps.length, 0);
-  const completedSteps = data.blocks.reduce((sum, block) => sum + block.steps.filter((step) => step.done).length, 0);
-  const overallPercent = (completedSteps / totalSteps) * 100;
-  const activeBlock = data.blocks.find((block) => block.id === data.activeBlock) ?? data.blocks[0];
-  let selectedId = activeBlock.id;
+  const [aResponse, bResponse] = await Promise.all([
+    fetch("/roadmap/roadmap-a-status.json", { cache: "no-store" }),
+    fetch("/roadmap/roadmap-status.json", { cache: "no-store" }),
+  ]);
+  if (!aResponse.ok || !bResponse.ok) {
+    throw new Error(`Status konnte nicht geladen werden (A: ${aResponse.status}, B: ${bResponse.status}).`);
+  }
 
-  document.querySelector("#overall-percent").textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
-  document.querySelector("#overall-ring").style.setProperty("--progress", `${overallPercent}%`);
-  document.querySelector("#program-a-percent").textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
-  const handoffPercent = document.querySelector("#handoff-a-percent");
-  if (handoffPercent) handoffPercent.textContent = `${Number.isInteger(overallPercent) ? overallPercent : overallPercent.toFixed(1)}%`;
-  document.querySelector("#active-block-label").textContent = `0${activeBlock.id} · ${activeBlock.title}`;
-  document.querySelector("#active-step-label").textContent = `${data.activeStep} · ${activeBlock.steps[data.activeStep - 1].name}`;
-  document.querySelector("#completed-label").textContent = `${completedSteps} / ${totalSteps} Gates`;
-  document.querySelector("#updated-label").textContent = data.updated;
+  const roadmaps = {
+    A: await aResponse.json(),
+    B: await bResponse.json(),
+  };
+  const activeData = roadmaps.B;
+  const activeBlock = activeData.blocks.find((block) => block.id === activeData.activeBlock) ?? activeData.blocks[0];
+  const activeTotals = getTotals(activeData);
+  const aTotals = getTotals(roadmaps.A);
+  let selectedRoadmap = "B";
+  let selectedIds = { A: roadmaps.A.blocks.at(-1).id, B: activeBlock.id };
+
+  document.querySelector("#overall-percent").textContent = formatPercent(activeTotals.percent);
+  document.querySelector("#overall-ring").style.setProperty("--progress", `${activeTotals.percent}%`);
+  document.querySelector("#program-a-percent").textContent = formatPercent(aTotals.percent);
+  document.querySelector("#program-b-percent").textContent = formatPercent(activeTotals.percent);
+  document.querySelector("#switch-a-progress").textContent = `${aTotals.completed}/${aTotals.total} · ${formatPercent(aTotals.percent)}`;
+  document.querySelector("#switch-b-progress").textContent = `${activeTotals.completed}/${activeTotals.total} · ${formatPercent(activeTotals.percent)}`;
+  document.querySelector("#active-block-label").textContent = `${getBlockCode(activeData, activeBlock)} · ${activeBlock.title}`;
+  document.querySelector("#active-step-label").textContent = `${activeData.activeStep} · ${activeBlock.steps[activeData.activeStep - 1].name}`;
+  document.querySelector("#completed-label").textContent = `${activeTotals.completed} / ${activeTotals.total} B-Gates`;
+  document.querySelector("#updated-label").textContent = activeData.updated;
 
   const grid = document.querySelector("#block-grid");
   const paintCards = () => {
+    const data = roadmaps[selectedRoadmap];
+    const selectedId = selectedIds[selectedRoadmap];
     grid.innerHTML = data.blocks.map((block) => renderCard(block, data, selectedId)).join("");
     grid.querySelectorAll(".block-card").forEach((button) => {
       button.addEventListener("click", () => {
-        selectedId = Number(button.dataset.blockId);
-        const selected = data.blocks.find((block) => block.id === selectedId);
+        selectedIds[selectedRoadmap] = Number(button.dataset.blockId);
+        const selected = data.blocks.find((block) => block.id === selectedIds[selectedRoadmap]);
         paintCards();
         renderDetail(selected, data);
         document.querySelector("#detail").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -204,8 +267,28 @@ const init = async () => {
     });
   };
 
-  paintCards();
-  renderDetail(activeBlock, data);
+  const paintRoadmap = () => {
+    const data = roadmaps[selectedRoadmap];
+    const selected = data.blocks.find((block) => block.id === selectedIds[selectedRoadmap]) ?? data.blocks[0];
+    document.querySelector("#selected-roadmap-label").innerHTML = `<span></span> Roadmap ${data.roadmap}`;
+    document.querySelector("#blocks-title").textContent = data.roadmap === "A"
+      ? "Acht abgeschlossene Blöcke des Systemfundaments."
+      : "Acht Blöcke für Design und Oberfläche.";
+    document.querySelectorAll("[data-roadmap-switch]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.roadmapSwitch === selectedRoadmap));
+    });
+    paintCards();
+    renderDetail(selected, data);
+  };
+
+  document.querySelectorAll("[data-roadmap-switch]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedRoadmap = button.dataset.roadmapSwitch;
+      paintRoadmap();
+    });
+  });
+
+  paintRoadmap();
 };
 
 init().catch((error) => {

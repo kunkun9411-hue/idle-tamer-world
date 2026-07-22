@@ -1,118 +1,120 @@
 {
-  "updated": "22. Juli 2026 · A.08 Gesamtprüfung bestanden · Roadmap A bei 96,9 %",
-  "activeBlock": 8,
-  "activeStep": 4,
+  "roadmap": "B",
+  "status": "active",
+  "updated": "22. Juli 2026 · Roadmap B gestartet · B.01 Planen aktiv",
+  "activeBlock": 1,
+  "activeStep": 1,
   "blocks": [
     {
       "id": 1,
-      "kicker": "Fundament",
-      "title": "Lokale Grundversion",
-      "summary": "Der komplette Solo-Kernloop ist spielbar, getestet und als stabiler Ausgangsstand gesichert.",
-      "visual": "battle",
+      "kicker": "Visuelle Basis",
+      "title": "Inventar & Designsystem",
+      "summary": "Aus dem geprüften UI-Bestand entsteht ein verbindliches Silver-Ether-System für Tokens, Typografie, Raster und Komponenten.",
+      "visual": "design",
       "accent": "violet",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Kernloop, Inhalte, Ökonomie und Stil festgelegt" },
-        { "name": "Bauen", "done": true, "note": "Kampf, Sammlung, Prestige und Meta-Systeme spielbar" },
-        { "name": "Prüfen", "done": true, "note": "33 Regeltests, Build und 96 Runtime-Assets validiert" },
-        { "name": "Abnehmen", "done": true, "note": "Grundversion dokumentiert und auf GitHub gesichert" }
+        { "name": "Planen", "done": false, "note": "Bestand, Tokens, Typografie, Komponenten und Zielansichten festziehen" },
+        { "name": "Bauen", "done": false, "note": "Design-Tokens und Kernkomponenten als echte Spielbauteile umsetzen" },
+        { "name": "Prüfen", "done": false, "note": "Katalog, Viewports, Zustände, Kontrast und Konsistenz vergleichen" },
+        { "name": "Abnehmen", "done": false, "note": "Verbindliche visuelle Basis für alle folgenden B-Blöcke freigeben" }
       ]
     },
     {
       "id": 2,
-      "kicker": "Client",
-      "title": "Backend-bereiter Client",
-      "summary": "Der geprüfte Clientvertrag wird jetzt im echten Spielbogen abgenommen und für den Backendstart freigegeben.",
-      "visual": "client",
+      "kicker": "Orientierung",
+      "title": "Navigation & Informationsarchitektur",
+      "summary": "Kampf, Sammlung, Brut, Forschung, Gilde und Profil erhalten klare Wege und eine verständliche Szenenhierarchie.",
+      "visual": "navigation",
       "accent": "cyan",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Spielbögen, Balance, Resetregeln und Abnahmefall festgezogen" },
-        { "name": "Bauen", "done": true, "note": "E2E-Kernloop, Service-Port, UI-Zustände und Assetvertrag fertig" },
-        { "name": "Prüfen", "done": true, "note": "48 Verträge und 12 Browserfälle inklusive DOM-Stabilität grün" },
-        { "name": "Abnehmen", "done": true, "note": "Spielbogen, Prestige V2 und API-Protokoll 8 freigegeben" }
+        { "name": "Planen", "done": false, "note": "Spielerwege, Szenenhierarchie und Desktop-/Mobilnavigation definieren" },
+        { "name": "Bauen", "done": false, "note": "Hauptnavigation, Kontextaktionen und einklappbare Nebenflächen umsetzen" },
+        { "name": "Prüfen", "done": false, "note": "Kernwege, Rücksprünge, Fokus und mobile Kollisionen testen" },
+        { "name": "Abnehmen", "done": false, "note": "Jede Kernfunktion in höchstens zwei verständlichen Wechseln erreichbar machen" }
       ]
     },
     {
       "id": 3,
-      "kicker": "Fundament",
-      "title": "API & PostgreSQL",
-      "summary": "Ein deploybares Backend-Fundament mit Migrationen, Transaktionen, Ledger und Backups.",
-      "visual": "backend",
-      "accent": "blue",
+      "kicker": "Hauptszene",
+      "title": "Kampfszene & HUD",
+      "summary": "Die Kampfszene wird zur klaren Hauptbühne: große Monster, lesbarer Kampfstatus und versteckbare Nebeninformationen.",
+      "visual": "battle",
+      "accent": "crimson",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Node 24, Fastify 5, PostgreSQL 18, SQL-Schema und Betrieb festgelegt" },
-        { "name": "Bauen", "done": true, "note": "Workspace, Fastify, Migration, Seed, Ledger und PostgreSQL-18-CI stehen" },
-        { "name": "Prüfen", "done": true, "note": "PG18, Up/Down, Parallelität, Rollback, Restore, Ledger und Log-Redaction grün" },
-        { "name": "Abnehmen", "done": true, "note": "Dev-Server, PostgreSQL, Migration, Neustart, Firewall und Backups geprüft" }
+        { "name": "Planen", "done": false, "note": "Informationsprioritäten, HUD-Zonen und Interaktionsdichte festlegen" },
+        { "name": "Bauen", "done": false, "note": "Kampfbühne, Teamwahl, Ressourcen und einklappbare Panels neu ordnen" },
+        { "name": "Prüfen", "done": false, "note": "Lesbarkeit, Überlauf, kleine Viewports und lange Zahlen prüfen" },
+        { "name": "Abnehmen", "done": false, "note": "Kampf bleibt auf Desktop und Mobile der unübersehbare Mittelpunkt" }
       ]
     },
     {
       "id": 4,
-      "kicker": "Identität",
-      "title": "Accounts & Bootstrap",
-      "summary": "Sichere Accounts, Sessions sowie dasselbe autoritative Profil und derselbe Starter auf jedem Browser.",
-      "visual": "account",
-      "accent": "amber",
+      "kicker": "Fortschritt",
+      "title": "Sammlung & Entwicklung",
+      "summary": "Monster, Eier, Fragmente, Hyperlevel, Evolution, Gems, Forschung und Prestige werden als zusammenhängender Fortschritt lesbar.",
+      "visual": "collection",
+      "accent": "mint",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Auth-, Session-, Profil-, Starter- und Datenschutzvertrag freigegeben" },
-        { "name": "Bauen", "done": true, "note": "Accounts, Sessions, Recovery, Bootstrap, Starter und getrennte Saves stehen" },
-        { "name": "Prüfen", "done": true, "note": "Missbrauch, Limits, Rotation, Cookies und zwei echte Browser grün" },
-        { "name": "Abnehmen", "done": true, "note": "Echter Spielerlogin, voller Live-Ablauf und Nur-Lese-Supportsicht freigegeben" }
+        { "name": "Planen", "done": false, "note": "Fortschrittspfade, Begriffe, Kosten und Besitzsignale hierarchisieren" },
+        { "name": "Bauen", "done": false, "note": "Sammlung, Brut, Gems, Forschung und Prestige visuell vereinheitlichen" },
+        { "name": "Prüfen", "done": false, "note": "Leer-, Lade-, Sperr-, Fehler- und Erfolgszustände vollständig testen" },
+        { "name": "Abnehmen", "done": false, "note": "Spieler verstehen Reset- und Dauerfortschritt ohne externe Erklärung" }
       ]
     },
     {
       "id": 5,
-      "kicker": "Wirtschaft online",
-      "title": "Run & Wirtschaft",
-      "summary": "Kampfzeit, Gold, Run-Level, Zonen und Kampfspeicher werden ausschließlich vom Server berechnet und sind abgenommen.",
-      "visual": "economy",
-      "accent": "crimson",
+      "kicker": "Tamer-Identität",
+      "title": "Profil, Avatare & Rahmen",
+      "summary": "Runde Avatare, getrennte Rahmen und ein modernes Profil machen den Tamer sichtbar, ohne Besitzlogik in den Client zu verlagern.",
+      "visual": "account",
+      "accent": "amber",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Serverzeit, Kampftick, Reward-Batches, Zahlen- und Autoritätsgrenzen festgelegt" },
-        { "name": "Bauen", "done": true, "note": "Run, Kampf, Speicher, Gold, Level und Zonen auf PostgreSQL migriert" },
-        { "name": "Prüfen", "done": true, "note": "Parallelzugriffe, Doppelclaims, große Zahlen und Client-Manipulation grün" },
-        { "name": "Abnehmen", "done": true, "note": "Hauptkampf und Ledger vollständig online freigegeben" }
+        { "name": "Planen", "done": false, "note": "Profilhierarchie, Avatar-/Rahmenkatalog und Auswahlregeln gestalten" },
+        { "name": "Bauen", "done": false, "note": "Profilfläche, 512er Runtime-Layer und Auswahlzustände umsetzen" },
+        { "name": "Prüfen", "done": false, "note": "Kombinationen, Masken, Fallbacks, Besitz und Geräteansichten prüfen" },
+        { "name": "Abnehmen", "done": false, "note": "Identität ist konsistent in Profil, Gilde, Freunde und Ranglisten einsetzbar" }
       ]
     },
     {
       "id": 6,
-      "kicker": "Dauerfortschritt",
-      "title": "Sammlung & Zeitjobs",
-      "summary": "Eier, Monsterentwicklung, Gems, Prestige, Offline-Ertrag und Meta-Systeme gehen online.",
-      "visual": "collection",
-      "accent": "mint",
+      "kicker": "Gemeinschaft",
+      "title": "Gilden- & Sozialoberfläche",
+      "summary": "DNA, Mitglieder, Aufgaben, Boss, Expedition, Freunde, Chat und Moderation erhalten eine verständliche gemeinsame Oberfläche.",
+      "visual": "guild",
+      "accent": "magenta",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Besitz, Zeitjobs, Prestige und Contentbetrieb finalisiert" },
-        { "name": "Bauen", "done": true, "note": "Sammlung, Entwicklung, Offline und Meta-Systeme migriert" },
-        { "name": "Prüfen", "done": true, "note": "Zeit, Claims, Ledger und Content-Rollback auf PostgreSQL 18 grün" },
-        { "name": "Abnehmen", "done": true, "note": "Vollständigen Solo-Online-Entwicklungsstand freigegeben" }
+        { "name": "Planen", "done": false, "note": "Rollen, Rechte, gemeinsame Ziele und Sozialfeedback sichtbar strukturieren" },
+        { "name": "Bauen", "done": false, "note": "Gildenhub, DNA, Boss, Aufgaben, Freunde und Chat neu gestalten" },
+        { "name": "Prüfen", "done": false, "note": "Rechte, Sperren, Meldungen, lange Namen und Aktivitätszustände prüfen" },
+        { "name": "Abnehmen", "done": false, "note": "Kooperation ist verständlich, motivierend und moderierbar dargestellt" }
       ]
     },
     {
       "id": 7,
-      "kicker": "Gemeinschaft",
-      "title": "Gilden & Gilden-DNA",
-      "summary": "Gemeinsame Ziele, DNA-Investitionen, Gildenbosse, Freunde und moderierbare Kommunikation.",
-      "visual": "guild",
-      "accent": "magenta",
+      "kicker": "Alle Geräte",
+      "title": "Responsive & Zugänglichkeit",
+      "summary": "Desktop, Tablet und Mobile erhalten robuste Layouts, klare Fokusführung, ausreichenden Kontrast und reduzierte Bewegung.",
+      "visual": "responsive",
+      "accent": "blue",
       "steps": [
-        { "name": "Planen", "done": true, "note": "Rollen, DNA, Kooperation und Sozialregeln definiert" },
-        { "name": "Bauen", "done": true, "note": "Gildenkern, DNA, Boss, Expedition, Freunde und Chat online" },
-        { "name": "Prüfen", "done": true, "note": "Rechte, Wechsel, Parallelität, Power-Creep und Moderation grün" },
-        { "name": "Abnehmen", "done": true, "note": "Kooperativen Loop für den internen Entwicklungsbetrieb freigegeben" }
+        { "name": "Planen", "done": false, "note": "Viewports, Eingaben, Kontrast, Fokus und Bewegungsregeln festlegen" },
+        { "name": "Bauen", "done": false, "note": "Responsive Raster, Touchziele, Tastaturführung und Motion-Fallbacks umsetzen" },
+        { "name": "Prüfen", "done": false, "note": "Layout-Audit, Browsermatrix, Zoom, Tastatur und reduzierte Bewegung testen" },
+        { "name": "Abnehmen", "done": false, "note": "Alle Kernwege auf drei Referenz-Viewports ohne P0/P1-Layoutfehler freigeben" }
       ]
     },
     {
       "id": 8,
-      "kicker": "Roadmap-A-Abschluss",
-      "title": "Fundament einfrieren & übergeben",
-      "summary": "Roadmap A sauber abschließen, technische Grenzen einfrieren und Roadmap B für Design, UI und Lesbarkeit vorbereiten.",
+      "kicker": "Roadmap-B-Abschluss",
+      "title": "Gesamtpolish & Übergabe",
+      "summary": "Animation, Feedback, Zustände und Oberflächen werden als geschlossenes Spielerlebnis abgenommen und an Roadmap C übergeben.",
       "visual": "launch",
       "accent": "gold",
       "steps": [
-        { "name": "Planen", "done": true, "note": "16 UI-Flächen, Zustände, Verträge und B-Prioritäten abgenommen" },
-        { "name": "Bauen", "done": true, "note": "UI-Katalog, Layout-Audit, 42 Screenshots und Profilverträge stehen" },
-        { "name": "Prüfen", "done": true, "note": "Gesamtregression, PG18, Domain-Smoke, Restore und Neustart grün" },
-        { "name": "Abnehmen", "done": false, "note": "Roadmap A einfrieren und Roadmap B offiziell starten" }
+        { "name": "Planen", "done": false, "note": "Polish-Budget, finale Szenenmatrix und C-Übergabekriterien festlegen" },
+        { "name": "Bauen", "done": false, "note": "Mikrofeedback, Übergänge, Restzustände und visuelle Schulden schließen" },
+        { "name": "Prüfen", "done": false, "note": "Gesamtregression, Screenshotvergleich und echte Gerätewege ausführen" },
+        { "name": "Abnehmen", "done": false, "note": "Roadmap B einfrieren und die gestaltete Oberfläche an C übergeben" }
       ]
     }
   ]

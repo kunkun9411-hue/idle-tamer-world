@@ -23,7 +23,7 @@
       </a>
       <nav aria-label="Seitennavigation">
         <a href="#program">Roadmaps A–D</a>
-        <a href="#blocks">Roadmap A</a>
+        <a href="#blocks">Roadmap B</a>
         <a href="#detail">Aktiver Stand</a>
         <a class="nav-cta" href="/">Spiel öffnen</a>
       </nav>
@@ -32,11 +32,11 @@
     <main>
       <section class="hero" aria-labelledby="page-title">
         <div class="hero-copy">
-          <p class="eyebrow"><span></span> Roadmap A · Systemfundament</p>
-          <h1 id="page-title">Das Fundament steht.<br /><em>Die Alpha kommt nach D.</em></h1>
+          <p class="eyebrow"><span></span> Roadmap B · Design & UI</p>
+          <h1 id="page-title">Das System steht.<br /><em>Jetzt wird es zum Spiel.</em></h1>
           <p class="hero-lead">
-            Roadmap A baut die technische Grundlage in acht Blöcken. Danach folgen Design und UI in B,
-            Content und Features in C sowie die vollständige Abnahme in D. Erst dann startet die Alpha-Testgruppe.
+            Roadmap A ist mit 32 von 32 Gates abgeschlossen. Jetzt verwandelt Roadmap B das belastbare Fundament
+            in eine moderne, klare und greifbare Spieleroberfläche. Die Alpha bleibt weiterhin hinter Roadmap D.
           </p>
           <div class="hero-actions">
             <a class="button button--primary" href="#blocks">Fortschritt ansehen</a>
@@ -50,7 +50,7 @@
           <div class="progress-ring" id="overall-ring">
             <div>
               <span id="overall-percent">–</span>
-              <small>Gesamt</small>
+              <small>Roadmap B</small>
             </div>
           </div>
           <span class="orbit-node orbit-node--one" aria-hidden="true"></span>
@@ -86,11 +86,11 @@
           <p>Jede Roadmap löst eine andere Klasse von Problemen. Fortschritt wird nicht durch verfrühte Alpha-Häkchen geschönt.</p>
         </div>
         <div class="program-grid">
-          <article class="program-card is-active">
-            <span>A</span><small>JETZT AKTIV</small><h3>Systemfundament</h3><p>Accounts, Serverautorität, Progression, Gilden und Betriebsbasis.</p><strong id="program-a-percent">–</strong>
+          <article class="program-card is-complete">
+            <span>A</span><small>ABGESCHLOSSEN</small><h3>Systemfundament</h3><p>Accounts, Serverautorität, Progression, Gilden und Betriebsbasis.</p><strong id="program-a-percent">–</strong>
           </article>
-          <article class="program-card">
-            <span>B</span><small>DANACH</small><h3>Design & UI</h3><p>Interface, Lesbarkeit, Profile, Avatare, Rahmen und visuelles Feedback.</p><strong>GEPLANT</strong>
+          <article class="program-card is-active">
+            <span>B</span><small>JETZT AKTIV</small><h3>Design & UI</h3><p>Interface, Lesbarkeit, Profile, Avatare, Rahmen und visuelles Feedback.</p><strong id="program-b-percent">–</strong>
           </article>
           <article class="program-card">
             <span>C</span><small>ANSCHLIESSEND</small><h3>Content & Features</h3><p>Monster, Zonen, Bosse, PvP, Handel, Events und langfristige Inhalte.</p><strong>GEPLANT</strong>
@@ -105,10 +105,18 @@
       <section class="blocks-section" id="blocks" aria-labelledby="blocks-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow"><span></span> Roadmap A</p>
-            <h2 id="blocks-title">Acht Blöcke für das Systemfundament.</h2>
+            <p class="eyebrow" id="selected-roadmap-label"><span></span> Roadmap B</p>
+            <h2 id="blocks-title">Acht Blöcke für Design und Oberfläche.</h2>
           </div>
           <p>Wähle einen Block, um seine vier Schritte und ein visuelles Zielbild zu sehen.</p>
+        </div>
+        <div class="roadmap-switcher" aria-label="Roadmap auswählen">
+          <button type="button" data-roadmap-switch="A">
+            <span>A</span><strong>Systemfundament</strong><small id="switch-a-progress">32/32 · 100%</small>
+          </button>
+          <button type="button" data-roadmap-switch="B" aria-pressed="true">
+            <span>B</span><strong>Design & UI</strong><small id="switch-b-progress">0/32 · 0%</small>
+          </button>
         </div>
         <div class="block-grid" id="block-grid" aria-live="polite"></div>
       </section>
@@ -156,7 +164,7 @@
 
     <footer>
       <span>Idle Tamer · Ether Protocol</span>
-      <span>Roadmap A: 8 Blöcke · 32 Gates · Alpha nach Roadmap D</span>
+      <span>Roadmap A: 100 % · Roadmap B: aktiv · Alpha nach Roadmap D</span>
     </footer>
 
     <noscript>Für die interaktive Roadmap muss JavaScript aktiviert sein.</noscript>

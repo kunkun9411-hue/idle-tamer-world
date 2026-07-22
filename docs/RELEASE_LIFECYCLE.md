@@ -19,7 +19,7 @@ flowchart LR
     D --> E["Geschlossene Alpha-Testgruppe"]
 ```
 
-Die aktuelle Acht-Block-Roadmap ist **Roadmap A**. Ihre Prozentanzeige misst ausschließlich 32 Qualitätsgates dieses Systemfundaments. Sie ist weder der Gesamtfortschritt bis Alpha noch der Gesamtfortschritt bis Version 1.0.
+**Roadmap A ist mit 32/32 Gates abgeschlossen und eingefroren. Roadmap B ist aktiv.** Die aktuelle Prozentanzeige misst ausschließlich die 32 Design- und UI-Gates von B. Die 100 % von A und der Fortschritt von B sind weder der Gesamtfortschritt bis Alpha noch der Gesamtfortschritt bis Version 1.0.
 
 ## Alpha erst nach Roadmap D
 
