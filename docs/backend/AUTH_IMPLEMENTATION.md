@@ -70,4 +70,4 @@ Schritt 3 prüft progressive Fehlversuche, harte Rate-Limits, Tokenablauf, Sessi
 
 Der Accountfluss wurde in Schritt 4 mit einem echten Testeraccount sowie einem separaten synthetischen Zwei-Browser-Account abgenommen. Die serverinterne Supportsicht verwendet eine PostgreSQL-`READ ONLY`-Transaktion, exakte Suche und maskierte Ausgabe; sie besitzt keinen öffentlichen HTTP-Endpunkt und keine Schreibfunktion. Ablauf, Belege und Alpha-Grenzen stehen in `AUTH_ACCEPTANCE.md`.
 
-Block 4 ist damit für die geschlossene Alpha freigegeben. Besitz- und Wirtschaftsaktionen bleiben weiterhin außerhalb dieses Blocks und beginnen mit der Planung von Block 5.
+Block 4 ist damit für den internen Entwicklungsbetrieb freigegeben. Besitz- und Wirtschaftsaktionen bleiben weiterhin außerhalb dieses Blocks und beginnen mit der Planung von Block 5. Eine externe Alpha-Freigabe erfolgt erst nach Roadmap D.

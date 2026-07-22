@@ -1,5 +1,5 @@
 {
-  "updated": "22. Juli 2026 · Block 6 und 7 fertig, geprüft und online",
+  "updated": "22. Juli 2026 · Roadmap A bei 87,5 % · Alpha erst nach Roadmap D",
   "activeBlock": 8,
   "activeStep": 1,
   "blocks": [
@@ -84,7 +84,7 @@
         { "name": "Planen", "done": true, "note": "Besitz, Zeitjobs, Prestige und Contentbetrieb finalisiert" },
         { "name": "Bauen", "done": true, "note": "Sammlung, Entwicklung, Offline und Meta-Systeme migriert" },
         { "name": "Prüfen", "done": true, "note": "Zeit, Claims, Ledger und Content-Rollback auf PostgreSQL 18 grün" },
-        { "name": "Abnehmen", "done": true, "note": "Vollständige Solo-Online-Alpha freigegeben" }
+        { "name": "Abnehmen", "done": true, "note": "Vollständigen Solo-Online-Entwicklungsstand freigegeben" }
       ]
     },
     {
@@ -103,16 +103,16 @@
     },
     {
       "id": 8,
-      "kicker": "Nächster Planungsblock",
-      "title": "PvP, Handel & Live Ops",
-      "summary": "Wettbewerb, Handel, Saisons, Events und die belastbare Grundlage des ersten 0.2-Zyklus.",
+      "kicker": "Roadmap-A-Abschluss",
+      "title": "Fundament einfrieren & übergeben",
+      "summary": "Roadmap A sauber abschließen, technische Grenzen einfrieren und Roadmap B für Design, UI und Lesbarkeit vorbereiten.",
       "visual": "launch",
       "accent": "gold",
       "steps": [
-        { "name": "Planen", "done": false, "note": "PvP, Markt, Saisons und Alpha-Betrieb beschließen" },
-        { "name": "Bauen", "done": false, "note": "Ranglisten, Handel, Events und Betriebswerkzeuge bauen" },
-        { "name": "Prüfen", "done": false, "note": "Missbrauch, Last, Sicherheit und Ausfälle testen" },
-        { "name": "Abnehmen", "done": false, "note": "0.2-Alpha abnehmen und nächsten Zyklus planen" }
+        { "name": "Planen", "done": false, "note": "Roadmap-A-Grenze, Übergabepaket und Roadmap-B-Einstieg festlegen" },
+        { "name": "Bauen", "done": false, "note": "Designinventar, UI-Bauteilkatalog und technische Übergabewerkzeuge anlegen" },
+        { "name": "Prüfen", "done": false, "note": "Gesamtregression, Dokumentkonsistenz, Backup und Dev-Betrieb prüfen" },
+        { "name": "Abnehmen", "done": false, "note": "Roadmap A einfrieren und Roadmap B offiziell starten" }
       ]
     }
   ]

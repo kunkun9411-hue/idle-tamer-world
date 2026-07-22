@@ -19,7 +19,7 @@ Der Browser stellt Kämpfe dar und sendet ausschließlich Absichten. Er darf nie
 | Eier, Materialien, Gems und Monsterbesitz | noch lokal bis Block 6 |
 | Hyperlevel, Evolution, Forschung und Prestige | noch lokal bis Block 6 |
 
-Ein bestehender lokaler Run wird nicht in Gold oder Fortschritt umgewandelt. Der Client ist manipulierbar und deshalb keine belastbare Quelle. Für die Alpha startet der serverseitige Run nach der bereits autoritativen Starterwahl mit 100 Gold, Level 1 und Zone 1. Der lokale Save bleibt als Entwicklungsstand erhalten, besitzt aber keine Wirtschaftsautorität mehr.
+Ein bestehender lokaler Run wird nicht in Gold oder Fortschritt umgewandelt. Der Client ist manipulierbar und deshalb keine belastbare Quelle. Im internen Entwicklungsbetrieb startet der serverseitige Run nach der bereits autoritativen Starterwahl mit 100 Gold, Level 1 und Zone 1. Der lokale Save bleibt als Entwicklungsstand erhalten, besitzt aber keine Wirtschaftsautorität mehr.
 
 ## Servertick
 

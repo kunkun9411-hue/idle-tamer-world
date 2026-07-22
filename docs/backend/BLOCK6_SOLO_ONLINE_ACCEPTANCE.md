@@ -4,7 +4,7 @@ Stand: 22. Juli 2026
 
 ## Ergebnis
 
-Die komplette allein spielbare Alpha verwendet für wertrelevanten Zustand PostgreSQL. Der Browser sendet nur Absichten und ersetzt seine sichtbare Sammlung nach jeder Antwort durch den autoritativen Snapshot. `localStorage` enthält für Online-Accounts nur Komfortzustand, Browserinstanz und ein getrenntes Cache-Namespace.
+Der komplette allein spielbare Entwicklungsstand verwendet für wertrelevanten Zustand PostgreSQL. Der Browser sendet nur Absichten und ersetzt seine sichtbare Sammlung nach jeder Antwort durch den autoritativen Snapshot. `localStorage` enthält für Online-Accounts nur Komfortzustand, Browserinstanz und ein getrenntes Cache-Namespace.
 
 ## Autoritative Systeme
 
@@ -50,4 +50,3 @@ Integrationstests akzeptieren ausschließlich Datenbanknamen mit `_test` oder `_
 ## Wiederherstellung
 
 Vor der Block-6-Migration wurde ein PostgreSQL-Dump erstellt und die Wiederherstellung praktisch ausgeführt. Als ein früher Testlauf versehentlich die Produktionsdatenbank erreichte, wurde die API gestoppt, der unmittelbar vorher erzeugte Dump restauriert und beide vorhandenen Accounts nachgezählt. Anschließend wurde die harte `_test`-/`_ci`-Sperre ergänzt. Der Vorfall und die Schutzmaßnahme werden bewusst nicht verschwiegen.
-

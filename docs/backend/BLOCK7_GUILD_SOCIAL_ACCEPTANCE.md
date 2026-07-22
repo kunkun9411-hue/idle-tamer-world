@@ -8,7 +8,7 @@ Gilden sind keine lokale Vorschau mehr. Mitgliedschaft, Rollen, persönliche DNA
 
 ## Spielerregeln
 
-- Eine Gilde besitzt 2 bis 100 Plätze; die Alpha startet mit 30.
+- Eine Gilde besitzt 2 bis 100 Plätze; der interne Entwicklungsstand startet mit 30.
 - Rollen: Leitung, Offizier, Mitglied.
 - Nur die Leitung ändert Beitrittspolitik, Rollen und Leitung.
 - Leitung und Offiziere laden ein, entfernen zulässige Mitglieder, starten Expeditionen und investieren direkt in Gene.
@@ -68,7 +68,7 @@ Zusätzliche Unit-Tests prüfen Eingabevalidierung, Social-Revision, Client-CSRF
 
 Die echte Domain wurde nach Migration `000005_guilds_and_social` mit einem temporären QA-Account im Browser durchlaufen:
 
-- Account registriert, über die private Alpha-Mailbox bestätigt und Starter gewählt
+- Account registriert, über die private Entwicklungs-Mailbox bestätigt und Starter gewählt
 - Gilde aus der kampfzentrierten Hauptszene geöffnet und gegründet
 - 10 persönliche DNA atomar ins Gilden-Ledger gespendet
 - Wochenboss getroffen; HP und persönlicher Schaden wurden serverseitig aktualisiert

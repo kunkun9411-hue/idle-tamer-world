@@ -4,9 +4,10 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 ## Projektstand
 
-- Version: `0.2.0`, erster Acht-Block-Zyklus
+- Version: `0.2.0`, **Roadmap A – Systemfundament**
 - Block 1 bis 7: technisch umgesetzt, geprüft und auf dem Entwicklungsserver
-- Block 8: bewusst noch nicht begonnen; PvP, Handel und Live-Ops bleiben ein eigener Risikoblock
+- Block 8: aktiver Abschluss- und Übergabeblock von Roadmap A zu Roadmap B
+- Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
 - Repository: `kunkun9411-hue/idle-tamer-world`, Branch `main`
@@ -87,12 +88,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Block 8 nicht blind beginnen. Zuerst mit den vorhandenen Accounts gemeinsam den Gilden-Wochenloop spielen und dabei reale Messwerte sammeln:
+Block A.08 schließt das Systemfundament ab und bereitet Roadmap B vor:
 
-1. zwei bis fünf Tester in eine Gilde bringen;
-2. Aufgaben, Spenden, Abstimmung, Expedition und Boss über mehrere Tage beobachten;
-3. Chat-/Meldeweg einmal mit Moderatorrolle üben;
-4. DNA-Tempo und kleine gegen größere Gilden anhand echter Daten bewerten;
-5. danach Block 8 planen: zuerst asynchrones PvP und Betriebsmetriken, Handel erst nach eigener Missbrauchsanalyse.
+1. alle Ansichten, Dialoge, HUDs, Leer-, Lade-, Fehler- und Sperrzustände inventarisieren;
+2. technische UI-Verträge markieren, die bei der Neugestaltung stabil bleiben müssen;
+3. UX-Schulden und Lesbarkeitsprobleme mit Screenshots sammeln;
+4. Profilbild-, Avatar- und Rahmenkonzept als Daten- und Designvertrag festziehen;
+5. Roadmap B in konkrete Design-/UI-Blöcke gliedern und danach offiziell starten.
 
-Block 8 bleibt damit ein bewusstes neues Gate und wird nicht als Nebenprodukt von Block 7 vorgetäuscht.
+PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der vorbereitete Arbeitsrahmen für die direkt folgende UI-Phase liegt in `ROADMAP_B_DESIGN_UI.md`.

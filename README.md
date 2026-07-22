@@ -87,8 +87,10 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 
 ## Zentrale Dokumente
 
-- `docs/CURRENT_CHECKPOINT.md` – aktueller Live-, Sicherungs- und Wiedereinstiegsstand nach der Entwicklungspause
-- `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan vom Prototyp über PostgreSQL bis zum Launch
+- `docs/CURRENT_CHECKPOINT.md` – aktueller Live-, Sicherungs- und Wiedereinstiegsstand in Roadmap A
+- `docs/RELEASE_LIFECYCLE.md` – verbindliche Reihenfolge Roadmap A bis D und anschließende Alpha-/Release-Phasen
+- `docs/PRODUCT_ROADMAP.md` – abhakebarer 8×4-Arbeitsplan für Roadmap A „Systemfundament“
+- `docs/ROADMAP_B_DESIGN_UI.md` – vorbereiteter 8×4-Arbeitsrahmen für Design, Interface, Lesbarkeit, Avatare und Rahmen
 - `docs/GAMEPLAY_FOUNDATION_SPEC.md` – verbindliche Zielbalance, Resetmatrix, E2E-Ablauf und UI-Zustände
 - `docs/NUMBER_SCALE_POLICY.md` – verbindliche Kleinzahl-, Prestige- und wissenschaftliche Zahlenregeln
 - `docs/GAME_CONCEPT.md` – verbindliche Produkt- und Gameplay-Quelle

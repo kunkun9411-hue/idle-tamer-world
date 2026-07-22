@@ -1,15 +1,15 @@
-# Block 4 – Accountabnahme der geschlossenen Alpha
+# Block 4 – Accountabnahme des internen Entwicklungsbetriebs
 
 - Stand: 21. Juli 2026
 - Implementierungscommit: `02c5d4c`
 - Ergebnis: Block 4 abgenommen, Block 5 planungsbereit
-- Freigabeumfang: geschlossene Alpha auf dem Entwicklungsserver
+- Freigabeumfang: interne Entwickler- und QA-Konten auf dem Entwicklungsserver
 
 ## Abnahmeergebnis
 
 | Kriterium | Live-Nachweis |
 | --- | --- |
-| Neuer Account | Registrierung antwortet 202, die private Alpha-Mailbox enthält genau den Verifikationslink und die Bestätigung antwortet 204. |
+| Neuer Account | Registrierung antwortet 202, die private Entwicklungs-Mailbox enthält genau den Verifikationslink und die Bestätigung antwortet 204. |
 | Echter Spieler | Ein realer Testeraccount wurde bestätigt, erfolgreich eingeloggt und erreichte Profil sowie Starterzustand. Personenbezogene Einzelwerte werden nicht in diesem Dokument festgehalten. |
 | Starterpersistenz | Browser A wählt den Starter; Browser B erhält dieselbe Benutzer-ID, Profil-ID, Revision, Starterwahl und denselben Account-Namespace. |
 | Sitzungswiderruf | Browser A widerruft alle anderen Sitzungen. Browser B fällt auf den Login zurück, während A aktiv bleibt. |
@@ -42,11 +42,11 @@ Der operative Aufruf steht in `DEV_SERVER.md`. Damit kann Support einen gemeldet
 
 Die kurzlebige Testdatenbank, der synthetische Account und sein Mailboxeintrag wurden nach der Prüfung entfernt. Der Entwicklungsserver und das Git-Repository blieben sauber.
 
-## Bewusste Alpha-Grenze
+## Bewusste Vor-Alpha-Grenze
 
-Die Dev-Domain versendet noch keine externe E-Mail. Verifikation und Passwortreset landen in einer privaten, serverinternen Alpha-Mailbox. Die Registrierungsoberfläche weist jetzt ausdrücklich darauf hin, dass das Testteam den Zugang in dieser Phase bestätigt.
+Die Dev-Domain versendet noch keine externe E-Mail. Verifikation und Passwortreset landen in einer privaten, serverinternen Entwicklungs-Mailbox. Die Registrierungsoberfläche weist jetzt ausdrücklich darauf hin, dass das Testteam den Zugang in dieser Phase bestätigt.
 
-Das ist für eine kleine geschlossene Alpha freigegeben, aber nicht für eine öffentliche Beta. Vor einer öffentlichen Einladung werden ein Transaktionsmail-Anbieter, SPF, DKIM, DMARC, Bounce-/Complaint-Behandlung und eine Zustellbarkeitsprüfung verpflichtend.
+Das ist ausschließlich für interne Entwickler- und QA-Konten freigegeben. Vor der Alpha-Testgruppe nach Roadmap D werden ein Transaktionsmail-Anbieter, SPF, DKIM, DMARC, Bounce-/Complaint-Behandlung und eine Zustellbarkeitsprüfung verpflichtend.
 
 ## Freigabeentscheidung
 

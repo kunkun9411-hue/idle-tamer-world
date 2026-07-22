@@ -1,7 +1,7 @@
-# Idle Tamer – Arbeitsroadmap
+# Idle Tamer – Roadmap A: Systemfundament
 
 - Stand: 22. Juli 2026
-- Aktiver Block: **Block 8 – PvP, Handel und Live-Ops-Grundlage**
+- Aktiver Block: **Block 8 – Fundament einfrieren und an Roadmap B übergeben**
 - Aktiver Schritt: **Schritt 1 – Planen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
@@ -12,7 +12,7 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden nur den ersten Entwicklungszyklus der Version-0.2-/Alpha-Grundlage. Danach folgen weitere Zyklen für Beta, Gamma, Beta Release und schließlich Launch 1.0. Die angezeigten 50 % beziehen sich deshalb auf den aktuellen 32-Gate-Zyklus, nicht auf das gesamte Projekt bis 1.0. Details: `RELEASE_LIFECYCLE.md`.
+Die acht Blöcke bilden **Roadmap A – Systemfundament**. Danach folgen Roadmap B für Design und UI, Roadmap C für Content und Features sowie Roadmap D für Abnahme und Prüfung. Erst nach vollständiger Roadmap D beginnt die geschlossene Alpha-Testgruppe. Die Prozentanzeige bezieht sich ausschließlich auf die 32 Gates von Roadmap A. Details: `RELEASE_LIFECYCLE.md`; der vorbereitete Arbeitsrahmen für die nächste Phase steht in `ROADMAP_B_DESIGN_UI.md`.
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -44,7 +44,7 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
-| 8 | PvP, Handel und Live-Ops-Grundlage | [ ] | [ ] | [ ] | [ ] | **Nächster Zyklus · Planung offen** |
+| 8 | Fundament einfrieren und an Roadmap B übergeben | [ ] | [ ] | [ ] | [ ] | **Aktiv · Planung** |
 
 Gesamtfortschritt: **28 von 32 Schritten abgeschlossen (87,5 %)**.
 
@@ -243,7 +243,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Support kann Accountstatus nachvollziehen, aber keine Werte heimlich verändern
 - [x] Authentifizierungsablauf dokumentieren und freigeben
 
-**Definition of Done erfüllt:** Ein echter Testeraccount wurde registriert, über die private Alpha-Mailbox bestätigt und erfolgreich eingeloggt. Ein separater synthetischer Live-Account durchlief Registrierung, Verifikation, Starterwahl, denselben Zustand in zwei Browsern, Fremdsitzungswiderruf, Löschvormerkung, Löschabbruch und Logout; Account und Mailboxeintrag wurden danach vollständig entfernt. Die serverinterne Supportsicht läuft in einer technisch erzwungenen PostgreSQL-`READ ONLY`-Transaktion, maskiert die E-Mail und gibt weder Credentials noch Token-, Cookie- oder CSRF-Material aus. Block 4 ist für die geschlossene Alpha freigegeben. Externer Mailversand samt SPF, DKIM und DMARC bleibt ein Gate vor der öffentlichen Beta. Details: `backend/AUTH_ACCEPTANCE.md`.
+**Definition of Done erfüllt:** Ein echter Entwickleraccount wurde registriert, über die private Entwicklungs-Mailbox bestätigt und erfolgreich eingeloggt. Ein separater synthetischer Live-Account durchlief Registrierung, Verifikation, Starterwahl, denselben Zustand in zwei Browsern, Fremdsitzungswiderruf, Löschvormerkung, Löschabbruch und Logout; Account und Mailboxeintrag wurden danach vollständig entfernt. Die serverinterne Supportsicht läuft in einer technisch erzwungenen PostgreSQL-`READ ONLY`-Transaktion, maskiert die E-Mail und gibt weder Credentials noch Token-, Cookie- oder CSRF-Material aus. Block 4 ist für den internen Entwicklungsbetrieb freigegeben. Externer Mailversand samt SPF, DKIM und DMARC bleibt ein Gate vor der Alpha nach Roadmap D. Details: `backend/AUTH_ACCEPTANCE.md`.
 
 **Gate erfüllt:** Identität und Basiszustand funktionieren online. Besitz- und Wirtschaftsaktionen folgen in Block 5 und 6.
 
@@ -298,7 +298,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Block 6 – Sammlung, Dauerfortschritt und Zeitjobs
 
-**Ergebnis:** Alle übrigen Solo-Systeme liegen autoritativ auf dem Server. Damit ist die Online-Alpha spielmechanisch vollständig.
+**Ergebnis:** Alle übrigen Solo-Systeme liegen autoritativ auf dem Server. Damit ist das Solo-Systemfundament von Roadmap A spielmechanisch vollständig.
 
 ### Schritt 1 – Planen ✅
 
@@ -332,7 +332,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] `localStorage` enthält nur noch Komfortdaten
 - [x] Offline-Bericht ist serverseitig und einmalig claimbar
 - [x] Support- und Admin-Aktionen sind berechtigt und protokolliert
-- [x] Online-Alpha mit Backup- und Wiederherstellungsprobe freigeben
+- [x] Solo-Online-Entwicklungsstand mit Backup- und Wiederherstellungsprobe freigeben
 
 **Gate erfüllt:** Die komplette Solo-Version ist online. Nachweise: `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md`.
 
@@ -380,47 +380,47 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ---
 
-## Block 8 – PvP, Handel und Live-Ops-Grundlage
+## Block 8 – Fundament einfrieren und an Roadmap B übergeben
 
-**Ergebnis:** Wettbewerb, optionale Wirtschaft zwischen Spielern, wiederkehrende Inhalte und eine belastbare Betriebsgrundlage für die erste geschlossene Online-Alpha.
+**Ergebnis:** Roadmap A endet als sauber dokumentiertes und reproduzierbares Systemfundament. Roadmap B kann die gesamte Oberfläche neu ordnen und gestalten, ohne dabei Spiellogik, Datenautorität oder Betriebswissen erraten zu müssen.
 
 ### Schritt 1 – Planen ⬜
 
-- [ ] asynchrones PvP, Verteidigungssnapshots und reproduzierbare Simulation festlegen
-- [ ] Ligen, Saisons, Resets und Ranglistenbelohnungen definieren
-- [ ] handelbare, gebundene und niemals handelbare Güter festlegen
-- [ ] Marktgebühren, Preisgrenzen und Missbrauchsschutz planen
-- [ ] Event-, Saison-, Ankündigungs- und Releaseprozess beschreiben
-- [ ] rechtliche, Datenschutz- und Community-Anforderungen prüfen
+- [ ] verbindliche Grenze zwischen Roadmap A und B festlegen
+- [ ] alle vorhandenen Ansichten, Dialoge, HUDs und Zustände inventarisieren
+- [ ] technische Verträge markieren, die Roadmap B nicht brechen darf
+- [ ] bekannte UX-Schulden ohne vorschnelle Designlösung sammeln
+- [ ] Roadmap-B-Arbeitsblöcke für Interface, Lesbarkeit, Profile und Responsive Design formulieren
+- [ ] PvP, Handel, Events und weitere große Features eindeutig Roadmap C zuordnen
 
 ### Schritt 2 – Bauen ⬜
 
-- [ ] PvP-Matches, Verteidigungsteams, Historie und Ranglisten umsetzen
-- [ ] Marktangebote, Reservierung, Ablauf und atomaren Besitzerwechsel bauen
-- [ ] Events, Kalender, globale Ziele, Eventshops und Saisons umsetzen
-- [ ] In-App-Ankündigungen und gezielte Systempost integrieren
-- [ ] Monitoring, Alarmierung, Statusseite und Incident-Werkzeuge aufbauen
-- [ ] Datenexport, Löschung und Community-Moderationswerkzeuge fertigstellen
+- [ ] zentralen UI-Bauteil- und Zustandskatalog anlegen
+- [ ] Screenshot- und Viewport-Abnahmewerkzeuge für Roadmap B vorbereiten
+- [ ] Profilbild-, Avatar- und Rahmendatenvertrag dokumentieren
+- [ ] Design-Tokens, Assetquellen und PixelLab-Übergaben zentral erfassbar machen
+- [ ] veraltete oder doppelte Entwicklungsdokumente bereinigen
+- [ ] Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen
 
 ### Schritt 3 – Prüfen ⬜
 
-- [ ] Matchmaking-Farmen, Absprachen und manipulierte Teams testen
-- [ ] Marktduplikation, Preismanipulation und parallele Käufe verhindern
-- [ ] Lasttests für Login, Bootstrap, Claims, Ranglisten und Gildenboss
-- [ ] Auth-, Session-, Rechte- und Eingabevalidierung sicherheitsprüfen
-- [ ] Datenbankindizes anhand echter Abfragen und Lastdaten prüfen
-- [ ] Ausfall, Wiederanlauf, Jobwiederholung und Restore-Übung durchführen
+- [ ] vollständigen lokalen Gesamtcheck und PostgreSQL-18-Integrationen ausführen
+- [ ] Dev-Domain, Accounts, Run, Sammlung und Gilden im Browser erneut rauchtesten
+- [ ] Backup, Migrationen, Restore-Anleitung und Serverneustart prüfen
+- [ ] Roadmap-, Vertrags- und Versionsangaben auf Widersprüche prüfen
+- [ ] sicherstellen, dass Roadmap B keine wertrelevante Logik in den Browser verschiebt
+- [ ] Repository und Servercheckout auf denselben sauberen Commit bringen
 
 ### Schritt 4 – Abnehmen ⬜
 
-- [ ] geschlossene Version-0.2-Alpha mit klarer Testgruppe abnehmen
-- [ ] Wirtschafts-, PvP- und Gildenmetriken ohne kritische Ausreißer prüfen
-- [ ] Datenschutz-, Nutzungs- und Community-Regeln veröffentlichen
-- [ ] Support-, Moderations- und Incident-Ablauf mit Testfällen üben
-- [ ] Alpha Candidate einfrieren und vollständigen Regressionstest ausführen
-- [ ] ersten Acht-Block-Zyklus abnehmen und den Beta-Zyklus aus echten Messdaten planen
+- [ ] Roadmap-A-Abschlussbericht mit offenen UX-Themen veröffentlichen
+- [ ] Systemfundament gegen die ursprünglichen acht Blöcke abnehmen
+- [ ] Roadmap A einfrieren und nur noch für kritische Fehler öffnen
+- [ ] Roadmap B als aktiven Design- und UI-Zyklus starten
+- [ ] öffentliche Statusseite von A.08 auf B.01 umstellen
+- [ ] ausdrücklich festhalten, dass noch keine Alpha-Testgruppe startet
 
-**Gate:** Die Online-Alpha-Grundlage ist funktionsreich, betreibbar, sicher, wiederherstellbar und moderierbar. Sie ist noch nicht Version 1.0.
+**Gate:** Das Systemfundament ist übergabefähig. Roadmap B beginnt mit Design, Interface, UI, Lesbarkeit, Profilbildern, Avataren und Rahmen. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
 
 ---
 
@@ -447,6 +447,8 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Block 8 beginnt mit Planung, nicht mit blindem Featurebau.** Zuerst werden reale Daten aus dem freigegebenen Gildenloop gesammelt. Danach werden asynchrones PvP, Saisonbetrieb, Monitoring und erst anschließend der besonders missbrauchsanfällige Handel spezifiziert.
+**Block A.08 beginnt mit dem Übergabeplan an Roadmap B.** Der technische Stand wird eingefroren, alle sichtbaren Oberflächen und Zustände werden inventarisiert und die UX-Schulden werden gesammelt. Danach startet Roadmap B mit dem vollständigen Design- und UI-Zyklus.
+
+PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 
 Der technische Wiedereinstieg und die Block-6-/7-Nachweise stehen in `CURRENT_CHECKPOINT.md`, `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md` und `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.

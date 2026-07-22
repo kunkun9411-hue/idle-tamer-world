@@ -1,6 +1,6 @@
 # Pre-Backend-Roadmap
 
-Status: **abgeschlossen**. Die anschließenden Backend-, Online- und Launch-Phasen stehen in `PRODUCT_ROADMAP.md`.
+Status: **abgeschlossen**. Die anschließende technische Umsetzung steht in `PRODUCT_ROADMAP.md`; die Roadmaps A bis D und späteren Release-Phasen sind in `RELEASE_LIFECYCLE.md` getrennt beschrieben.
 
 ## Ziel
 

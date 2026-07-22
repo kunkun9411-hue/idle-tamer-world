@@ -73,7 +73,7 @@ Vorwärtskorrekturen werden bevorzugt. Ein `down` wird nur produktiv verwendet, 
 - täglicher verschlüsselter `pg_dump -Fc` in getrenntem Speicher
 - Aufbewahrung: 14 tägliche, 8 wöchentliche und 12 monatliche Stände
 - quartalsweise vollständige Restore-Übung
-- Alpha-Ziel: RPO 24 Stunden, RTO 4 Stunden
+- Entwicklungsziel bis Roadmap D: RPO 24 Stunden, RTO 4 Stunden
 - Beta-Ziel: RPO 15 Minuten, RTO 1 Stunde
 - Launch-Ziel: RPO 5 Minuten, RTO 30 Minuten
 

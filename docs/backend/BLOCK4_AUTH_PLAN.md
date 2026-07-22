@@ -89,7 +89,7 @@ Die anfängliche Starterauswahl bleibt bei den zehn ursprünglichen Rookie-Linie
 - identische NFC-Normalisierung bei Setzen und Prüfen
 - Argon2id mit `m=65536 KiB`, `t=3`, `p=1`; im echten Container auf 200 bis 500 ms Zielzeit benchmarken
 - der PHC-String enthält Algorithmus, Parameter und Salt; bei erfolgreichem Login wird ein veralteter Work-Factor transparent neu gehasht
-- für die Alpha kein zusätzlicher Pepper: Vor Produktion wird ein Secrets-Manager- und Rotationskonzept separat abgenommen
+- im internen Entwicklungsbetrieb kein zusätzlicher Pepper: Vor der Alpha-Freigabe in Roadmap D wird ein Secrets-Manager- und Rotationskonzept separat abgenommen
 
 Diese Parameter liegen oberhalb des derzeitigen OWASP-Mindestprofils. Sollte der Dev-Server das Latenzziel nicht halten, darf nur auf ein anderes von OWASP genanntes Argon2id-Profil gewechselt werden; Argon2id selbst bleibt verbindlich.
 
@@ -196,7 +196,7 @@ Rollen sind `player`, `support`, `moderator`, `admin`. Sie stehen in einer eigen
 - wirtschaftliche Ledgerzeilen dürfen nur anonymisiert und entsprechend einer später festgelegten gesetzlichen Aufbewahrung bestehen bleiben
 - Backups laufen regulär aus; ein Restore muss nachgelagerte Löschereignisse erneut anwenden
 
-Die Sieben-Tage-Frist ist eine Produktoberfläche, keine Behauptung, gesetzliche Rechte einzuschränken. Vor öffentlicher Beta werden Rechtsgrundlage, Altersmodell, Aufbewahrungsplan und Pflichttexte fachjuristisch geprüft. Die geschlossene Alpha ist zunächst auf Testpersonen ab 16 Jahren beschränkt und enthält keine Echtgeldfunktion.
+Die Sieben-Tage-Frist ist eine Produktoberfläche, keine Behauptung, gesetzliche Rechte einzuschränken. Vor der Alpha-Freigabe nach Roadmap D werden Rechtsgrundlage, Altersmodell, Aufbewahrungsplan und Pflichttexte fachjuristisch geprüft. Die spätere geschlossene Alpha ist zunächst auf Testpersonen ab 16 Jahren beschränkt und enthält keine Echtgeldfunktion.
 
 ## Mail- und Secret-Grenze
 
@@ -211,7 +211,7 @@ Die Sieben-Tage-Frist ist eine Produktoberfläche, keine Behauptung, gesetzliche
 
 Security Events protokollieren Ereignistyp, User-ID falls bekannt, Session-ID, Zeitpunkt, Ergebnis und minimierte Metadaten. Nicht gespeichert oder geloggt werden Rohpasswort, Token, Cookie, E-Mail im Klartext, vollständige IP oder vollständiger User-Agent.
 
-Aufbewahrung für die Alpha:
+Geplante Aufbewahrung für die spätere Alpha:
 
 | Daten | Frist |
 | --- | ---: |

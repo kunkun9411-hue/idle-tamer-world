@@ -33,7 +33,7 @@
 
 ## Live-Ablauf
 
-Der Live-Test verwendet einen kurzlebigen, verifizierten QA-Account aus der privaten Alpha-Outbox:
+Der Live-Test verwendet einen kurzlebigen, verifizierten QA-Account aus der privaten Entwicklungs-Outbox:
 
 1. Browser A meldet sich an und wählt Pyrook.
 2. Die Einführung wird beendet und Pyrook über die sichtbare Monsteransicht auf Run-Level 2 erhöht.

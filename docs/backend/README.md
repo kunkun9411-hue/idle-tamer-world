@@ -12,7 +12,7 @@ Dieser Ordner ist die verbindliche technische Quelle für Block 3. Planung und e
 8. [`AUTH_SCHEMA_PLAN.md`](AUTH_SCHEMA_PLAN.md) – Welche Tabellen, Constraints, Indizes und Löschtransaktionen ergänzt Migration 000002?
 9. [`AUTH_IMPLEMENTATION.md`](AUTH_IMPLEMENTATION.md) – Wo liegt die gebaute Auth-Funktion und wie wird sie betrieben?
 10. [`AUTH_SECURITY_VERIFICATION.md`](AUTH_SECURITY_VERIFICATION.md) – Welche Missbrauchs-, PostgreSQL-, Cookie- und Zwei-Browser-Fälle sind nachgewiesen?
-11. [`AUTH_ACCEPTANCE.md`](AUTH_ACCEPTANCE.md) – Wie wurde Block 4 live abgenommen und welche Grenze gilt für die geschlossene Alpha?
+11. [`AUTH_ACCEPTANCE.md`](AUTH_ACCEPTANCE.md) – Wie wurde Block 4 live abgenommen und welche Grenze gilt für den internen Entwicklungsbetrieb?
 12. [`BLOCK5_RUN_PLAN.md`](BLOCK5_RUN_PLAN.md) – Welche Serverzeit-, Kampf-, Reward- und Autoritätsregeln gelten für Block 5?
 13. [`RUN_API_CONTRACT.md`](RUN_API_CONTRACT.md) – Welche Run-Endpunkte und Transaktionskommandos definiert Vertrag 1?
 14. [`RUN_IMPLEMENTATION.md`](RUN_IMPLEMENTATION.md) – Wie sind Run, PostgreSQL, API und Client umgesetzt und live ausgerollt?
@@ -49,7 +49,7 @@ Block 4 verwendet Auth-Vertrag 1. Run-Vertrag 2 umfasst inzwischen den vollstän
 - [x] Gilden, DNA, Aufgaben, Expedition, Wochenboss, Freunde und Chat über Sozialvertrag 1
 - [x] interne Content- und Moderationswerkzeuge mit Rollen-, CSRF- und Auditgrenze
 
-Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Block 8 bleibt bis zu einer eigenen Planung gesperrt.
+Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Block A.08 schließt das Systemfundament ab und übergibt an Roadmap B. PvP, Handel und Live-Ops werden nicht vor Roadmap C gebaut.
 
 ## Gebauter Stand von Block 4
 
@@ -60,7 +60,7 @@ Block 5, 6 und 7 sind auf der Dev-Domain aktiv. Block 8 bleibt bis zu einer eige
 - [x] Exportanforderung, siebentägige Löschfrist und stündlicher Retentionjob
 - [x] Browser-Accountclient mit strikt getrennten lokalen Save-Namespaces
 
-Block 4 ist für die geschlossene Alpha vollständig abgenommen. Missbrauchsmatrix, PostgreSQL-Lebenszyklen, Zweitbrowser sowie Proxy-, Cookie-, Origin- und CSRF-Grenzen sind nachgewiesen. Ein echter Spielerlogin und ein vollständiger synthetischer Live-Ablauf bestätigen Starterpersistenz, Widerruf, Löschabbruch und Logout. Die Supportsicht ist serverintern, maskiert und technisch nur lesend. Externer Transaktionsmailversand bleibt bewusst ein Gate vor der öffentlichen Beta.
+Block 4 ist für den internen Entwicklungsbetrieb vollständig abgenommen. Missbrauchsmatrix, PostgreSQL-Lebenszyklen, Zweitbrowser sowie Proxy-, Cookie-, Origin- und CSRF-Grenzen sind nachgewiesen. Ein echter Entwicklerlogin und ein vollständiger synthetischer Live-Ablauf bestätigen Starterpersistenz, Widerruf, Löschabbruch und Logout. Die Supportsicht ist serverintern, maskiert und technisch nur lesend. Externer Transaktionsmailversand und veröffentlichte Pflichttexte bleiben Gates vor der Alpha-Freigabe nach Roadmap D.
 
 ## Abgenommener Stand von Block 3
 

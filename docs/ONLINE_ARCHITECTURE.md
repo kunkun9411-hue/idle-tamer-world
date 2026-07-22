@@ -1,6 +1,6 @@
 # Backend- und Online-Architektur
 
-PostgreSQL ist die verbindliche Zieldatenbank. Die vollständige Reihenfolge bis zum Launch steht in `PRODUCT_ROADMAP.md`, das Domänenmodell in `DATABASE_BLUEPRINT.md` und der normierte Bauvertrag in `backend/SCHEMA_REVIEW.md`; die bereits lokal fertiggestellten Systeme stehen in `PRE_BACKEND_ROADMAP.md`.
+PostgreSQL ist die verbindliche Zieldatenbank. Die aktuelle technische Umsetzung steht in `PRODUCT_ROADMAP.md`, das Entwicklungsprogramm bis Alpha und Version 1.0 in `RELEASE_LIFECYCLE.md`, das Domänenmodell in `DATABASE_BLUEPRINT.md` und der normierte Bauvertrag in `backend/SCHEMA_REVIEW.md`; die bereits lokal fertiggestellten Systeme stehen in `PRE_BACKEND_ROADMAP.md`.
 
 ## Autoritative Grenze
 

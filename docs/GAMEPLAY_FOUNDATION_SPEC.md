@@ -14,7 +14,7 @@ Dieses Dokument friert den Solo-Kern von Idle Tamer ein, bevor PostgreSQL und Se
 - Resetgrenzen, Ressourcenarten und Besitzmodelle ändern sich ab jetzt nur bewusst und dokumentiert.
 - Zahlen dürfen vor dem öffentlichen Launch über Content-Versionen nachjustiert werden.
 - Eine Zahlenänderung darf keine neue Besitzart oder andere Datenbankstruktur benötigen.
-- Die Werte in diesem Dokument sind das Ziel für die Online-Alpha. Abweichende schnelle Testwerte im aktuellen Prototyp stehen in der Delta-Tabelle.
+- Die Werte in diesem Dokument sind die Ausgangsbasis für Roadmap C und den späteren Alpha-Kandidaten. Abweichende schnelle Testwerte im aktuellen Prototyp stehen in der Delta-Tabelle.
 
 ## Spielerlebnis-Ziele
 
