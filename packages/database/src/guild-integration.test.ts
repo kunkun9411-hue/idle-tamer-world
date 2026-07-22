@@ -14,7 +14,8 @@ import { guardedTestDatabaseUrl } from "./test-database-guard";
 const databaseUrl = guardedTestDatabaseUrl(process.env.TEST_DATABASE_URL);
 const integration = databaseUrl ? describe : describe.skip;
 const hash = (value: string): Buffer => createHash("sha256").update(value).digest();
-const now = new Date();
+// Commands happen after PostgreSQL has created the fixture rows with its own clock.
+const now = new Date(Date.now() + 60_000);
 
 integration("PostgreSQL 18 guild and social store", () => {
   let pool: Pool;
