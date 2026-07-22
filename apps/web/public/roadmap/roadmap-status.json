@@ -1,7 +1,7 @@
 {
-  "updated": "22. Juli 2026 · Roadmap A bei 87,5 % · Alpha erst nach Roadmap D",
+  "updated": "22. Juli 2026 · A.08 Planung abgenommen · Roadmap A bei 90,6 %",
   "activeBlock": 8,
-  "activeStep": 1,
+  "activeStep": 2,
   "blocks": [
     {
       "id": 1,
@@ -98,7 +98,7 @@
         { "name": "Planen", "done": true, "note": "Rollen, DNA, Kooperation und Sozialregeln definiert" },
         { "name": "Bauen", "done": true, "note": "Gildenkern, DNA, Boss, Expedition, Freunde und Chat online" },
         { "name": "Prüfen", "done": true, "note": "Rechte, Wechsel, Parallelität, Power-Creep und Moderation grün" },
-        { "name": "Abnehmen", "done": true, "note": "Kooperativen Loop für geschlossene Testgruppe freigegeben" }
+        { "name": "Abnehmen", "done": true, "note": "Kooperativen Loop für den internen Entwicklungsbetrieb freigegeben" }
       ]
     },
     {
@@ -109,7 +109,7 @@
       "visual": "launch",
       "accent": "gold",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Roadmap-A-Grenze, Übergabepaket und Roadmap-B-Einstieg festlegen" },
+        { "name": "Planen", "done": true, "note": "16 UI-Flächen, Zustände, Verträge und B-Prioritäten abgenommen" },
         { "name": "Bauen", "done": false, "note": "Designinventar, UI-Bauteilkatalog und technische Übergabewerkzeuge anlegen" },
         { "name": "Prüfen", "done": false, "note": "Gesamtregression, Dokumentkonsistenz, Backup und Dev-Betrieb prüfen" },
         { "name": "Abnehmen", "done": false, "note": "Roadmap A einfrieren und Roadmap B offiziell starten" }

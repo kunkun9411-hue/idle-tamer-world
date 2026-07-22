@@ -2,6 +2,8 @@
 
 Dieses Dokument ist die verbindliche Komponentenbasis für Login, Spiel und spätere Account-Seiten. Die darüberliegende Inszenierung, Zonenwelten und Game-Feel-Regeln von Optik V2 stehen in `ART_DIRECTION_V2.md`; die feste Einstiegsreihenfolge steht in `PLAYER_ENTRY_FLOW.md`. Neue Oberflächen sollen diese Ebenen erweitern, nicht pro Feature einen eigenen Stil erfinden.
 
+Das abgenommene Inventar aller aktuellen Flächen, Zustände und bekannten UX-Schulden steht in `ui/SCENE_INVENTORY.md`.
+
 Die verpflichtenden Lade-, Fehler-, Konflikt-, Leer-, Voll- und Maximalzustände pro Szene stehen in `GAMEPLAY_FOUNDATION_SPEC.md` und gehören zur Abnahme jeder neuen Oberfläche.
 
 ## Charakter

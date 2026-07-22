@@ -2,7 +2,7 @@
 
 - Stand: 22. Juli 2026
 - Aktiver Block: **Block 8 – Fundament einfrieren und an Roadmap B übergeben**
-- Aktiver Schritt: **Schritt 1 – Planen**
+- Aktiver Schritt: **Schritt 2 – Bauen**
 - Visuelle Statusseite: `/roadmap/`
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
@@ -44,9 +44,9 @@ flowchart LR
 | 5 | Serverautoritärer Run und Wirtschaft | [x] | [x] | [x] | [x] | **Fertig** |
 | 6 | Sammlung, Dauerfortschritt und Zeitjobs online | [x] | [x] | [x] | [x] | **Fertig** |
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
-| 8 | Fundament einfrieren und an Roadmap B übergeben | [ ] | [ ] | [ ] | [ ] | **Aktiv · Planung** |
+| 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [ ] | [ ] | [ ] | **Aktiv · Bauen** |
 
-Gesamtfortschritt: **28 von 32 Schritten abgeschlossen (87,5 %)**.
+Gesamtfortschritt: **29 von 32 Schritten abgeschlossen (90,6 %)**.
 
 ## Verbindliche Arbeitsregeln
 
@@ -384,14 +384,14 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 **Ergebnis:** Roadmap A endet als sauber dokumentiertes und reproduzierbares Systemfundament. Roadmap B kann die gesamte Oberfläche neu ordnen und gestalten, ohne dabei Spiellogik, Datenautorität oder Betriebswissen erraten zu müssen.
 
-### Schritt 1 – Planen ⬜
+### Schritt 1 – Planen ✅
 
-- [ ] verbindliche Grenze zwischen Roadmap A und B festlegen
-- [ ] alle vorhandenen Ansichten, Dialoge, HUDs und Zustände inventarisieren
-- [ ] technische Verträge markieren, die Roadmap B nicht brechen darf
-- [ ] bekannte UX-Schulden ohne vorschnelle Designlösung sammeln
-- [ ] Roadmap-B-Arbeitsblöcke für Interface, Lesbarkeit, Profile und Responsive Design formulieren
-- [ ] PvP, Handel, Events und weitere große Features eindeutig Roadmap C zuordnen
+- [x] verbindliche Grenze zwischen Roadmap A und B festlegen
+- [x] alle vorhandenen Ansichten, Dialoge, HUDs und Zustände inventarisieren
+- [x] technische Verträge markieren, die Roadmap B nicht brechen darf
+- [x] bekannte UX-Schulden ohne vorschnelle Designlösung sammeln
+- [x] Roadmap-B-Arbeitsblöcke für Interface, Lesbarkeit, Profile und Responsive Design formulieren
+- [x] PvP, Handel, Events und weitere große Features eindeutig Roadmap C zuordnen
 
 ### Schritt 2 – Bauen ⬜
 
@@ -447,7 +447,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Block A.08 beginnt mit dem Übergabeplan an Roadmap B.** Der technische Stand wird eingefroren, alle sichtbaren Oberflächen und Zustände werden inventarisiert und die UX-Schulden werden gesammelt. Danach startet Roadmap B mit dem vollständigen Design- und UI-Zyklus.
+**Block A.08, Schritt 2 baut jetzt das Übergabepaket.** Das abgenommene Inventar steht in `ui/SCENE_INVENTORY.md`. Als Nächstes entstehen der zentrale UI-Bauteil- und Zustandskatalog, reproduzierbare Screenshot-/Viewport-Werkzeuge sowie der Profilbild-, Avatar- und Rahmenvertrag.
 
 PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 

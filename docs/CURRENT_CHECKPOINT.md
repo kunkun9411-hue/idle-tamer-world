@@ -6,7 +6,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 - Version: `0.2.0`, **Roadmap A – Systemfundament**
 - Block 1 bis 7: technisch umgesetzt, geprüft und auf dem Entwicklungsserver
-- Block 8: aktiver Abschluss- und Übergabeblock von Roadmap A zu Roadmap B
+- Block 8: Planung abgenommen; der Bau des Übergabepakets von Roadmap A zu Roadmap B ist aktiv
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -42,6 +42,8 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - echter Domain-Smoke-Test: Registrierung, Starter, Gildengründung, DNA-Ledger, Boss, Expedition und Chat
 - zwei dabei gefundene UI-Blocker behoben und im erneut gebauten Web-Container bestätigt
 - temporäre QA-Daten vollständig bereinigt; die zwei vorher vorhandenen Accounts blieben erhalten
+- A.08.1: 16 sichtbare Flächen samt Lade-, Leer-, Fehler-, Sperr- und Erfolgszuständen inventarisiert
+- reproduzierbarer UX-Befund auf 1280×720 und 390×844 dokumentiert; mobile Navigationskollision als P0 für B.02/B.03 markiert
 
 Die genauen Fälle stehen in:
 
@@ -88,12 +90,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Block A.08 schließt das Systemfundament ab und bereitet Roadmap B vor:
+Block A.08.1 ist in `ui/SCENE_INVENTORY.md` abgenommen. Jetzt folgt A.08.2:
 
-1. alle Ansichten, Dialoge, HUDs, Leer-, Lade-, Fehler- und Sperrzustände inventarisieren;
-2. technische UI-Verträge markieren, die bei der Neugestaltung stabil bleiben müssen;
-3. UX-Schulden und Lesbarkeitsprobleme mit Screenshots sammeln;
-4. Profilbild-, Avatar- und Rahmenkonzept als Daten- und Designvertrag festziehen;
-5. Roadmap B in konkrete Design-/UI-Blöcke gliedern und danach offiziell starten.
+1. zentralen UI-Bauteil- und Zustandskatalog anlegen;
+2. reproduzierbare Screenshot- und Viewport-Abnahmewerkzeuge bauen;
+3. Profilbild-, Avatar- und Rahmenkonzept als Daten- und Designvertrag festziehen;
+4. Design-Tokens, Assetquellen und PixelLab-Übergaben zentral erfassbar machen;
+5. das Roadmap-A-Übergabepaket als schnellen Einstiegspunkt fertigstellen.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der vorbereitete Arbeitsrahmen für die direkt folgende UI-Phase liegt in `ROADMAP_B_DESIGN_UI.md`.

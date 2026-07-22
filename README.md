@@ -106,6 +106,7 @@ Für UI-Abnahmen stehen im lokalen Dev-Server `?ui-state=loading`, `offline`, `c
 - `docs/PIXELLAB_ANIMATION_CONTRACT.md` – Frame-, Anker-, Namens- und API-Jobvertrag für Animationen
 - `docs/ASSET_PROMPTS.md` – reproduzierbare Designprompts der ersten Monster
 - `docs/UI_SYSTEM.md` – verbindliche Farben, Komponenten und Responsive-Regeln
+- `docs/ui/SCENE_INVENTORY.md` – vollständige Szenen-, Zustands- und UX-Schuldenliste für Roadmap B
 - `docs/PRESTIGE_SCENE_V2.md` – Aufbau, Animation, Assets und reproduzierbare Imagegen-Prompts der Prestige-Szene
 - `docs/CONTENT_PIPELINE.md` – Dev-Konzept für Zonenpflege, Validierung und Live-Veröffentlichung
 - `docs/CUSTOMIZATION_GUIDE.md` – schnelle Übersicht: welche Werte du morgen wo änderst

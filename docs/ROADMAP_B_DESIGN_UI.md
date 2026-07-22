@@ -2,6 +2,8 @@
 
 Status: **vorbereitet, noch nicht aktiv**. Roadmap B startet erst nach der Abnahme von Block A.08.
 
+Die gemessene Ausgangsbasis mit 16 Flächen, Zustandsmatrix und priorisiertem UX-Backlog steht in `ui/SCENE_INVENTORY.md`. Dieser Befund ist verbindlicher Eingang für B.01 und wird nicht während der Umsetzung stillschweigend umgedeutet.
+
 ## Ziel
 
 Roadmap B macht aus dem technisch funktionierenden Systemfundament ein geschlossenes, modernes und verständliches Spiel. Sie verändert Darstellung, Navigation und Bedienung, aber keine serverautoritativen Wirtschaftsregeln. Neue große Spielsysteme gehören weiterhin in Roadmap C.
