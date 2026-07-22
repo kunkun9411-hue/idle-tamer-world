@@ -8,7 +8,7 @@ test("UI catalog exposes its contracts without page errors or horizontal overflo
   await expect(page.getByRole("heading", { name: "Eine Oberfläche. Lesbar statt winzig." })).toBeVisible();
   await expect(page.locator(".type-contract-grid article")).toHaveCount(9);
   await expect(page.locator(".foundation-grid article")).toHaveCount(4);
-  await expect(page.locator(".ui-kit-card")).toHaveCount(5);
+  await expect(page.locator(".ui-kit-card")).toHaveCount(6);
   await expect(page.locator('[data-kit-item="A01"] img')).toHaveCount(1);
   await expect.poll(() => page.locator('[data-kit-item="A01"] img').evaluate((image) => (
     image instanceof HTMLImageElement && image.complete
@@ -35,8 +35,17 @@ test("UI catalog exposes its contracts without page errors or horizontal overflo
       ? { width: image.naturalWidth, height: image.naturalHeight }
       : null
   ))).toEqual({ width: 64, height: 1024 });
+  await expect.poll(() => page.locator('[data-kit-item="A06"] img').evaluate((image) => (
+    image instanceof HTMLImageElement && image.complete
+      ? { width: image.naturalWidth, height: image.naturalHeight }
+      : null
+  ))).toEqual({ width: 256, height: 256 });
   await expect(page.locator('[data-kit-assembly="A01-A03"] img')).toHaveCount(8);
   await expect.poll(() => page.locator('[data-kit-assembly="A01-A03"] img').evaluateAll((images) => images.every((image) => (
+    image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
+  )))).toBe(true);
+  await expect(page.locator('[data-kit-assembly="A04-A06"] img')).toHaveCount(8);
+  await expect.poll(() => page.locator('[data-kit-assembly="A04-A06"] img').evaluateAll((images) => images.every((image) => (
     image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
   )))).toBe(true);
   await expect(page.getByRole("heading", { name: "Generierte Identität, echter UI-Text" })).toBeVisible();

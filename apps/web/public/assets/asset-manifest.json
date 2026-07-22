@@ -1301,6 +1301,17 @@
       "sha256": "243c5ecba45de490e7bac0409b1564132bf3f438ce06fac85a498382179e1315"
     },
     {
+      "id": "ui.kit.frame.corner-compact-v1",
+      "kind": "ui",
+      "path": "/assets/ui/kit/frame/corner-compact-v1.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "bytes": 3538,
+      "sha256": "d88c2a33f9df9017e827ed17cda76abd923aa9a7671e3f4c23b2404331980ff9"
+    },
+    {
       "id": "ui.kit.frame.corner-large-v1",
       "kind": "ui",
       "path": "/assets/ui/kit/frame/corner-large-v1.webp",

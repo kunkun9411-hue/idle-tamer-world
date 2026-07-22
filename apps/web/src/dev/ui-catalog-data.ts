@@ -197,6 +197,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Verlustfreie 90°-Ableitung von A04 für kompakte Seitenkonturen",
     state: "ABGELEITET",
   },
+  {
+    id: "A06",
+    family: "Rahmen",
+    name: "Kompakte Kartenrahmenecke",
+    path: "/assets/ui/kit/frame/corner-compact-v1.webp",
+    runtime: "256×256 WebP",
+    use: "Drehbare leichte Ecke für Karten, Tooltips und Sekundärfenster",
+    state: "FREIGEGEBEN",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

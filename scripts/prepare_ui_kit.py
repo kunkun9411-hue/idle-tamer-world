@@ -79,6 +79,18 @@ ITEMS = [
         "status": "approved",
         "derivation": "rotate-90-from-A04",
     },
+    {
+        "id": "A06",
+        "family": "frame",
+        "name": "Kompakte Kartenrahmenecke",
+        "source": "frame-corner-compact-silver-ether-v1-master.png",
+        "output": "frame/corner-compact-v1.webp",
+        "target": (256, 256),
+        "padding": 6,
+        "rotatable": True,
+        "connections": ["right", "bottom"],
+        "status": "approved",
+    },
 ]
 
 

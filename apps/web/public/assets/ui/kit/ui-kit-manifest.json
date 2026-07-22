@@ -96,6 +96,25 @@
       ],
       "status": "approved",
       "derivation": "rotate-90-from-A04"
+    },
+    {
+      "id": "A06",
+      "family": "frame",
+      "name": "Kompakte Kartenrahmenecke",
+      "path": "/assets/ui/kit/frame/corner-compact-v1.webp",
+      "source": "art-source/generated/ui-kit-v1/transparent/frame-corner-compact-silver-ether-v1-master.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "bytes": 3538,
+      "sha256": "d88c2a33f9df9017e827ed17cda76abd923aa9a7671e3f4c23b2404331980ff9",
+      "rotatable": true,
+      "connections": [
+        "right",
+        "bottom"
+      ],
+      "status": "approved",
+      "derivation": null
     }
   ]
 }
