@@ -58,6 +58,25 @@
       ],
       "status": "approved",
       "derivation": "rotate-90-from-A02"
+    },
+    {
+      "id": "A04",
+      "family": "frame",
+      "name": "Dünne horizontale Rahmenkante",
+      "path": "/assets/ui/kit/frame/edge-thin-horizontal-v1.webp",
+      "source": "art-source/generated/ui-kit-v1/transparent/frame-edge-thin-horizontal-silver-ether-v1-master.png",
+      "width": 1024,
+      "height": 64,
+      "alpha": true,
+      "bytes": 7182,
+      "sha256": "a915bd35fe0d77d945b37df162364ae9070eee21a5474e96a1146053abba01a5",
+      "rotatable": true,
+      "connections": [
+        "left",
+        "right"
+      ],
+      "status": "approved",
+      "derivation": null
     }
   ]
 }

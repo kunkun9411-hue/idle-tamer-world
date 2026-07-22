@@ -179,6 +179,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Verlustfreie 90°-Ableitung von A02 für die Fensterseiten",
     state: "ABGELEITET",
   },
+  {
+    id: "A04",
+    family: "Rahmen",
+    name: "Dünne horizontale Rahmenkante",
+    path: "/assets/ui/kit/frame/edge-thin-horizontal-v1.webp",
+    runtime: "1024×64 WebP",
+    use: "Leichte streckbare Kontur für Karten, Tooltips und Sekundärflächen",
+    state: "FREIGEGEBEN",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

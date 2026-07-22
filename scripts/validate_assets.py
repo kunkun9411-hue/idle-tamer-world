@@ -28,7 +28,7 @@ UI_KIT_ROOT = PUBLIC / "assets" / "ui" / "kit"
 UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 7}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 8}
 MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 120_000}
 
 
@@ -193,7 +193,7 @@ def main() -> None:
         raise ValueError("ui kit: unsupported manifest version or style")
     if len({element["id"] for element in ui_kit_elements}) != len(ui_kit_elements):
         raise ValueError("ui kit: duplicate element IDs")
-    expected_derivations = {"A01": None, "A02": None, "A03": "rotate-90-from-A02"}
+    expected_derivations = {"A01": None, "A02": None, "A03": "rotate-90-from-A02", "A04": None}
     actual_derivations = {element["id"]: element.get("derivation") for element in ui_kit_elements}
     if actual_derivations != expected_derivations:
         raise ValueError(f"ui kit: unexpected derivations {actual_derivations}")
@@ -210,6 +210,19 @@ def main() -> None:
                 raise ValueError(f"{path}: UI kit element must be visible with transparent corners")
         if element["bytes"] != path.stat().st_size or element["sha256"] != hashlib.sha256(path.read_bytes()).hexdigest():
             raise ValueError(f"{path}: UI kit size or SHA-256 mismatch")
+    kit_by_id = {element["id"]: PUBLIC / str(element["path"]).lstrip("/") for element in ui_kit_elements}
+    with Image.open(kit_by_id["A02"]) as thick_edge, Image.open(kit_by_id["A04"]) as thin_edge:
+        thick_bounds = thick_edge.getchannel("A").getbbox()
+        thin_bounds = thin_edge.getchannel("A").getbbox()
+        if thick_bounds is None or thin_bounds is None:
+            raise ValueError("ui kit: frame edge comparison requires visible pixels")
+        thick_height = thick_bounds[3] - thick_bounds[1]
+        thin_height = thin_bounds[3] - thin_bounds[1]
+        thin_width = thin_bounds[2] - thin_bounds[0]
+        if thin_height > thick_height * 0.45:
+            raise ValueError(f"ui kit: A04 must remain visibly thinner than A02 ({thin_height}px vs {thick_height}px)")
+        if thin_width < thin_edge.width * 0.9:
+            raise ValueError(f"ui kit: A04 must span at least 90% of its runtime width, got {thin_width}px")
     print(f"ui kit: {len(ui_kit_files)} modular runtime elements and manifest entries valid")
     gem_files = sorted(GEM_ROOT.glob("*/*.png"))
     if len(gem_files) != 45:

@@ -53,6 +53,18 @@ ITEMS = [
         "status": "approved",
         "derivation": "rotate-90-from-A02",
     },
+    {
+        "id": "A04",
+        "family": "frame",
+        "name": "Dünne horizontale Rahmenkante",
+        "source": "frame-edge-thin-horizontal-silver-ether-v1-master.png",
+        "output": "frame/edge-thin-horizontal-v1.webp",
+        "target": (1024, 64),
+        "padding": 6,
+        "rotatable": True,
+        "connections": ["left", "right"],
+        "status": "approved",
+    },
 ]
 
 

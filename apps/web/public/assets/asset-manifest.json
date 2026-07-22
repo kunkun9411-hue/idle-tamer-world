@@ -1334,6 +1334,17 @@
       "sha256": "1063e07841e46492d39eb960b083a2bbb44f8930867fbbfe9cf5072cac7e6364"
     },
     {
+      "id": "ui.kit.frame.edge-thin-horizontal-v1",
+      "kind": "ui",
+      "path": "/assets/ui/kit/frame/edge-thin-horizontal-v1.webp",
+      "format": "webp",
+      "width": 1024,
+      "height": 64,
+      "alpha": true,
+      "bytes": 7182,
+      "sha256": "a915bd35fe0d77d945b37df162364ae9070eee21a5474e96a1146053abba01a5"
+    },
+    {
       "id": "zone.glass-gardens-v2",
       "kind": "zone",
       "path": "/assets/zones/glass-gardens-v2.webp",
