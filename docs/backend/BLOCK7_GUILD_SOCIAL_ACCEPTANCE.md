@@ -64,6 +64,21 @@ Sieben echte PostgreSQL-18-Integrationsfälle decken ab:
 
 Zusätzliche Unit-Tests prüfen Eingabevalidierung, Social-Revision, Client-CSRF, Größenvergleich und maximale Genboni.
 
+## Live-Abnahme auf der Dev-Domain
+
+Die echte Domain wurde nach Migration `000005_guilds_and_social` mit einem temporären QA-Account im Browser durchlaufen:
+
+- Account registriert, über die private Alpha-Mailbox bestätigt und Starter gewählt
+- Gilde aus der kampfzentrierten Hauptszene geöffnet und gegründet
+- 10 persönliche DNA atomar ins Gilden-Ledger gespendet
+- Wochenboss getroffen; HP und persönlicher Schaden wurden serverseitig aktualisiert
+- gemeinsame Fünf-Minuten-Expedition gestartet
+- moderierte Chatnachricht gesendet und nach Reload wieder gelesen
+
+Die Live-Abnahme fand zwei reine Clientfehler: Der direkte Gildenknopf fehlte in der Kampfseitenleiste und die Gründung blieb während der ersten Synchronisierung deaktiviert. Beide Pfade wurden korrigiert, erneut gebaut, bereitgestellt und im Browser bestätigt. Console-Fehler traten danach nicht auf.
+
+Der QA-Account und seine Testgilde wurden anschließend in einer gezielten Transaktion vollständig entfernt. Die Produktionsdatenbank enthielt danach wieder genau die zwei vorher vorhandenen Accounts und keine QA-Gilde.
+
 ## Endpunkte
 
 - `GET /api/v1/guild`
@@ -73,4 +88,3 @@ Zusätzliche Unit-Tests prüfen Eingabevalidierung, Social-Revision, Client-CSRF
 - `GET /api/v1/internal/guilds/:guildId/ledger`
 
 Alle Spieleränderungen sind revisioniert und idempotent. Alle internen Änderungen sind zusätzlich rollen-, Origin-, CSRF- und Rate-Limit-geschützt.
-

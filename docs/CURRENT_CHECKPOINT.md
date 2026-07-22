@@ -38,6 +38,9 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - parallele Claims, DNA-Ausgaben und Bossangriffe geprüft
 - Content-Vorschau, Aktivierung, Rollback und Audit geprüft
 - kleine/30er-Gilden sowie maximale Genboni automatisiert gegengeprüft
+- echter Domain-Smoke-Test: Registrierung, Starter, Gildengründung, DNA-Ledger, Boss, Expedition und Chat
+- zwei dabei gefundene UI-Blocker behoben und im erneut gebauten Web-Container bestätigt
+- temporäre QA-Daten vollständig bereinigt; die zwei vorher vorhandenen Accounts blieben erhalten
 
 Die genauen Fälle stehen in:
 
