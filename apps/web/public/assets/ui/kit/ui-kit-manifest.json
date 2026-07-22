@@ -18,7 +18,8 @@
         "right",
         "bottom"
       ],
-      "status": "approved"
+      "status": "approved",
+      "derivation": null
     },
     {
       "id": "A02",
@@ -36,7 +37,27 @@
         "left",
         "right"
       ],
-      "status": "approved"
+      "status": "approved",
+      "derivation": null
+    },
+    {
+      "id": "A03",
+      "family": "frame",
+      "name": "Dicke vertikale Rahmenkante",
+      "path": "/assets/ui/kit/frame/edge-thick-vertical-v1.webp",
+      "source": "art-source/generated/ui-kit-v1/transparent/frame-edge-thick-horizontal-silver-ether-v1-master.png",
+      "width": 192,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 17594,
+      "sha256": "1063e07841e46492d39eb960b083a2bbb44f8930867fbbfe9cf5072cac7e6364",
+      "rotatable": true,
+      "connections": [
+        "top",
+        "bottom"
+      ],
+      "status": "approved",
+      "derivation": "rotate-90-from-A02"
     }
   ]
 }

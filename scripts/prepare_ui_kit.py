@@ -39,12 +39,28 @@ ITEMS = [
         "connections": ["left", "right"],
         "status": "approved",
     },
+    {
+        "id": "A03",
+        "family": "frame",
+        "name": "Dicke vertikale Rahmenkante",
+        "source": "frame-edge-thick-horizontal-silver-ether-v1-master.png",
+        "output": "frame/edge-thick-vertical-v1.webp",
+        "target": (192, 1024),
+        "padding": 8,
+        "rotation": 90,
+        "rotatable": True,
+        "connections": ["top", "bottom"],
+        "status": "approved",
+        "derivation": "rotate-90-from-A02",
+    },
 ]
 
 
-def fit_alpha(source: Path, destination: Path, target: tuple[int, int], padding: int) -> None:
+def fit_alpha(source: Path, destination: Path, target: tuple[int, int], padding: int, rotation: int = 0) -> None:
     with Image.open(source) as original:
         image = original.convert("RGBA")
+        if rotation:
+            image = image.rotate(rotation, expand=True, resample=Image.Resampling.BICUBIC)
         bounds = image.getchannel("A").getbbox()
         if bounds is None:
             raise ValueError(f"{source}: no visible pixels")
@@ -80,6 +96,7 @@ def runtime_entry(item: dict[str, object], output: Path) -> dict[str, object]:
         "rotatable": item["rotatable"],
         "connections": item["connections"],
         "status": item["status"],
+        "derivation": item.get("derivation"),
     }
 
 
@@ -90,7 +107,7 @@ def main() -> None:
         destination = OUTPUT_DIR / str(item["output"])
         if not source.exists():
             raise FileNotFoundError(source)
-        fit_alpha(source, destination, tuple(item["target"]), int(item["padding"]))
+        fit_alpha(source, destination, tuple(item["target"]), int(item["padding"]), int(item.get("rotation", 0)))
         entries.append(runtime_entry(item, destination))
         print(f"{item['id']} {source.name} -> {destination.relative_to(ROOT)}")
 

@@ -8,12 +8,12 @@ test("modular UI kit remains readable and contained at the reference viewport", 
   const kit = page.locator("#kit");
   await kit.scrollIntoViewIfNeeded();
 
-  await expect(page.locator(".ui-kit-card")).toHaveCount(2);
-  await expect(page.locator('[data-kit-assembly="A01-A02"]')).toBeVisible();
+  await expect(page.locator(".ui-kit-card")).toHaveCount(3);
+  await expect(page.locator('[data-kit-assembly="A01-A03"]')).toBeVisible();
 
   const viewportWidth = page.viewportSize()?.width ?? 0;
   const kitBox = await kit.boundingBox();
-  const assemblyBox = await page.locator('[data-kit-assembly="A01-A02"]').boundingBox();
+  const assemblyBox = await page.locator('[data-kit-assembly="A01-A03"]').boundingBox();
   expect(kitBox).not.toBeNull();
   expect(assemblyBox).not.toBeNull();
   expect(kitBox!.x).toBeGreaterThanOrEqual(0);

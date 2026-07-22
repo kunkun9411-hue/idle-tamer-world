@@ -170,6 +170,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Gerade, streckbare Kante für große Fenster und Dialoge",
     state: "FREIGEGEBEN",
   },
+  {
+    id: "A03",
+    family: "Rahmen",
+    name: "Dicke vertikale Rahmenkante",
+    path: "/assets/ui/kit/frame/edge-thick-vertical-v1.webp",
+    runtime: "192×1024 WebP",
+    use: "Verlustfreie 90°-Ableitung von A02 für die Fensterseiten",
+    state: "ABGELEITET",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

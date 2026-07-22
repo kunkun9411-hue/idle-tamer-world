@@ -57,5 +57,6 @@ Strukturelle Referenzen: [Fab – Modular Borders and Frames](https://www.fab.co
 | --- | --- | --- | --- | --- |
 | A01 | Große universelle Rahmenecke | `art-source/generated/ui-kit-v1/transparent/frame-corner-large-silver-ether-v1-master.png` | `assets/ui/kit/frame/corner-large-v1.webp` | freigegeben |
 | A02 | Dicke horizontale Rahmenkante | `art-source/generated/ui-kit-v1/transparent/frame-edge-thick-horizontal-silver-ether-v1-master.png` | `assets/ui/kit/frame/edge-thick-horizontal-v1.webp` | freigegeben |
+| A03 | Dicke vertikale Rahmenkante | verlustfreie 90°-Ableitung von A02 | `assets/ui/kit/frame/edge-thick-vertical-v1.webp` | freigegeben |
 
-A01 und A02 besitzen im UI-Katalog zusätzlich eine sichtbare Verbindungsprobe. Sie zeigt einen streckbaren Fensterkopf aus zwei gespiegelten Eckmodulen und einer überlappenden horizontalen Kante.
+A01 bis A03 besitzen im UI-Katalog zusätzlich eine sichtbare Verbindungsprobe. Sie zeigt einen vollständigen skalierbaren Fensterrahmen aus vier gedrehten Ecken, zwei horizontalen Kanten und zwei abgeleiteten vertikalen Kanten.
