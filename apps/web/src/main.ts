@@ -1604,7 +1604,6 @@ function offlineReport(): string {
   if (!showOfflineReport) return "";
   const offlineMaterialCount = Object.values(loaded.offlineItems).reduce((sum, amount) => sum + amount, 0);
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
-  const hasPendingRewards = game.pendingGold > 0 || game.pendingEggs.length > 0 || pendingMaterialCount > 0 || game.pendingGems.length > 0;
   return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
     <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/panel-frame-v1.webp" alt="" aria-hidden="true">
     <div class="offline-report__signal"><span>${icon("spark")}</span><i></i></div>
@@ -1620,7 +1619,7 @@ function offlineReport(): string {
     </div>
     <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${activeCacheCapacity()}</span></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
-    <div class="offline-report__actions"><button class="secondary-button offline-report__continue" id="offline-continue"><small>OHNE EINSAMMELN</small><strong>ZUM KAMPF</strong></button><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect" ${hasPendingRewards ? "" : "disabled"}>${hasPendingRewards ? `ALLES EINSAMMELN ${icon("arrow")}` : "NICHTS ZUM EINSAMMELN"}</button></div>
+    <div class="offline-report__actions"><p>In <strong>${formatOfflineDuration(loaded.offlineSeconds)}</strong> wurden <strong>${formatNumber(loaded.offlineGold)} Gold</strong> und <strong>${offlineMaterialCount} Materialien</strong> für dich geborgen.</p><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect">EINSAMMELN ${icon("arrow")}</button></div>
   </section></div>`;
 }
 
@@ -1967,10 +1966,6 @@ function bindEvents(): void {
       case "combat-focus-toggle": return toggleCombatFocus();
       case "collect-cache": return run("collect-cache", collectCache);
       case "offline-collect": return run("offline-collect", collectOfflineRewards);
-      case "offline-continue":
-        showOfflineReport = false;
-        render();
-        return window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
       case "hatch-egg": return run("hatch", hatchIncubation);
       case "accelerate-incubation": return run("incubation-charge", accelerateIncubation);
       case "open-starter": starterDialogOpen = true; return render();

@@ -35,7 +35,9 @@ for (const viewport of UI_VIEWPORTS) {
     await page.getByTestId("login-submit").click();
     await expect(page.getByTestId("offline-report")).toBeVisible();
     await shot("03-offline-report");
-    await page.locator("#offline-continue").click();
+    await page.getByTestId("offline-collect").hover();
+    await shot("03-offline-report-hover");
+    await page.getByTestId("offline-collect").click();
     if (await page.locator("#skip-tutorial").count()) await page.locator("#skip-tutorial").click();
     await expect(page.getByTestId("combat-scene")).toBeVisible();
     await shot("04-combat");

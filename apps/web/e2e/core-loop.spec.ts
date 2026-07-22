@@ -38,7 +38,7 @@ test("combat controls stay mounted and the first click opens its panel", async (
   }, { key: STORAGE_KEY, save: state });
   await page.goto("/");
   await page.getByTestId("login-submit").click();
-  await page.locator("#offline-continue").click();
+  await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 
   const replacements = await page.evaluate(async () => {
@@ -84,7 +84,7 @@ test("Prestige remains locked before zone 10 even after 500 run victories", asyn
   }, { key: STORAGE_KEY, save: state });
   await page.goto("/");
   await page.getByTestId("login-submit").click();
-  await page.locator("#offline-continue").click();
+  await page.getByTestId("offline-collect").click();
   await page.locator('[data-combat-panel="missions"]').click();
   await page.locator("#start-prestige").click();
 
@@ -121,7 +121,11 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await expect(page.getByTestId("offline-report")).toBeVisible();
   await expect(page.locator(".offline-report__generated-frame")).toHaveAttribute("src", "/assets/ui/chrome/panel-frame-v1.webp");
   await expect(page.locator(".offline-report__divider")).toHaveAttribute("src", "/assets/ui/chrome/ether-divider-v1.webp");
+  await expect(page.locator(".offline-report__actions button")).toHaveCount(1);
+  await expect(page.locator("#offline-continue")).toHaveCount(0);
   await expect(page.getByTestId("offline-collect")).toHaveCSS("background-image", /primary-button-frame-v1\.webp/);
+  await expect(page.getByTestId("offline-collect")).toHaveCSS("box-shadow", "none");
+  expect(await page.getByTestId("offline-collect").evaluate((element) => getComputedStyle(element, "::after").display)).toBe("none");
   await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await skipTutorialIfVisible(page);

@@ -6,7 +6,7 @@ const enterLocalCombat = async (page: import("@playwright/test").Page): Promise<
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   if (await page.getByTestId("starter-dialog").count()) await page.getByTestId("starter-pyrook").click();
-  if (await page.getByTestId("offline-report").count()) await page.locator("#offline-continue").click();
+  if (await page.getByTestId("offline-report").count()) await page.getByTestId("offline-collect").click();
   if (await page.locator("#skip-tutorial").count()) await page.locator("#skip-tutorial").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 };

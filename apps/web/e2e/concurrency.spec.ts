@@ -15,7 +15,7 @@ test("an external tab update blocks stale autosaves and reloads the latest state
   }, { key: STORAGE_KEY, save: state });
   await page.goto("/");
   await page.getByTestId("login-submit").click();
-  await page.locator("#offline-continue").click();
+  await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 
   const secondTab = await context.newPage();

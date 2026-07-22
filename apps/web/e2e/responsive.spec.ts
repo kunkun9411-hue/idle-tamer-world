@@ -89,7 +89,7 @@ test("generated login and offline chrome stay inside the configured viewport", a
       return { width: rect.width, left: rect.left, right: rect.right, contentLeft: contentRect.left, contentRight: contentRect.right };
     });
   });
-  expect(actionLayout).toHaveLength(2);
+  expect(actionLayout).toHaveLength(1);
   for (const button of actionLayout) {
     expect(button.width).toBeLessThanOrEqual(211);
     expect(button.contentLeft).toBeGreaterThanOrEqual(button.left);
