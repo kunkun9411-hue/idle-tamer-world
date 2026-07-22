@@ -188,6 +188,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Leichte streckbare Kontur für Karten, Tooltips und Sekundärflächen",
     state: "FREIGEGEBEN",
   },
+  {
+    id: "A05",
+    family: "Rahmen",
+    name: "Dünne vertikale Rahmenkante",
+    path: "/assets/ui/kit/frame/edge-thin-vertical-v1.webp",
+    runtime: "64×1024 WebP",
+    use: "Verlustfreie 90°-Ableitung von A04 für kompakte Seitenkonturen",
+    state: "ABGELEITET",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

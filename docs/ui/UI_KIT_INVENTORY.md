@@ -20,7 +20,7 @@ Dieses Inventar ist die feste Produktionsreihenfolge für den modularen UI-Bauka
 | A02 | dicke horizontale Rahmenkante | ImageGen + Alpha | freigegeben |
 | A03 | dicke vertikale Rahmenkante | aus A02 abgeleitet | freigegeben |
 | A04 | dünne horizontale Rahmenkante | ImageGen + Alpha | freigegeben |
-| A05 | dünne vertikale Rahmenkante | aus A04 abgeleitet | geplant |
+| A05 | dünne vertikale Rahmenkante | aus A04 abgeleitet | freigegeben |
 | A06 | kompakte Kartenrahmenecke | ImageGen + Alpha | geplant |
 | A07 | minimale Tooltip-Rahmenecke | ImageGen + Alpha | geplant |
 | A08 | horizontaler gerader Verbinder | ImageGen + Alpha | geplant |
@@ -201,8 +201,8 @@ Interaktionszustände wie Hover, Fokus, gedrückt und deaktiviert werden bevorzu
 ## Produktionszähler
 
 - Grundelemente insgesamt: **144**
-- Davon freigegeben: **4**
-- Davon noch geplant: **140**
-- Nächstes zulässiges Element: **A05 – dünne vertikale Rahmenkante**
+- Davon freigegeben: **5**
+- Davon noch geplant: **139**
+- Nächstes zulässiges Element: **A06 – kompakte Kartenrahmenecke**
 
 Das Inventar kann später erweitert werden. Neue IDs werden jedoch nur ergänzt, wenn eine neue fachliche Form nicht durch Kombination, Rotation, 9-Slice, CSS-Zustand oder Ableitung abgedeckt werden kann.

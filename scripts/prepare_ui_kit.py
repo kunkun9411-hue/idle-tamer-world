@@ -65,6 +65,20 @@ ITEMS = [
         "connections": ["left", "right"],
         "status": "approved",
     },
+    {
+        "id": "A05",
+        "family": "frame",
+        "name": "Dünne vertikale Rahmenkante",
+        "source": "frame-edge-thin-horizontal-silver-ether-v1-master.png",
+        "output": "frame/edge-thin-vertical-v1.webp",
+        "target": (64, 1024),
+        "padding": 6,
+        "rotation": 90,
+        "rotatable": True,
+        "connections": ["top", "bottom"],
+        "status": "approved",
+        "derivation": "rotate-90-from-A04",
+    },
 ]
 
 

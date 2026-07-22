@@ -59,7 +59,8 @@ Strukturelle Referenzen: [Fab – Modular Borders and Frames](https://www.fab.co
 | A02 | Dicke horizontale Rahmenkante | `art-source/generated/ui-kit-v1/transparent/frame-edge-thick-horizontal-silver-ether-v1-master.png` | `assets/ui/kit/frame/edge-thick-horizontal-v1.webp` | freigegeben |
 | A03 | Dicke vertikale Rahmenkante | verlustfreie 90°-Ableitung von A02 | `assets/ui/kit/frame/edge-thick-vertical-v1.webp` | freigegeben |
 | A04 | Dünne horizontale Rahmenkante | `art-source/generated/ui-kit-v1/transparent/frame-edge-thin-horizontal-silver-ether-v1-master.png` | `assets/ui/kit/frame/edge-thin-horizontal-v1.webp` | freigegeben |
+| A05 | Dünne vertikale Rahmenkante | verlustfreie 90°-Ableitung von A04 | `assets/ui/kit/frame/edge-thin-vertical-v1.webp` | freigegeben |
 
 A01 bis A03 besitzen im UI-Katalog zusätzlich eine sichtbare Verbindungsprobe. Sie zeigt einen vollständigen skalierbaren Fensterrahmen aus vier gedrehten Ecken, zwei horizontalen Kanten und zwei abgeleiteten vertikalen Kanten.
 
-A04 ist als leichte Sekundärkante bewusst nicht Teil der schweren Vollrahmenprobe. Ihr technischer Vertrag erzwingt eine sichtbare Höhe von höchstens 45 Prozent der A02-Höhe und mindestens 90 Prozent nutzbare Breite.
+A04 und A05 bilden das leichte Kantenpaar für Karten und Tooltips. Bis A06 als passende kompakte Ecke vorliegt, sind sie bewusst nicht Teil der schweren Vollrahmenprobe. Der technische Vertrag von A04 erzwingt eine sichtbare Höhe von höchstens 45 Prozent der A02-Höhe und mindestens 90 Prozent nutzbare Breite.

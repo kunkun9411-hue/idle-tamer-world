@@ -61,6 +61,7 @@
 [data-kit-item="A02"] .ui-kit-preview img { width: 96%; max-width: none; }
 [data-kit-item="A03"] .ui-kit-preview img { width: auto; height: 270px; }
 [data-kit-item="A04"] .ui-kit-preview img { width: 96%; max-width: none; }
+[data-kit-item="A05"] .ui-kit-preview img { width: auto; height: 270px; }
 .ui-kit-card > footer { width: auto; min-height: 0; margin: 0; padding: 16px 4px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 18px; border: 0; opacity: 1; letter-spacing: normal; }
 .ui-kit-card > footer div { min-width: 0; display: grid; gap: 5px; }
 .ui-kit-card > footer span { color: var(--violet-bright); font-size: 12px; font-weight: 800; letter-spacing: .08em; }
