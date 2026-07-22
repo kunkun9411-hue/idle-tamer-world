@@ -9,6 +9,7 @@ import {
   UI_COLOR_TOKENS,
   UI_COMPONENT_GROUPS,
   UI_FOUNDATION_SCALES,
+  UI_GENERATED_CHROME,
   UI_STATES,
   UI_SURFACES,
   UI_TYPOGRAPHY_ROLES,
@@ -23,11 +24,22 @@ const activeFrame = FRAMES[1];
 
 const statePath = (query?: string): string => query ? `/?ui-state=${query}` : "/";
 
+const generatedChromePreview = (asset: (typeof UI_GENERATED_CHROME)[number]): string => {
+  const content = asset.id === "panel-frame"
+    ? `<span><b>ECHTER UI-TEXT</b><small>Werte und Beschriftung bleiben dynamisch.</small></span>`
+    : asset.id === "primary-button"
+      ? `<strong>BELOHNUNG ABHOLEN</strong>`
+      : asset.id === "avatar-frame"
+        ? `<i>${activeAvatar.glyph}</i>`
+        : "";
+  return `<article class="generated-chrome-card panel" data-chrome="${asset.id}"><div class="generated-chrome-preview generated-chrome-preview--${asset.id}"><img src="${asset.path}" alt="" loading="lazy">${content}</div><footer><div><span>IMAGEGEN · TEXTFREI</span><h3>${asset.name}</h3></div><small>${asset.runtime}</small></footer></article>`;
+};
+
 root.innerHTML = `
   <div class="catalog-ambient" aria-hidden="true"></div>
   <header class="catalog-header">
     <a class="catalog-brand" href="/"><span></span><div><small>ETHER PROTOCOL · DEV</small><strong>IDLE TAMER UI-KATALOG</strong></div></a>
-    <nav aria-label="Katalogbereiche"><a href="#components">Bauteile</a><a href="#states">Zustände</a><a href="#surfaces">Flächen</a><a href="#viewport">Viewports</a><a href="#debt">Schulden</a></nav>
+    <nav aria-label="Katalogbereiche"><a href="#components">Bauteile</a><a href="#generated">ImageGen</a><a href="#states">Zustände</a><a href="#surfaces">Flächen</a><a href="#viewport">Viewports</a><a href="#debt">Schulden</a></nav>
     <a class="secondary-button" href="/roadmap/">ROADMAP</a>
   </header>
   <main class="catalog-main">
@@ -52,6 +64,8 @@ root.innerHTML = `
         <article class="catalog-demo panel"><small>IDENTITÄT</small><div class="catalog-identity" style="--avatar-a:${activeAvatar.colors[0]};--avatar-b:${activeAvatar.colors[1]};--frame-a:${activeFrame.colors[0]};--frame-b:${activeFrame.colors[1]}"><span><i>${activeAvatar.glyph}</i></span><div><b>${activeAvatar.name}</b><em>${activeFrame.name}</em><small>Avatar-ID und Rahmen-ID bleiben getrennt</small></div></div></article>
       </div>
     </section>
+
+    <section class="catalog-section" id="generated"><div class="catalog-heading"><div><span class="eyebrow">IMAGEGEN · RUNTIME</span><h2>Generierte Identität, echter UI-Text</h2></div><p>Diese vier freigestellten Assets sind keine Mockups. Sie liegen versioniert in der Runtime; jeder sichtbare Text wird separat als HTML gerendert.</p></div><div class="generated-chrome-grid">${UI_GENERATED_CHROME.map(generatedChromePreview).join("")}</div></section>
 
     <section class="catalog-section" id="states"><div class="catalog-heading"><div><span class="eyebrow">ZUSTANDSMATRIX</span><h2>Zehn Zustände pro relevanter Fläche</h2></div><p>Die Query-Zustände öffnen den echten Client. Fachzustände werden im Screenshotlauf erzeugt.</p></div><div class="state-grid">${UI_STATES.map((state) => `<article class="panel"><span>${state.id.toUpperCase()}</span><h3>${state.name}</h3><p>${state.purpose}</p><a href="${statePath(state.previewQuery)}" target="catalog-preview">${state.previewQuery ? "IM CLIENT PRÜFEN" : "STANDARD ÖFFNEN"}</a></article>`).join("")}</div></section>
 

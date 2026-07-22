@@ -31,6 +31,23 @@ Gesamtfortschritt: **1 von 32 Gates abgeschlossen (3,1 %)**. Roadmap A bleibt se
 
 Jeder Block durchläuft **Planen → Bauen → Prüfen → Abnehmen**. Ein Gate zählt nur, wenn Oberfläche, UI-Katalog, Referenz-Viewports, Tests, Dokumentation und öffentlicher Status denselben Stand zeigen.
 
+### Visuelle Produktion ist Teil jedes B-Blocks
+
+Roadmap B ist ausdrücklich keine reine Planungs- oder CSS-Roadmap. Wo eine Fläche sichtbare Identität benötigt, gehört die Erzeugung echter Grafik-Assets zum jeweiligen Bau-Gate.
+
+| Block | verbindliche visuelle Produktion |
+| --- | --- |
+| B.01 | Silver-Ether-Panelrahmen, Aktionsrahmen, Trenner, Oberflächen und erste Avatarrahmen |
+| B.02 | Navigationsrahmen, nichtsprachliche Bereichssymbole, aktive Marker und mobile Dock-Ornamente |
+| B.03 | Kampf-HUD, Nameplates, Bossrahmen, Treffer-/Sieg-/Loot-Effekte und versteckbare Panel-Chrome |
+| B.04 | Sammlungs-, Ei-, Fragment-, Gem-, Evolutions-, Forschungs- und Prestige-Oberflächen |
+| B.05 | Profilbilder, runde Wechselrahmen, Rang- und Identitätsornamente |
+| B.06 | Gilden-DNA-Segmente, Rollenmarker, Gildenboss-/Expeditionsrahmen und Sozialfeedback |
+| B.07 | responsive Zuschnitte, kleine Varianten und robuste Fallbacks für generierte Oberflächen |
+| B.08 | Übergänge, Glows, Partikel, Zustandsfeedback und finale visuelle Vereinheitlichung |
+
+ImageGen liefert HD-Master, Material, Rahmen, Ornamente, Icons, Hintergründe und VFX. PixelLab übernimmt später die 200×200-Monsteranimationen. HTML/CSS bleibt für Texte, Zahlen, Interaktion, Zustände und Skalierung zuständig. Ein B-Baugate ist nicht erfüllt, wenn anstelle geplanter Grafik nur ein Platzhalter oder eine CSS-Skizze existiert.
+
 ## B.01 – Inventar und Designsystem
 
 **Ergebnis:** Ein verbindliches Silver-Ether-Designsystem ersetzt Einzelfall-CSS als Arbeitsgrundlage. Alle folgenden B-Blöcke bauen auf denselben Tokens, Komponenten, Zuständen und Assetregeln auf.
@@ -52,6 +69,8 @@ Jeder Block durchläuft **Planen → Bauen → Prüfen → Abnehmen**. Ein Gate 
 ### Schritt 2 – Bauen 🔷
 
 - Design-Tokens in einer zentralen, dokumentierten Quelle umsetzen;
+- echte textfreie ImageGen-Assets erzeugen, freistellen, optimieren und im Runtime-Manifest führen;
+- den ersten Silver-Ether-Chrome-Satz aus Panelrahmen, Aktionsrahmen, Avatarrahmen und Ether-Trenner im UI-Katalog verwenden;
 - Kernkomponenten ohne Änderung der Spiellogik vereinheitlichen;
 - UI-Katalog auf produktionsnahe Zustände und Komponentenvarianten erweitern;
 - alte Einzelfallwerte schrittweise auf die neue Basis migrieren.
@@ -139,4 +158,4 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 ## Direkt als Nächstes
 
-Aktiv ist **B.01, Schritt 2 – Bauen**. Als Nächstes entstehen die zentrale Tokenebene und die ersten migrierten Kernkomponenten. Login und Offline-Bericht werden die ersten echten Referenzflächen; Kampfnavigation und Kampfbühne bleiben anschließend B.02/B.03.
+Aktiv ist **B.01, Schritt 2 – Bauen**. Der erste ImageGen-Runtime-Satz liegt unter `assets/ui/chrome`; als Nächstes werden diese visuellen Ebenen zusammen mit der zentralen Tokenebene in die ersten echten Kernkomponenten migriert. Login und Offline-Bericht werden die ersten Referenzflächen; Kampfnavigation und Kampfbühne bleiben anschließend B.02/B.03.

@@ -1257,6 +1257,50 @@
       "sha256": "e63bca1af0ffa0499e219d28e0c2dbdec442623643a7d03e0fe05c7b690f6447"
     },
     {
+      "id": "ui.chrome.avatar-frame-v1",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/avatar-frame-v1.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 45312,
+      "sha256": "d71ecd64bec10a76d04b9a5d84f26a1ed80744548f1767d471e6f011ce810b55"
+    },
+    {
+      "id": "ui.chrome.ether-divider-v1",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/ether-divider-v1.webp",
+      "format": "webp",
+      "width": 1024,
+      "height": 256,
+      "alpha": true,
+      "bytes": 17364,
+      "sha256": "4f60493e40948134bc0891a2c1fe4c7cb117ea0fa281556981c97eaf63532713"
+    },
+    {
+      "id": "ui.chrome.panel-frame-v1",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/panel-frame-v1.webp",
+      "format": "webp",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 71476,
+      "sha256": "893609465ae12e5fd433f97b5dd88d25c745da839619e7a7c650caa630c22fe0"
+    },
+    {
+      "id": "ui.chrome.primary-button-frame-v1",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/primary-button-frame-v1.webp",
+      "format": "webp",
+      "width": 1024,
+      "height": 384,
+      "alpha": true,
+      "bytes": 27528,
+      "sha256": "243c5ecba45de490e7bac0409b1564132bf3f438ce06fac85a498382179e1315"
+    },
+    {
       "id": "zone.glass-gardens-v2",
       "kind": "zone",
       "path": "/assets/zones/glass-gardens-v2.webp",

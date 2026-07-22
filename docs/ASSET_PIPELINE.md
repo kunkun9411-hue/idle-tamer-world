@@ -28,6 +28,8 @@ Dadurch bleiben Übersetzung, Schriftgröße, Zahlenformat, Responsive Design un
 
 Die aktuelle HD-v2-Serie umfasst zehn ursprüngliche Rookie-Starter, 30 momentan als Normalgegner abgelegte Kreaturendesigns und fünf Bosse. Die 30 Designs werden später zu zusätzlichen sammelbaren Rookie-Linien mit Evolutionen migriert; ihre derzeitige Ordnerbezeichnung ist kein dauerhaftes Produktmodell. Optik V2 ergänzt drei 1600×900-Zonenwelten. Neun neutrale Gem-Master liefern außerdem 45 transparente Equipment-Varianten. Das offizielle transparente Idle-Tamer-World-Logo ist ein eigener Branding-Asset. Die Prestige-Szene ergänzt ein 1600×900-Heiligtum und einen transparenten 512×768-Ether-Kristall. Elf Eier, fünf Kernmaterialien, ein Inkubator und vier Effekt-Layer vervollständigen den ersten spielrelevanten Gegenstandssatz. `python scripts/validate_assets.py` prüft Anzahl, Format, Größe und Prüfsummen aller Runtime-Bilder.
 
+Roadmap B ergänzt Interface-Art nicht nur als Konzept: Der erste Silver-Ether-Chrome-Satz enthält vier textfreie ImageGen-Assets für Panel, Primäraktion, Avatar und Szenentrennung. Prompt, Quellen und Runtime-Vertrag stehen in `ui/UI_CHROME_V1.md`.
+
 ## Ordner
 
 - `art-source/generated/hd-v1/*_chroma.png` – unveränderte Generierung
@@ -52,6 +54,8 @@ Die aktuelle HD-v2-Serie umfasst zehn ursprüngliche Rookie-Starter, 30 momentan
 - `apps/web/public/assets/incubator` – transparenter 512×512-Inkubator
 - `art-source/generated/prestige-vfx-v1` und `art-source/generated/hatch-vfx-v1` – Effektquellen und Master
 - `apps/web/public/assets/effects` – vier bewegte Runtime-Layer für Brut und Prestige
+- `art-source/generated/ui-chrome-v1` – Chromaquellen und transparente HD-Master des Silver-Ether-Interfaces
+- `apps/web/public/assets/ui/chrome` – vier optimierte transparente UI-Chrome-WebPs
 - `apps/web/public/assets/asset-manifest.json` – versionierter Pfad-, Maß-, Format- und SHA-256-Vertrag aller Runtime-Bilder
 - `art-source/archive/pixel-v1` – verworfener Pixel-Stiltest
 
@@ -75,5 +79,7 @@ Zonenhintergründe laufen getrennt von der 200×200-PixelLab-Spritepipeline. `py
 Gems laufen ebenfalls getrennt von Monsteranimationen. `python scripts/build_gem_assets.py` erzeugt aus neun freigestellten Mastern alle fünf Farbvarianten pro Form und Seltenheit. Regeln und der reproduzierbare Prompt stehen in `docs/GEM_SYSTEM.md`.
 
 Prestige-Art läuft ebenfalls getrennt von der 200×200-Spritepipeline. `python scripts/prepare_prestige_assets.py` erzeugt beide Runtime-Dateien reproduzierbar; Komposition, Animation und vollständige Prompts stehen in `docs/PRESTIGE_SCENE_V2.md`.
+
+UI-Chrome läuft als eigene textfreie ImageGen-Pipeline. `python scripts/prepare_ui_chrome.py` erzeugt feste WebP-Runtime-Größen aus den freigestellten Mastern; Prompts und Einsatzregeln stehen in `docs/ui/UI_CHROME_V1.md`.
 
 Das Eier-, Material-, Inkubator- und VFX-Paket einschließlich Promptset und Ebenenaufbau steht in `EGG_AND_VFX_ASSET_PACK.md`.

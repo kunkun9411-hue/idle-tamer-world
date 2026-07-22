@@ -144,6 +144,13 @@ export const UI_ASSET_CONTRACTS = [
   { id: "ui-decoration", name: "UI-Rahmen und Ornament", runtime: "PNG/WebP/SVG nach Einsatz", source: "ImageGen oder Codegrafik", textPolicy: "keine Texte, Zahlen oder Pseudoschrift", document: "ASSET_PIPELINE.md" },
 ] as const;
 
+export const UI_GENERATED_CHROME = [
+  { id: "panel-frame", name: "Panelrahmen", path: "/assets/ui/chrome/panel-frame-v1.webp", runtime: "1024x1024 WebP" },
+  { id: "primary-button", name: "Aktionsrahmen", path: "/assets/ui/chrome/primary-button-frame-v1.webp", runtime: "1024x384 WebP" },
+  { id: "avatar-frame", name: "Avatarrahmen", path: "/assets/ui/chrome/avatar-frame-v1.webp", runtime: "512x512 WebP" },
+  { id: "ether-divider", name: "Ether-Trenner", path: "/assets/ui/chrome/ether-divider-v1.webp", runtime: "1024x256 WebP" },
+] as const;
+
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS
   .filter((debt) => (debt.appliesAt.minWidth === undefined || width >= debt.appliesAt.minWidth)
     && (debt.appliesAt.maxWidth === undefined || width <= debt.appliesAt.maxWidth))

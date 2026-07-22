@@ -108,11 +108,12 @@ Die drei verbindlichen Größen bleiben **1280×720**, **1024×768** und **390×
 ## Baufolge für B.01.2
 
 1. neue Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
-2. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal als Kernprimitive migrieren;
-3. UI-Katalog gegen die neuen Primitiven stellen und alte Werte sichtbar markieren;
-4. Login und Offline-Bericht als erste echte Referenzflächen umstellen;
-5. globale Status- und Fokuszustände vereinheitlichen;
-6. erst danach szenenspezifische Migration an B.02 bis B.08 übergeben.
+2. textfreie ImageGen-Master für Panel, Aktion, Avatar und Trenner erzeugen und als Runtime-Chrome integrieren;
+3. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal als Kernprimitive migrieren;
+4. UI-Katalog gegen die neuen Primitiven und die echten generierten Ebenen stellen;
+5. Login und Offline-Bericht als erste echte Referenzflächen umstellen;
+6. globale Status- und Fokuszustände vereinheitlichen;
+7. erst danach szenenspezifische Migration an B.02 bis B.08 übergeben.
 
 ## Abnahme B.01.1
 

@@ -23,10 +23,11 @@ EGG_ROOT = PUBLIC / "assets" / "eggs"
 EFFECT_ROOT = PUBLIC / "assets" / "effects"
 ITEM_ROOT = PUBLIC / "assets" / "items"
 INCUBATOR_ROOT = PUBLIC / "assets" / "incubator"
+UI_CHROME_ROOT = PUBLIC / "assets" / "ui" / "chrome"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 4}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 120_000}
 
 
 def validate(path: Path) -> None:
@@ -56,6 +57,7 @@ def asset_kind(path: Path) -> str:
         "effects": "effect",
         "items": "item",
         "incubator": "incubator",
+        "ui": "ui",
     }[path.relative_to(ASSET_ROOT).parts[0]]
 
 
@@ -162,6 +164,24 @@ def main() -> None:
         if alpha.getbbox() is None or any(alpha.getpixel(point) for point in ((0, 0), (511, 0), (0, 511), (511, 511))):
             raise ValueError("incubator: expected visible content with transparent corners")
     print("incubator: one transparent 512x512 frame valid")
+    ui_chrome_sizes = {
+        "panel-frame-v1.webp": (1024, 1024),
+        "primary-button-frame-v1.webp": (1024, 384),
+        "avatar-frame-v1.webp": (512, 512),
+        "ether-divider-v1.webp": (1024, 256),
+    }
+    ui_chrome_files = sorted(UI_CHROME_ROOT.glob("*.webp"))
+    if {path.name for path in ui_chrome_files} != set(ui_chrome_sizes):
+        raise ValueError(f"ui chrome: unexpected runtime assets {[path.name for path in ui_chrome_files]}")
+    for path in ui_chrome_files:
+        with Image.open(path) as image:
+            if image.size != ui_chrome_sizes[path.name] or image.mode != "RGBA":
+                raise ValueError(f"{path}: expected {ui_chrome_sizes[path.name]} RGBA, got {image.size} {image.mode}")
+            alpha = image.getchannel("A")
+            corners = [alpha.getpixel(point) for point in ((0, 0), (image.width - 1, 0), (0, image.height - 1), (image.width - 1, image.height - 1))]
+            if alpha.getbbox() is None or any(corners):
+                raise ValueError(f"{path}: UI chrome must be visible with transparent corners")
+    print(f"ui chrome: {len(ui_chrome_files)} generated transparent runtime assets valid")
     gem_files = sorted(GEM_ROOT.glob("*/*.png"))
     if len(gem_files) != 45:
         raise ValueError(f"gems: expected 45 runtime assets, found {len(gem_files)}")
@@ -194,7 +214,7 @@ def main() -> None:
     if total_bytes > 8_000_000:
         raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 8 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
-    print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + 1 branding + {len(prestige_files)} prestige assets")
+    print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + {len(ui_chrome_files)} UI chrome + 1 branding + {len(prestige_files)} prestige assets")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 - Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
 - Roadmap B: **B.01 – Inventar und Designsystem, Schritt 2 Bauen aktiv; 1/32 Gates**
+- B.01-Art: erster textfreier ImageGen-Runtime-Satz mit Panel-, Aktions-, Avatarrahmen und Ether-Trenner integriert
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -52,6 +53,7 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - vollständigen Serverneustart bestanden; Docker, Datenbank, API, Web, Proxy und Backup-Timer kamen automatisch zurück
 - A.08-QA-Account und Testgilde vollständig entfernt; exakt zwei vorher vorhandene Accounts blieben erhalten
 - A.08.4: Abschlussbericht veröffentlicht, Roadmap A bei 100 % eingefroren und B.01 bei 0/32 aktiviert
+- B.01.2: vier Silver-Ether-UI-Chrome-Assets mit Chromaquellen, transparenten Mastern, Runtime-WebPs, Manifestvertrag und UI-Katalog-Vorschau gebaut
 
 Die genauen Fälle stehen in:
 

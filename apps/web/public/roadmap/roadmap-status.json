@@ -1,7 +1,7 @@
 {
   "roadmap": "B",
   "status": "active",
-  "updated": "22. Juli 2026 · B.01 Planung abgenommen · B.01 Bauen aktiv",
+  "updated": "22. Juli 2026 · erster ImageGen-Runtime-Satz integriert · B.01 Bauen aktiv",
   "activeBlock": 1,
   "activeStep": 2,
   "blocks": [
@@ -14,7 +14,7 @@
       "accent": "violet",
       "steps": [
         { "name": "Planen", "done": true, "note": "Tokens, lesbare Typografie, zehn Komponentenfamilien und textfreie Assets festgelegt" },
-        { "name": "Bauen", "done": false, "note": "Design-Tokens und Kernkomponenten als echte Spielbauteile umsetzen" },
+        { "name": "Bauen", "done": false, "note": "Design-Tokens, ImageGen-Runtime-Assets und Kernkomponenten als echte Spielbauteile umsetzen" },
         { "name": "Prüfen", "done": false, "note": "Katalog, Viewports, Zustände, Kontrast und Konsistenz vergleichen" },
         { "name": "Abnehmen", "done": false, "note": "Verbindliche visuelle Basis für alle folgenden B-Blöcke freigeben" }
       ]
