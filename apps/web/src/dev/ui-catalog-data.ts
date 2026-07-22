@@ -161,6 +161,15 @@ export const UI_MODULAR_KIT_ITEMS = [
     use: "Drehbares Eckmodul für große Fenster und Dialoge",
     state: "FREIGEGEBEN",
   },
+  {
+    id: "A02",
+    family: "Rahmen",
+    name: "Dicke horizontale Rahmenkante",
+    path: "/assets/ui/kit/frame/edge-thick-horizontal-v1.webp",
+    runtime: "1024×192 WebP",
+    use: "Gerade, streckbare Kante für große Fenster und Dialoge",
+    state: "FREIGEGEBEN",
+  },
 ] as const;
 
 export const knownUiDebtIdsForWidth = (width: number): string[] => KNOWN_UI_DEBTS

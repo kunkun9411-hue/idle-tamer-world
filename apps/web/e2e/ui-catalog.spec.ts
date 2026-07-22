@@ -8,13 +8,22 @@ test("UI catalog exposes its contracts without page errors or horizontal overflo
   await expect(page.getByRole("heading", { name: "Eine Oberfläche. Lesbar statt winzig." })).toBeVisible();
   await expect(page.locator(".type-contract-grid article")).toHaveCount(9);
   await expect(page.locator(".foundation-grid article")).toHaveCount(4);
-  await expect(page.locator(".ui-kit-card")).toHaveCount(1);
+  await expect(page.locator(".ui-kit-card")).toHaveCount(2);
   await expect(page.locator('[data-kit-item="A01"] img')).toHaveCount(1);
   await expect.poll(() => page.locator('[data-kit-item="A01"] img').evaluate((image) => (
     image instanceof HTMLImageElement && image.complete
       ? { width: image.naturalWidth, height: image.naturalHeight }
       : null
   ))).toEqual({ width: 512, height: 512 });
+  await expect.poll(() => page.locator('[data-kit-item="A02"] img').evaluate((image) => (
+    image instanceof HTMLImageElement && image.complete
+      ? { width: image.naturalWidth, height: image.naturalHeight }
+      : null
+  ))).toEqual({ width: 1024, height: 192 });
+  await expect(page.locator('[data-kit-assembly="A01-A02"] img')).toHaveCount(3);
+  await expect.poll(() => page.locator('[data-kit-assembly="A01-A02"] img').evaluateAll((images) => images.every((image) => (
+    image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
+  )))).toBe(true);
   await expect(page.getByRole("heading", { name: "Generierte Identität, echter UI-Text" })).toBeVisible();
   await expect(page.locator(".generated-chrome-card")).toHaveCount(4);
   await expect(page.locator(".generated-chrome-card img")).toHaveCount(4);
