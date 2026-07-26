@@ -1,0 +1,57 @@
+.icon-kit-block { margin-top: 34px; }
+.icon-kit-block > h3 { margin: 0 0 14px; color: var(--silver-2); font-size: 20px; letter-spacing: -.3px; }
+.icon-kit-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 9px; }
+.icon-kit-card { min-width: 0; min-height: 205px; padding: 10px; display: grid; align-content: start; gap: 6px; overflow: hidden; }
+.icon-kit-preview { min-height: 116px; display: grid; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; background: radial-gradient(circle at 50% 42%, rgba(168,139,255,.14), transparent 62%), #0b0b11; }
+.icon-kit-preview img { width: 88%; height: 112px; object-fit: contain; filter: drop-shadow(0 10px 16px rgba(0,0,0,.5)); }
+.icon-kit-card > span { color: var(--violet-bright); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.icon-kit-card > strong { overflow: hidden; color: var(--silver); font-size: 12px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.icon-kit-card > small { min-height: 28px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+.surface-kit-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.surface-kit-card { min-width: 0; overflow: hidden; }
+.surface-kit-preview { min-height: 150px; padding: 10px; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); background: #08080e; }
+.surface-kit-preview img { width: 100%; max-height: 170px; object-fit: contain; filter: drop-shadow(0 12px 20px rgba(0,0,0,.45)); }
+.surface-kit-card footer { min-height: 98px; padding: 12px 14px 14px; display: grid; align-content: start; gap: 5px; }
+.surface-kit-card footer span { color: var(--violet-bright); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.surface-kit-card footer strong { color: var(--silver); font-size: 14px; }
+.surface-kit-card footer small { color: var(--muted); font-size: 10px; line-height: 1.4; }
+.info-variant-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.info-variant-card { min-width: 0; overflow: hidden; }
+.info-variant-preview { min-height: 128px; padding: 12px; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); background: #08080e; }
+.info-variant-preview img { width: 100%; max-height: 112px; object-fit: contain; filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+.info-variant-card--rotate-180 .info-variant-preview img { transform: rotate(180deg); }
+.info-variant-card--rotate-90 .info-variant-preview img { transform: rotate(90deg); }
+.info-variant-card--rotate-270 .info-variant-preview img { transform: rotate(270deg); }
+.info-variant-card--warning .info-variant-preview { border-bottom-color: rgba(231,187,122,.34); }
+.info-variant-card--error .info-variant-preview { border-bottom-color: rgba(238,125,147,.34); }
+.info-variant-card--ether .info-variant-preview { border-bottom-color: rgba(168,139,255,.34); }
+.system-variant-card--audio-off .info-variant-preview img { opacity: .42; filter: grayscale(.85) brightness(.72); }
+.system-variant-card--forward .info-variant-preview img { transform: rotate(180deg); }
+.info-variant-card footer { min-height: 96px; padding: 12px 14px 14px; display: grid; align-content: start; gap: 5px; }
+.info-variant-card footer span { color: var(--violet-bright); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.info-variant-card footer strong { color: var(--silver); font-size: 14px; }
+.info-variant-card footer small { color: var(--muted); font-size: 10px; line-height: 1.4; }
+@media (max-width: 1100px) { .icon-kit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .surface-kit-grid, .info-variant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .chrome-primitive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .identity-kit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .icon-kit-grid, .surface-kit-grid, .info-variant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .chrome-primitive-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .identity-kit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.chrome-primitive-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.chrome-primitive-card { min-width: 0; overflow: hidden; }
+.chrome-primitive-preview { min-height: 128px; padding: 14px; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); background: radial-gradient(circle at 50% 50%, rgba(168,139,255,.10), transparent 64%), #08080e; }
+.chrome-primitive-preview img { width: 100%; max-height: 116px; object-fit: contain; filter: drop-shadow(0 10px 18px rgba(0,0,0,.48)); }
+.chrome-primitive-card footer { min-height: 84px; padding: 12px 14px 14px; display: grid; align-content: start; gap: 5px; }
+.chrome-primitive-card footer span { color: var(--violet-bright); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.chrome-primitive-card footer strong { color: var(--silver); font-size: 14px; }
+.chrome-primitive-card footer small { color: var(--muted); font-size: 10px; line-height: 1.4; }
+.identity-kit-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; }
+.identity-kit-card { min-width: 0; overflow: hidden; }
+.identity-kit-preview { min-height: 150px; position: relative; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.07); background: radial-gradient(circle at 50% 48%, rgba(168,139,255,.16), transparent 64%), #08080e; }
+.identity-kit-preview img { width: 132px; height: 132px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(0,0,0,.5)); }
+.identity-kit-preview i { position: absolute; width: 82px; height: 82px; display: grid; place-items: center; border-radius: 50%; color: var(--silver); background: linear-gradient(145deg, #372c59, #11131f); font-size: 32px; font-style: normal; font-weight: 800; }
+.identity-kit-card footer { min-height: 90px; padding: 11px 12px 13px; display: grid; align-content: start; gap: 5px; }
+.identity-kit-card footer span { color: var(--violet-bright); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.identity-kit-card footer strong { color: var(--silver); font-size: 13px; line-height: 1.2; }
+.identity-kit-card footer small { color: var(--muted); font-size: 10px; line-height: 1.35; }

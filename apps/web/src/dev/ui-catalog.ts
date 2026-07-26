@@ -1,6 +1,7 @@
 import "../styles.css";
 import "../styles-v2.css";
 import "./ui-catalog.css";
+import "./ui-kit-catalog.css";
 
 import { AVATARS, FRAMES } from "../game/catalog";
 import {
@@ -10,7 +11,14 @@ import {
   UI_COMPONENT_GROUPS,
   UI_FOUNDATION_SCALES,
   UI_GENERATED_CHROME,
+  UI_ECONOMY_ICONS,
+  UI_CHROME_PRIMITIVES,
+  UI_INFO_DERIVATIONS,
+  UI_SYSTEM_DERIVATIONS,
+  UI_IDENTITY_ASSETS,
   UI_MODULAR_KIT_ITEMS,
+  UI_SYSTEM_ICONS,
+  UI_SURFACE_ASSETS,
   UI_STATES,
   UI_SURFACES,
   UI_TYPOGRAPHY_ROLES,
@@ -24,6 +32,13 @@ const activeAvatar = AVATARS[0];
 const activeFrame = FRAMES[1];
 
 const statePath = (query?: string): string => query ? `/?ui-state=${query}` : "/";
+
+// Stable family metadata keeps the catalog and manifest in lockstep as new
+// C/D batches are appended to the data arrays.
+const kitFamilyForId = (id: string): string => {
+  const prefix = id.charAt(0);
+  return ({ A: "frame", B: "surface", C: "chrome", D: "control", E: "info", F: "economy", G: "system", H: "identity" } as Record<string, string>)[prefix] ?? "unknown";
+};
 
 const generatedChromePreview = (asset: (typeof UI_GENERATED_CHROME)[number]): string => {
   const content = asset.id === "panel-frame"
@@ -78,9 +93,29 @@ root.innerHTML = `
 
     <section class="catalog-section" id="viewport"><div class="catalog-heading"><div><span class="eyebrow">VIEWPORT-STUDIO</span><h2>Client in festen Abnahmegrößen</h2></div><p>Für vollständige Bildserien: <code>pnpm ui:capture</code>.</p></div><div class="viewport-toolbar" role="group" aria-label="Viewport wählen">${UI_VIEWPORTS.map((viewport, index) => `<button class="${index === 0 ? "is-active" : ""}" data-viewport="${viewport.id}"><b>${viewport.name}</b><small>${viewport.width}×${viewport.height}</small></button>`).join("")}</div><div class="viewport-stage"><div class="viewport-frame" style="--preview-width:${UI_VIEWPORTS[0].width}px;--preview-height:${UI_VIEWPORTS[0].height}px"><iframe name="catalog-preview" src="/" title="Idle Tamer UI-Vorschau"></iframe></div></div></section>
 
-    <section class="catalog-section" id="debt"><div class="catalog-heading"><div><span class="eyebrow">BEKANNTE UX-SCHULDEN</span><h2>Offen, messbar und zugeordnet</h2></div><p>Der Layout-Audit erlaubt nur diese bekannten Befunde. Jede neue Kollision lässt den Test fehlschlagen.</p></div><div class="debt-grid">${KNOWN_UI_DEBTS.map((debt) => `<article class="panel debt-${debt.priority.toLowerCase()}"><span>${debt.priority} · ${debt.id}</span><h3>${debt.title}</h3><p>${debt.description}</p><footer>${debt.blocks.map((block) => `<b>${block}</b>`).join("")}</footer></article>`).join("")}</div></section>
+    <section class="catalog-section" id="debt"><div class="catalog-heading"><div><span class="eyebrow">BEKANNTE UX-SCHULDEN</span><h2>${KNOWN_UI_DEBTS.length ? "Offen, messbar und zugeordnet" : "Keine offenen Layoutschulden"}</h2></div><p>${KNOWN_UI_DEBTS.length ? "Der Layout-Audit erlaubt nur diese bekannten Befunde. Jede neue Kollision lässt den Test fehlschlagen." : "Der Layout-Audit ist aktuell ohne Ausnahme-Allowlist grün. Neue Befunde benötigen Messung, Zuständigkeit und Abnahmekriterium."}</p></div><div class="debt-grid">${KNOWN_UI_DEBTS.map((debt) => `<article class="panel debt-${debt.priority.toLowerCase()}"><span>${debt.priority} · ${debt.id}</span><h3>${debt.title}</h3><p>${debt.description}</p><footer>${debt.blocks.map((block) => `<b>${block}</b>`).join("")}</footer></article>`).join("")}</div></section>
   </main>
   <footer class="catalog-footer"><span>Idle Tamer · Designvertrag B.01</span><span>Quelle: ui-catalog-data.ts · docs/ui</span></footer>`;
+
+document.querySelector<HTMLElement>("main.catalog-main")?.insertAdjacentHTML("beforeend", `
+  <section class="catalog-section" id="identity-kit"><div class="catalog-heading"><div><span class="eyebrow">IDENTITÄT UND SOZIALES</span><h2>Avatar, Rahmen und Rolle bleiben getrennt</h2></div><p>Das Profilbild bleibt ein eigenes Layer. Rahmen, Rang, Online-Status und Rollenmarker können unabhängig gewechselt und später serverseitig gespeichert werden.</p></div><div class="identity-kit-grid">${UI_IDENTITY_ASSETS.map((item) => `<article class="identity-kit-card panel" data-kit-item="${item.id}"><div class="identity-kit-preview"><img src="${item.path}" alt="" loading="lazy">${item.id.startsWith("H0") && Number(item.id.slice(1)) <= 4 ? `<i>R</i>` : ""}</div><footer><span>${item.id}</span><strong>${item.name}</strong><small>${item.use}</small></footer></article>`).join("")}</div></section>
+
+  <section class="catalog-section" id="chrome-kit"><div class="catalog-heading"><div><span class="eyebrow">LEISTEN, AKTIONEN UND WERTE</span><h2>Die wiederverwendbare Chrome-Schicht</h2></div><p>Kopf-/Fußleisten, Trenner, Buttons und Wertfassungen sind einzeln austauschbar. Der eigentliche Text bleibt dynamisches HTML.</p></div><div class="chrome-primitive-grid">${UI_CHROME_PRIMITIVES.map((item) => `<article class="chrome-primitive-card panel" data-kit-item="${item.id}"><div class="chrome-primitive-preview"><img src="${item.path}" alt="" loading="lazy"></div><footer><span>${item.id} · ${item.family.toUpperCase()}</span><strong>${item.name}</strong><small>${item.use}</small></footer></article>`).join("")}</div></section>
+
+  <section class="catalog-section" id="surfaces-kit"><div class="catalog-heading"><div><span class="eyebrow">FLÄCHEN UND MATERIAL</span><h2>Ruhige Innenflächen für jedes Fenster</h2></div><p>Die Innenflächen liefern Material und Zustandslicht; Geometrie, Text und Werte bleiben dynamisches HTML/CSS.</p></div><div class="surface-kit-grid">${UI_SURFACE_ASSETS.map((item) => `<article class="surface-kit-card panel" data-kit-item="${item.id}"><div class="surface-kit-preview"><img src="${item.path}" alt="" loading="lazy"></div><footer><span>${item.id}</span><strong>${item.name}</strong><small>${item.use}</small></footer></article>`).join("")}</div></section>
+
+  <section class="catalog-section" id="icons"><div class="catalog-heading"><div><span class="eyebrow">RESSOURCEN UND NAVIGATION</span><h2>Textfreie Icons, echte Beschriftung</h2></div><p>Ressourcen- und Systemicons kommen aus derselben HD-Materialfamilie. Namen, Werte und Tooltips werden erst im Client ergänzt.</p></div><div class="icon-kit-block"><h3>Ökonomie und Items</h3><div class="icon-kit-grid">${UI_ECONOMY_ICONS.map((item) => `<article class="icon-kit-card panel" data-kit-item="${item.id}"><div class="icon-kit-preview"><img src="${item.path}" alt="" loading="lazy"></div><span>${item.id}</span><strong>${item.name}</strong><small>${item.use}</small></article>`).join("")}</div></div><div class="icon-kit-block"><h3>System und Navigation</h3><div class="icon-kit-grid">${UI_SYSTEM_ICONS.map((item) => `<article class="icon-kit-card panel" data-kit-item="${item.id}"><div class="icon-kit-preview"><img src="${item.path}" alt="" loading="lazy"></div><span>${item.id}</span><strong>${item.name}</strong><small>${item.use}</small></article>`).join("")}</div></div></section>
+`);
+
+document.querySelector<HTMLElement>("main.catalog-main")?.insertAdjacentHTML("beforeend", `
+  <section class="catalog-section" id="info-variants"><div class="catalog-heading"><div><span class="eyebrow">INFORMATION · ABLEITUNGEN</span><h2>Ein Master, mehrere zugängliche Zustände</h2></div><p>E06–E08, E12–E13 und E15–E17 bleiben bewusst CSS-/Rotationsableitungen. Das spart Rasterduplikate, hält Kontrast und Bewegung zentral steuerbar und lässt den Text lokalisierbar.</p></div><div class="info-variant-grid">${UI_INFO_DERIVATIONS.map((item) => `<article class="info-variant-card panel info-variant-card--${item.variant}" data-info-derivation="${item.id}"><div class="info-variant-preview"><img src="${item.path}" alt="" loading="lazy"></div><footer><span>${item.id} · AUS ${item.base}</span><strong>${item.name}</strong><small>${item.use}</small></footer></article>`).join("")}</div></section>
+`);
+
+document.querySelector<HTMLElement>("main.catalog-main")?.insertAdjacentHTML("beforeend", `
+  <section class="catalog-section" id="system-variants"><div class="catalog-heading"><div><span class="eyebrow">SYSTEM · ABLEITUNG</span><h2>Systemzustände ohne Rasterduplikate</h2></div><p>G19 nutzt G18 als gemeinsames Master für Audio aus. G27 nutzt G26 als Zurück-Master und rotiert ihn für Vorwärts. Beschriftung und Zugänglichkeit bleiben echtes UI.</p></div><div class="info-variant-grid">${UI_SYSTEM_DERIVATIONS.map((item) => `<article class="info-variant-card system-variant-card system-variant-card--${item.variant} panel" data-system-derivation="${item.id}"><div class="info-variant-preview"><img src="${item.path}" alt="" loading="lazy"></div><footer><span>${item.id} · BASIS ${item.base}</span><strong>${item.name}</strong><small>${item.use}</small></footer></article>`).join("")}</div></section>
+`);
+
+document.querySelector<HTMLElement>(".catalog-header nav")?.insertAdjacentHTML("beforeend", `<a href="#icons">Icons</a>`);
 
 document.querySelector<HTMLElement>("#kit")?.insertAdjacentHTML("beforeend", `
   <article class="ui-kit-assembly ui-kit-assembly--tooltip panel" data-kit-assembly="A04-A07">
@@ -94,6 +129,10 @@ document.querySelector<HTMLElement>("#kit")?.insertAdjacentHTML("beforeend", `
     </div>
   </article>
 `);
+
+document.querySelectorAll<HTMLElement>("[data-kit-item]").forEach((element) => {
+  element.dataset.kitFamily = kitFamilyForId(element.dataset.kitItem ?? "");
+});
 
 const viewportFrame = document.querySelector<HTMLElement>(".viewport-frame");
 for (const button of document.querySelectorAll<HTMLButtonElement>("[data-viewport]")) {

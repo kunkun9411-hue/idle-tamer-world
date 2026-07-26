@@ -234,7 +234,7 @@ const init = async () => {
     B: await bResponse.json(),
   };
   const activeData = roadmaps.B;
-  const activeBlock = activeData.blocks.find((block) => block.id === activeData.activeBlock) ?? activeData.blocks[0];
+  const activeBlock = activeData.blocks.find((block) => block.id === activeData.activeBlock) ?? activeData.blocks.at(-1) ?? activeData.blocks[0];
   const activeTotals = getTotals(activeData);
   const aTotals = getTotals(roadmaps.A);
   let selectedRoadmap = "B";
@@ -247,7 +247,10 @@ const init = async () => {
   document.querySelector("#switch-a-progress").textContent = `${aTotals.completed}/${aTotals.total} · ${formatPercent(aTotals.percent)}`;
   document.querySelector("#switch-b-progress").textContent = `${activeTotals.completed}/${activeTotals.total} · ${formatPercent(activeTotals.percent)}`;
   document.querySelector("#active-block-label").textContent = `${getBlockCode(activeData, activeBlock)} · ${activeBlock.title}`;
-  document.querySelector("#active-step-label").textContent = `${activeData.activeStep} · ${activeBlock.steps[activeData.activeStep - 1].name}`;
+  const activeStep = activeData.activeStep ?? activeBlock.steps.length;
+  document.querySelector("#active-step-label").textContent = activeData.status === "complete"
+    ? "ABGESCHLOSSEN · ÜBERGABE AN C"
+    : `${activeStep} · ${activeBlock.steps[activeStep - 1].name}`;
   document.querySelector("#completed-label").textContent = `${activeTotals.completed} / ${activeTotals.total} B-Gates`;
   document.querySelector("#updated-label").textContent = activeData.updated;
 

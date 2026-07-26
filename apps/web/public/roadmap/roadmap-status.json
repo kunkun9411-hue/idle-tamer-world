@@ -1,9 +1,9 @@
 {
   "roadmap": "B",
-  "status": "active",
-  "updated": "22. Juli 2026 · ImageGen-Chrome in Login und Offline-Bericht integriert · B.01 Bauen aktiv",
-  "activeBlock": 1,
-  "activeStep": 2,
+  "status": "complete",
+  "updated": "26. Juli 2026 · Roadmap B.08 abgenommen · Übergabe an Roadmap C",
+  "activeBlock": null,
+  "activeStep": null,
   "blocks": [
     {
       "id": 1,
@@ -14,9 +14,9 @@
       "accent": "violet",
       "steps": [
         { "name": "Planen", "done": true, "note": "Tokens, lesbare Typografie, zehn Komponentenfamilien und textfreie Assets festgelegt" },
-        { "name": "Bauen", "done": false, "note": "Modularen ImageGen-UI-Baukasten, Design-Tokens, Icons und Kernkomponenten als gemeinsame Spielbauteile umsetzen" },
-        { "name": "Prüfen", "done": false, "note": "Katalog, Viewports, Zustände, Kontrast und Konsistenz vergleichen" },
-        { "name": "Abnehmen", "done": false, "note": "Verbindliche visuelle Basis für alle folgenden B-Blöcke freigeben" }
+        { "name": "Bauen", "done": true, "note": "136 Rasterelemente, 10 Ableitungen, textfreie Chrome-Assets, Manifest und Katalog synchronisiert" },
+        { "name": "Prüfen", "done": true, "note": "UI-Katalog, Desktop/Tablet/Mobile-Capture, Layout-Audit, Zustandsmatrix, Kontrast, Tastatur und Reduced Motion grün" },
+        { "name": "Abnehmen", "done": true, "note": "Desktop/Tablet/Mobile-Captures visuell geprüft; Freeze für die folgenden B-Blöcke dokumentiert" }
       ]
     },
     {
@@ -27,10 +27,10 @@
       "visual": "navigation",
       "accent": "cyan",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Spielerwege, Szenenhierarchie und Desktop-/Mobilnavigation definieren" },
-        { "name": "Bauen", "done": false, "note": "Hauptnavigation, Kontextaktionen und einklappbare Nebenflächen umsetzen" },
-        { "name": "Prüfen", "done": false, "note": "Kernwege, Rücksprünge, Fokus und mobile Kollisionen testen" },
-        { "name": "Abnehmen", "done": false, "note": "Jede Kernfunktion in höchstens zwei verständlichen Wechseln erreichbar machen" }
+        { "name": "Planen", "done": true, "note": "Kernwege, Szenenhierarchie und Desktop-/Mobilnavigation im UI-Katalog festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Kampf-Dock, Kontextaktionen, Profilchip und einklappbare Nebenflächen umgesetzt" },
+        { "name": "Prüfen", "done": true, "note": "Navigation-IA-, Responsive-, Layout-Audit- und Zustandsmatrix-E2E grün" },
+        { "name": "Abnehmen", "done": true, "note": "Kampf, Sammlung, Brut, Forschung, Gilde, Aufträge und Profil sind über Dock/Topbar direkt erreichbar; Rückkehr zum Kampf in E2E verifiziert" }
       ]
     },
     {
@@ -41,10 +41,10 @@
       "visual": "battle",
       "accent": "crimson",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Informationsprioritäten, HUD-Zonen und Interaktionsdichte festlegen" },
-        { "name": "Bauen", "done": false, "note": "Kampfbühne, Teamwahl, Ressourcen und einklappbare Panels neu ordnen" },
-        { "name": "Prüfen", "done": false, "note": "Lesbarkeit, Überlauf, kleine Viewports und lange Zahlen prüfen" },
-        { "name": "Abnehmen", "done": false, "note": "Kampf bleibt auf Desktop und Mobile der unübersehbare Mittelpunkt" }
+        { "name": "Planen", "done": true, "note": "HUD-Prioritäten, Zwei-Monster-Bühne und einklappbare Nebeninformationen im B03-Vertrag festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Kampf-Dock, Frontwahl, Duo, Speicher, Aufträge, Kampflog und Fokusmodus umgesetzt" },
+        { "name": "Prüfen", "done": true, "note": "B03-HUD-E2E, Kernloop, Responsive-, Layout- und Capture-Läufe grün" },
+        { "name": "Abnehmen", "done": true, "note": "Desktop-/Tablet-/Mobile-Captures visuell geprüft; Bühne bleibt der Mittelpunkt und Fokusmodus ist nachvollziehbar" }
       ]
     },
     {
@@ -55,10 +55,10 @@
       "visual": "collection",
       "accent": "mint",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Fortschrittspfade, Begriffe, Kosten und Besitzsignale hierarchisieren" },
-        { "name": "Bauen", "done": false, "note": "Sammlung, Brut, Gems, Forschung und Prestige visuell vereinheitlichen" },
-        { "name": "Prüfen", "done": false, "note": "Leer-, Lade-, Sperr-, Fehler- und Erfolgszustände vollständig testen" },
-        { "name": "Abnehmen", "done": false, "note": "Spieler verstehen Reset- und Dauerfortschritt ohne externe Erklärung" }
+        { "name": "Planen", "done": true, "note": "Run-/Permanent-Ebenen, Besitzsignale und Reset-Grenzen im B04-Vertrag festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Habitat, Brut, Inventar, Forschung, Gems und Prestige als zusammenhängende Ansichten umgesetzt" },
+        { "name": "Prüfen", "done": true, "note": "Core-Loop, State-Matrix, Zone-10-Gate, E2E und fünf Referenz-Captures grün" },
+        { "name": "Abnehmen", "done": true, "note": "Run- und permanenter Fortschritt in Desktop-/Mobile-Flächen visuell unterscheidbar; Assets bleiben textfrei" }
       ]
     },
     {
@@ -69,10 +69,10 @@
       "visual": "account",
       "accent": "amber",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Profilhierarchie, Avatar-/Rahmenkatalog und Auswahlregeln gestalten" },
-        { "name": "Bauen", "done": false, "note": "Profilfläche, 512er Runtime-Layer und Auswahlzustände umsetzen" },
-        { "name": "Prüfen", "done": false, "note": "Kombinationen, Masken, Fallbacks, Besitz und Geräteansichten prüfen" },
-        { "name": "Abnehmen", "done": false, "note": "Identität ist konsistent in Profil, Gilde, Freunde und Ranglisten einsetzbar" }
+        { "name": "Planen", "done": true, "note": "Getrennte runde Avatare, Rahmen, Besitz- und Fallbackregeln im Avatar-Frame-Vertrag festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Profilchip, Profilfläche, 512er Runtime-Layer und getrennte Auswahlkarten umgesetzt" },
+        { "name": "Prüfen", "done": true, "note": "Avatar-/Rahmen-Smoke, Fallbacks, Keyboard/Responsive-Captures und getrennte Auswahl grün" },
+        { "name": "Abnehmen", "done": true, "note": "Profil, Gildenmitglied, Freundes-Leerzustand und spätere Rangornamente verwenden denselben getrennten Avatar-/Rahmenvertrag; Ranglistenintegration bleibt Roadmap C" }
       ]
     },
     {
@@ -83,10 +83,10 @@
       "visual": "guild",
       "accent": "magenta",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Rollen, Rechte, gemeinsame Ziele und Sozialfeedback sichtbar strukturieren" },
-        { "name": "Bauen", "done": false, "note": "Gildenhub, DNA, Boss, Aufgaben, Freunde und Chat neu gestalten" },
-        { "name": "Prüfen", "done": false, "note": "Rechte, Sperren, Meldungen, lange Namen und Aktivitätszustände prüfen" },
-        { "name": "Abnehmen", "done": false, "note": "Kooperation ist verständlich, motivierend und moderierbar dargestellt" }
+        { "name": "Planen", "done": true, "note": "DNA, Rollen, Rechte, Aufgaben, Boss, Expedition, Freunde, Chat und Moderation als Hub-Vertrag festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Servergespeister Gildenhub mit DNA, Aufgaben, Expedition, Boss, Abstimmungen und Chat umgesetzt; Feature-Flag-Aus-Zustand sichtbar" },
+        { "name": "Prüfen", "done": true, "note": "Foundation/Auth/Run/Guild-Integrationen 4/4, 7/7, 8/8, 7/7 sowie aktive Browser-E2E mit echtem Testkonto und Guild-Capture grün" },
+        { "name": "Abnehmen", "done": true, "note": "DNA, Rollen, Boss, Aufgaben, Expedition, Chat, Freunde-Leerzustand und Moderationsaktionen sind im servergespeisten Hub nachvollziehbar" }
       ]
     },
     {
@@ -97,10 +97,10 @@
       "visual": "responsive",
       "accent": "blue",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Viewports, Eingaben, Kontrast, Fokus und Bewegungsregeln festlegen" },
-        { "name": "Bauen", "done": false, "note": "Responsive Raster, Touchziele, Tastaturführung und Motion-Fallbacks umsetzen" },
-        { "name": "Prüfen", "done": false, "note": "Layout-Audit, Browsermatrix, Zoom, Tastatur und reduzierte Bewegung testen" },
-        { "name": "Abnehmen", "done": false, "note": "Alle Kernwege auf drei Referenz-Viewports ohne P0/P1-Layoutfehler freigeben" }
+        { "name": "Planen", "done": true, "note": "1280×720, 1024×768 und 390×844 sowie Fokus-, Kontrast-, Touch- und Reduced-Motion-Regeln verbindlich festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Responsive Raster, einklappbare Kampfpanels, sichtbare Fokusführung und Motion-Fallbacks umgesetzt" },
+        { "name": "Prüfen", "done": true, "note": "31/31 lokale E2E, Layout-Audit, Capture-Satz, WCAG-Kontrast, Keyboard, Reduced Motion und 2×-Typografiestress grün" },
+        { "name": "Abnehmen", "done": true, "note": "Alle drei Referenz-Viewports bleiben ohne P0/P1-Layoutschuld innerhalb der Breite und Kernaktionen bleiben erreichbar" }
       ]
     },
     {
@@ -111,10 +111,10 @@
       "visual": "launch",
       "accent": "gold",
       "steps": [
-        { "name": "Planen", "done": false, "note": "Polish-Budget, finale Szenenmatrix und C-Übergabekriterien festlegen" },
-        { "name": "Bauen", "done": false, "note": "Mikrofeedback, Übergänge, Restzustände und visuelle Schulden schließen" },
-        { "name": "Prüfen", "done": false, "note": "Gesamtregression, Screenshotvergleich und echte Gerätewege ausführen" },
-        { "name": "Abnehmen", "done": false, "note": "Roadmap B einfrieren und die gestaltete Oberfläche an C übergeben" }
+        { "name": "Planen", "done": true, "note": "136 UI-Kit-Rasterelemente, 10 Ableitungen, 14 Szenen je Viewport, 8,5-MB-Budget und C-Übergaberegeln festgelegt" },
+        { "name": "Bauen", "done": true, "note": "Mikrofeedback, Fokusmodus, Zustandsfeedback, textfreie Chrome-Bausteine und reduzierte Bewegung geschlossen" },
+        { "name": "Prüfen", "done": true, "note": "Roadmap-, Asset-, Unit-, E2E-, Layout-Audit-, Capture-, Build- und Live-Gildenachweise grün; QA-Konto anschließend entfernt" },
+        { "name": "Abnehmen", "done": true, "note": "Roadmap B ist eingefroren und die geschlossene Oberfläche mit dokumentierten C-Grenzen übergeben" }
       ]
     }
   ]

@@ -11,7 +11,7 @@ const roadmapSources = [
     id: "B",
     statusPath: new URL("../apps/web/public/roadmap/roadmap-status.json", import.meta.url),
     documentPath: new URL("../docs/ROADMAP_B_DESIGN_UI.md", import.meta.url),
-    complete: false,
+    complete: null,
   },
 ];
 
@@ -54,7 +54,9 @@ for (const source of roadmapSources) {
     }
   }
 
-  if (source.complete) {
+  const allStepsDone = (data.blocks ?? []).every((block) => block.steps?.every((step) => step.done));
+  const isComplete = source.complete === true || allStepsDone;
+  if (isComplete) {
     if (data.status !== "complete") problems.push(`${label}: eingefrorene Roadmap muss status=complete besitzen.`);
     if (data.activeBlock !== null || data.activeStep !== null) problems.push(`${label}: abgeschlossene Roadmap darf kein aktives Gate besitzen.`);
     if ((data.blocks ?? []).some((block) => block.steps.some((step) => !step.done))) {

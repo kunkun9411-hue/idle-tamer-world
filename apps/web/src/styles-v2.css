@@ -84,6 +84,14 @@ body::before {
 .topbar .brand__mark { width: 36px; height: 36px; border-radius: 11px; }
 .topbar .brand__copy strong { font-size: 15px; }
 .topbar .brand__copy small { font-size: 6px; }
+
+/* Keep the full information architecture inside laptop-sized desktop viewports. */
+@media (max-width: 1380px) and (min-width: 1021px) {
+  .topbar { grid-template-columns: minmax(190px, 210px) minmax(0, 1fr) auto; gap: 12px; padding-inline: 24px; }
+  .nav-button { min-width: 82px !important; padding-inline: 9px; }
+  .topbar__account { gap: 8px; }
+  .resources { gap: 10px; padding-inline: 8px; }
+}
 .nav-button { min-width: 92px; }
 .nav-button::after {
   content: "";

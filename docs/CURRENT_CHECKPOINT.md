@@ -1,13 +1,13 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Stand: 22. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
+Stand: 26. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
 
 ## Projektstand
 
 - Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
-- Roadmap B: **B.01 – Inventar und Designsystem, Schritt 2 Bauen aktiv; 1/32 Gates**
-- B.01-Art: erster textfreier ImageGen-Runtime-Satz mit Panel-, Aktions-, Avatarrahmen und Ether-Trenner integriert; B.01.2 wurde verbindlich um einen modularen UI-Baukasten aus Rahmenstücken, Flächen, Tooltips, Ressourcen- und Systemicons erweitert
+- Roadmap B: **B.08 – Gesamtpolish und Übergabe abgenommen; 32/32 Gates, Übergabe an Roadmap C**
+- B.01-Art: vollständiger textfreier Silver-Ether-Baukasten mit 136 Rasterelementen, zehn CSS-/Rotationsableitungen, G30–G36-Systemicons und H09–H12-Identitätslayern integriert; technische Prüfkette grün, B.01.4 visuell abgenommen und eingefroren
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
 - Roadmap: `https://idle-tamer-world.de/roadmap/`
@@ -44,7 +44,7 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - zwei dabei gefundene UI-Blocker behoben und im erneut gebauten Web-Container bestätigt
 - temporäre QA-Daten vollständig bereinigt; die zwei vorher vorhandenen Accounts blieben erhalten
 - A.08.1: 16 sichtbare Flächen samt Lade-, Leer-, Fehler-, Sperr- und Erfolgszuständen inventarisiert
-- reproduzierbarer UX-Befund auf 1280×720 und 390×844 dokumentiert; mobile Navigationskollision als P0 für B.02/B.03 markiert
+- reproduzierbarer UX-Befund auf 1280×720 und 390×844 dokumentiert; die mobile Navigationskollision wurde in B.02/B.03 durch ein einreihiges 7er-Dock geschlossen
 - A.08.2: codebasierter UI-Katalog mit 16 Flächen, zehn Zuständen, drei Viewports, Assetverträgen und bekannter Schulden-Allowlist gebaut
 - Layout-Audit in Desktop, Tablet und Mobile grün; Screenshotlauf erzeugt 42 Vergleichsbilder ohne Repository-Ballast
 - getrennten 512×512-Runtimevertrag für runde Avatare und transparente Rahmen festgezogen
@@ -52,9 +52,10 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - frischen Serverdump in eine leere Datenbank restauriert und Health, Revision, Bestand sowie Ledger geprüft
 - vollständigen Serverneustart bestanden; Docker, Datenbank, API, Web, Proxy und Backup-Timer kamen automatisch zurück
 - A.08-QA-Account und Testgilde vollständig entfernt; exakt zwei vorher vorhandene Accounts blieben erhalten
-- A.08.4: Abschlussbericht veröffentlicht, Roadmap A bei 100 % eingefroren und B.01 bei 0/32 aktiviert
-- B.01.2: vier Silver-Ether-UI-Chrome-Assets mit Chromaquellen, transparenten Mastern, Runtime-WebPs, Manifestvertrag und UI-Katalog-Vorschau gebaut
+- A.08.4: Abschlussbericht veröffentlicht, Roadmap A bei 100 % eingefroren und B.01 historisch bei 0/32 aktiviert
+- B.01.2/B.01.3/B.01.4: 136 textfreie Rasterelemente, zehn CSS-/Rotationsableitungen, 257 Manifest-IDs und 8.39 MB Runtime-Budget geprüft; UI-Katalog, Asset-Validator, Desktop/Tablet/Mobile-Captures und E2E grün, visuell eingefroren
 - B.01.2: Login und Offline-Bericht auf generierte Rahmen, echten HTML-Text und 12-px-Mindestrollen migriert; Desktop, Tablet und 390×844 bleiben innerhalb ihrer Viewports
+- B.06-Backend-/Live-Nachweis: Dev-API mit `FEATURE_GUILDS=true` und `FEATURE_GUILD_DNA=true` neu gebaut; Foundation 4/4, Auth 7/7, Run 8/8 und Guild/Social 7/7 gegen `idle_tamer_test` grün; aktive Browser-E2E/Capture auf der Dev-Domain grün, QA-Konto/Testgilde danach entfernt
 
 Die genauen Fälle stehen in:
 
@@ -103,13 +104,11 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Roadmap A ist vollständig abgeschlossen. B.01.1 hat UI-Bestand, Typografie, Grundskalen, Komponenten, textfreie Assets und Referenzansichten abgenommen. Jetzt folgt **B.01, Schritt 2 – Bauen**:
+Roadmap A und Roadmap B sind vollständig abgeschlossen. B.01 bis B.08 sind visuell, automatisiert und – für den Gildenpfad – live verifiziert; der Designsystem-Freeze ist an Roadmap C übergeben:
 
-1. modularen Silver-Ether-UI-Baukasten mit Ecken, Kanten, Verbindern, Flächen, Leisten und Ornamenten erzeugen;
-2. Ressourcen- und Systemicons sowie Tooltip-, Button-, Badge- und Fortschrittsfassungen ergänzen;
-3. zentrale Tokenebene für Typografie, Abstand, Radius, Bewegung und Ebenen anlegen;
-4. Button, Input, Panel, Chip, Ressource, Fortschritt, Toast und Modal aus den gemeinsamen Bauteilen migrieren;
-5. UI-Katalog als sichtbare Bauanleitung auf die neuen Primitiven umstellen;
-6. globale Status-, Fokus- und Reduced-Motion-Zustände vereinheitlichen.
+1. Roadmap C mit Content- und Feature-Verträgen starten;
+2. Ranglisten, Events und Wettbewerbssysteme erst mit serverautoritativen Verträgen ergänzen;
+3. Roadmap D für Abnahme, Balance, Sicherheit, Last und echte Geräte-Smokes vorbereiten;
+4. den visuellen Review der drei Capture-Sätze und `/roadmap/` als morgendlichen Kontrollpunkt behalten.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.

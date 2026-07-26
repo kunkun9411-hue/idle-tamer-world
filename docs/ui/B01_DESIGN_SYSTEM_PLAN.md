@@ -1,8 +1,8 @@
 # B.01 – Verbindlicher Designsystem-Plan
 
 Stand: **22. Juli 2026**  
-Status: **Schritt 1 Planen abgenommen**  
-Nächster Schritt: **B.01.2 – Bauen**
+Status: **Schritt 1 Planen sowie B.01.2/B.01.3 technisch abgeschlossen**
+Nächster Schritt: **B.01.4 – Abnehmen**
 
 ## Ziel
 
@@ -145,13 +145,13 @@ Neue B-Oberflächen müssen zuerst prüfen, ob sie aus diesen Teilen zusammenges
 
 **Gate erfüllt:** Die sichtbare Migration kann beginnen, ohne den Stil pro Szene neu zu erfinden oder Texte in generierte Bilder einzubrennen.
 
-## B.01.2 Zwischenstand
+## B.01.2/B.01.3 Zwischenstand
 
-- vier textfreie Silver-Ether-Chrome-Assets als optimierte Runtime-WebPs integriert;
+- 136 textfreie Silver-Ether-Rasterelemente und zehn CSS-/Rotationsableitungen als optimierte Runtime-WebPs integriert;
 - Loginpanel und Offline-Bericht verwenden generierte Panel-, Aktions- und Trennerebenen;
 - sämtliche Beschriftungen, Zahlen und Backendzustände bleiben echtes HTML;
 - informationstragende Mikroschrift der beiden Referenzflächen auf mindestens 12 px angehoben;
 - Login und Offline-Bericht auf 1280×720, Tablet und 390×844 innerhalb des Viewports automatisiert geprüft.
-- der modulare Silver-Ether-Baukasten wurde als verbindlicher zusätzlicher Umfang des Baugates aufgenommen; die bestehenden vier Vollassets dienen als Stilanker für seine Produktion.
+- der modulare Silver-Ether-Baukasten wurde als verbindlicher zusätzlicher Umfang des Baugates aufgenommen; G30–G36 sowie H09–H12 schließen die serielle Inventarliste.
 
-Das Bauen-Gate bleibt offen, bis Tokenebene und restliche Kernprimitive ebenfalls migriert und gemeinsam geprüft sind.
+Das Bauen- und Prüfen-Gate ist technisch geschlossen. B.01.4 friert Token-, Komponenten- und Abnahmeregeln nach visueller Produktentscheidung ein.

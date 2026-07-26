@@ -36,7 +36,7 @@ Roadmap B darf Oberflächen, Navigation, Komponenten, Animationen und Lesbarkeit
 
 Diese Punkte sind bekannte Gestaltungsschulden und kein versteckter Fehler im Abschluss von A:
 
-1. **P0 – mobile Navigation:** Auf 390×844 kollidiert die bestehende Navigation mit der Kampfszene. B.02 und B.03 müssen den Hauptweg neu ordnen.
+1. **Erledigt in B.02/B.03 – mobile Navigation:** Das 7er-Bereichsdock bleibt auf 390×844 einreihig und kollidiert nicht mehr mit den Kampfkontrollen. Die E2E-Layoutprüfung hält den Fix fest.
 2. **P1 – Kampffokus:** Die Kampfszene enthält noch zu viele gleichzeitig sichtbare Nebeninformationen. B.03 führt einklappbare, priorisierte HUD-Flächen ein.
 3. **P1 – Informationshierarchie:** Sammlung, Entwicklung, Gems, Forschung und Prestige benötigen ein gemeinsames visuelles Vokabular. Das gehört in B.01 und B.04.
 4. **P1 – Identität:** Avatar und Rahmen besitzen einen stabilen Datenvertrag, aber noch keine endgültige Auswahl- und Profiloberfläche. Das übernimmt B.05.

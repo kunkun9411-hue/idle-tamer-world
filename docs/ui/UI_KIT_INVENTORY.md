@@ -23,76 +23,78 @@ Dieses Inventar ist die feste Produktionsreihenfolge für den modularen UI-Bauka
 | A05 | dünne vertikale Rahmenkante | aus A04 abgeleitet | freigegeben |
 | A06 | kompakte Kartenrahmenecke | ImageGen + Alpha | freigegeben |
 | A07 | minimale Tooltip-Rahmenecke | ImageGen + Alpha | freigegeben |
-| A08 | horizontaler gerader Verbinder | ImageGen + Alpha | geplant |
-| A09 | vertikaler gerader Verbinder | aus A08 abgeleitet | geplant |
-| A10 | horizontaler verzierter Verbinder | ImageGen + Alpha | geplant |
-| A11 | vertikaler verzierter Verbinder | aus A10 abgeleitet | geplant |
-| A12 | horizontale Endkappe | ImageGen + Alpha | geplant |
-| A13 | vertikale Endkappe | aus A12 abgeleitet | geplant |
-| A14 | T-Verbindung für verschachtelte Flächen | ImageGen + Alpha | geplant |
-| A15 | Fokus-Eckaufsatz | ImageGen + Alpha | geplant |
-| A16 | Warnungs-Eckaufsatz | ImageGen + Alpha | geplant |
+| A08 | horizontaler gerader Verbinder | ImageGen + Alpha | freigegeben |
+| A09 | vertikaler gerader Verbinder | aus A08 abgeleitet | abgeleitet |
+| A10 | horizontaler verzierter Verbinder | ImageGen + Alpha | freigegeben |
+| A11 | vertikaler verzierter Verbinder | aus A10 abgeleitet | abgeleitet |
+| A12 | horizontale Endkappe | ImageGen + Alpha | freigegeben |
+| A13 | vertikale Endkappe | aus A12 abgeleitet | abgeleitet |
+| A14 | T-Verbindung für verschachtelte Flächen | ImageGen + Alpha | freigegeben |
+| A15 | Fokus-Eckaufsatz | ImageGen + Alpha | freigegeben |
+| A16 | Warnungs-Eckaufsatz | ImageGen + Alpha | freigegeben |
+| A17 | kompakter Ether-Trenner | ImageGen + Alpha | freigegeben |
+| A18 | kleine Ether-Niete | ImageGen + Alpha | freigegeben |
 
 ## B – Flächen und Material
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| B01 | ruhige Fensterfläche | ImageGen, nahtlos | geplant |
-| B02 | erhöhte Kartenfläche | ImageGen, 9-Slice | geplant |
-| B03 | kompakte Kartenfläche | ImageGen, 9-Slice | geplant |
-| B04 | Tooltipfläche | ImageGen, 9-Slice | geplant |
-| B05 | Eingabefläche | ImageGen, 9-Slice | geplant |
-| B06 | Dropdownfläche | ImageGen, 9-Slice | geplant |
-| B07 | Modalabdunklung | CSS + Textur | geplant |
-| B08 | gesperrte Flächenauflage | ImageGen + CSS | geplant |
-| B09 | Hover-Lichtauflage | ImageGen + Alpha | geplant |
-| B10 | Auswahl-Lichtauflage | ImageGen + Alpha | geplant |
-| B11 | Fehler-Lichtauflage | ImageGen + Alpha | geplant |
-| B12 | Erfolg-Lichtauflage | ImageGen + Alpha | geplant |
-| B13 | subtile Glasrauschtextur | ImageGen, nahtlos | geplant |
-| B14 | tiefe Graphittextur | ImageGen, nahtlos | geplant |
+| B01 | ruhige Fensterfläche | ImageGen, nahtlos | freigegeben |
+| B02 | erhöhte Kartenfläche | ImageGen, 9-Slice | freigegeben |
+| B03 | kompakte Kartenfläche | ImageGen, 9-Slice | freigegeben |
+| B04 | Tooltipfläche | ImageGen, 9-Slice | freigegeben |
+| B05 | Eingabefläche | ImageGen, 9-Slice | freigegeben |
+| B06 | Dropdownfläche | ImageGen, 9-Slice | freigegeben |
+| B07 | gesperrte Flächenauflage | ImageGen + CSS | freigegeben |
+| B08 | Hover-Lichtauflage | ImageGen + Alpha | freigegeben |
+| B09 | Fokus-Lichtauflage | ImageGen + Alpha | freigegeben |
+| B10 | Auswahl-Lichtauflage | ImageGen + Alpha | freigegeben |
+| B11 | Fehler-Lichtauflage | ImageGen + Alpha | freigegeben |
+| B12 | Erfolg-Lichtauflage | ImageGen + Alpha | freigegeben |
+| B13 | subtile Glasrauschtextur | ImageGen, nahtlos | freigegeben |
+| B14 | tiefe Graphittextur | ImageGen, nahtlos | freigegeben |
 
 ## C – Leisten, Trenner und Ornamente
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| C01 | große Kopfleistenschale | ImageGen + Alpha | geplant |
-| C02 | kompakte Kopfleistenschale | ImageGen + Alpha | geplant |
-| C03 | Fußleistenschale | ImageGen + Alpha | geplant |
-| C04 | dünner Ether-Trenner | ImageGen + Alpha | geplant |
-| C05 | dicker Ether-Trenner | ImageGen + Alpha | geplant |
-| C06 | kurzer symmetrischer Trenner | ImageGen + Alpha | geplant |
-| C07 | aktiver Tab-Unterstrich | ImageGen + Alpha | geplant |
-| C08 | aktiver Seitenmarker | ImageGen + Alpha | geplant |
-| C09 | zentraler Fokusdiamant | ImageGen + Alpha | geplant |
-| C10 | kleine Eckniete | ImageGen + Alpha | geplant |
-| C11 | Kristallfassung klein | ImageGen + Alpha | geplant |
-| C12 | Kristallfassung groß | ImageGen + Alpha | geplant |
-| C13 | passive Etherlinie | ImageGen + Alpha | geplant |
-| C14 | aktive Etherlinie | ImageGen + Alpha | geplant |
-| C15 | Warnungsleiste | ImageGen + Alpha | geplant |
-| C16 | Erfolgsleiste | ImageGen + Alpha | geplant |
+| C01 | große Kopfleistenschale | ImageGen + Alpha | freigegeben |
+| C02 | kompakte Kopfleistenschale | ImageGen + Alpha | freigegeben |
+| C03 | Fußleistenschale | ImageGen + Alpha | freigegeben |
+| C04 | dünner Ether-Trenner | ImageGen + Alpha | freigegeben |
+| C05 | dicker Ether-Trenner | ImageGen + Alpha | freigegeben |
+| C06 | kurzer symmetrischer Trenner | ImageGen + Alpha | freigegeben |
+| C07 | aktiver Tab-Unterstrich | ImageGen + Alpha | freigegeben |
+| C08 | aktiver Seitenmarker | ImageGen + Alpha | freigegeben |
+| C09 | zentraler Fokusdiamant | ImageGen + Alpha | freigegeben |
+| C10 | kleine Eckniete | ImageGen + Alpha | freigegeben |
+| C11 | Kristallfassung klein | ImageGen + Alpha | freigegeben |
+| C12 | Kristallfassung groß | ImageGen + Alpha | freigegeben |
+| C13 | passive Etherlinie | ImageGen + Alpha | freigegeben |
+| C14 | aktive Etherlinie | ImageGen + Alpha | freigegeben |
+| C15 | Warnungsleiste | ImageGen + Alpha | freigegeben |
+| C16 | Erfolgsleiste | ImageGen + Alpha | freigegeben |
 
 ## D – Aktionen und Steuerung
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| D01 | primärer Buttonrahmen | ImageGen, 9-Slice | geplant |
-| D02 | sekundärer Buttonrahmen | ImageGen, 9-Slice | geplant |
-| D03 | Ghost-Buttonrahmen | ImageGen, 9-Slice | geplant |
-| D04 | kompakter Buttonrahmen | ImageGen, 9-Slice | geplant |
-| D05 | Gefahren-Buttonrahmen | ImageGen, 9-Slice | geplant |
-| D06 | Icon-Buttonfassung rund | ImageGen + Alpha | geplant |
-| D07 | Icon-Buttonfassung eckig | ImageGen + Alpha | geplant |
-| D08 | Tabrahmen Standard | ImageGen, 9-Slice | geplant |
-| D09 | Tabrahmen aktiv | ImageGen, 9-Slice | geplant |
-| D10 | Segmentsteuerung außen | ImageGen, 9-Slice | geplant |
-| D11 | Toggle-Schiene | ImageGen, 9-Slice | geplant |
-| D12 | Toggle-Knopf | ImageGen + Alpha | geplant |
-| D13 | Slider-Schiene | ImageGen, 9-Slice | geplant |
-| D14 | Slider-Griff | ImageGen + Alpha | geplant |
-| D15 | Checkboxfassung | ImageGen + Alpha | geplant |
-| D16 | Radiobuttonfassung | ImageGen + Alpha | geplant |
+| D01 | primärer Buttonrahmen | ImageGen, 9-Slice | freigegeben |
+| D02 | sekundärer Buttonrahmen | ImageGen, 9-Slice | freigegeben |
+| D03 | Ghost-Buttonrahmen | ImageGen, 9-Slice | freigegeben |
+| D04 | kompakter Buttonrahmen | ImageGen, 9-Slice | freigegeben |
+| D05 | Gefahren-Buttonrahmen | ImageGen, 9-Slice | freigegeben |
+| D06 | Icon-Buttonfassung rund | ImageGen + Alpha | freigegeben |
+| D07 | Icon-Buttonfassung eckig | ImageGen + Alpha | freigegeben |
+| D08 | Tabrahmen Standard | ImageGen, 9-Slice | freigegeben |
+| D09 | Tabrahmen aktiv | ImageGen, 9-Slice | freigegeben |
+| D10 | Segmentsteuerung außen | ImageGen, 9-Slice | freigegeben |
+| D11 | Toggle-Schiene | ImageGen, 9-Slice | freigegeben |
+| D12 | Toggle-Knopf | ImageGen + Alpha | freigegeben |
+| D13 | Slider-Schiene | ImageGen, 9-Slice | freigegeben |
+| D14 | Slider-Griff | ImageGen + Alpha | freigegeben |
+| D15 | Checkboxfassung | ImageGen + Alpha | freigegeben |
+| D16 | Radiobuttonfassung | ImageGen + Alpha | freigegeben |
 
 Interaktionszustände wie Hover, Fokus, gedrückt und deaktiviert werden bevorzugt durch CSS-Licht, Farbe und Bewegung auf diesen Grundformen erzeugt. Ein neues Rasterasset entsteht nur, wenn sich die Silhouette ändert.
 
@@ -100,109 +102,118 @@ Interaktionszustände wie Hover, Fokus, gedrückt und deaktiviert werden bevorzu
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| E01 | Ressourcen-Chiprahmen | ImageGen, 9-Slice | geplant |
-| E02 | Wertplakette | ImageGen, 9-Slice | geplant |
-| E03 | Kostenplakette | ImageGen, 9-Slice | geplant |
-| E04 | Kapazitätsplakette | ImageGen, 9-Slice | geplant |
-| E05 | Statusbadge neutral | ImageGen, 9-Slice | geplant |
-| E06 | Statusbadge aktiv | CSS-Variante von E05 | geplant |
-| E07 | Statusbadge Warnung | CSS-Variante von E05 | geplant |
-| E08 | Statusbadge Fehler | CSS-Variante von E05 | geplant |
-| E09 | horizontale Fortschrittsfassung | ImageGen, 9-Slice | geplant |
-| E10 | kompakte Fortschrittsfassung | ImageGen, 9-Slice | geplant |
-| E11 | runde Fortschrittsfassung | ImageGen + Alpha | geplant |
-| E12 | Fortschrittsfüllung neutral | CSS + Textur | geplant |
-| E13 | Fortschrittsfüllung Ether | CSS + Textur | geplant |
-| E14 | Tooltip-Pfeil oben | ImageGen + Alpha | geplant |
-| E15 | Tooltip-Pfeil unten | aus E14 abgeleitet | geplant |
-| E16 | Tooltip-Pfeil links | aus E14 abgeleitet | geplant |
-| E17 | Tooltip-Pfeil rechts | aus E14 abgeleitet | geplant |
-| E18 | Benachrichtigungspunkt | ImageGen + CSS | geplant |
+| E01 | Ressourcen-Chiprahmen | ImageGen, 9-Slice | freigegeben |
+| E02 | Wertplakette | ImageGen, 9-Slice | freigegeben |
+| E03 | Kostenplakette | ImageGen, 9-Slice | freigegeben |
+| E04 | Kapazitätsplakette | ImageGen, 9-Slice | freigegeben |
+| E05 | Statusbadge neutral | ImageGen, 9-Slice | freigegeben |
+| E06 | Statusbadge aktiv | CSS-Variante von E05 | freigegeben |
+| E07 | Statusbadge Warnung | CSS-Variante von E05 | freigegeben |
+| E08 | Statusbadge Fehler | CSS-Variante von E05 | freigegeben |
+| E09 | horizontale Fortschrittsfassung | ImageGen, 9-Slice | freigegeben |
+| E10 | kompakte Fortschrittsfassung | ImageGen, 9-Slice | freigegeben |
+| E11 | runde Fortschrittsfassung | ImageGen + Alpha | freigegeben |
+| E12 | Fortschrittsfüllung neutral | CSS + Textur | freigegeben |
+| E13 | Fortschrittsfüllung Ether | CSS + Textur | freigegeben |
+| E14 | Tooltip-Pfeil oben | ImageGen + Alpha | freigegeben |
+| E15 | Tooltip-Pfeil unten | aus E14 abgeleitet | freigegeben |
+| E16 | Tooltip-Pfeil links | aus E14 abgeleitet | freigegeben |
+| E17 | Tooltip-Pfeil rechts | aus E14 abgeleitet | freigegeben |
+| E18 | Benachrichtigungspunkt | ImageGen + CSS | freigegeben |
 
 ## F – Ökonomie- und Itemicons
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| F01 | Goldmünze | ImageGen + Alpha | geplant |
-| F02 | Ether-Premiumkristall | ImageGen + Alpha | geplant |
-| F03 | Monsterfragment | ImageGen + Alpha | geplant |
-| F04 | Forschungsmaterial | ImageGen + Alpha | geplant |
-| F05 | DNA-/Genressource | ImageGen + Alpha | geplant |
-| F06 | Monsterei | vorhandene Assetfamilie + Fassung | geplant |
-| F07 | Dreieck-Gem-Symbol | vorhandene Assetfamilie + Fassung | geplant |
-| F08 | Quadrat-Gem-Symbol | vorhandene Assetfamilie + Fassung | geplant |
-| F09 | Raute-Gem-Symbol | vorhandene Assetfamilie + Fassung | geplant |
-| F10 | Hyperlevel-Fragment | ImageGen + Alpha | geplant |
-| F11 | Evolutionskern | ImageGen + Alpha | geplant |
-| F12 | Expeditionsmarke | ImageGen + Alpha | geplant |
-| F13 | Gilden-Essenz | ImageGen + Alpha | geplant |
-| F14 | Kampfmaterial | ImageGen + Alpha | geplant |
-| F15 | Offline-Speicher | ImageGen + Alpha | geplant |
-| F16 | Schlüssel-/Freischaltressource | ImageGen + Alpha | geplant |
+| F01 | Goldmünze | ImageGen + Alpha | freigegeben |
+| F02 | Ether-Premiumkristall | ImageGen + Alpha | freigegeben |
+| F03 | Monsterfragment | ImageGen + Alpha | freigegeben |
+| F04 | Forschungsmaterial | ImageGen + Alpha | freigegeben |
+| F05 | DNA-/Genressource | ImageGen + Alpha | freigegeben |
+| F06 | Monsterei | vorhandene Assetfamilie + Fassung | freigegeben |
+| F07 | Dreieck-Gem-Symbol | vorhandene Assetfamilie + Fassung | freigegeben |
+| F08 | Quadrat-Gem-Symbol | vorhandene Assetfamilie + Fassung | freigegeben |
+| F09 | Raute-Gem-Symbol | vorhandene Assetfamilie + Fassung | freigegeben |
+| F10 | Hyperlevel-Fragment | ImageGen + Alpha | freigegeben |
+| F11 | Evolutionskern | ImageGen + Alpha | freigegeben |
+| F12 | Expeditionsmarke | ImageGen + Alpha | freigegeben |
+| F13 | Gilden-Essenz | ImageGen + Alpha | freigegeben |
+| F14 | Kampfmaterial | ImageGen + Alpha | freigegeben |
+| F15 | Offline-Speicher | ImageGen + Alpha | freigegeben |
+| F16 | Schlüssel-/Freischaltressource | ImageGen + Alpha | freigegeben |
 
 ## G – System- und Navigationsicons
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| G01 | Start/Kampf | ImageGen + Alpha | geplant |
-| G02 | Weltkarte | ImageGen + Alpha | geplant |
-| G03 | Monster/Habitat | ImageGen + Alpha | geplant |
-| G04 | Brutstation | ImageGen + Alpha | geplant |
-| G05 | Inventar | ImageGen + Alpha | geplant |
-| G06 | Forschung | ImageGen + Alpha | geplant |
-| G07 | Expedition | ImageGen + Alpha | geplant |
-| G08 | Auftrag/Quest | ImageGen + Alpha | geplant |
-| G09 | Prestige | ImageGen + Alpha | geplant |
-| G10 | Gilde | ImageGen + Alpha | geplant |
-| G11 | Gilden-DNA | ImageGen + Alpha | geplant |
-| G12 | Freunde | ImageGen + Alpha | geplant |
-| G13 | Chat | ImageGen + Alpha | geplant |
-| G14 | Rangliste | ImageGen + Alpha | geplant |
-| G15 | Profil | ImageGen + Alpha | geplant |
-| G16 | Post | ImageGen + Alpha | geplant |
-| G17 | Einstellungen | ImageGen + Alpha | geplant |
-| G18 | Audio an | ImageGen + Alpha | geplant |
-| G19 | Audio aus | aus G18 abgeleitet | geplant |
-| G20 | Hilfe | ImageGen + Alpha | geplant |
-| G21 | Information | ImageGen + Alpha | geplant |
-| G22 | Warnung | ImageGen + Alpha | geplant |
-| G23 | Erfolg/Haken | ImageGen + Alpha | geplant |
-| G24 | Fehler | ImageGen + Alpha | geplant |
-| G25 | Schließen | ImageGen + Alpha | geplant |
-| G26 | Zurück | ImageGen + Alpha | geplant |
-| G27 | Vorwärts | aus G26 abgeleitet | geplant |
-| G28 | Hinzufügen | ImageGen + Alpha | geplant |
-| G29 | Entfernen | ImageGen + Alpha | geplant |
-| G30 | Sperre | ImageGen + Alpha | geplant |
-| G31 | Filter | ImageGen + Alpha | geplant |
-| G32 | Sortieren | ImageGen + Alpha | geplant |
-| G33 | Suche | ImageGen + Alpha | geplant |
-| G34 | Aktualisieren | ImageGen + Alpha | geplant |
-| G35 | Menü | ImageGen + Alpha | geplant |
-| G36 | Mehr/Optionen | ImageGen + Alpha | geplant |
+| G01 | Start/Kampf | ImageGen + Alpha | freigegeben |
+| G02 | Weltkarte | ImageGen + Alpha | freigegeben |
+| G03 | Monster/Habitat | ImageGen + Alpha | freigegeben |
+| G04 | Brutstation | ImageGen + Alpha | freigegeben |
+| G05 | Inventar | ImageGen + Alpha | freigegeben |
+| G06 | Forschung | ImageGen + Alpha | freigegeben |
+| G07 | Expedition | ImageGen + Alpha | freigegeben |
+| G08 | Auftrag/Quest | ImageGen + Alpha | freigegeben |
+| G09 | Prestige | ImageGen + Alpha | freigegeben |
+| G10 | Gilde | ImageGen + Alpha | freigegeben |
+| G11 | Gilden-DNA | ImageGen + Alpha | freigegeben |
+| G12 | Freunde | ImageGen + Alpha | freigegeben |
+| G13 | Chat | ImageGen + Alpha | freigegeben |
+| G14 | Rangliste | ImageGen + Alpha | freigegeben |
+| G15 | Profil | ImageGen + Alpha | freigegeben |
+| G16 | Post | ImageGen + Alpha | freigegeben |
+| G17 | Einstellungen | ImageGen + Alpha | freigegeben |
+| G18 | Audio an | ImageGen + Alpha | freigegeben |
+| G19 | Audio aus | aus G18 abgeleitet | freigegeben |
+| G20 | Hilfe | ImageGen + Alpha | freigegeben |
+| G21 | Information | ImageGen + Alpha | freigegeben |
+| G22 | Warnung | ImageGen + Alpha | freigegeben |
+| G23 | Erfolg/Haken | ImageGen + Alpha | freigegeben |
+| G24 | Fehler | ImageGen + Alpha | freigegeben |
+| G25 | Schließen | ImageGen + Alpha | freigegeben |
+| G26 | Zurück | ImageGen + Alpha | freigegeben |
+| G27 | Vorwärts | aus G26 abgeleitet | freigegeben |
+| G28 | Hinzufügen | ImageGen + Alpha | freigegeben |
+| G29 | Entfernen | ImageGen + Alpha | freigegeben |
+| G30 | Sperre | ImageGen + Alpha | freigegeben |
+| G31 | Filter | ImageGen + Alpha | freigegeben |
+| G32 | Sortieren | ImageGen + Alpha | freigegeben |
+| G33 | Suche | ImageGen + Alpha | freigegeben |
+| G34 | Aktualisieren | ImageGen + Alpha | freigegeben |
+| G35 | Menü | ImageGen + Alpha | freigegeben |
+| G36 | Mehr/Optionen | ImageGen + Alpha | freigegeben |
 
 ## H – Identität und soziale Fassung
 
 | ID | Element | Medium | Status |
 | --- | --- | --- | --- |
-| H01 | neutraler runder Avatarrahmen | ImageGen + Alpha | geplant |
-| H02 | gewöhnlicher Avatarrahmen | ImageGen + Alpha | geplant |
-| H03 | seltener Avatarrahmen | ImageGen + Alpha | geplant |
-| H04 | epischer Avatarrahmen | ImageGen + Alpha | geplant |
-| H05 | Gildenleiter-Aufsatz | ImageGen + Alpha | geplant |
-| H06 | Offiziers-Aufsatz | ImageGen + Alpha | geplant |
-| H07 | Online-Statusfassung | ImageGen + CSS | geplant |
-| H08 | Rollenplakette Angriff | ImageGen + Alpha | geplant |
-| H09 | Rollenplakette Verteidigung | ImageGen + Alpha | geplant |
-| H10 | Rollenplakette Support | ImageGen + Alpha | geplant |
-| H11 | Rangfassung klein | ImageGen + Alpha | geplant |
-| H12 | Rangfassung groß | ImageGen + Alpha | geplant |
+| H01 | neutraler runder Avatarrahmen | ImageGen + Alpha | freigegeben |
+| H02 | gewöhnlicher Avatarrahmen | ImageGen + Alpha | freigegeben |
+| H03 | seltener Avatarrahmen | ImageGen + Alpha | freigegeben |
+| H04 | epischer Avatarrahmen | ImageGen + Alpha | freigegeben |
+| H05 | Gildenleiter-Aufsatz | ImageGen + Alpha | freigegeben |
+| H06 | Offiziers-Aufsatz | ImageGen + Alpha | freigegeben |
+| H07 | Online-Statusfassung | ImageGen + CSS | freigegeben |
+| H08 | Rollenplakette Angriff | ImageGen + Alpha | freigegeben |
+| H09 | Rollenplakette Verteidigung | ImageGen + Alpha | freigegeben |
+| H10 | Rollenplakette Support | ImageGen + Alpha | freigegeben |
+| H11 | Rangfassung klein | ImageGen + Alpha | freigegeben |
+| H12 | Rangfassung groß | ImageGen + Alpha | freigegeben |
 
 ## Produktionszähler
 
-- Grundelemente insgesamt: **144**
-- Davon freigegeben: **7**
-- Davon noch geplant: **137**
-- Nächstes zulässiges Element: **A08 – horizontaler gerader Verbinder**
+- Grundelemente insgesamt: **146**
+- Davon freigegeben: **146** (136 Raster, 10 CSS-/Rotationsableitungen)
+- Davon noch geplant: **0**
+- Nächstes zulässiges Element: **serielle Liste abgeschlossen · B.01.4-Abnahme**
 
 Das Inventar kann später erweitert werden. Neue IDs werden jedoch nur ergänzt, wenn eine neue fachliche Form nicht durch Kombination, Rotation, 9-Slice, CSS-Zustand oder Ableitung abgedeckt werden kann.
+## Produktionsbatch 2026-07-25 - B.01.2
+
+Der erste modulare Ausbau ist jetzt im Repository freigegeben und im UI-Katalog sichtbar.
+
+- Rahmen A08-A18: Verbinder, Endkappen, T-Verbindung, Fokus-/Warnaufsatze, Trenner und Niete.
+- Okonomie F01-F16: textfreie Ressourcen-, Ei- und Gem-Icons.
+- System G01-G36: textfreie Navigation, Profil-, Sozial-, Gilden-, Audio-, Informations-, Warnungs-, Erfolgs-, Fehler-, Hilfe-, Sperr-, Filter-, Sortier-, Such-, Aktualisierungs-, Menü- und Options-Icons.
+
+Damit sind **136 reale Runtime-Elemente** im Manifest `apps/web/public/assets/ui/kit/ui-kit-manifest.json` enthalten: 18 Rahmen, 14 Flächen, 42 Leisten-/Aktions-/Wertprimitive, 16 Ökonomie-Icons, 34 System-Icons und 12 Identitätsbausteine. Master liegen unter `art-source/generated/ui-kit-v1/transparent/`; Chroma-Quellen bleiben unter `art-source/generated/ui-kit-v1/chroma/` erhalten. Oberflächen, Beschriftungen und Zustände bleiben HTML/CSS.

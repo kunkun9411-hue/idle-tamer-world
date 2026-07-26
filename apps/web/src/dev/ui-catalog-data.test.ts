@@ -7,6 +7,14 @@ import {
   UI_COMPONENT_GROUPS,
   UI_FOUNDATION_SCALES,
   UI_GENERATED_CHROME,
+  UI_ECONOMY_ICONS,
+  UI_CHROME_PRIMITIVES,
+  UI_INFO_DERIVATIONS,
+  UI_SYSTEM_DERIVATIONS,
+  UI_IDENTITY_ASSETS,
+  UI_MODULAR_KIT_ITEMS,
+  UI_SYSTEM_ICONS,
+  UI_SURFACE_ASSETS,
   UI_STATES,
   UI_SURFACES,
   UI_TYPOGRAPHY_ROLES,
@@ -40,13 +48,30 @@ describe("UI handoff catalog", () => {
     expect(UI_GENERATED_CHROME).toHaveLength(4);
     expectUnique("generated chrome", UI_GENERATED_CHROME.map((entry) => entry.id));
     expect(UI_GENERATED_CHROME.every((entry) => entry.path.startsWith("/assets/ui/chrome/"))).toBe(true);
+    expect(UI_MODULAR_KIT_ITEMS).toHaveLength(18);
+    expect(UI_ECONOMY_ICONS).toHaveLength(16);
+    expect(UI_SYSTEM_ICONS).toHaveLength(34);
+    expect(UI_SURFACE_ASSETS).toHaveLength(14);
+    expect(UI_CHROME_PRIMITIVES).toHaveLength(42);
+    expect(UI_INFO_DERIVATIONS).toHaveLength(8);
+    expect(UI_SYSTEM_DERIVATIONS).toHaveLength(2);
+    expect(UI_IDENTITY_ASSETS).toHaveLength(12);
+    expectUnique("kit", UI_MODULAR_KIT_ITEMS.map((entry) => entry.id));
+    expectUnique("economy icon", UI_ECONOMY_ICONS.map((entry) => entry.id));
+    expectUnique("system icon", UI_SYSTEM_ICONS.map((entry) => entry.id));
+    expectUnique("surface asset", UI_SURFACE_ASSETS.map((entry) => entry.id));
+    expectUnique("chrome primitive", UI_CHROME_PRIMITIVES.map((entry) => entry.id));
+    expectUnique("info derivation", UI_INFO_DERIVATIONS.map((entry) => entry.id));
+    expectUnique("system derivation", UI_SYSTEM_DERIVATIONS.map((entry) => entry.id));
+    expectUnique("identity asset", UI_IDENTITY_ASSETS.map((entry) => entry.id));
+    expect([...UI_ECONOMY_ICONS, ...UI_SYSTEM_ICONS].every((entry) => entry.path.startsWith("/assets/ui/kit/"))).toBe(true);
   });
 
   it("keeps measured layout debt explicit until its B-block resolves it", () => {
     expectUnique("debt", KNOWN_UI_DEBTS.map((entry) => entry.id));
-    expect(KNOWN_UI_DEBTS.some((entry) => entry.priority === "P0")).toBe(true);
-    expect(knownUiDebtIdsForWidth(390)).toEqual(["mobile-combat-navigation-overlap"]);
-    expect(knownUiDebtIdsForWidth(820)).toEqual(["mobile-combat-navigation-overlap"]);
-    expect(knownUiDebtIdsForWidth(1_280)).toEqual(["subpage-account-overflow"]);
+    expect(KNOWN_UI_DEBTS.some((entry) => entry.priority === "P0")).toBe(false);
+    expect(knownUiDebtIdsForWidth(390)).toEqual([]);
+    expect(knownUiDebtIdsForWidth(820)).toEqual([]);
+    expect(knownUiDebtIdsForWidth(1_280)).toEqual([]);
   });
 });

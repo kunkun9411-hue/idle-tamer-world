@@ -38,7 +38,7 @@ Der Baukasten ist vollständig, wenn UI-Katalog und echte Referenzflächen minde
 
 Jedes Element durchläuft dieselbe Reihenfolge: Referenzrolle festlegen → einzeln generieren → Chromaquelle sichern → Alpha entfernen → Kanten visuell prüfen → feste Runtimevariante bauen → Manifest aktualisieren → im UI-Katalog rendern → automatisiert laden und vermessen. Erst danach beginnt das nächste Element.
 
-Die verbindliche ID- und Produktionsreihenfolge steht in [`UI_KIT_INVENTORY.md`](UI_KIT_INVENTORY.md). Sie beginnt mit 144 Grundelementen und kann kontrolliert erweitert werden, wenn Kombination, Rotation, 9-Slice oder CSS-Zustände eine neue fachliche Form nicht abdecken.
+Die verbindliche ID- und Produktionsreihenfolge steht in [`UI_KIT_INVENTORY.md`](UI_KIT_INVENTORY.md). Sie umfasst aktuell 146 Grundelemente und kann kontrolliert erweitert werden, wenn Kombination, Rotation, 9-Slice oder CSS-Zustände eine neue fachliche Form nicht abdecken.
 
 ## Strukturreferenzen
 
@@ -68,3 +68,6 @@ A01 bis A03 besitzen im UI-Katalog zusätzlich eine sichtbare Verbindungsprobe. 
 A04 bis A06 bilden die leichte Kartenfamilie und besitzen eine eigene sichtbare Verbindungsprobe. Ihre horizontale und vertikale Kante wird nach dem 9-Slice-Prinzip nur in Längsrichtung gestreckt; die Randstärke bleibt identisch. Der technische Vertrag von A04 erzwingt außerdem eine sichtbare Höhe von höchstens 45 Prozent der A02-Höhe und mindestens 90 Prozent nutzbare Breite.
 
 A07 reduziert dieselbe Familie zur Tooltip-Hierarchie. Die Katalogprobe kombiniert A04, A05 und vier A07-Ecken mit echtem HTML-Inhalt; Rolle, Effekttext und Zahlen sind nicht in den Rasterbildern eingebrannt.
+## B.01.2 - Produktionsbatch freigegeben (2026-07-25)
+
+Der Bausatz ist jetzt über die ursprünglichen sieben Proof-Elemente hinaus erweitert: A08-A18 bilden die verbindbare Rahmenfamilie; B01-B14 liefern Innenflächen, Zustandslicht und Materialtexturen; C01-C16, D01-D16 und E01-E05, E09-E11, E14 und E18 liefern Leisten, Aktionen und Wertfassungen; E06-E08, E12-E13 und E15-E17 sind als CSS-/Rotationsableitungen im Katalog abgenommen; F01-F16 liefern textfreie Ressourcen-, Ei- und Gem-Icons; G01-G36 liefern textfreie System- und Navigationsicons inklusive G11 Gilden-DNA, G16 Post, G18 Audio an, G21 Information, G22 Warnung, G23 Erfolg, G24 Fehler, G25 Schließen, G26 Zurück, G28 Hinzufügen, G29 Entfernen, G30 Sperre, G31 Filter, G32 Sortieren, G33 Suche, G34 Aktualisieren, G35 Menü und G36 Mehr/Optionen; G19 Audio aus und G27 Vorwärts sind als CSS-Zustände/Ableitung abgenommen; H01-H12 liefern getrennte Avatar-, Rollen- und Ranglayer. Alle 136 Raster-Runtime-Dateien werden aus `scripts/prepare_ui_kit.py` erzeugt, im Manifest geprüft und in der Katalogseite montiert. Beschriftungen, Zahlen und Zustände bleiben dynamisches HTML/CSS. Die serielle UI-Liste ist abgeschlossen; B.01.4 bleibt die visuelle Abnahme.

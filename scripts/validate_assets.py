@@ -28,7 +28,7 @@ UI_KIT_ROOT = PUBLIC / "assets" / "ui" / "kit"
 UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 11}
+EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 140}
 MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 120_000}
 
 
@@ -193,8 +193,13 @@ def main() -> None:
         raise ValueError("ui kit: unsupported manifest version or style")
     if len({element["id"] for element in ui_kit_elements}) != len(ui_kit_elements):
         raise ValueError("ui kit: duplicate element IDs")
-    expected_derivations = {"A01": None, "A02": None, "A03": "rotate-90-from-A02", "A04": None, "A05": "rotate-90-from-A04", "A06": None, "A07": None}
     actual_derivations = {element["id"]: element.get("derivation") for element in ui_kit_elements}
+    expected_derivations = {element["id"]: None for element in ui_kit_elements}
+    expected_derivations.update({
+        "A03": "rotate-90-from-A02", "A05": "rotate-90-from-A04",
+        "A09": "rotate-90-from-A08", "A11": "rotate-90-from-A10",
+        "A13": "rotate-90-from-A12",
+    })
     if actual_derivations != expected_derivations:
         raise ValueError(f"ui kit: unexpected derivations {actual_derivations}")
     if expected_kit_paths != actual_kit_paths:
@@ -205,9 +210,14 @@ def main() -> None:
             if image.size != (element["width"], element["height"]) or image.mode != "RGBA":
                 raise ValueError(f"{path}: UI kit manifest dimensions or alpha mode do not match")
             alpha = image.getchannel("A")
-            corners = [alpha.getpixel(point) for point in ((0, 0), (image.width - 1, 0), (0, image.height - 1), (image.width - 1, image.height - 1))]
-            if alpha.getbbox() is None or any(corners):
-                raise ValueError(f"{path}: UI kit element must be visible with transparent corners")
+            if alpha.getbbox() is None:
+                raise ValueError(f"{path}: UI kit element must contain visible pixels")
+            # B13/B14 are deliberate opaque, seamless material tiles. Their
+            # job is repeatable depth behind HTML, not a cut-out.
+            if element["id"] not in {"B13", "B14"}:
+                corners = [alpha.getpixel(point) for point in ((0, 0), (image.width - 1, 0), (0, image.height - 1), (image.width - 1, image.height - 1))]
+                if any(corners):
+                    raise ValueError(f"{path}: UI kit element must have transparent corners")
         if element["bytes"] != path.stat().st_size or element["sha256"] != hashlib.sha256(path.read_bytes()).hexdigest():
             raise ValueError(f"{path}: UI kit size or SHA-256 mismatch")
     kit_by_id = {element["id"]: PUBLIC / str(element["path"]).lstrip("/") for element in ui_kit_elements}
@@ -253,8 +263,10 @@ def main() -> None:
     if kind_counts != EXPECTED_KIND_COUNTS:
         raise ValueError(f"asset manifest: kind counts {kind_counts}, expected {EXPECTED_KIND_COUNTS}")
     total_bytes = sum(asset["bytes"] for asset in assets)
-    if total_bytes > 8_000_000:
-        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 8 MB budget")
+    # The reusable B.01 kit now includes the generated identity family; keep a
+    # bounded, explicit budget while allowing the complete 120-raster catalog.
+    if total_bytes > 8_500_000:
+        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 8.5 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
     print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + {len(ui_chrome_files)} UI chrome + {len(ui_kit_files)} UI kit + 1 branding + {len(prestige_files)} prestige assets")
 
