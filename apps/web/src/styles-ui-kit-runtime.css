@@ -245,7 +245,7 @@
    old layout bottom-aligned the whole duel, which pushed the sprites into the
    vignette and made the HP plates feel larger than the fight itself. */
 .combat-shell--ui-kit .combat-duel {
-  inset: 148px clamp(230px, 19vw, 290px) 164px clamp(112px, 10vw, 150px);
+  inset: 148px clamp(96px, 8vw, 132px) 132px clamp(112px, 8vw, 140px);
   grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
   align-items: center;
 }
@@ -253,7 +253,7 @@
 .combat-shell--ui-kit .combat-duel .fighter {
   justify-content: center;
   padding: 22px 0 0;
-  transform: translateY(clamp(34px, 8vh, 76px));
+  transform: translateY(clamp(48px, 9vh, 84px));
 }
 
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar {
@@ -287,7 +287,7 @@
 }
 
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar.is-hit {
-  transform: translateY(clamp(34px, 8vh, 76px)) translateX(-8px);
+  transform: translateY(clamp(48px, 9vh, 84px)) translateX(-8px);
 }
 
 @media (max-width: 1020px) and (min-width: 821px) {
