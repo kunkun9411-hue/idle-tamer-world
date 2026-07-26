@@ -587,6 +587,116 @@
   }
 }
 
+/* Habitat compact pass: treat the roster like an inventory shelf. The full
+   progression data remains available, but the default view is lighter and
+   scannable instead of presenting every monster as a tall management panel. */
+.habitat-page > .page-heading--kit {
+  min-height: 112px;
+  padding-block: 18px;
+}
+.habitat-page > .page-heading--kit h1 {
+  margin: 5px 0 7px;
+  font-size: clamp(28px, 3vw, 40px);
+}
+.habitat-page > .page-heading--kit p {
+  max-width: 520px;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.habitat-page .gem-workbench {
+  margin-bottom: 14px;
+  padding: 14px;
+}
+.habitat-page .gem-workbench__heading {
+  align-items: center;
+  gap: 14px;
+}
+.habitat-page .gem-workbench__heading h2 {
+  margin: 3px 0;
+  font-size: 18px;
+}
+.habitat-page .gem-workbench__heading p {
+  font-size: 8px;
+}
+.habitat-page .gem-workbench__heading > span {
+  min-width: 150px;
+  padding: 8px 10px;
+}
+.habitat-page .gem-loadout {
+  gap: 7px;
+  margin-top: 11px;
+}
+.habitat-page .gem-slot {
+  min-height: 62px;
+  grid-template-columns: 40px 1fr auto;
+  gap: 7px;
+  padding: 7px 8px;
+}
+.habitat-page .gem-slot > img { width: 40px; height: 40px; }
+.habitat-page .gem-slot > span { width: 35px; height: 35px; font-size: 21px; }
+.habitat-page .gem-slot div strong { font-size: 8px; }
+.habitat-page .gem-slot div span { font-size: 7px; }
+.habitat-page .gem-inventory {
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.habitat-page .gem-inventory__grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 5px; }
+.habitat-page .gem-chip { min-height: 48px; grid-template-columns: 34px 1fr; gap: 5px; padding: 4px 6px; }
+.habitat-page .gem-chip img { width: 33px; height: 33px; }
+.habitat-page .gem-chip span strong { font-size: 8px; }
+.habitat-page .roster-grid--compact {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.habitat-page .monster-card {
+  min-height: 338px;
+  padding: 11px;
+}
+.habitat-page .monster-card > .monster-avatar {
+  width: 128px;
+  height: 132px;
+  margin: 1px auto -2px;
+}
+.habitat-page .monster-card__body > div:first-child h3 { font-size: 17px; }
+.habitat-page .monster-card__body > div:first-child span { font-size: 8px; }
+.habitat-page .stat-line {
+  margin: 8px 0 7px;
+  padding: 7px 0;
+}
+.habitat-page .stat-line b { font-size: 10px; }
+.habitat-page .gem-stat-note { margin-top: 4px; font-size: 5px; }
+.habitat-page .evolution-line {
+  margin-top: 7px;
+  padding: 7px;
+  gap: 3px 6px;
+}
+.habitat-page .evolution-line span b { font-size: 8px; }
+.habitat-page .evolution-line em { font-size: 6px; }
+.habitat-page .evolution-line .evolve-button { min-height: 30px; padding-inline: 7px; font-size: 6px; }
+.habitat-page .fragment-line { min-height: 31px; gap: 5px; }
+.habitat-page .fragment-line .resource-icon { width: 21px; height: 21px; }
+.habitat-page .monster-card__actions { margin-top: 7px; gap: 4px; }
+.habitat-page .monster-card__actions button { min-height: 28px; padding-inline: 5px; font-size: 6px; }
+.habitat-page .monster-card__actions button small { font-size: 5px; }
+.habitat-page .empty-slot { min-height: 338px; padding: 16px; }
+
+@media (max-width: 1240px) {
+  .habitat-page .roster-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .habitat-page .roster-grid--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .habitat-page .gem-workbench__heading { align-items: flex-start; }
+  .habitat-page .gem-inventory { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .habitat-page > .page-heading--kit { min-height: 140px; padding-block: 24px; }
+  .habitat-page .roster-grid--compact { grid-template-columns: 1fr; }
+  .habitat-page .monster-card { min-height: 360px; }
+  .habitat-page .gem-loadout { grid-template-columns: 1fr; }
+}
+
 /* Desktop floor-anchor pass: large HD sprites must end on the illustrated
    platforms, not on the lower navigation dock. The previous center layout
    combined a large art box with an extra downward transform, which made the

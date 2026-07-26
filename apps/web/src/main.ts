@@ -1377,7 +1377,7 @@ function pageHeading(kicker: string, title: string, copy: string, meta: string, 
 function habitatView(): string {
   if (game.roster.length === 0) return starterGate();
   const active = activeMonster();
-  return `<section class="page page--kit">${pageHeading("SAMMLUNG · ENTWICKLUNG", "Monster-Habitat", "Run-Level kosten Gold. Evolutionen, Hyperlevel, Fragmente und eingesetzte Gems bleiben dauerhaft auf deinem Account.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}${active ? gemLoadout(active) : ""}<div class="roster-grid">${game.roster.map(monsterCard).join("")}<div class="empty-slot"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Weitere Rookie-Monster schlüpfen aus Eiern des Hauptkampfs.</small></div></div></section>`;
+  return `<section class="page page--kit habitat-page">${pageHeading("MONSTER · SAMMLUNG", "Monster", "Wähle Front, Support und Entwicklung. Permanente Werte bleiben bei Prestige erhalten.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}${active ? gemLoadout(active) : ""}<div class="roster-grid roster-grid--compact">${game.roster.map(monsterCard).join("")}<div class="empty-slot"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Weitere Rookie-Monster schlüpfen aus Eiern des Hauptkampfs.</small></div></div></section>`;
 }
 
 function gemEffect(gemId: string): string {
