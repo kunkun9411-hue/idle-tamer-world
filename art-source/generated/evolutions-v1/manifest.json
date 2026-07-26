@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "purpose": "HD idle anchors for the ten starter evolution lines",
+  "runtimeCanvas": "200x200",
+  "animationDirection": "right",
+  "forms": [
+    {
+      "starterId": "pyrook",
+      "forms": [
+        { "slug": "solaraptor", "stage": "stage1", "runtime": "/assets/monsters/evolutions/pyrook/pyrook_solaraptor_idle_right.png" },
+        { "slug": "solflare", "stage": "stage2", "runtime": "/assets/monsters/evolutions/pyrook/pyrook_solflare_idle_right.png" },
+        { "slug": "aetherion", "stage": "ultimate", "runtime": "/assets/monsters/evolutions/pyrook/pyrook_aetherion_idle_right.png" }
+      ]
+    },
+    {
+      "starterId": "mossbit",
+      "forms": [
+        { "slug": "groveguard", "stage": "stage1", "runtime": "/assets/monsters/evolutions/mossbit/mossbit_groveguard_idle_right.png" },
+        { "slug": "rootwarden", "stage": "stage2", "runtime": null },
+        { "slug": "verdant-titan", "stage": "ultimate", "runtime": null }
+      ]
+    },
+    {
+      "starterId": "voltfin",
+      "forms": [
+        { "slug": "stormray", "stage": "stage1", "runtime": "/assets/monsters/evolutions/voltfin/voltfin_stormray_idle_right.png" },
+        { "slug": "thunderwing", "stage": "stage2", "runtime": null },
+        { "slug": "tempest-leviathan", "stage": "ultimate", "runtime": null }
+      ]
+    },
+    {
+      "starterId": "tideram",
+      "forms": [
+        { "slug": "abysshorn", "stage": "stage1", "runtime": "/assets/monsters/evolutions/tideram/tideram_abysshorn_idle_right.png" },
+        { "slug": "tidalord", "stage": "stage2", "runtime": null },
+        { "slug": "abyssal-colossus", "stage": "ultimate", "runtime": null }
+      ]
+    },
+    { "starterId": "nyxlet", "forms": [{ "slug": "noctyra", "stage": "stage1", "runtime": null }, { "slug": "umbrafang", "stage": "stage2", "runtime": null }, { "slug": "eclipse-seraph", "stage": "ultimate", "runtime": null }] },
+    { "starterId": "bramblet", "forms": [{ "slug": "thornwarden", "stage": "stage1", "runtime": null }, { "slug": "briar-warden", "stage": "stage2", "runtime": null }, { "slug": "worldroot-guardian", "stage": "ultimate", "runtime": null }] },
+    { "starterId": "glimmite", "forms": [{ "slug": "prismantis", "stage": "stage1", "runtime": null }, { "slug": "spectrumantis", "stage": "stage2", "runtime": null }, { "slug": "prismatic-archon", "stage": "ultimate", "runtime": null }] },
+    { "starterId": "riftjaw", "forms": [{ "slug": "voidmaw", "stage": "stage1", "runtime": null }, { "slug": "riftreaver", "stage": "stage2", "runtime": null }, { "slug": "null-devourer", "stage": "ultimate", "runtime": null }] },
+    { "starterId": "frostel", "forms": [{ "slug": "cryolupus", "stage": "stage1", "runtime": null }, { "slug": "glacieron", "stage": "stage2", "runtime": null }, { "slug": "cryosphere-alpha", "stage": "ultimate", "runtime": null }] },
+    { "starterId": "lumipup", "forms": [{ "slug": "auralion", "stage": "stage1", "runtime": null }, { "slug": "auroracrest", "stage": "stage2", "runtime": null }, { "slug": "lumen-constellation", "stage": "ultimate", "runtime": null }] }
+  ]
+}

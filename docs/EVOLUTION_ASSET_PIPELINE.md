@@ -76,6 +76,8 @@ Zu jedem dieser drei Anker liegt die unveränderte Chroma-Quelle und der
 freigestellte Master unter `art-source/generated/evolutions-v1/<starter-id>/`.
 Weitere Linien werden erst nach demselben Chroma→Master→200×200-Abnahmelauf
 ergänzt; es werden keine isolierten Großmaster ohne Runtime-Export eingecheckt.
+Der vollständige Status inklusive Stage2-/Ultimate-Platzhaltern steht in
+`art-source/generated/evolutions-v1/manifest.json`.
 
 ## Prompt-Basis
 
