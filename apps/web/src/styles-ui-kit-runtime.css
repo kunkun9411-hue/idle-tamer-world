@@ -567,6 +567,7 @@
   background: linear-gradient(145deg, rgba(114, 79, 190, .34), rgba(24, 18, 42, .88));
   border-color: rgba(202, 183, 255, .38);
 }
+.combat-shell--ui-kit .combat-control-dock button > i[hidden] { display: none; }
 
 @media (max-width: 820px) {
   .combat-shell--ui-kit .combat-top-hud { left: 10px; right: 10px; top: 9px; }
