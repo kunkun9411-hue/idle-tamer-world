@@ -556,8 +556,8 @@
    active pair should read as the visual anchor rather than as tiny thumbnails.
    Keep the platform at the fighter's baseline while enlarging the artwork. */
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar {
-  width: clamp(300px, 27vw, 420px);
-  height: clamp(300px, 27vw, 420px);
+  width: clamp(300px, 24vw, 380px);
+  height: clamp(300px, 24vw, 380px);
   transform-origin: 50% 100%;
 }
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar__platform {
@@ -582,8 +582,33 @@
 
 @media (min-width: 1440px) {
   .combat-shell--ui-kit .combat-duel .fighter .monster-avatar {
-    width: clamp(360px, 30vw, 500px);
-    height: clamp(360px, 30vw, 500px);
+    width: clamp(340px, 24vw, 430px);
+    height: clamp(340px, 24vw, 430px);
+  }
+}
+
+/* Desktop floor-anchor pass: large HD sprites must end on the illustrated
+   platforms, not on the lower navigation dock. The previous center layout
+   combined a large art box with an extra downward transform, which made the
+   feet drift into the vignette on wide screens. */
+@media (min-width: 1021px) {
+  .combat-shell--ui-kit .combat-duel {
+    align-items: end;
+    inset-block-end: 82px;
+  }
+  .combat-shell--ui-kit .combat-duel .fighter {
+    justify-content: end;
+    padding: 0 0 2px;
+    transform: none;
+  }
+  .combat-shell--ui-kit .combat-duel .fighter .monster-avatar.is-hit {
+    transform: translateX(-8px);
+  }
+}
+
+@media (min-width: 1440px) {
+  .combat-shell--ui-kit .combat-duel {
+    inset-block-end: 100px;
   }
 }
 
