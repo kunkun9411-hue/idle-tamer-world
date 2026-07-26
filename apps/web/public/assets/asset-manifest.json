@@ -1358,13 +1358,13 @@
     {
       "id": "ui.chrome.offline-report-frame-v2",
       "kind": "ui",
-      "path": "/assets/ui/chrome/offline-report-frame-v3.png",
+      "path": "/assets/ui/chrome/offline-report-frame-v4.png",
       "format": "png",
       "width": 1024,
       "height": 1024,
       "alpha": true,
-      "bytes": 80191,
-      "sha256": "cf150bf6279385e0329d9b679ef6400d5dfb61ed6b11ca4b46c4105a268d4e30"
+      "bytes": 53328,
+      "sha256": "d30d657931b0aab566e50a54fd180bcae604d0fe1abdc1b55cd4b102eb582d26"
     },
     {
       "id": "ui.chrome.primary-button-frame-v1",
