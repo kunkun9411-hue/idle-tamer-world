@@ -41,7 +41,7 @@ die Runtime-Idle-Dateien umzubenennen.
 Die Namen sind Design-Arbeitsnamen und werden vor der Content-Migration noch auf
 Lore, Übersetzungen und Namenskonflikte geprüft.
 
-## Pyrook-Prototyp (freigegeben)
+## Prototyp-Status (freigegeben)
 
 Die erste zusammenhängende Dreiform-Pipeline liegt bereits im Repository:
 
@@ -63,6 +63,19 @@ apps/web/public/assets/monsters/evolutions/pyrook/
 Die drei Runtime-Exports sind jeweils 200×200 RGBA; ihre Ecken sind vollständig
 transparent. `Aetherion` nutzt die verfügbare Silhouette fast vollständig und ist
 damit für die gewünschte Endgame-Skalierung im Kampf vorbereitet.
+
+Zusätzlich sind vier erste Evolutionsanker für das Starter-Roster freigegeben:
+
+```text
+apps/web/public/assets/monsters/evolutions/mossbit/mossbit_groveguard_idle_right.png
+apps/web/public/assets/monsters/evolutions/voltfin/voltfin_stormray_idle_right.png
+apps/web/public/assets/monsters/evolutions/tideram/tideram_abysshorn_idle_right.png
+```
+
+Zu jedem dieser drei Anker liegt die unveränderte Chroma-Quelle und der
+freigestellte Master unter `art-source/generated/evolutions-v1/<starter-id>/`.
+Weitere Linien werden erst nach demselben Chroma→Master→200×200-Abnahmelauf
+ergänzt; es werden keine isolierten Großmaster ohne Runtime-Export eingecheckt.
 
 ## Prompt-Basis
 

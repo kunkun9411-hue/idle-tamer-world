@@ -1136,6 +1136,72 @@
       "sha256": "5ae722db8cc459b735909a83f57b4aa27c5053da7379b28323cd8572986b66e1"
     },
     {
+      "id": "monster.evolutions.mossbit.mossbit_groveguard_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/mossbit/mossbit_groveguard_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 62963,
+      "sha256": "24494522124abfeb6698a93fbf542befb26b3ee2e5c1962c7a580a3edeb41847"
+    },
+    {
+      "id": "monster.evolutions.pyrook.pyrook_aetherion_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/pyrook/pyrook_aetherion_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 79461,
+      "sha256": "8833090f1a580ec689d99f6acc76536e53c067738df0a0cf9e0bb84d121e5949"
+    },
+    {
+      "id": "monster.evolutions.pyrook.pyrook_solaraptor_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/pyrook/pyrook_solaraptor_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 47580,
+      "sha256": "a83fa165bdcdfc29674d8f9727cde0ec76776111cb589c7d3bf6f6e8eb373019"
+    },
+    {
+      "id": "monster.evolutions.pyrook.pyrook_solflare_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/pyrook/pyrook_solflare_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 67671,
+      "sha256": "8c4a7bc920a8b7b1ee3adefa695163e39ec77e3429e919cbbc9baf258d6a09bf"
+    },
+    {
+      "id": "monster.evolutions.tideram.tideram_abysshorn_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/tideram/tideram_abysshorn_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 73521,
+      "sha256": "8fbe8115b38b36aecdb005d00362047d8d3df66bf7ae7f89b4518d6f39c06423"
+    },
+    {
+      "id": "monster.evolutions.voltfin.voltfin_stormray_idle_right",
+      "kind": "monster",
+      "path": "/assets/monsters/evolutions/voltfin/voltfin_stormray_idle_right.png",
+      "format": "png",
+      "width": 200,
+      "height": 200,
+      "alpha": true,
+      "bytes": 49157,
+      "sha256": "0ed80a1fd66814dd53fae4b2c45b288d399995c8d0cb4017198f02f43fbbd0dd"
+    },
+    {
       "id": "monster.frostel_idle_right",
       "kind": "monster",
       "path": "/assets/monsters/frostel_idle_right.png",
@@ -1299,6 +1365,50 @@
       "alpha": true,
       "bytes": 27528,
       "sha256": "243c5ecba45de490e7bac0409b1564132bf3f438ce06fac85a498382179e1315"
+    },
+    {
+      "id": "ui.inventory.ether-chest-v1",
+      "kind": "ui",
+      "path": "/assets/ui/inventory/ether-chest-v1.png",
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "bytes": 1307200,
+      "sha256": "4065afc9ba76c17339b7159224fd2e39e871810b1277be46f05759ca41f9986e"
+    },
+    {
+      "id": "ui.inventory.inventory-window-v1",
+      "kind": "ui",
+      "path": "/assets/ui/inventory/inventory-window-v1.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1024,
+      "alpha": false,
+      "bytes": 1923093,
+      "sha256": "01998666fcefa812ff6bebd161a6a3e7220f71cf47e22f542e5673104d2728a2"
+    },
+    {
+      "id": "ui.inventory.inventory-window-v2",
+      "kind": "ui",
+      "path": "/assets/ui/inventory/inventory-window-v2.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 1814452,
+      "sha256": "9be3583d33dedffd090e0cb0be59bd7539efdbd554ea2b972e9c4d8e04c5c1b9"
+    },
+    {
+      "id": "ui.inventory.inventory-window-v3",
+      "kind": "ui",
+      "path": "/assets/ui/inventory/inventory-window-v3.png",
+      "format": "png",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 1301564,
+      "sha256": "d9823b879769d1283014568d2554554e030323676a8fb446fa22bad745836861"
     },
     {
       "id": "ui.kit.chrome.c01-v1",

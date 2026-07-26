@@ -987,7 +987,7 @@ function monsterAvatar(monster: MonsterInstance, side = "left", hit = false): st
   const desiredFacing = side === "left" ? "right" : "left";
   const flipped = form.nativeFacing ? form.nativeFacing !== desiredFacing : desiredFacing === "left";
   return `
-    <div class="monster-avatar monster-avatar--${side} ${flipped ? "is-flipped" : ""} ${hit ? "is-hit" : ""}" style="--monster-accent:${form.accent}">
+    <div class="monster-avatar monster-avatar--${side} monster-avatar--${form.stage} ${flipped ? "is-flipped" : ""} ${hit ? "is-hit" : ""}" data-stage="${form.stage}" style="--monster-accent:${form.accent}">
       <span class="monster-avatar__glow"></span><span class="monster-avatar__platform"></span>
       ${form.sprite
         ? `<img class="monster-avatar__sprite" src="${form.sprite}" alt="${form.name}" width="200" height="200" draggable="false">`
