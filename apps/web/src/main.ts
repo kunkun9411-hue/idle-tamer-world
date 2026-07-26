@@ -45,7 +45,7 @@ import { loadGame, resetGame, STORAGE_KEY, storageKeyForNamespace, type StorageD
 import { SYSTEM_MESSAGES } from "./game/system-messages";
 import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./game/types";
 
-type View = "expedition" | "objectives" | "dispatch" | "habitat" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
+type View = "expedition" | "objectives" | "dispatch" | "habitat" | "gems" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
 type NoticeTone = "violet" | "success" | "warning";
 type CombatPanel = "missions" | "loot" | "duo" | "monsters" | "log";
 type InventoryCategory = "gems" | "consumables" | "materials" | "other";
@@ -96,7 +96,9 @@ let starterDialogOpen = false;
 let activeCombatPanel: CombatPanel | null = null;
 let combatFocusMode = false;
 let inventoryModalOpen = false;
+let monsterModalOpen = false;
 let inventoryCategory: InventoryCategory = "gems";
+let gemTargetUid = "";
 let testChestAvailable = true;
 let pointerInteractionActive = false;
 let keyboardInteractionActive = false;
@@ -392,6 +394,7 @@ function openTestChest(): void {
   if (!testChestAvailable) return;
   testChestAvailable = false;
   inventoryModalOpen = false;
+  monsterModalOpen = false;
   if (isRunOnline()) {
     showNotice("Ether-Truhe geöffnet", "UI-Testbeute: +250 Gold · +3 Etherstaub. Die echte Truhenbuchung folgt später als serverseitige Transaktion.", "success");
     return;
@@ -796,6 +799,7 @@ function setView(view: View): void {
   activeCombatPanel = null;
   combatFocusMode = false;
   inventoryModalOpen = false;
+  monsterModalOpen = false;
   window.scrollTo({ top: 0, behavior: "auto" });
   render();
   if (view === "guild") void synchronizeGuild();
@@ -967,6 +971,7 @@ function icon(name: View | "home" | "shield" | "spark" | "arrow" | "check" | "ey
     objectives: '<path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4"/><path d="m3.5 8 .8.8L6 7"/>',
     dispatch: '<path d="M4 18 9 6l3 5 3-8 5 15H4Z"/><path d="M7 18v2h10v-2M9 14h6"/>',
     habitat: '<path d="M7.2 11.5c-1.7 1-2.8 2.6-2.3 4.4.7 2.5 3.5 3.1 7.1 3.1s6.4-.6 7.1-3.1c.5-1.8-.6-3.4-2.3-4.4C15.6 10.8 14.6 10 12 10s-3.6.8-4.8 1.5Z"/><circle cx="6.5" cy="7.5" r="2"/><circle cx="11" cy="5.5" r="2"/><circle cx="17.5" cy="7.5" r="2"/>',
+    gems: '<path d="m12 3 7 7-7 11L5 10z"/><path d="m5 10 7 2 7-2M12 3v9"/>',
     incubation: '<path d="M12 3c4 0 7 7.1 7 11a7 7 0 0 1-14 0c0-3.9 3-11 7-11Z"/><path d="m8.5 12 2 2 4.5-5"/>',
     inventory: '<path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3M4 12h16M10 12v3h4v-3"/>',
     research: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 16h9"/>',
@@ -1030,7 +1035,7 @@ function officialLogoMarkup(): string {
 }
 
 function navButton(view: View, label: string, locked = false): string {
-  const shortLabel: Record<View, string> = { expedition: "Kampf", objectives: "Aufträge", dispatch: "Missionen", habitat: "Monster", incubation: "Brut", inventory: "Inventar", research: "Labor", guild: "Gilde", profile: "Profil", prestige: "Prestige" };
+  const shortLabel: Record<View, string> = { expedition: "Kampf", objectives: "Aufträge", dispatch: "Missionen", habitat: "Monster", gems: "Gems", incubation: "Brut", inventory: "Inventar", research: "Labor", guild: "Gilde", profile: "Profil", prestige: "Prestige" };
   return `<button class="nav-button ${activeView === view ? "is-active" : ""}" data-view="${view}" aria-label="${label}" aria-current="${activeView === view ? "page" : "false"}"><span>${icon(view)}</span><b><span class="nav-label-full">${label}</span><span class="nav-label-short">${shortLabel[view]}</span></b>${locked ? '<i title="Vorschau ab Rang 10">10</i>' : ""}</button>`;
 }
 
@@ -1074,7 +1079,7 @@ function topShell(content: string): string {
       <header class="topbar">
         <button class="brand" data-home aria-label="Zur Idle-Tamer-Homepage">${brandMarkup()}</button>
         <nav class="main-nav" aria-label="Spielbereiche">
-          ${navButton("expedition", "Kampf")}${activeView === "objectives" ? navButton("objectives", "Aufträge") : ""}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
+          ${navButton("expedition", "Kampf")}${activeView === "objectives" ? navButton("objectives", "Aufträge") : ""}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
         </nav>
         <div class="topbar__account">
           <div class="resources" aria-label="Ressourcen">
@@ -1094,7 +1099,7 @@ function topShell(content: string): string {
 function combatShell(content: string): string {
   return `
     <div class="combat-shell combat-shell--ui-kit combat-shell--${game.currentZoneId} ${combatFocusMode ? "is-focus-mode" : ""}">${content}</div>
-    ${inventoryModalOpen ? combatInventoryModal() : ""}${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
+    ${inventoryModalOpen ? combatInventoryModal() : ""}${monsterModalOpen ? combatMonsterModal() : ""}${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
 }
 
 function prestigeShell(content: string): string {
@@ -1172,7 +1177,10 @@ function combatRail(): string {
     ["dispatch", "Missionen"],
     ["guild", "Gilde"],
   ];
-  return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => `<button class="${view === "expedition" ? "is-active" : ""}" ${view === "inventory" ? "data-inventory-toggle=\"true\"" : `data-view=\"${view}\"`} title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`).join("")}</nav>`;
+  return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => {
+    const action = view === "inventory" ? "data-inventory-toggle=\"true\"" : view === "habitat" ? "data-monster-toggle=\"true\"" : `data-view=\"${view}\"`;
+    return `<button class="${view === "expedition" ? "is-active" : ""}" ${action} title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`;
+  }).join("")}</nav>`;
 }
 
 function combatMonsterSelector(): string {
@@ -1182,6 +1190,24 @@ function combatMonsterSelector(): string {
     const dispatched = isMonsterDispatched(game, monster.uid);
     return `<button class="combat-monster-option ${selected ? "is-active" : ""}" data-active="${monster.uid}" ${selected || dispatched ? "disabled" : ""} style="--monster-accent:${definition.accent}" title="${dispatched ? "Monster ist auf Expedition" : `${definition.name} als Front wählen`}">${monsterAvatar(monster)}<span><strong>${definition.name}</strong><small>LV ${monster.level} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</small></span>${selected ? "<i>AKTIV</i>" : dispatched ? "<i>ENTSANDT</i>" : ""}</button>`;
   }).join("")}</div><button class="combat-manage-team" data-view="habitat">DUO &amp; LEVEL ${icon("arrow")}</button></section>`;
+}
+
+function combatMonsterModal(): string {
+  const activeUid = game.activeMonsterUid;
+  const supportUid = game.supportMonsterUid;
+  const cards = game.roster.map((monster) => {
+    const definition = getMonsterForm(monster);
+    const active = monster.uid === activeUid;
+    const support = monster.uid === supportUid;
+    const dispatched = isMonsterDispatched(game, monster.uid);
+    const cost = levelCost(monster.level);
+    return `<article class="combat-monster-modal__card ${active ? "is-active" : ""} ${support ? "is-support" : ""}" style="--monster-accent:${definition.accent}">
+      <div class="combat-monster-modal__visual">${monsterAvatar(monster)}<span class="combat-monster-modal__role">${active ? "FRONT" : support ? "SUPPORT" : dispatched ? "EXPEDITION" : definition.combatRole.toUpperCase()}</span></div>
+      <div class="combat-monster-modal__copy"><div><strong>${definition.name}</strong><small>${EVOLUTION_LABELS[monster.evolution]} · LV ${monster.level} · HYPER ${monster.hyperLevel}</small></div><span>${monsterMaxHp(monster, game.prestigeCount)} HP · ${monsterAttack(monster, game.prestigeCount)} ATK</span></div>
+      <div class="combat-monster-modal__actions"><button class="secondary-button" data-active="${monster.uid}" ${active || dispatched ? "disabled" : ""}>${active ? "FRONT AKTIV" : dispatched ? "ENTSANDT" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${support || active || dispatched ? "disabled" : ""}>${support ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < cost || dispatched ? "disabled" : ""}>RUN-LEVEL +1 <small>${cost} G</small></button></div>
+    </article>`;
+  }).join("");
+  return `<div class="combat-monster-modal-backdrop" data-close-combat-monsters aria-hidden="true"></div><aside class="combat-monster-modal" role="dialog" aria-modal="true" aria-labelledby="combat-monster-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-monster-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">KAMPFTEAM · SCHNELLZUGRIFF</span><h2 id="combat-monster-title">Monster</h2><small>Front, Support und temporäres Run-Level direkt im Kampf verwalten.</small></div><button class="combat-inventory-modal__close" id="close-combat-monsters" type="button" aria-label="Monsterfenster schließen">×</button></header><div class="combat-monster-modal__summary"><span><b>${game.roster.length}</b> Resonanzen</span><span><b>${activeUid ? "1" : "0"}</b> Front</span><span><b>${supportUid ? "1" : "0"}</b> Support</span></div><div class="combat-monster-modal__grid">${cards}</div><p class="combat-inventory-hint">Run-Level wird mit Gold bezahlt und beim Prestige zurückgesetzt. Hyperlevel, Evolution und Gems bleiben im separaten Ausrüstungsbereich.</p></div></aside>`;
 }
 
 interface InventorySlotData {
@@ -1278,7 +1304,6 @@ function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {
     { panel: "missions", label: "Ziele", iconName: "spark", badge: claimable ? "!" : undefined },
     { panel: "loot", label: "Beute", iconName: "inventory", badge: cacheEmpty ? undefined : String(game.cacheSlotsUsed) },
     { panel: "duo", label: "Duo", iconName: "habitat", badge: game.supportMonsterUid ? undefined : "+" },
-    { panel: "monsters", label: "Front", iconName: "profile" },
     { panel: "log", label: "Kampflog", iconName: "expedition" },
   ];
   return `<nav class="combat-control-dock" aria-label="Kampfoptionen">${controls.map((control) => `<button class="${activeCombatPanel === control.panel ? "is-active" : ""}" data-combat-panel="${control.panel}" aria-pressed="${activeCombatPanel === control.panel}" title="${control.label}">${icon(control.iconName)}<span>${control.label}</span><i data-live="control-badge-${control.panel}" ${control.badge ? "" : "hidden"}>${control.badge ?? ""}</i></button>`).join("")}<button class="combat-focus-button ${combatFocusMode ? "is-active" : ""}" id="combat-focus-toggle" aria-pressed="${combatFocusMode}" title="${combatFocusMode ? "HUD einblenden" : "Fokusmodus"}">${icon("eye")}<span>${combatFocusMode ? "HUD ein" : "Fokus"}</span></button></nav>`;
@@ -1376,8 +1401,17 @@ function pageHeading(kicker: string, title: string, copy: string, meta: string, 
 
 function habitatView(): string {
   if (game.roster.length === 0) return starterGate();
-  const active = activeMonster();
-  return `<section class="page page--kit habitat-page">${pageHeading("MONSTER · SAMMLUNG", "Monster", "Wähle Front, Support und Entwicklung. Permanente Werte bleiben bei Prestige erhalten.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}${active ? gemLoadout(active) : ""}<div class="roster-grid roster-grid--compact">${game.roster.map(monsterCard).join("")}<div class="empty-slot"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Weitere Rookie-Monster schlüpfen aus Eiern des Hauptkampfs.</small></div></div></section>`;
+  return `<section class="page page--kit habitat-page">${pageHeading("MONSTER · SAMMLUNG", "Monster", "Archiv und permanente Entwicklung. Front und temporäres Run-Level verwaltest du direkt im Kampf.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}<div class="roster-grid roster-grid--compact">${game.roster.map(monsterCard).join("")}<div class="empty-slot"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Weitere Rookie-Monster schlüpfen aus Eiern des Hauptkampfs.</small></div></div></section>`;
+}
+
+function gemTargetMonster(): MonsterInstance | null {
+  return game.roster.find((monster) => monster.uid === gemTargetUid) ?? activeMonster();
+}
+
+function gemsView(): string {
+  if (game.roster.length === 0) return starterGate();
+  const target = gemTargetMonster();
+  return `<section class="page page--kit gems-page">${pageHeading("AUSRÜSTUNG · PERMANENT", "Gems", "Dreieck, Quadrat und Raute verstärken die Grundwerte deiner Formen. Gems bleiben bei Prestige erhalten.", `${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} GEMS IM INVENTAR`)}<nav class="gem-monster-picker" aria-label="Monster für Gems auswählen">${game.roster.map((monster) => { const definition = getMonsterForm(monster); return `<button class="${monster.uid === target?.uid ? "is-active" : ""}" data-gem-monster="${monster.uid}"><span>${monsterAvatar(monster)}</span><strong>${definition.name}</strong><small>LV ${monster.level} · H${monster.hyperLevel}</small></button>`; }).join("")}</nav>${target ? gemLoadout(target) : ""}</section>`;
 }
 
 function gemEffect(gemId: string): string {
@@ -1427,9 +1461,7 @@ function monsterCard(monster: MonsterInstance): string {
   const actionsEnd = html.indexOf('</div></article>', actionsStart);
   if (actionsStart < 0 || actionsEnd < 0) return html;
   const actionsClose = '</div></article>';
-  const actions = html.slice(actionsStart, actionsEnd + '</div>'.length);
-  const role = monster.uid === game.activeMonsterUid ? 'FRONT' : monster.uid === game.supportMonsterUid ? 'SUPPORT' : '';
-  return `${html.slice(0, actionsStart)}<details class="monster-card__controls"><summary>VERWALTEN <span>${role}</span></summary>${actions}</details>${html.slice(actionsEnd + actionsClose.length)}`;
+  return `${html.slice(0, actionsStart)}${html.slice(actionsEnd + actionsClose.length)}`;
 }
 
 function incubationView(): string {
@@ -1938,7 +1970,7 @@ function render(): void {
   }
   if (showLogin) app.innerHTML = loginShell();
   else {
-    const views: Record<View, () => string> = { expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, incubation: incubationView, inventory: inventoryView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
+    const views: Record<View, () => string> = { expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, gems: gemsView, incubation: incubationView, inventory: inventoryView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
     const content = views[activeView]();
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
@@ -1963,6 +1995,7 @@ function bindModalKeyboard(): void {
       if (starterDialogOpen) starterDialogOpen = false;
       else if (showOfflineReport) showOfflineReport = false;
       else if (inventoryModalOpen) inventoryModalOpen = false;
+      else if (monsterModalOpen) monsterModalOpen = false;
       render();
       return;
     }
@@ -2036,6 +2069,11 @@ function bindEvents(): void {
       inventoryModalOpen = false;
       return render();
     }
+    const closeMonsters = event.target instanceof Element && event.target.closest("[data-close-combat-monsters]");
+    if (closeMonsters) {
+      monsterModalOpen = false;
+      return render();
+    }
     const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
     if (!target || target.disabled) return;
     const run = (key: string, action: () => void): void => runSingleAction(key, action);
@@ -2043,11 +2081,21 @@ function bindEvents(): void {
     if (target.dataset.qa) return run(`qa:${target.dataset.qa}`, () => applyQaState(target.dataset.qa as QaPreset));
     if (target.dataset.inventoryToggle) {
       inventoryModalOpen = true;
+      monsterModalOpen = false;
       inventoryCategory = "gems";
+      return render();
+    }
+    if (target.dataset.monsterToggle) {
+      monsterModalOpen = !monsterModalOpen;
+      inventoryModalOpen = false;
       return render();
     }
     if (target.dataset.inventoryCategory) {
       inventoryCategory = target.dataset.inventoryCategory as InventoryCategory;
+      return render();
+    }
+    if (target.dataset.gemMonster) {
+      gemTargetUid = target.dataset.gemMonster;
       return render();
     }
     if (target.dataset.openChest) return run(`open-chest:${target.dataset.openChest}`, openTestChest);
@@ -2113,6 +2161,7 @@ function bindEvents(): void {
       case "logout-account": return void logoutAccount();
       case "combat-focus-toggle": return toggleCombatFocus();
       case "close-combat-inventory": inventoryModalOpen = false; return render();
+      case "close-combat-monsters": monsterModalOpen = false; return render();
       case "collect-cache": return run("collect-cache", collectCache);
       case "offline-collect": return run("offline-collect", collectOfflineRewards);
       case "hatch-egg": return run("hatch", hatchIncubation);

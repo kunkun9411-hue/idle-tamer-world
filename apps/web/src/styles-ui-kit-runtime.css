@@ -893,17 +893,20 @@
 .combat-shell--ui-kit .combat-rail button[data-view="objectives"] svg,
 .combat-shell--ui-kit .combat-rail button[data-view="dispatch"] svg,
 .combat-shell--ui-kit .combat-rail button[data-view="habitat"] svg,
+.combat-shell--ui-kit .combat-rail button[data-monster-toggle] svg,
 .combat-shell--ui-kit .combat-rail button[data-view="incubation"] svg,
 .combat-shell--ui-kit .combat-rail button[data-view="research"] svg,
 .combat-shell--ui-kit .combat-rail button[data-view="guild"] svg { opacity: 0; }
 .combat-shell--ui-kit .combat-rail button[data-view="expedition"] { background-image: url("/assets/ui/kit/system/g01-v1.webp"), var(--kit-secondary-control); }
 .combat-shell--ui-kit .combat-rail button[data-view="objectives"] { background-image: url("/assets/ui/kit/system/g08-v1.webp"), var(--kit-secondary-control); }
 .combat-shell--ui-kit .combat-rail button[data-view="dispatch"] { background-image: url("/assets/ui/kit/system/g07-v1.webp"), var(--kit-secondary-control); }
-.combat-shell--ui-kit .combat-rail button[data-view="habitat"] { background-image: url("/assets/ui/kit/system/g03-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="habitat"],
+.combat-shell--ui-kit .combat-rail button[data-monster-toggle] { background-image: url("/assets/ui/kit/system/g03-v1.webp"), var(--kit-secondary-control); }
 .combat-shell--ui-kit .combat-rail button[data-view="incubation"] { background-image: url("/assets/ui/kit/system/g04-v1.webp"), var(--kit-secondary-control); }
 .combat-shell--ui-kit .combat-rail button[data-view="research"] { background-image: url("/assets/ui/kit/system/g06-v1.webp"), var(--kit-secondary-control); }
 .combat-shell--ui-kit .combat-rail button[data-view="guild"] { background-image: url("/assets/ui/kit/system/g10-v1.webp"), var(--kit-secondary-control); }
-.combat-shell--ui-kit .combat-rail button[data-view] {
+.combat-shell--ui-kit .combat-rail button[data-view],
+.combat-shell--ui-kit .combat-rail button[data-monster-toggle] {
   background-position: center, center;
   background-size: 22px 22px, 100% 100%;
   background-repeat: no-repeat;
@@ -1256,6 +1259,100 @@
   .combat-inventory-modal__content { padding: 36px 39px 32px; gap: 9px; }
   .combat-inventory-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .combat-inventory-tabs button { font-size: 8px; }
+}
+
+/* Monster quick-access window: the battle rail owns temporary actions. The
+   archive page stays a calm collection view, while this overlay keeps the
+   two combat decisions and the Run-Level button close to the fight. */
+.combat-monster-modal-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  background: rgba(4, 4, 10, .58);
+  backdrop-filter: blur(7px);
+}
+.combat-monster-modal {
+  position: fixed;
+  z-index: 81;
+  top: 50%;
+  left: 50%;
+  width: min(820px, calc(100vw - 42px));
+  aspect-ratio: 4 / 3;
+  max-height: calc(100vh - 72px);
+  transform: translate(-50%, -50%);
+  color: #f3effb;
+  overflow: visible;
+  background: transparent;
+  filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .58));
+}
+.combat-monster-modal::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 10% 12% 11%;
+  border: 1px solid rgba(187, 157, 255, .08);
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 28%, rgba(90, 67, 133, .4), rgba(18, 16, 31, .64) 72%);
+  box-shadow: inset 0 0 55px rgba(149, 113, 235, .12);
+  pointer-events: none;
+}
+.combat-monster-modal__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(40px, 5.6vw, 64px) clamp(56px, 7vw, 88px) clamp(38px, 5vw, 58px);
+}
+.combat-monster-modal__header .combat-inventory-modal__header { min-width: 0; }
+.combat-monster-modal__header h2 { margin: 3px 0 2px; font: 700 clamp(22px, 3vw, 34px)/1 var(--display); letter-spacing: -.035em; }
+.combat-monster-modal__header small { display: block; max-width: 420px; color: rgba(225, 219, 239, .57); font-size: 9px; line-height: 1.35; }
+.combat-monster-modal__summary {
+  display: flex;
+  gap: 7px;
+  padding: 4px;
+  border: 1px solid rgba(205, 190, 244, .13);
+  border-radius: 9px;
+  background: rgba(8, 8, 15, .58);
+}
+.combat-monster-modal__summary span { flex: 1 1 0; min-width: 0; padding: 7px 8px; color: rgba(232, 226, 246, .52); font-size: 8px; text-align: center; text-transform: uppercase; letter-spacing: .08em; }
+.combat-monster-modal__summary span + span { border-left: 1px solid rgba(205, 190, 244, .1); }
+.combat-monster-modal__summary b { display: inline-block; margin-right: 4px; color: #d8c8ff; font-size: 12px; }
+.combat-monster-modal__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; min-height: 0; overflow-y: auto; padding: 2px 3px 4px; scrollbar-color: rgba(178, 146, 255, .54) transparent; }
+.combat-monster-modal__card { display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: center; gap: 7px; min-width: 0; min-height: 144px; padding: 7px; border: 1px solid rgba(210, 198, 235, .14); border-radius: 9px; background: linear-gradient(145deg, rgba(32, 30, 46, .75), rgba(9, 9, 16, .86)); box-shadow: inset 0 1px rgba(255, 255, 255, .045), inset 0 0 16px rgba(98, 67, 165, .08); }
+.combat-monster-modal__card.is-active { border-color: color-mix(in srgb, var(--monster-accent), white 15%); box-shadow: inset 0 0 22px color-mix(in srgb, var(--monster-accent), transparent 86%), 0 0 18px color-mix(in srgb, var(--monster-accent), transparent 88%); }
+.combat-monster-modal__card.is-support { border-color: rgba(115, 223, 186, .35); }
+.combat-monster-modal__visual { position: relative; display: grid; place-items: center; min-height: 106px; }
+.combat-monster-modal__visual .monster-avatar { width: 98px; height: 98px; }
+.combat-monster-modal__visual .monster-avatar__platform { width: 70%; }
+.combat-monster-modal__role { position: absolute; left: 3px; right: 3px; bottom: 0; padding: 3px 4px; border: 1px solid color-mix(in srgb, var(--monster-accent), transparent 55%); border-radius: 5px; color: color-mix(in srgb, var(--monster-accent), white 42%); background: rgba(7, 7, 13, .82); font: 700 6px/1 var(--body); text-align: center; letter-spacing: .08em; }
+.combat-monster-modal__copy { min-width: 0; align-self: start; padding-top: 8px; }
+.combat-monster-modal__copy strong, .combat-monster-modal__copy small, .combat-monster-modal__copy > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.combat-monster-modal__copy strong { color: #f0ecf6; font: 700 14px/1 var(--display); }
+.combat-monster-modal__copy small { margin-top: 5px; color: rgba(230, 226, 238, .48); font-size: 7px; }
+.combat-monster-modal__copy > span { margin-top: 14px; color: rgba(224, 216, 238, .7); font-size: 8px; }
+.combat-monster-modal__actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.combat-monster-modal__actions button { min-height: 28px; min-width: 0; padding: 4px 5px; font-size: 6px; }
+.combat-monster-modal__actions button small { display: block; margin-top: 2px; color: rgba(255, 255, 255, .58); font-size: 5px; }
+
+.gem-monster-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; margin-bottom: 10px; }
+.gem-monster-picker button { display: grid; grid-template-columns: 42px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; min-width: 0; min-height: 54px; padding: 4px 7px 4px 2px; border: 1px solid rgba(210, 198, 235, .13); border-radius: 8px; color: inherit; text-align: left; background: rgba(255, 255, 255, .025); cursor: pointer; }
+.gem-monster-picker button.is-active { border-color: rgba(188, 164, 255, .58); background: rgba(168, 139, 255, .11); box-shadow: inset 0 -2px rgba(190, 159, 255, .8); }
+.gem-monster-picker button > span { grid-row: 1 / 3; }
+.gem-monster-picker .monster-avatar { width: 42px; height: 42px; }
+.gem-monster-picker .monster-avatar__platform, .gem-monster-picker .monster-avatar__glow, .gem-monster-picker .monster-avatar small { display: none; }
+.gem-monster-picker strong, .gem-monster-picker small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gem-monster-picker strong { color: #f0ecf6; font-size: 8px; }
+.gem-monster-picker small { margin-top: 3px; color: rgba(230, 226, 238, .4); font-size: 6px; }
+
+@media (max-width: 700px) {
+  .combat-monster-modal { width: min(640px, calc(100vw - 18px)); aspect-ratio: 3 / 4; max-height: calc(100vh - 24px); }
+  .combat-monster-modal__content { padding: 36px 39px 32px; gap: 8px; }
+  .combat-monster-modal__grid { grid-template-columns: 1fr; gap: 6px; }
+  .combat-monster-modal__card { min-height: 126px; }
+  .gem-monster-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Incubation buttons keep the generated silver/purple plate as the only
