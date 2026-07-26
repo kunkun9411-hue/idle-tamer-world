@@ -419,6 +419,12 @@
   .combat-shell--ui-kit .combat-duel .versus small { padding: 1px 4px; font-size: 4px; letter-spacing: 1px; }
 }
 
+/* PvE is an always-on idle loop; the duel does not need a centre badge for
+   every short encounter. Keep the component ready for the future PvP shell,
+   where the explicit combat mode adds .combat-shell--pvp. */
+.combat-shell--ui-kit:not(.combat-shell--pvp) .combat-duel .versus { visibility: hidden; }
+.combat-shell--ui-kit.combat-shell--pvp .combat-duel .versus { visibility: visible; }
+
 @media (prefers-reduced-motion: reduce) {
   .page--kit > .page-heading--kit,
   .page--kit > .panel,
