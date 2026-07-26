@@ -290,6 +290,22 @@
   transform: translateY(clamp(48px, 9vh, 84px)) translateX(-8px);
 }
 
+/* Wide desktop backgrounds have fixed floor anchors at roughly 21% and 75%
+   of the battlefield width. Give the duel a wider centre lane so the live
+   sprites land on those marks instead of drifting toward the VS badge. */
+@media (min-width: 1440px) {
+  .combat-shell--ui-kit .combat-duel {
+    inset: 148px 50px 100px 0;
+    grid-template-columns: minmax(0, 1fr) clamp(150px, 11.3vw, 210px) minmax(0, 1fr);
+  }
+  .combat-shell--ui-kit .combat-duel .fighter {
+    transform: translateY(clamp(88px, 12.6vh, 116px));
+  }
+  .combat-shell--ui-kit .combat-duel .fighter .monster-avatar.is-hit {
+    transform: translateY(clamp(88px, 12.6vh, 116px)) translateX(-8px);
+  }
+}
+
 @media (max-width: 1020px) and (min-width: 821px) {
   .combat-shell--ui-kit .combat-duel {
     inset-inline: 190px;
