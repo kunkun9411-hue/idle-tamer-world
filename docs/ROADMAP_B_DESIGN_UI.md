@@ -1,9 +1,9 @@
 # Roadmap B – Design, Interface und Lesbarkeit
 
 - Stand: 26. Juli 2026
-- Status: **abgenommen und eingefroren**
-- Übergabe: **Roadmap C – Content und Features**
-- Letztes Gate: **B.08.4 – Abnehmen**
+- Status: **aktiv – visuelle Nacharbeit offen**
+- Übergabe: **noch keine Übergabe an Roadmap C**
+- Aktives Gate: **B.03.3 – Kampfszene visuell prüfen**
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
 Die gemessene Ausgangsbasis mit 16 Flächen, Zustandsmatrix und priorisiertem UX-Backlog steht in `ui/SCENE_INVENTORY.md`. Der eingefrorene technische Übergabevertrag und die offenen UX-Themen stehen in `ROADMAP_A_COMPLETION.md`. Beides ist verbindlicher Eingang für B.01.
@@ -18,14 +18,14 @@ Roadmap B macht aus dem technisch funktionierenden Systemfundament ein geschloss
 | --- | --- | :---: | :---: | :---: | :---: | --- |
 | B.01 | Inventar und verbindliches Designsystem | [x] | [x] | [x] | [x] | Fertig |
 | B.02 | Informationsarchitektur und Navigation | [x] | [x] | [x] | [x] | Fertig |
-| B.03 | Kampfszene und HUD | [x] | [x] | [x] | [x] | Fertig |
+| B.03 | Kampfszene und HUD | [x] | [x] | [ ] | [ ] | Nacharbeit offen |
 | B.04 | Sammlung und Entwicklung | [x] | [x] | [x] | [x] | Fertig |
 | B.05 | Profil, Avatare und Rahmen | [x] | [x] | [x] | [x] | Fertig |
 | B.06 | Gilden- und Sozialoberfläche | [x] | [x] | [x] | [x] | Fertig |
 | B.07 | Responsive Design und Zugänglichkeit | [x] | [x] | [x] | [x] | Fertig |
-| B.08 | Gesamtpolish und Übergabe an C | [x] | [x] | [x] | [x] | Fertig |
+| B.08 | Gesamtpolish und Übergabe an C | [x] | [x] | [ ] | [ ] | Wartet auf B.03 |
 
-Gesamtfortschritt: **32 von 32 Gates abgeschlossen (100 %)**. Roadmap A bleibt separat bei 32/32 eingefroren; Roadmap C übernimmt jetzt Content und neue Features.
+Gesamtfortschritt: **28 von 32 Gates abgeschlossen (87,5 %)**. B.03 und B.08 bleiben bewusst offen, bis die Kampfszene auch visuell abgenommen ist. Roadmap A bleibt separat bei 32/32 eingefroren; Roadmap C startet erst nach der echten B-Abnahme.
 
 ## Arbeitsmodell
 
@@ -164,7 +164,7 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 ## Übergabe an Roadmap C
 
-Roadmap B ist eingefroren. Der aktive Online-Gildenpfad wurde mit einem ephemeren, verifizierten QA-Konto gegen `FEATURE_GUILDS=true` und `FEATURE_GUILD_DNA=true` geprüft; der Account und die Testgilde wurden danach aus der Dev-Datenbank entfernt. Die 1280×720-, 1024×768- und 390×844-Matrix, 2×-Typografiestress, Keyboard, Kontrast, Reduced Motion, Layout-Audit, UI-Captures, Live-Gilden-Capture und Produktionsbuild sind dokumentiert. Der modulare ImageGen-Runtime-Satz bleibt mit 136 Rasterelementen und zehn CSS-/Rotationsableitungen im Manifest und UI-Katalog verankert. Neue Ranglistenlogik und größere Wettbewerbssysteme beginnen bewusst erst in Roadmap C.
+Die Übergabe ist **noch gesperrt**. Der nächste Abnahmeschritt ist eine echte visuelle Spielersicht auf die Kampfszene: beide Monster mittig in einer klaren Safe-Area, kompakte Nameplates und HP-Balken, keine Kollision mit Dock oder Panels. Erst danach wird B.08 erneut geprüft und Roadmap C geöffnet.
 # B.01.2 Build-Stand - 2026-07-26
 
 Der modulare Bausatz ist in den ersten produktionsnahen Familien umgesetzt: A08-A18 Rahmengeometrie, B01-B14 Innenflächen, Zustandslicht und Materialtexturen, C01-C16 Leisten/Ornamente, D01-D16 Aktionen/Steuerung, E01-E05, E09-E11, E14 und E18 Wert-/Fortschrittsfassungen plus die acht CSS-/Rotationsableitungen E06-E08, E12-E13 und E15-E17, F01-F16 Ökonomie-/Itemicons, G01-G36 Systemicons inklusive G11 Gilden-DNA, G16 Post, G18 Audio an, G19 Audio aus und G27 Vorwärts als Ableitungen, G21 Information, G22 Warnung, G23 Erfolg, G24 Fehler, G25 Schließen, G26 Zurück, G28 Hinzufügen, G29 Entfernen, G30 Sperre, G31 Filter, G32 Sortieren, G33 Suche, G34 Aktualisieren, G35 Menü und G36 Mehr/Optionen sowie H01-H12 Identitätslayer. Runtime, Manifest, Katalog, Desktop-/Tablet-/Mobile-E2E und Asset-Budget sind grün; die serielle UI-Liste ist vollständig. B.01.4 ist visuell abgenommen und der Designsystem-Freeze gilt für B.02–B.08.

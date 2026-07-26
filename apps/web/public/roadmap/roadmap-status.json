@@ -1,9 +1,9 @@
 {
   "roadmap": "B",
-  "status": "complete",
-  "updated": "26. Juli 2026 · Roadmap B.08 abgenommen · Übergabe an Roadmap C",
-  "activeBlock": null,
-  "activeStep": null,
+  "status": "in_progress",
+  "updated": "26. Juli 2026 · B.03 Kampfszene nach visueller Prüfung wieder geöffnet",
+  "activeBlock": 3,
+  "activeStep": "Prüfen",
   "blocks": [
     {
       "id": 1,
@@ -43,8 +43,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "HUD-Prioritäten, Zwei-Monster-Bühne und einklappbare Nebeninformationen im B03-Vertrag festgelegt" },
         { "name": "Bauen", "done": true, "note": "Kampf-Dock, Frontwahl, Duo, Speicher, Aufträge, Kampflog und Fokusmodus umgesetzt" },
-        { "name": "Prüfen", "done": true, "note": "B03-HUD-E2E, Kernloop, Responsive-, Layout- und Capture-Läufe grün" },
-        { "name": "Abnehmen", "done": true, "note": "Desktop-/Tablet-/Mobile-Captures visuell geprüft; Bühne bleibt der Mittelpunkt und Fokusmodus ist nachvollziehbar" }
+        { "name": "Prüfen", "done": false, "note": "Visuelle Nachprüfung offen: Monsterposition, Nameplates und HP-Balken müssen kompakter und mittiger abgenommen werden" },
+        { "name": "Abnehmen", "done": false, "note": "Noch nicht freigegeben; B.03 bleibt bis zur Spielerabnahme offen" }
       ]
     },
     {
@@ -113,8 +113,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "136 UI-Kit-Rasterelemente, 10 Ableitungen, 14 Szenen je Viewport, 8,5-MB-Budget und C-Übergaberegeln festgelegt" },
         { "name": "Bauen", "done": true, "note": "Mikrofeedback, Fokusmodus, Zustandsfeedback, textfreie Chrome-Bausteine und reduzierte Bewegung geschlossen" },
-        { "name": "Prüfen", "done": true, "note": "Roadmap-, Asset-, Unit-, E2E-, Layout-Audit-, Capture-, Build- und Live-Gildenachweise grün; QA-Konto anschließend entfernt" },
-        { "name": "Abnehmen", "done": true, "note": "Roadmap B ist eingefroren und die geschlossene Oberfläche mit dokumentierten C-Grenzen übergeben" }
+        { "name": "Prüfen", "done": false, "note": "Wartet auf die echte visuelle Abnahme der Kampfszene und des restlichen Gesamtpolish" },
+        { "name": "Abnehmen", "done": false, "note": "Roadmap B wird nicht an C übergeben, solange B.03 und B.08 offen sind" }
       ]
     }
   ]

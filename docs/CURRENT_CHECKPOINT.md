@@ -6,7 +6,7 @@ Stand: 26. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 - Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
-- Roadmap B: **B.08 – Gesamtpolish und Übergabe abgenommen; 32/32 Gates, Übergabe an Roadmap C**
+- Roadmap B: **aktiv bei B.03 – Kampfszene visuell nacharbeiten; 28/32 Gates**
 - B.01-Art: vollständiger textfreier Silver-Ether-Baukasten mit 136 Rasterelementen, zehn CSS-/Rotationsableitungen, G30–G36-Systemicons und H09–H12-Identitätslayern integriert; technische Prüfkette grün, B.01.4 visuell abgenommen und eingefroren
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
@@ -105,15 +105,15 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Roadmap A und Roadmap B sind vollständig abgeschlossen. B.01 bis B.08 sind visuell, automatisiert und – für den Gildenpfad – live verifiziert; der Designsystem-Freeze ist an Roadmap C übergeben:
+Roadmap A ist abgeschlossen. Roadmap B bleibt nach der visuellen Spielerprüfung bewusst offen: B.03 (Kampfszene) und B.08 (Gesamtpolish) sind noch nicht abgenommen.
 
-1. Roadmap C mit Content- und Feature-Verträgen starten;
-2. Ranglisten, Events und Wettbewerbssysteme erst mit serverautoritativen Verträgen ergänzen;
-3. Roadmap D für Abnahme, Balance, Sicherheit, Last und echte Geräte-Smokes vorbereiten;
-4. den visuellen Review der drei Capture-Sätze und `/roadmap/` als morgendlichen Kontrollpunkt behalten.
+1. Kampfszene in Desktop, Tablet und Mobile visuell abnehmen;
+2. HP-/Nameplate-Dichte und Monster-Safe-Area gegen echte Spielersicht prüfen;
+3. B.08 erst danach erneut prüfen und die Übergabe an Roadmap C freigeben;
+4. Roadmap D weiterhin erst nach C für Abnahme, Balance, Sicherheit und Last vorbereiten.
 
 Die erste Runtime-Brücke des UI-Baukastens ist in `ui/UI_KIT_RUNTIME_BRIDGE.md`
-dokumentiert. Weitere Flächen werden in Roadmap C nur zusammen mit ihren
-Content- und Serververträgen ergänzt.
+dokumentiert. Weitere visuelle Nacharbeit bleibt bis zur B-Abnahme in B.03 und
+B.08; Roadmap C ergänzt erst danach neue Content- und Serververträge.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.
