@@ -1356,6 +1356,17 @@
       "sha256": "893609465ae12e5fd433f97b5dd88d25c745da839619e7a7c650caa630c22fe0"
     },
     {
+      "id": "ui.chrome.offline-report-frame-v2",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/offline-report-frame-v2.png",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 55536,
+      "sha256": "f8a8866b184cd5845cee5ce1e950939d478459498396569ae8b79972840a311a"
+    },
+    {
       "id": "ui.chrome.primary-button-frame-v1",
       "kind": "ui",
       "path": "/assets/ui/chrome/primary-button-frame-v1.webp",

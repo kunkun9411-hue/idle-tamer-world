@@ -45,7 +45,7 @@ describe("UI handoff catalog", () => {
     expect(UI_FOUNDATION_SCALES.map((entry) => entry.id)).toEqual(["space", "radius", "motion", "layer"]);
     expect(UI_ASSET_CONTRACTS.map((entry) => entry.id)).toEqual(["monster", "avatar", "frame", "zone", "item", "ui-decoration"]);
     expect(UI_ASSET_CONTRACTS.every((entry) => entry.textPolicy.includes("textfrei") || entry.textPolicy.includes("keine Texte"))).toBe(true);
-    expect(UI_GENERATED_CHROME).toHaveLength(4);
+    expect(UI_GENERATED_CHROME).toHaveLength(5);
     expectUnique("generated chrome", UI_GENERATED_CHROME.map((entry) => entry.id));
     expect(UI_GENERATED_CHROME.every((entry) => entry.path.startsWith("/assets/ui/chrome/"))).toBe(true);
     expect(UI_MODULAR_KIT_ITEMS).toHaveLength(18);

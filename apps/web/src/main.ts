@@ -1713,7 +1713,7 @@ function offlineReport(): string {
   const offlineMaterialCount = Object.values(loaded.offlineItems).reduce((sum, amount) => sum + amount, 0);
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
-    <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/panel-frame-v1.webp" alt="" aria-hidden="true">
+    <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/offline-report-frame-v2.png" alt="" aria-hidden="true">
     <div class="offline-report__signal"><span>${icon("spark")}</span><i></i></div>
     <span class="eyebrow">EXPEDITION FORTGESETZT</span>
     <h2 id="offline-report-title">Willkommen zurück.</h2>
