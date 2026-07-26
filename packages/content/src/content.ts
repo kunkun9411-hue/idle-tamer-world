@@ -10,7 +10,7 @@ export const MONSTERS: MonsterDefinition[] = [
     baseHp: 112, baseAttack: 18, accent: "#ff7b4f", glyph: "PY",
     description: "Ein furchtloses Feuer-Rookie, dessen Kern wie eine kleine Sonne pulsiert.",
     sprite: "/assets/monsters/pyrook_idle_right.png", nativeFacing: "right",
-    evolution: { name: "Solaraptor", species: "Sonnenraptor", role: "Explosiver Angreifer", baseHp: 214, baseAttack: 36, accent: "#ff6b45", glyph: "SR", description: "Verdichtet seinen Glutkern zu einer flammengekrönten Raptorenform." },
+    evolution: { name: "Solaraptor", species: "Sonnenraptor", role: "Explosiver Angreifer", baseHp: 214, baseAttack: 36, accent: "#ff6b45", glyph: "SR", description: "Verdichtet seinen Glutkern zu einer flammengekrönten Raptorenform.", sprite: "/assets/monsters/evolutions/pyrook/pyrook_solaraptor_idle_right.png", nativeFacing: "right" },
   },
   {
     id: "mossbit", name: "Mossbit", species: "Wurzelknirps", element: "earth", role: "Tank", combatRole: "defender",
