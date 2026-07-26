@@ -293,6 +293,69 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
   };
 };
 
+interface ClaimedPendingRewards {
+  gold: bigint;
+  eggs: number;
+  items: number;
+  gems: number;
+}
+
+/**
+ * Move the authoritative combat cache into permanent balances. This is kept
+ * as one transaction helper so normal collection and prestige can share the
+ * exact same accounting path. Prestige intentionally calls it before the run
+ * reset: cached loot is secured instead of becoming an impossible gate.
+ */
+const claimPendingRewards = async (
+  client: PoolClient,
+  context: RunContext,
+  commandId: string,
+  now: Date,
+  reason: string,
+): Promise<ClaimedPendingRewards | null> => {
+  if (!context.pending) return null;
+  const pending = context.pending;
+  const claimedEggs = { ...pending.eggs };
+  const claimedItems = { ...pending.items };
+  const claimedGems = { ...pending.gems };
+  await client.query(
+    `UPDATE pending_reward_batches
+        SET claimed_at = $2, claimed_by_command_id = $3, updated_at = $2
+      WHERE id = $1 AND claimed_at IS NULL`,
+    [pending.id, now, commandId],
+  );
+  context.gold = await applyBalanceDelta(client, {
+    kind: "wallet",
+    playerId: context.playerId,
+    commandId,
+    definitionId: "gold",
+    delta: pending.gold,
+    reason,
+    contentReleaseId: CONTENT_RELEASE_ID,
+    balanceReleaseId: BALANCE_RELEASE_ID,
+  });
+  for (const [definitionId, amount] of Object.entries(claimedEggs)) if (amount > 0) await applyBalanceDelta(client, {
+    kind: "egg", playerId: context.playerId, commandId, definitionId,
+    delta: BigInt(amount), reason, contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
+  });
+  for (const [definitionId, amount] of Object.entries(claimedItems)) if (amount > 0) await applyBalanceDelta(client, {
+    kind: "item", playerId: context.playerId, commandId, definitionId,
+    delta: BigInt(amount), reason, contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
+  });
+  for (const [definitionId, amount] of Object.entries(claimedGems)) if (amount > 0) await applyBalanceDelta(client, {
+    kind: "gem", playerId: context.playerId, commandId, definitionId,
+    delta: BigInt(amount), reason, contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
+  });
+  await incrementActivity(client, context.playerId, "cache_claim");
+  context.pending = null;
+  return {
+    gold: pending.gold,
+    eggs: Object.values(claimedEggs).reduce((sum, amount) => sum + amount, 0),
+    items: Object.values(claimedItems).reduce((sum, amount) => sum + amount, 0),
+    gems: Object.values(claimedGems).reduce((sum, amount) => sum + amount, 0),
+  };
+};
+
 const snapshot = async (client: PoolClient, context: RunContext, now: Date): Promise<AuthoritativeRunSnapshot> => ({
   revision: context.revision,
   serverTime: now.toISOString(),
@@ -377,49 +440,17 @@ export class PostgresRunStore implements RunStore {
       let event: RunCommandResponse["event"];
       if (envelope.command.type === "cache.claim") {
         if (!context.pending || context.pending.gold <= 0n) throw new RunDatabaseError("VALIDATION", "The combat cache is empty.");
-        const claimedGold = context.pending.gold;
-        const claimedEggs = { ...context.pending.eggs };
-        const claimedItems = { ...context.pending.items };
-        const claimedGems = { ...context.pending.gems };
-        await client.query(
-          `UPDATE pending_reward_batches
-              SET claimed_at = $2, claimed_by_command_id = $3, updated_at = $2
-            WHERE id = $1 AND claimed_at IS NULL`,
-          [context.pending.id, now, envelope.commandId],
-        );
-        context.gold = await applyBalanceDelta(client, {
-          kind: "wallet",
-          playerId: context.playerId,
-          commandId: envelope.commandId,
-          definitionId: "gold",
-          delta: claimedGold,
-          reason: "cache.claim",
-          contentReleaseId: CONTENT_RELEASE_ID,
-          balanceReleaseId: BALANCE_RELEASE_ID,
-        });
-        for (const [definitionId, amount] of Object.entries(claimedEggs)) if (amount > 0) await applyBalanceDelta(client, {
-          kind: "egg", playerId: context.playerId, commandId: envelope.commandId, definitionId,
-          delta: BigInt(amount), reason: "cache.claim", contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
-        });
-        for (const [definitionId, amount] of Object.entries(claimedItems)) if (amount > 0) await applyBalanceDelta(client, {
-          kind: "item", playerId: context.playerId, commandId: envelope.commandId, definitionId,
-          delta: BigInt(amount), reason: "cache.claim", contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
-        });
-        for (const [definitionId, amount] of Object.entries(claimedGems)) if (amount > 0) await applyBalanceDelta(client, {
-          kind: "gem", playerId: context.playerId, commandId: envelope.commandId, definitionId,
-          delta: BigInt(amount), reason: "cache.claim", contentReleaseId: CONTENT_RELEASE_ID, balanceReleaseId: BALANCE_RELEASE_ID,
-        });
-        await incrementActivity(client, context.playerId, "cache_claim");
-        context.pending = null;
+        const claimed = await claimPendingRewards(client, context, envelope.commandId, now, "cache.claim");
+        if (!claimed) throw new RunDatabaseError("VALIDATION", "The combat cache is empty.");
         context.state.progressionStatus = "fighting";
         context.state.nextCombatAtMs = resumeCombatAt(context.state, now.getTime());
         event = {
           type: "cache.claimed",
           payload: {
-            gold: claimedGold.toString(),
-            eggs: Object.values(claimedEggs).reduce((sum, amount) => sum + amount, 0),
-            items: Object.values(claimedItems).reduce((sum, amount) => sum + amount, 0),
-            gems: Object.values(claimedGems).reduce((sum, amount) => sum + amount, 0),
+            gold: claimed.gold.toString(),
+            eggs: claimed.eggs,
+            items: claimed.items,
+            gems: claimed.gems,
           },
         };
       } else if (envelope.command.type === "monster.level_up") {
@@ -470,6 +501,9 @@ export class PostgresRunStore implements RunStore {
         context.state.nextCombatAtMs = resumeCombatAt(context.state, now.getTime());
         event = { type: "zone.selected", payload: { zoneId } };
       } else {
+        if (envelope.command.type === "prestige.activate" && context.pending) {
+          await claimPendingRewards(client, context, envelope.commandId, now, "prestige.activate");
+        }
         const progressionContext: MutableProgressionCommandContext = {
           playerId: context.playerId,
           commandId: envelope.commandId,

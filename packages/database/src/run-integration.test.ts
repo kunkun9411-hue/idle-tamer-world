@@ -226,4 +226,33 @@ integration("PostgreSQL 18 authoritative run store", () => {
     const ledger = await pool.query("SELECT definition_id, delta::text FROM economy_ledger WHERE player_id = $1 AND reason = 'prestige.activate' ORDER BY definition_id", [account.playerId]);
     expect(ledger.rows).toContainEqual({ definition_id: "ether_core", delta: "1" });
   });
+
+  it("secures a non-empty combat cache before the prestige reset", async () => {
+    const account = await createRun("prestige-cache");
+    await pool.query(
+      `UPDATE player_runs
+          SET run_victories = 100, highest_zone_number = 10, next_combat_at = $2
+        WHERE player_id = $1`,
+      [account.playerId, new Date(now.getTime() + 60_000)],
+    );
+    await pool.query(
+      `INSERT INTO pending_reward_batches
+         (player_id, source, gold, slot_count, victory_count, content_release_id, balance_release_id, created_at, updated_at)
+       VALUES ($1, 'combat', 13, 1, 1, 'foundation-1.0.0', 'low-numbers-1.0.0', $2, $2)`,
+      [account.playerId, now],
+    );
+
+    const before = (await runStore.bootstrap(account.userId, now)).snapshot;
+    const result = await runStore.executeCommand(account.userId, command(before.revision, "prestige.activate"), now);
+
+    expect(result.snapshot).toMatchObject({ runVictories: "0", highestZoneNumber: 1, gold: "100", pendingGold: "0", cacheSlotsUsed: 0 });
+    await expect(pool.query(
+      "SELECT count(*)::int AS count FROM pending_reward_batches WHERE player_id = $1 AND claimed_at IS NOT NULL",
+      [account.playerId],
+    )).resolves.toMatchObject({ rows: [{ count: 1 }] });
+    await expect(pool.query(
+      "SELECT count(*)::int AS count FROM economy_ledger WHERE player_id = $1 AND reason = 'prestige.activate' AND definition_id = 'gold' AND delta = 13",
+      [account.playerId],
+    )).resolves.toMatchObject({ rows: [{ count: 1 }] });
+  });
 });

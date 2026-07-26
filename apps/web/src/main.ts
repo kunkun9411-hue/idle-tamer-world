@@ -1205,7 +1205,6 @@ function combatObjectiveMarkup(): string {
   const upcoming = nextMilestone(game.totalVictories);
   const previousTarget = upcoming ? [...MILESTONES].reverse().find((milestone) => milestone.target < upcoming.target)?.target ?? 0 : 0;
   const missionPercent = upcoming ? Math.min(100, ((game.totalVictories - previousTarget) / (upcoming.target - previousTarget)) * 100) : 100;
-  const readyObjectives = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
   const prestigeZoneReady = game.highestZoneNumber >= BALANCE.prestige.requiredZoneNumber;
   const prestigeReward = prestigeCoreReward(game.runVictories, game.highestZoneNumber);
   const prestigeProgress = prestigeZoneReady ? Math.min(100, game.runVictories) : Math.min(100, (game.highestZoneNumber / BALANCE.prestige.requiredZoneNumber) * 100);
@@ -1214,7 +1213,7 @@ function combatObjectiveMarkup(): string {
     : upcoming
       ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>`
       : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`;
-  return `${milestone}<button class="combat-objectives-link" data-view="objectives"><span>${icon("objectives")}</span><div><small>AUFTRAGSZENTRALE</small><strong>${readyObjectives > 0 ? `${readyObjectives} BELOHNUNG${readyObjectives === 1 ? "" : "EN"} BEREIT` : "TÄGLICH · WÖCHENTLICH · ERFOLGE"}</strong></div></button><button class="combat-prestige" id="start-prestige"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button>`;
+  return `${milestone}<button class="combat-prestige" id="start-prestige" title="Beute wird beim Prestige automatisch gesichert"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button>`;
 }
 
 function expeditionView(): string {
@@ -1232,7 +1231,6 @@ function expeditionView(): string {
   const capacity = activeCacheCapacity();
   const eggGuarantee = Math.max(1, BALANCE.drops.eggPityMisses + 1 - game.eggPity);
   const zone = getZone(game.currentZoneId);
-  const zoneNumber = ZONES.findIndex((entry) => entry.id === zone.id) + 1;
   const zoneProgress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
   const bossStage = zoneProgress.stage >= zone.stages;
   const playerAttackProgress = battle.status === "fighting" ? Math.max(3, Math.min(100, 100 - ((battle.playerNextAttackAt - performance.now()) / 1_650) * 100)) : 100;
@@ -1244,13 +1242,11 @@ function expeditionView(): string {
         <div class="battle-stage__sky" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="combat-vignette" aria-hidden="true"></div>
         <header class="combat-top-hud">
-          <div class="combat-brand">${brandMarkup()}</div>
           ${combatZoneTabs()}
           <div class="combat-account"><div class="resources"><span title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span><span title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span></div><span class="rank-chip"><small>RANG</small><b data-live="rank">${rank}</b></span><button class="profile-chip" data-view="profile" title="Profil öffnen">${accountAvatar()}</button></div>
         </header>
         ${combatRail()}
         <section class="combat-story-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}"><span class="combat-story-hud__chapter" data-live="story-chapter">${String(chapter.chapter).padStart(2, "0")}</span><div><small data-live="story-run">AKTUELLES SIGNAL · RUN ${game.runVictories}</small><strong data-live="story-title">${chapter.title}</strong><p data-live="story-copy">${chapter.story}</p></div></section>
-        <div class="combat-world-label"><small data-live="zone-stage">ZONE ${String(zoneNumber).padStart(2, "0")} · ${bossStage ? "BOSS-SIGNAL" : `STAGE ${zoneProgress.stage}/${zone.stages}`}</small><strong data-live="zone-name">${zone.name}</strong><span data-live="zone-subtitle">${zone.subtitle}</span></div>
         <div class="battle-state-banner battle-state-banner--${battle.status}" data-live="battle-banner" ${battle.status === "fighting" ? "hidden" : ""}><small>${battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT"}</small><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION"}</strong></div>
         <div class="combat-duel">
           <div class="fighter fighter--player">${combatPlayerMarkup(player, battle)}</div>

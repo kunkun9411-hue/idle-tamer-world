@@ -425,6 +425,138 @@
 .combat-shell--ui-kit:not(.combat-shell--pvp) .combat-duel .versus { visibility: hidden; }
 .combat-shell--ui-kit.combat-shell--pvp .combat-duel .versus { visibility: visible; }
 
+/* V2.1 combat cleanup: the stage strip is the single source of zone/stage
+   identity. Keep account counters useful, but remove the old framed
+   "Ether Protocol" shell and the opaque raster surfaces that made flexible
+   panels look like blurred boxes at different viewport sizes. */
+.combat-shell--ui-kit .combat-top-hud {
+  top: 14px;
+  left: 20px;
+  right: 20px;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.combat-shell--ui-kit .combat-zone-tabs { gap: 7px; }
+.combat-shell--ui-kit .combat-zone-tab {
+  min-width: 118px;
+  min-height: 40px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(10, 10, 18, .62);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+}
+.combat-shell--ui-kit .combat-zone-tab strong { font-size: 8px; }
+.combat-shell--ui-kit .combat-zone-tab small { margin-top: 2px; font-size: 5px; }
+
+.combat-shell--ui-kit .combat-account {
+  position: absolute;
+  top: 0;
+  right: 0;
+  gap: 7px;
+}
+.combat-shell--ui-kit .combat-account .resources {
+  min-height: 0;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.combat-shell--ui-kit .combat-account .resources span {
+  min-height: 30px;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.combat-shell--ui-kit .combat-account .resource-icon {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.combat-shell--ui-kit .combat-account .rank-chip {
+  min-width: 44px;
+  height: 30px;
+  padding-inline: 7px;
+  border-radius: 8px;
+  background: rgba(12, 11, 20, .72);
+}
+.combat-shell--ui-kit .combat-account .profile-chip { width: 32px; height: 32px; }
+
+/* Flexible cards use live CSS gradients; generated edge strips remain
+   available for fixed-size art but are not stretched across live panels. */
+.app-shell--ui-kit .panel,
+.prestige-shell--ui-kit .panel,
+.page--kit > .panel,
+.page--kit > .incubator-layout > .panel,
+.page--kit > .research-grid > .panel,
+.combat-shell--ui-kit .combat-story-hud,
+.combat-shell--ui-kit .combat-loot-hud,
+.combat-shell--ui-kit .combat-duo-hud,
+.combat-shell--ui-kit .combat-objective-hud,
+.combat-shell--ui-kit .combat-monster-selector,
+.combat-shell--ui-kit .combat-console-hud {
+  background-image: linear-gradient(145deg, rgba(18, 18, 28, .92), rgba(8, 8, 14, .95)) !important;
+}
+
+.combat-shell--ui-kit .combat-shell__panel,
+.combat-shell--ui-kit .combat-capacity,
+.combat-shell--ui-kit .combat-objective-progress,
+.combat-shell--ui-kit .attack-cycle > div,
+.combat-shell--ui-kit .hp-track {
+  background-image: none;
+}
+.combat-shell--ui-kit .combat-duel .nameplate {
+  width: min(238px, 76%);
+  margin-bottom: 5px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(7, 7, 13, .9), rgba(20, 18, 31, .78));
+}
+.combat-shell--ui-kit .combat-duel .nameplate strong { font-size: 12px; }
+.combat-shell--ui-kit .combat-duel .nameplate > div > span small { font-size: 5px; }
+.combat-shell--ui-kit .combat-duel .nameplate > div > b { font-size: 7px; }
+.combat-shell--ui-kit .combat-duel .nameplate > small { margin-top: 3px; font-size: 5px; }
+.combat-shell--ui-kit .combat-duel .hp-track {
+  height: 4px;
+  margin-top: 4px;
+  border: 1px solid rgba(194, 169, 255, .22);
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(4, 4, 9, .74);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, .38);
+}
+
+/* PvE is a two-column idle presentation. The centre VS treatment remains
+   available only to the future PvP shell and no longer reserves dead space. */
+.combat-shell--ui-kit:not(.combat-shell--pvp) .combat-duel {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.combat-shell--ui-kit:not(.combat-shell--pvp) .combat-duel .versus { display: none; }
+
+@media (max-width: 820px) {
+  .combat-shell--ui-kit .combat-top-hud { left: 10px; right: 10px; top: 9px; }
+  .combat-shell--ui-kit .combat-zone-tab { min-width: 94px; min-height: 36px; padding-inline: 7px; }
+  .combat-shell--ui-kit .combat-account { right: 0; }
+  .combat-shell--ui-kit .combat-account .resources span:nth-child(2),
+  .combat-shell--ui-kit .combat-account .rank-chip { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .page--kit > .page-heading--kit,
   .page--kit > .panel,
