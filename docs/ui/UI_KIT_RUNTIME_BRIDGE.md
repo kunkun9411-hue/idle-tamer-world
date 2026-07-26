@@ -13,11 +13,13 @@ Zustände und Interaktionen bleiben HTML/CSS und damit responsiv.
 | --- | --- | --- |
 | Login / Offline-Bericht | bestehender Silver-Ether-Chrome | Account-Zugang und Offline-Bergung |
 | Kampf-HUD | `surface/b03-v1.webp`, `chrome/c16-v1.webp` | einheitliche HUD-Fenster und Kontroll-Dock |
-| Monster, Inventar, Brut, Forschung, Profil, Gilde | `surface/b01-v1.webp`, `surface/b02-v1.webp` | große Arbeitsflächen und Überschriften |
+| Monster, Inventar, Brut, Forschung, Profil, Gilde | CSS-Surface mit Kit-Randtokens | flexible HTML-Arbeitsflächen ohne Raster-Überlagerung |
 | Überschriften | `frame/divider-compact-v1.webp` | textfreie Resonanz-Trennlinie |
 
 Die Zuordnung erfolgt in `apps/web/src/styles-ui-kit-runtime.css`. Es gibt
-keine festen UI-Texte in den generierten Bildern.
+keine festen UI-Texte in den generierten Bildern. Große, dynamische Karten
+verwenden bewusst keine vollflächig gestreckte Rasterfläche, weil deren
+interner Rahmen sonst über variable HTML-Inhalte laufen würde.
 
 ## Abnahmekriterien für weitere Verbraucher
 

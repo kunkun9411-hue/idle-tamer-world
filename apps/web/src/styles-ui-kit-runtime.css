@@ -12,7 +12,6 @@
   --kit-surface-02: url("/assets/ui/kit/surface/b02-v1.webp");
   --kit-surface-03: url("/assets/ui/kit/surface/b03-v1.webp");
   --kit-divider: url("/assets/ui/kit/frame/divider-compact-v1.webp");
-  --kit-control-frame: url("/assets/ui/kit/chrome/c16-v1.webp");
   --kit-corner: url("/assets/ui/kit/frame/corner-compact-v1.webp");
 }
 
@@ -20,12 +19,9 @@
    reusable surface family as the catalog. Text remains live HTML. */
 .page--kit > .page-heading--kit {
   border-color: rgba(218, 208, 247, .18);
-  background-image:
+  background:
     radial-gradient(circle at 82% 12%, rgba(169, 139, 255, .18), transparent 30%),
-    linear-gradient(120deg, rgba(30, 29, 41, .72), rgba(12, 13, 19, .76)),
-    var(--kit-surface-02);
-  background-position: center;
-  background-size: 100% 100%;
+    linear-gradient(120deg, rgba(30, 29, 41, .92), rgba(12, 13, 19, .92));
   box-shadow: 0 24px 68px rgba(3, 3, 8, .4), inset 0 1px rgba(255, 255, 255, .06);
 }
 
@@ -47,11 +43,7 @@
 .page--kit > .incubator-layout > .panel,
 .page--kit > .research-grid > .panel {
   border-color: rgba(218, 208, 247, .16);
-  background-image:
-    linear-gradient(145deg, rgba(31, 31, 42, .72), rgba(12, 13, 19, .86)),
-    var(--kit-surface-01);
-  background-position: center;
-  background-size: 100% 100%;
+  background: linear-gradient(145deg, rgba(31, 31, 42, .78), rgba(12, 13, 19, .92));
 }
 
 /* Combat HUD: each collapsible window receives the compact surface. The
@@ -73,11 +65,6 @@
 
 .combat-shell--ui-kit .combat-control-dock {
   border-color: rgba(218, 208, 247, .12);
-  background-image:
-    linear-gradient(180deg, rgba(18, 18, 26, .7), rgba(9, 9, 14, .82)),
-    var(--kit-control-frame);
-  background-position: center;
-  background-size: 100% 100%;
   box-shadow: 0 20px 52px rgba(0, 0, 0, .42), 0 0 25px rgba(132, 94, 230, .08);
 }
 
