@@ -1,0 +1,106 @@
+/*
+ * Idle Tamer · UI kit runtime bridge
+ *
+ * The generated kit stays modular in /assets/ui/kit. This layer is the
+ * deliberately small bridge that lets real screens consume those surfaces
+ * without baking copy or layout into raster art. Game logic and responsive
+ * breakpoints remain owned by the existing style layers.
+ */
+
+:root {
+  --kit-surface-01: url("/assets/ui/kit/surface/b01-v1.webp");
+  --kit-surface-02: url("/assets/ui/kit/surface/b02-v1.webp");
+  --kit-surface-03: url("/assets/ui/kit/surface/b03-v1.webp");
+  --kit-divider: url("/assets/ui/kit/frame/divider-compact-v1.webp");
+  --kit-control-frame: url("/assets/ui/kit/chrome/c16-v1.webp");
+  --kit-corner: url("/assets/ui/kit/frame/corner-compact-v1.webp");
+}
+
+/* Interior pages: the heading and first-level workbenches now use the same
+   reusable surface family as the catalog. Text remains live HTML. */
+.page--kit > .page-heading--kit {
+  border-color: rgba(218, 208, 247, .18);
+  background-image:
+    radial-gradient(circle at 82% 12%, rgba(169, 139, 255, .18), transparent 30%),
+    linear-gradient(120deg, rgba(30, 29, 41, .72), rgba(12, 13, 19, .76)),
+    var(--kit-surface-02);
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0 24px 68px rgba(3, 3, 8, .4), inset 0 1px rgba(255, 255, 255, .06);
+}
+
+.page--kit > .page-heading--kit::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 7px;
+  width: 132px;
+  height: 18px;
+  transform: translateX(-50%);
+  opacity: .68;
+  background: var(--kit-divider) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.page--kit > .panel,
+.page--kit > .incubator-layout > .panel,
+.page--kit > .research-grid > .panel {
+  border-color: rgba(218, 208, 247, .16);
+  background-image:
+    linear-gradient(145deg, rgba(31, 31, 42, .72), rgba(12, 13, 19, .86)),
+    var(--kit-surface-01);
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+/* Combat HUD: each collapsible window receives the compact surface. The
+   hidden-state animation and mobile stacking continue to come from V2. */
+.combat-shell--ui-kit .combat-story-hud,
+.combat-shell--ui-kit .combat-loot-hud,
+.combat-shell--ui-kit .combat-duo-hud,
+.combat-shell--ui-kit .combat-objective-hud,
+.combat-shell--ui-kit .combat-monster-selector,
+.combat-shell--ui-kit .combat-console-hud {
+  border-color: rgba(218, 208, 247, .17);
+  background-image:
+    linear-gradient(145deg, rgba(16, 16, 24, .76), rgba(9, 9, 14, .84)),
+    var(--kit-surface-03);
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .36), inset 0 1px rgba(255, 255, 255, .05), 0 0 28px rgba(136, 95, 235, .045);
+}
+
+.combat-shell--ui-kit .combat-control-dock {
+  border-color: rgba(218, 208, 247, .12);
+  background-image:
+    linear-gradient(180deg, rgba(18, 18, 26, .7), rgba(9, 9, 14, .82)),
+    var(--kit-control-frame);
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0 20px 52px rgba(0, 0, 0, .42), 0 0 25px rgba(132, 94, 230, .08);
+}
+
+.combat-shell--ui-kit .combat-control-dock button.is-active,
+.combat-shell--ui-kit .combat-control-dock button:hover {
+  border-color: rgba(202, 183, 255, .34);
+  background: rgba(168, 139, 255, .11);
+}
+
+/* A small chrome cue keeps the catalog recognisable without adding fixed
+   text to generated artwork. */
+.app-shell--ui-kit .topbar {
+  border-bottom-color: rgba(218, 208, 247, .13);
+  box-shadow: 0 12px 42px rgba(0, 0, 0, .28), inset 0 -1px rgba(168, 139, 255, .07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page--kit > .page-heading--kit,
+  .page--kit > .panel,
+  .combat-shell--ui-kit .combat-story-hud,
+  .combat-shell--ui-kit .combat-loot-hud,
+  .combat-shell--ui-kit .combat-duo-hud,
+  .combat-shell--ui-kit .combat-objective-hud,
+  .combat-shell--ui-kit .combat-monster-selector,
+  .combat-shell--ui-kit .combat-console-hud { transition: none; }
+}

@@ -56,6 +56,7 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - B.01.2/B.01.3/B.01.4: 136 textfreie Rasterelemente, zehn CSS-/Rotationsableitungen, 257 Manifest-IDs und 8.39 MB Runtime-Budget geprüft; UI-Katalog, Asset-Validator, Desktop/Tablet/Mobile-Captures und E2E grün, visuell eingefroren
 - B.01.2: Login und Offline-Bericht auf generierte Rahmen, echten HTML-Text und 12-px-Mindestrollen migriert; Desktop, Tablet und 390×844 bleiben innerhalb ihrer Viewports
 - B.06-Backend-/Live-Nachweis: Dev-API mit `FEATURE_GUILDS=true` und `FEATURE_GUILD_DNA=true` neu gebaut; Foundation 4/4, Auth 7/7, Run 8/8 und Guild/Social 7/7 gegen `idle_tamer_test` grün; aktive Browser-E2E/Capture auf der Dev-Domain grün, QA-Konto/Testgilde danach entfernt
+- UI-Kit-Runtime-Brücke: Kampf-HUD, Kontroll-Dock, Seitenüberschriften und zentrale Arbeitsflächen verwenden jetzt die textfreien B01/B02/B03-/Chrome-Flächen; UI-Audit und B07/B08-E2E bleiben grün
 
 Die genauen Fälle stehen in:
 
@@ -110,5 +111,9 @@ Roadmap A und Roadmap B sind vollständig abgeschlossen. B.01 bis B.08 sind visu
 2. Ranglisten, Events und Wettbewerbssysteme erst mit serverautoritativen Verträgen ergänzen;
 3. Roadmap D für Abnahme, Balance, Sicherheit, Last und echte Geräte-Smokes vorbereiten;
 4. den visuellen Review der drei Capture-Sätze und `/roadmap/` als morgendlichen Kontrollpunkt behalten.
+
+Die erste Runtime-Brücke des UI-Baukastens ist in `ui/UI_KIT_RUNTIME_BRIDGE.md`
+dokumentiert. Weitere Flächen werden in Roadmap C nur zusammen mit ihren
+Content- und Serververträgen ergänzt.
 
 PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.
