@@ -698,6 +698,21 @@
 .resource-icon--fragments .resource-icon__glyph { display: none; }
 .resource-icon img { display: none !important; }
 
+/* The combat account has a legacy square reset with higher specificity than
+   the shared resource token. Re-assert the live coin/cores treatment there so
+   the compact HUD uses the same crisp shapes as the rest of the app. */
+.combat-shell--ui-kit .combat-account .resource-icon--gold {
+  border-radius: 50% !important;
+  border: 1px solid rgba(239, 199, 91, .82) !important;
+  background: radial-gradient(circle at 35% 28%, #fff8ca 0 12%, #efc45d 34%, #a86a24 100%) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .65), 0 0 12px rgba(231, 177, 57, .28) !important;
+}
+.combat-shell--ui-kit .combat-account .resource-icon--cores {
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, rgba(194, 169, 255, .2), rgba(107, 67, 200, .46)) !important;
+}
+.combat-shell--ui-kit .combat-account .resource-icon__glyph { font-size: 9px; }
+
 .combat-shell--ui-kit .combat-loot-values svg,
 .offline-report__rewards svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .combat-shell--ui-kit .combat-loot-values > span { padding: 6px 5px; }
