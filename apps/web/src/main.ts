@@ -1359,7 +1359,7 @@ function expeditionView(): string {
           <div class="versus"><span>VS</span><small>AUTO</small></div>
           <div class="fighter fighter--enemy">${combatEnemyMarkup(battle, bossStage)}</div>
         </div>
-        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span data-loot-kind="gold" ${game.pendingGold > 0 ? "" : "hidden"}>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span data-loot-kind="eggs" ${game.pendingEggs.length > 0 ? "" : "hidden"}>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span data-loot-kind="finds" ${pendingFindCount > 0 ? "" : "hidden"}>${icon("inventory")}<small>FUNDE</small><b data-live="pending-finds">${pendingFindCount}</b></span></div><p class="combat-loot-empty" ${cacheEmpty ? "" : "hidden"}>Keine Beute bereit.</p><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "hidden" : ""}>EINSAMMELN ${icon("arrow")}</button></aside>
+        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span data-loot-kind="gold" ${game.pendingGold > 0 ? "" : "hidden"}>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span data-loot-kind="eggs" ${game.pendingEggs.length > 0 ? "" : "hidden"}>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span data-loot-kind="materials" ${pendingMaterialCount > 0 ? "" : "hidden"}>${icon("inventory")}<small>MATERIAL</small><b data-live="pending-materials">${pendingMaterialCount}</b></span><span data-loot-kind="gems" ${game.pendingGems.length > 0 ? "" : "hidden"}>${icon("spark")}<small>GEMS</small><b data-live="pending-gems">${game.pendingGems.length}</b></span></div><p class="combat-loot-empty" ${cacheEmpty ? "" : "hidden"}>Keine Beute bereit.</p><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "hidden" : ""}>EINSAMMELN ${icon("arrow")}</button></aside>
         <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
         <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}" data-live="combat-objectives">${combatObjectiveMarkup()}</section>
         ${combatMonsterSelector()}
@@ -1751,7 +1751,8 @@ function refreshCombatUi(now = performance.now(), structural = false): void {
   const progress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
   const bossStage = progress.stage >= zone.stages;
   const chapter = currentChapter(game.totalVictories);
-  const pendingFindCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0) + game.pendingGems.length;
+  const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
+  const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
   const capacity = activeCacheCapacity();
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
   const attackProgress = battle.status === "fighting" ? Math.max(3, Math.min(100, 100 - ((battle.playerNextAttackAt - now) / 1_650) * 100)) : 100;
@@ -1786,7 +1787,8 @@ function refreshCombatUi(now = performance.now(), structural = false): void {
   setLiveText("cache-slots", `${game.cacheSlotsUsed}/${capacity}`);
   setLiveText("pending-gold", formatNumber(game.pendingGold));
   setLiveText("pending-eggs", String(game.pendingEggs.length));
-  setLiveText("pending-finds", String(pendingFindCount));
+  setLiveText("pending-materials", String(pendingMaterialCount));
+  setLiveText("pending-gems", String(game.pendingGems.length));
   setLiveText("battle-status", battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT");
   setLiveText("battle-log", battle.log[0] ?? "Kampf läuft.");
 
@@ -1801,10 +1803,12 @@ function refreshCombatUi(now = performance.now(), structural = false): void {
   lootHud?.classList.toggle("has-loot", !cacheEmpty);
   const lootGold = document.querySelector<HTMLElement>('[data-loot-kind="gold"]');
   const lootEggs = document.querySelector<HTMLElement>('[data-loot-kind="eggs"]');
-  const lootFinds = document.querySelector<HTMLElement>('[data-loot-kind="finds"]');
+  const lootMaterials = document.querySelector<HTMLElement>('[data-loot-kind="materials"]');
+  const lootGems = document.querySelector<HTMLElement>('[data-loot-kind="gems"]');
   if (lootGold) lootGold.hidden = game.pendingGold <= 0;
   if (lootEggs) lootEggs.hidden = game.pendingEggs.length === 0;
-  if (lootFinds) lootFinds.hidden = pendingFindCount === 0;
+  if (lootMaterials) lootMaterials.hidden = pendingMaterialCount === 0;
+  if (lootGems) lootGems.hidden = game.pendingGems.length === 0;
   const lootEmptyCopy = document.querySelector<HTMLElement>(".combat-loot-empty");
   if (lootEmptyCopy) lootEmptyCopy.hidden = !cacheEmpty;
   const collectButton = document.querySelector<HTMLButtonElement>("#collect-cache");
