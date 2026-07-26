@@ -1259,6 +1259,16 @@
   box-shadow: none;
 }
 
+/* The report frame should support the message, not swallow it. Keep a quiet
+   breathing margin around the generated chrome and lower its glow slightly. */
+.offline-report .offline-report__generated-frame {
+  inset: 18px;
+  width: calc(100% - 36px);
+  height: calc(100% - 36px);
+  opacity: .44;
+  filter: drop-shadow(0 0 14px rgba(125, 83, 227, .1));
+}
+
 @media (max-width: 820px) {
   .combat-shell--ui-kit .combat-loot-hud {
     width: auto;
