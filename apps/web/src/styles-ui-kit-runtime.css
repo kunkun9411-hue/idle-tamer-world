@@ -859,7 +859,7 @@
   transform: translate(-50%, -50%);
   color: #f3effb;
   overflow: visible;
-  background: radial-gradient(circle at 50% 35%, rgba(61, 45, 91, .78), rgba(17, 15, 28, .94) 72%);
+  background: transparent;
   filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .58));
 }
 .combat-inventory-modal::after {
