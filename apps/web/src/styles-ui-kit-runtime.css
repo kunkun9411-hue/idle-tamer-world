@@ -1246,6 +1246,19 @@
   z-index: 1;
 }
 
+/* The offline return report uses the same collect action. Reuse the manually
+   filled frame there as well so this path cannot fall back to the old full
+   rectangle gradient. */
+.offline-report .silver-ether-action {
+  background-color: transparent !important;
+  background-image: url("/assets/ui/kit/control/d08-filled-v2.png") !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border-color: transparent !important;
+  box-shadow: none;
+}
+
 @media (max-width: 820px) {
   .combat-shell--ui-kit .combat-loot-hud {
     width: auto;
