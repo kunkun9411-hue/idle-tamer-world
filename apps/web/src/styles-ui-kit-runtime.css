@@ -253,6 +253,7 @@
 .combat-shell--ui-kit .combat-duel .fighter {
   justify-content: center;
   padding: 22px 0 0;
+  transform: translateY(clamp(34px, 8vh, 76px));
 }
 
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar {
@@ -275,6 +276,20 @@
 .combat-shell--ui-kit .combat-duel .versus { padding: 62px 0 0; }
 .combat-shell--ui-kit .combat-duel .versus span { width: 48px; height: 48px; font-size: 15px; }
 
+.combat-shell--ui-kit .combat-duel .fighter .monster-avatar__platform {
+  width: 76%;
+  height: 32px;
+  bottom: 4px;
+  opacity: .86;
+  border-color: color-mix(in srgb, var(--monster-accent), transparent 42%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--monster-accent), transparent 88%) 0 30%, transparent 72%);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--monster-accent), transparent 76%), inset 0 0 18px color-mix(in srgb, var(--monster-accent), transparent 84%);
+}
+
+.combat-shell--ui-kit .combat-duel .fighter .monster-avatar.is-hit {
+  transform: translateY(clamp(34px, 8vh, 76px)) translateX(-8px);
+}
+
 @media (max-width: 1020px) and (min-width: 821px) {
   .combat-shell--ui-kit .combat-duel {
     inset-inline: 190px;
@@ -292,6 +307,7 @@
     grid-template-columns: 1fr 38px 1fr;
   }
   .combat-shell--ui-kit .combat-duel .fighter { padding-top: 14px; }
+  .combat-shell--ui-kit .combat-duel .fighter { transform: translateY(clamp(22px, 5vh, 48px)); }
   .combat-shell--ui-kit .combat-duel .fighter .monster-avatar {
     width: min(30vw, 190px);
     height: min(30vw, 190px);
@@ -305,7 +321,8 @@
 }
 
 @media (max-width: 540px) {
-  .combat-shell--ui-kit .combat-duel { inset: 98px 0 300px; grid-template-columns: 1fr 28px 1fr; }
+  .combat-shell--ui-kit .combat-duel { inset: 98px 0 255px; grid-template-columns: 1fr 28px 1fr; }
+  .combat-shell--ui-kit .combat-duel .fighter { transform: translateY(88px); }
   .combat-shell--ui-kit .combat-duel .fighter .monster-avatar { width: min(38vw, 170px); height: min(38vw, 170px); margin-inline: -5px; }
   .combat-shell--ui-kit .combat-duel .nameplate { margin-bottom: 2px; }
   .combat-shell--ui-kit .combat-duel .nameplate > div > b { font-size: 6px; }
