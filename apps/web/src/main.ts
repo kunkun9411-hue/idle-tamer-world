@@ -1223,7 +1223,6 @@ function expeditionView(): string {
   const playerLineage = getMonster(player.definitionId);
   const support = game.roster.find((monster) => monster.uid === game.supportMonsterUid) ?? null;
   const zoneSynergy = activeZoneSynergy(game);
-  const chapter = currentChapter(game.totalVictories);
   const claimable = MILESTONES.find((milestone) => game.totalVictories >= milestone.target && !game.claimedMilestones.includes(milestone.target));
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
@@ -1246,7 +1245,6 @@ function expeditionView(): string {
           <div class="combat-account"><div class="resources"><span title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span><span title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span></div><span class="rank-chip"><small>RANG</small><b data-live="rank">${rank}</b></span><button class="profile-chip" data-view="profile" title="Profil öffnen">${accountAvatar()}</button></div>
         </header>
         ${combatRail()}
-        <section class="combat-story-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}"><span class="combat-story-hud__chapter" data-live="story-chapter">${String(chapter.chapter).padStart(2, "0")}</span><div><small data-live="story-run">AKTUELLES SIGNAL · RUN ${game.runVictories}</small><strong data-live="story-title">${chapter.title}</strong><p data-live="story-copy">${chapter.story}</p></div></section>
         <div class="battle-state-banner battle-state-banner--${battle.status}" data-live="battle-banner" ${battle.status === "fighting" ? "hidden" : ""}><small>${battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT"}</small><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION"}</strong></div>
         <div class="combat-duel">
           <div class="fighter fighter--player">${combatPlayerMarkup(player, battle)}</div>
