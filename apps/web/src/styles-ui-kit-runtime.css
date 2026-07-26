@@ -554,7 +554,10 @@
    opaque corners, or blur when a tab is narrowed. */
 .combat-shell--ui-kit .combat-control-dock button,
 .combat-shell--ui-kit .combat-zone-tab {
-  background-image: none !important;
+  background-image: var(--kit-secondary-control) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   background-color: rgba(12, 11, 20, .72);
   border: 1px solid rgba(218, 208, 247, .15);
   box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 8px 18px rgba(0, 0, 0, .2);
@@ -563,8 +566,11 @@
 .combat-shell--ui-kit .combat-control-dock button.is-active,
 .combat-shell--ui-kit .combat-zone-tab:hover:not(:disabled),
 .combat-shell--ui-kit .combat-zone-tab.is-active {
-  background-image: none !important;
-  background: linear-gradient(145deg, rgba(114, 79, 190, .34), rgba(24, 18, 42, .88));
+  background-image: var(--kit-primary-control) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: rgba(114, 79, 190, .34);
   border-color: rgba(202, 183, 255, .38);
 }
 .combat-shell--ui-kit .combat-control-dock button > i[hidden] { display: none; }
@@ -575,17 +581,31 @@
 .app-shell--ui-kit .nav-button,
 .app-shell--ui-kit .nav-button:hover,
 .app-shell--ui-kit .nav-button.is-active {
-  background-image: none !important;
-  background-color: transparent;
+  background-image: var(--kit-secondary-control) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: rgba(12, 11, 20, .78);
   border-color: transparent;
   filter: none;
 }
 .app-shell--ui-kit .nav-button > span {
-  background-image: none !important;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
-.app-shell--ui-kit .nav-button > span svg { opacity: 1; }
+.app-shell--ui-kit .nav-button > span svg { opacity: 0; }
+.app-shell--ui-kit .nav-button[data-view="expedition"] > span { background-image: url("/assets/ui/kit/system/g01-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="objectives"] > span { background-image: url("/assets/ui/kit/system/g08-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="dispatch"] > span { background-image: url("/assets/ui/kit/system/g07-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="habitat"] > span { background-image: url("/assets/ui/kit/system/g03-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="incubation"] > span { background-image: url("/assets/ui/kit/system/g04-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="inventory"] > span { background-image: url("/assets/ui/kit/system/g05-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="research"] > span { background-image: url("/assets/ui/kit/system/g06-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="guild"] > span { background-image: url("/assets/ui/kit/system/g10-v1.webp"); }
 .app-shell--ui-kit .nav-button.is-active { color: #f1edfb; }
 .app-shell--ui-kit .nav-button.is-active > span { color: var(--violet-bright); }
+.app-shell--ui-kit .nav-button.is-active { background-image: var(--kit-primary-control) !important; }
 
 .app-shell--ui-kit .primary-button:not(.silver-ether-action),
 .combat-shell--ui-kit .primary-button,
@@ -593,7 +613,10 @@
 .app-shell--ui-kit .secondary-button,
 .combat-shell--ui-kit .secondary-button,
 .prestige-shell--ui-kit .secondary-button {
-  background-image: none !important;
+  background-image: var(--kit-secondary-control), linear-gradient(180deg, rgba(45, 40, 64, .94), rgba(13, 12, 20, .96)) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   border: 1px solid rgba(210, 193, 255, .24);
   border-radius: 8px;
   box-shadow: inset 0 1px rgba(255, 255, 255, .08), 0 8px 18px rgba(0, 0, 0, .2);
@@ -601,12 +624,18 @@
 .app-shell--ui-kit .primary-button:not(.silver-ether-action),
 .combat-shell--ui-kit .primary-button,
 .prestige-shell--ui-kit .primary-button {
-  background: linear-gradient(135deg, #bca5f4, #7552c8) !important;
+  background-image: var(--kit-primary-control), linear-gradient(135deg, #bca5f4, #7552c8) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .app-shell--ui-kit .secondary-button,
 .combat-shell--ui-kit .secondary-button,
 .prestige-shell--ui-kit .secondary-button {
-  background: linear-gradient(180deg, rgba(45, 40, 64, .94), rgba(13, 12, 20, .96)) !important;
+  background-image: var(--kit-secondary-control), linear-gradient(180deg, rgba(45, 40, 64, .94), rgba(13, 12, 20, .96)) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .app-shell--ui-kit .primary-button:hover:not(:disabled),
 .combat-shell--ui-kit .primary-button:hover:not(:disabled),
@@ -623,7 +652,10 @@
   gap: 3px;
   padding: 5px;
   border-radius: 12px;
-  background: rgba(9, 9, 16, .76);
+  background-image: var(--kit-surface-05), linear-gradient(180deg, rgba(9, 9, 16, .84), rgba(9, 9, 16, .72));
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   box-shadow: 0 16px 34px rgba(0, 0, 0, .32), inset 0 1px rgba(255, 255, 255, .04);
   backdrop-filter: blur(16px);
 }
@@ -631,10 +663,36 @@
   width: 48px;
   height: 46px;
   border-radius: 8px;
+  background-image: var(--kit-secondary-control);
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .combat-shell--ui-kit .combat-rail button svg { width: 17px; height: 17px; }
+.combat-shell--ui-kit .combat-rail button[data-view="expedition"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="objectives"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="dispatch"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="habitat"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="incubation"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="research"] svg,
+.combat-shell--ui-kit .combat-rail button[data-view="guild"] svg { opacity: 0; }
+.combat-shell--ui-kit .combat-rail button[data-view="expedition"] { background-image: url("/assets/ui/kit/system/g01-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="objectives"] { background-image: url("/assets/ui/kit/system/g08-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="dispatch"] { background-image: url("/assets/ui/kit/system/g07-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="habitat"] { background-image: url("/assets/ui/kit/system/g03-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="incubation"] { background-image: url("/assets/ui/kit/system/g04-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="research"] { background-image: url("/assets/ui/kit/system/g06-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view="guild"] { background-image: url("/assets/ui/kit/system/g10-v1.webp"), var(--kit-secondary-control); }
+.combat-shell--ui-kit .combat-rail button[data-view] {
+  background-position: center, center;
+  background-size: 22px 22px, 100% 100%;
+  background-repeat: no-repeat;
+}
 .combat-shell--ui-kit .combat-rail button.is-active {
-  background: rgba(168, 139, 255, .13);
+  background-image: url("/assets/ui/kit/system/g01-v1.webp"), var(--kit-primary-control);
+  background-position: center;
+  background-size: contain, 100% 100%;
+  background-repeat: no-repeat;
   box-shadow: inset 0 1px rgba(255, 255, 255, .07), 0 0 16px rgba(133, 91, 235, .1);
 }
 
@@ -659,7 +717,10 @@
   min-width: 150px;
   min-height: 36px;
   padding: 0 18px;
-  background: linear-gradient(135deg, #c8b7f6, #7651ce) !important;
+  background-image: var(--kit-primary-control), linear-gradient(135deg, #c8b7f6, #7651ce) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   border: 1px solid rgba(225, 215, 255, .44);
   border-radius: 8px;
   box-shadow: inset 0 1px rgba(255, 255, 255, .22), 0 8px 20px rgba(71, 41, 145, .25);
@@ -670,50 +731,41 @@
 .prestige-shell--ui-kit .prestige-header .secondary-button {
   min-height: 34px;
   padding-inline: 14px;
-  background-image: none !important;
+  background-image: var(--kit-secondary-control), linear-gradient(180deg, rgba(45, 40, 64, .94), rgba(13, 12, 20, .96)) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .prestige-shell--ui-kit .prestige-action .primary-button { min-width: 270px; }
 
-/* Economy marks are intentionally small, crisp and semantically distinct. */
+/* Economy marks are the generated kit assets, not placeholder CSS glyphs.
+   The transparent 256px sources stay crisp when contained in the live HUD. */
 .resource-icon {
   position: relative;
+  display: inline-grid;
+  place-items: center;
   border: 0 !important;
-  border-radius: 50%;
+  border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
+  overflow: visible;
 }
-.resource-icon__glyph { display: block; line-height: 1; }
-.resource-icon--gold {
-  color: #fff2ae;
-  border: 1px solid rgba(239, 199, 91, .82) !important;
-  background: radial-gradient(circle at 35% 28%, #fff8ca 0 12%, #efc45d 34%, #a86a24 100%) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.65), 0 0 12px rgba(231, 177, 57, .28) !important;
+.resource-icon img {
+  width: 145%;
+  height: 145%;
+  display: block !important;
+  object-fit: contain;
+  max-width: none;
 }
-.resource-icon--gold .resource-icon__glyph { color: #8b5718; font-size: 11px; text-shadow: 0 1px rgba(255,255,255,.35); }
-.resource-icon--cores { color: #d9caff; background: linear-gradient(145deg, rgba(194, 169, 255, .2), rgba(107, 67, 200, .46)) !important; }
-.resource-icon--cores .resource-icon__glyph { font-size: 12px; text-shadow: 0 0 8px #b79bff; }
-.resource-icon--eggs { color: #d8e8ff; background: radial-gradient(ellipse at 35% 28%, #ecf5ff, #8ca8d5 52%, #425173) !important; border-radius: 52% 48% 55% 45% !important; transform: rotate(10deg); }
-.resource-icon--eggs .resource-icon__glyph { display: none; }
-.resource-icon--fragments { color: #e0c8ff; background: linear-gradient(145deg, #e7d7ff, #8755d1 58%, #3c205f) !important; clip-path: polygon(50% 0, 95% 28%, 76% 100%, 23% 87%, 4% 32%); border-radius: 3px !important; }
-.resource-icon--fragments .resource-icon__glyph { display: none; }
-.resource-icon img { display: none !important; }
-
-/* The combat account has a legacy square reset with higher specificity than
-   the shared resource token. Re-assert the live coin/cores treatment there so
-   the compact HUD uses the same crisp shapes as the rest of the app. */
-.combat-shell--ui-kit .combat-account .resource-icon--gold {
+.resource-icon--gold img { filter: drop-shadow(0 0 5px rgba(234, 189, 80, .22)); }
+.resource-icon--cores img { filter: drop-shadow(0 0 6px rgba(159, 112, 255, .3)); }
+.resource-icon--eggs img { transform: rotate(8deg); }
+.resource-icon--fragments img { filter: drop-shadow(0 0 5px rgba(176, 99, 255, .28)); }
+.combat-shell--ui-kit .combat-account .resource-icon {
   min-height: 18px;
-  border-radius: 50% !important;
-  border: 1px solid rgba(239, 199, 91, .82) !important;
-  background: radial-gradient(circle at 35% 28%, #fff8ca 0 12%, #efc45d 34%, #a86a24 100%) !important;
-  box-shadow: inset 0 1px rgba(255, 255, 255, .65), 0 0 12px rgba(231, 177, 57, .28) !important;
+  width: 18px;
+  height: 18px;
 }
-.combat-shell--ui-kit .combat-account .resource-icon--cores {
-  min-height: 18px;
-  border-radius: 50% !important;
-  background: linear-gradient(145deg, rgba(194, 169, 255, .2), rgba(107, 67, 200, .46)) !important;
-}
-.combat-shell--ui-kit .combat-account .resource-icon__glyph { font-size: 9px; }
 
 .combat-shell--ui-kit .combat-loot-values svg,
 .offline-report__rewards svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }

@@ -991,10 +991,15 @@ function encounterAvatar(definitionId: string, side = "right", hit = false): str
 }
 
 function resourceIcon(kind: "gold" | "cores" | "eggs" | "fragments"): string {
-  // Render economy marks as live CSS shapes. The former generated plates
-  // became soft and ambiguous at HUD size (gold looked like another crystal).
-  const label = { gold: "✦", cores: "◆", eggs: "", fragments: "" }[kind];
-  return `<span class="resource-icon resource-icon--${kind}" aria-hidden="true"><span class="resource-icon__glyph">${label}</span></span>`;
+  // Keep the generated economy marks live. They are high-resolution,
+  // transparent assets and remain sharp when rendered at HUD size.
+  const asset = {
+    gold: "/assets/ui/kit/economy/f01-v1.webp",
+    cores: "/assets/ui/kit/economy/f02-v1.webp",
+    eggs: "/assets/ui/kit/economy/f06-v1.webp",
+    fragments: "/assets/ui/kit/economy/f10-v1.webp",
+  }[kind];
+  return `<span class="resource-icon resource-icon--${kind}" aria-hidden="true"><img src="${asset}" alt="" width="256" height="256" draggable="false"></span>`;
 }
 
 function brandMarkup(compact = false): string {
