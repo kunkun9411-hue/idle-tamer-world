@@ -12,14 +12,21 @@ Zustände und Interaktionen bleiben HTML/CSS und damit responsiv.
 | Oberfläche | Kit-Verbrauch | Zweck |
 | --- | --- | --- |
 | Login / Offline-Bericht | bestehender Silver-Ether-Chrome | Account-Zugang und Offline-Bergung |
-| Kampf-HUD | `surface/b03-v1.webp`, `chrome/c16-v1.webp` | einheitliche HUD-Fenster und Kontroll-Dock |
-| Monster, Inventar, Brut, Forschung, Profil, Gilde | CSS-Surface mit Kit-Randtokens | flexible HTML-Arbeitsflächen ohne Raster-Überlagerung |
+| Kampf-HUD | `surface/b03-v1.webp`, `frame/edge-thin-horizontal-v1.webp`, `control/d09-v1.webp` | HUD-Fenster, Kontroll-Dock, Zonen-Tabs und Statuskanten |
+| Spielweite Panels | `frame/edge-thin-horizontal-v1.webp` | wiederverwendbare obere/untere Fensterkanten auf flexiblen HTML-Karten |
+| Primär-/Sekundärbuttons | `control/d08-v1.webp`, `control/d09-v1.webp` | lesbare Button-Skins ohne festen Rastertext |
+| Statuschips und Ränge | `info/e05-v1.webp` | kompakte Werte-, Meta- und Rangplaketten |
+| Fortschrittsleisten | `control/d13-v1.webp` | Rahmen für HP, Beute-, Missions- und Forschungsfortschritt; Füllung bleibt live CSS |
+| Ressourcen | `economy/f01-v1.webp`, `f02-v1.webp`, `f03-v1.webp`, `f06-v1.webp` | Gold, Ether-Kerne, Fragmente und Eier als textfreie Laufzeit-Icons |
+| Hauptnavigation | `system/g01-v1.webp` bis `g10-v1.webp` | sichtbare System-Icons in den Spielbereichen |
 | Überschriften | `frame/divider-compact-v1.webp` | textfreie Resonanz-Trennlinie |
 
-Die Zuordnung erfolgt in `apps/web/src/styles-ui-kit-runtime.css`. Es gibt
+Die Zuordnung erfolgt in `apps/web/src/styles-ui-kit-runtime.css`; die
+Ressourcen-Icons werden in `apps/web/src/main.ts` zentral ausgegeben. Es gibt
 keine festen UI-Texte in den generierten Bildern. Große, dynamische Karten
 verwenden bewusst keine vollflächig gestreckte Rasterfläche, weil deren
-interner Rahmen sonst über variable HTML-Inhalte laufen würde.
+interner Rahmen sonst über variable HTML-Inhalte laufen würde. Die Rasterkunst
+liegt nur an stabilen Komponentenrändern; Inhalte und Füllstände bleiben live.
 
 ## Abnahmekriterien für weitere Verbraucher
 

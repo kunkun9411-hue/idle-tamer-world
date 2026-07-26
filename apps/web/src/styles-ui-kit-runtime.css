@@ -13,6 +13,11 @@
   --kit-surface-03: url("/assets/ui/kit/surface/b03-v1.webp");
   --kit-divider: url("/assets/ui/kit/frame/divider-compact-v1.webp");
   --kit-corner: url("/assets/ui/kit/frame/corner-compact-v1.webp");
+  --kit-edge: url("/assets/ui/kit/frame/edge-thin-horizontal-v1.webp");
+  --kit-primary-control: url("/assets/ui/kit/control/d08-v1.webp");
+  --kit-secondary-control: url("/assets/ui/kit/control/d09-v1.webp");
+  --kit-slim-control: url("/assets/ui/kit/control/d13-v1.webp");
+  --kit-chip: url("/assets/ui/kit/info/e05-v1.webp");
 }
 
 /* Interior pages: the heading and first-level workbenches now use the same
@@ -44,7 +49,116 @@
 .page--kit > .research-grid > .panel {
   border-color: rgba(218, 208, 247, .16);
   background: linear-gradient(145deg, rgba(31, 31, 42, .78), rgba(12, 13, 19, .92));
+  background-image:
+    linear-gradient(145deg, rgba(31, 31, 42, .78), rgba(12, 13, 19, .92)),
+    var(--kit-edge),
+    var(--kit-edge);
+  background-position: center, center top, center bottom;
+  background-size: 100% 100%, calc(100% - 36px) 5px, calc(100% - 36px) 5px;
+  background-repeat: no-repeat;
 }
+
+/* The generated kit is used as a component skin. Raster art is kept on the
+   perimeter of flexible cards, so live copy never gets stretched or blurred. */
+.app-shell--ui-kit .panel,
+.prestige-shell--ui-kit .panel {
+  border-color: rgba(218, 208, 247, .16);
+  background-image:
+    linear-gradient(145deg, rgba(31, 31, 42, .78), rgba(12, 13, 19, .92)),
+    var(--kit-edge),
+    var(--kit-edge);
+  background-position: center, center top, center bottom;
+  background-size: 100% 100%, calc(100% - 36px) 5px, calc(100% - 36px) 5px;
+  background-repeat: no-repeat;
+}
+
+/* Generated button frames are transparent in the centre; the live gradient
+   remains underneath and all labels stay HTML text. */
+.app-shell--ui-kit .primary-button:not(.silver-ether-action),
+.combat-shell--ui-kit .primary-button,
+.prestige-shell--ui-kit .primary-button {
+  border-color: transparent;
+  border-radius: 9px;
+  color: #f4efff;
+  background-image: var(--kit-primary-control), linear-gradient(135deg, rgba(131, 95, 222, .94), rgba(47, 38, 78, .96));
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0 10px 26px rgba(73, 43, 148, .25), inset 0 1px rgba(255, 255, 255, .16);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .65);
+}
+
+.app-shell--ui-kit .secondary-button,
+.app-shell--ui-kit .outline-button,
+.combat-shell--ui-kit .secondary-button,
+.prestige-shell--ui-kit .secondary-button {
+  border-color: transparent;
+  border-radius: 9px;
+  color: #e6def9;
+  background-image: var(--kit-secondary-control), linear-gradient(180deg, rgba(45, 41, 63, .92), rgba(12, 12, 19, .96));
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .08);
+}
+
+.app-shell--ui-kit .primary-button:hover:not(:disabled),
+.combat-shell--ui-kit .primary-button:hover:not(:disabled),
+.prestige-shell--ui-kit .primary-button:hover:not(:disabled),
+.app-shell--ui-kit .secondary-button:hover:not(:disabled),
+.combat-shell--ui-kit .secondary-button:hover:not(:disabled),
+.prestige-shell--ui-kit .secondary-button:hover:not(:disabled) {
+  filter: brightness(1.14);
+}
+
+/* Status chips, ranks and capacity labels share one crisp generated plate. */
+.app-shell--ui-kit .page-heading__meta,
+.app-shell--ui-kit .soft-chip,
+.app-shell--ui-kit .quantity-chip,
+.app-shell--ui-kit .level-chip,
+.app-shell--ui-kit .rank-chip,
+.combat-shell--ui-kit .rank-chip,
+.prestige-shell--ui-kit .soft-chip {
+  border-color: transparent;
+  background-color: rgba(17, 15, 28, .86);
+  background-image: var(--kit-chip);
+  background-position: center;
+  background-size: 150% 100%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 7px 18px rgba(0, 0, 0, .16);
+}
+
+/* Progress tracks use the slim generated control as a perimeter while the
+   fill remains a normal CSS gradient that can be updated every tick. */
+.app-shell--ui-kit .mission-progress,
+.app-shell--ui-kit .objective-card__progress i,
+.app-shell--ui-kit .dispatch-slot__progress,
+.app-shell--ui-kit .guild-task-card article > i,
+.combat-shell--ui-kit .combat-capacity,
+.combat-shell--ui-kit .combat-objective-progress,
+.combat-shell--ui-kit .attack-cycle > div,
+.combat-shell--ui-kit .hp-track {
+  border: 1px solid rgba(194, 169, 255, .2);
+  background-image: var(--kit-slim-control);
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 12px rgba(106, 74, 190, .14);
+}
+
+.app-shell--ui-kit .mission-progress,
+.app-shell--ui-kit .dispatch-slot__progress,
+.combat-shell--ui-kit .combat-capacity,
+.combat-shell--ui-kit .combat-objective-progress,
+.combat-shell--ui-kit .attack-cycle > div,
+.combat-shell--ui-kit .hp-track { padding: 1px; }
+
+.app-shell--ui-kit .mission-progress i,
+.app-shell--ui-kit .dispatch-slot__progress i,
+.combat-shell--ui-kit .combat-capacity i,
+.combat-shell--ui-kit .combat-objective-progress i,
+.combat-shell--ui-kit .attack-cycle > div i,
+.combat-shell--ui-kit .hp-track i { box-shadow: 0 0 12px rgba(190, 162, 255, .62); }
 
 /* Combat HUD: each collapsible window receives the compact surface. The
    hidden-state animation and mobile stacking continue to come from V2. */
@@ -57,15 +171,40 @@
   border-color: rgba(218, 208, 247, .17);
   background-image:
     linear-gradient(145deg, rgba(16, 16, 24, .76), rgba(9, 9, 14, .84)),
-    var(--kit-surface-03);
+    var(--kit-surface-03),
+    var(--kit-edge),
+    var(--kit-edge);
   background-position: center;
-  background-size: 100% 100%;
+  background-size: 100% 100%, 100% 100%, calc(100% - 30px) 5px, calc(100% - 30px) 5px;
+  background-position: center, center, center top, center bottom;
+  background-repeat: no-repeat;
   box-shadow: 0 20px 55px rgba(0, 0, 0, .36), inset 0 1px rgba(255, 255, 255, .05), 0 0 28px rgba(136, 95, 235, .045);
 }
 
 .combat-shell--ui-kit .combat-control-dock {
   border-color: rgba(218, 208, 247, .12);
   box-shadow: 0 20px 52px rgba(0, 0, 0, .42), 0 0 25px rgba(132, 94, 230, .08);
+}
+
+.combat-shell--ui-kit .combat-control-dock button,
+.combat-shell--ui-kit .combat-zone-tab,
+.app-shell--ui-kit .nav-button {
+  border-color: transparent;
+  background-image: var(--kit-secondary-control);
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.combat-shell--ui-kit .combat-control-dock button:hover,
+.combat-shell--ui-kit .combat-control-dock button.is-active,
+.combat-shell--ui-kit .combat-zone-tab:hover:not(:disabled),
+.combat-shell--ui-kit .combat-zone-tab.is-active,
+.app-shell--ui-kit .nav-button:hover,
+.app-shell--ui-kit .nav-button.is-active {
+  background-image: var(--kit-primary-control);
+  background-color: rgba(116, 81, 196, .2);
+  filter: brightness(1.08);
 }
 
 .combat-shell--ui-kit .combat-control-dock button.is-active,
@@ -78,8 +217,29 @@
    text to generated artwork. */
 .app-shell--ui-kit .topbar {
   border-bottom-color: rgba(218, 208, 247, .13);
+  background-image: linear-gradient(180deg, rgba(12, 12, 18, .96), rgba(9, 9, 14, .88)), url("/assets/ui/kit/chrome/c04-v1.webp");
+  background-position: center, center bottom;
+  background-size: 100% 100%, 100% 5px;
+  background-repeat: no-repeat;
   box-shadow: 0 12px 42px rgba(0, 0, 0, .28), inset 0 -1px rgba(168, 139, 255, .07);
 }
+
+/* The modular system icons replace the plain SVG only in the primary nav;
+   SVG remains available in other contexts as a graceful fallback. */
+.app-shell--ui-kit .nav-button > span {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.app-shell--ui-kit .nav-button > span svg { opacity: 0; }
+.app-shell--ui-kit .nav-button[data-view="expedition"] > span { background-image: url("/assets/ui/kit/system/g01-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="objectives"] > span { background-image: url("/assets/ui/kit/system/g08-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="dispatch"] > span { background-image: url("/assets/ui/kit/system/g07-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="habitat"] > span { background-image: url("/assets/ui/kit/system/g03-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="incubation"] > span { background-image: url("/assets/ui/kit/system/g04-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="inventory"] > span { background-image: url("/assets/ui/kit/system/g05-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="research"] > span { background-image: url("/assets/ui/kit/system/g06-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="guild"] > span { background-image: url("/assets/ui/kit/system/g10-v1.webp"); }
 
 @media (prefers-reduced-motion: reduce) {
   .page--kit > .page-heading--kit,

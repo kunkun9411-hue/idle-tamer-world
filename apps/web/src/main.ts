@@ -991,7 +991,12 @@ function encounterAvatar(definitionId: string, side = "right", hit = false): str
 }
 
 function resourceIcon(kind: "gold" | "cores" | "eggs" | "fragments"): string {
-  const image = kind === "cores" ? "/assets/items/prestige-core.png" : kind === "eggs" ? "/assets/eggs/mystery.png" : undefined;
+  const image = {
+    gold: "/assets/ui/kit/economy/f01-v1.webp",
+    cores: "/assets/ui/kit/economy/f02-v1.webp",
+    eggs: "/assets/ui/kit/economy/f06-v1.webp",
+    fragments: "/assets/ui/kit/economy/f03-v1.webp",
+  }[kind];
   if (image) return `<span class="resource-icon resource-icon--${kind}" aria-hidden="true"><img src="${image}" alt=""></span>`;
   const label = { gold: "◆", cores: "◈", eggs: "○", fragments: "△" }[kind];
   return `<span class="resource-icon resource-icon--${kind}" aria-hidden="true">${label}</span>`;
