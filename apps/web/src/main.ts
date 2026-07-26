@@ -1190,6 +1190,8 @@ interface InventorySlotData {
   image: string;
   amount: number;
   rarity?: string;
+  description?: string;
+  source?: string;
   detail?: string;
   action?: "open-chest";
 }
@@ -1209,26 +1211,32 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
       image: gem.image,
       amount: game.gemInventory[gem.id] ?? 0,
       rarity: GEM_RARITIES[gem.rarity].name,
+      description: gem.description,
+      source: gem.source,
       detail: gemEffect(gem.id),
     }));
   }
   if (category === "consumables") {
-    return ITEMS.filter((item) => item.action && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
+    return ITEMS.filter((item) => item.inventoryCategory === "consumables" && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
       id: item.id,
       name: item.name,
       image: item.image,
       amount: game.inventory[item.id] ?? 0,
       rarity: item.rarity,
+      description: item.description,
+      source: item.source,
       detail: item.action === "train" ? "Monstertraining" : "Inkubation",
     }));
   }
   if (category === "materials") {
-    return ITEMS.filter((item) => !item.action && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
+    return ITEMS.filter((item) => item.inventoryCategory === "materials" && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
       id: item.id,
       name: item.name,
       image: item.image,
       amount: game.inventory[item.id] ?? 0,
       rarity: item.rarity,
+      description: item.description,
+      source: item.source,
       detail: "Etherwerkstatt",
     }));
   }
@@ -1240,7 +1248,7 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
     .flatMap(([definitionId, amount]) => {
       const definition = MONSTERS.find((entry) => entry.id === definitionId);
       if (!definition) return [];
-      return [{ id: `egg-${definitionId}`, name: `${definition.name}-Ei`, image: eggImage(definitionId), amount, rarity: "Signal", detail: elementLabel[definition.element] }];
+      return [{ id: `egg-${definitionId}`, name: `${definition.name}-Ei`, image: eggImage(definitionId), amount, rarity: "Signal", description: `Schlüpft zu ${definition.name} und erweitert dein Monsterarchiv.`, detail: elementLabel[definition.element] }];
     }));
 }
 
@@ -1248,14 +1256,21 @@ function combatInventoryModal(): string {
   const slots = inventorySlots(inventoryCategory);
   const occupied = slots.length;
   const categoryLabel = INVENTORY_CATEGORY_LABELS[inventoryCategory];
-  const slotMarkup = Array.from({ length: 64 }, (_, index) => {
+  // Keep the 64-slot capacity as a data rule, but only render the rows that
+  // contain content. This prevents a mostly empty category (especially Gems
+  // and Sonstiges) from forcing a distracting scrollbar in the compact modal.
+  // Once a category grows beyond the visible area, the grid opts into a
+  // vertical scrollbar explicitly instead of relying on horizontal overflow.
+  const visibleSlotCount = Math.min(64, Math.max(8, Math.ceil(Math.max(1, slots.length) / 8) * 8));
+  const needsScroll = visibleSlotCount > 24;
+  const slotMarkup = Array.from({ length: visibleSlotCount }, (_, index) => {
     const entry = slots[index];
     if (!entry) return `<div class="combat-inventory-slot is-empty" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></div>`;
-    const tooltip = [entry.name, entry.amount > 1 ? `${entry.amount} Stück` : "1 Stück", entry.rarity, entry.detail].filter(Boolean).join(" · ");
+    const tooltip = [entry.name, entry.rarity, entry.amount > 1 ? `${entry.amount} Stück` : "1 Stück", entry.description, entry.detail ? `Effekt: ${entry.detail}` : "", entry.source].filter(Boolean).join(" · ");
     if (entry.action === "open-chest") return `<button class="combat-inventory-slot is-filled is-actionable combat-inventory-slot--${inventoryCategory}" data-open-chest="${entry.id}" data-tooltip="${escapeHtml(`${tooltip} · Öffnen`)}" aria-label="${escapeHtml(entry.name)} öffnen"><img src="${entry.image}" alt="" loading="lazy"><strong>ÖFFNEN</strong></button>`;
     return `<div class="combat-inventory-slot is-filled combat-inventory-slot--${inventoryCategory}" data-tooltip="${escapeHtml(tooltip)}" role="img" aria-label="${escapeHtml(tooltip)}"><img src="${entry.image}" alt="" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong></div>`;
   }).join("");
-  return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${occupied}/64 belegte Slots · ${categoryLabel}</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${(Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[]).map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${inventorySlots(category).length}</small></button>`).join("")}</nav><div class="combat-inventory-grid" aria-label="64 Inventarslots">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
+  return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${occupied}/64 belegte Slots · ${categoryLabel}</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${(Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[]).map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${inventorySlots(category).length}</small></button>`).join("")}</nav><div class="combat-inventory-grid${needsScroll ? " has-overflow" : ""}" aria-label="64 Inventarslots">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
 }
 
 function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {

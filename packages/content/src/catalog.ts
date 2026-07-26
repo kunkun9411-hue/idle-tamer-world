@@ -36,12 +36,23 @@ export const BALANCE = {
   },
 } as const;
 
+/**
+ * Canonical inventory buckets used by every client presentation.  Keeping the
+ * bucket in the content catalog means a tooltip, a future API payload and the
+ * 64-slot overlay all use the same vocabulary instead of inferring categories
+ * from an item's action at render time.
+ */
+export type InventoryCategory = "gems" | "consumables" | "materials" | "other";
+
 export interface GemDefinition {
   id: string;
+  inventoryCategory: "gems";
   shape: GemShape;
   color: GemColor;
   rarity: GemRarity;
   name: string;
+  description: string;
+  source: string;
   attackPercent: number;
   hpPercent: number;
   image: string;
@@ -74,14 +85,23 @@ const gemStats = (shape: GemShape, potency: number): Pick<GemDefinition, "attack
   return { attackPercent: balanced, hpPercent: balanced };
 };
 
+const gemDescription = (shape: GemShape): string => {
+  if (shape === "triangle") return "Verstärkt den Angriff einer ausgerüsteten Monsterform.";
+  if (shape === "square") return "Verstärkt die Lebenspunkte einer ausgerüsteten Monsterform.";
+  return "Verstärkt Angriff und Lebenspunkte einer ausgerüsteten Monsterform.";
+};
+
 export const GEMS: GemDefinition[] = (Object.keys(GEM_RARITIES) as GemRarity[]).flatMap((rarity) =>
-  (Object.keys(GEM_COLORS) as GemColor[]).flatMap((color) =>
-    (Object.keys(GEM_SHAPES) as GemShape[]).map((shape) => ({
+    (Object.keys(GEM_COLORS) as GemColor[]).flatMap((color) =>
+      (Object.keys(GEM_SHAPES) as GemShape[]).map((shape) => ({
       id: `${rarity}-${color}-${shape}`,
+      inventoryCategory: "gems" as const,
       shape,
       color,
       rarity,
       name: `${GEM_COLORS[color].name}-${GEM_SHAPES[shape].name}`,
+      description: gemDescription(shape),
+      source: "Kampf, Zonenbosse und seltene Expeditionsfunde",
       ...gemStats(shape, GEM_RARITIES[rarity].potency),
       image: `/assets/gems/${rarity}/${shape}-${color}.png`,
     })),
@@ -94,6 +114,7 @@ export const emptyGemInventory = (): Record<string, number> => Object.fromEntrie
 
 export interface ItemDefinition {
   id: ItemId;
+  inventoryCategory: Exclude<InventoryCategory, "gems" | "other">;
   name: string;
   icon: string;
   image: string;
@@ -104,10 +125,10 @@ export interface ItemDefinition {
 }
 
 export const ITEMS: ItemDefinition[] = [
-  { id: "training_data", name: "Trainingsdaten", icon: "↗", image: "/assets/items/training-data.png", rarity: "Gewöhnlich", description: "Erhöht das normale Level eines Monsters sofort um 1 – ohne Goldkosten.", source: "Normale Expeditionen", action: "train" },
-  { id: "evolution_core", name: "Evolutionskern", icon: "◇", image: "/assets/items/evolution-core.png", rarity: "Episch", description: "Drei Kerne entwickeln ein Rookie ab Level 20 in seine nächste Form.", source: "Zonenbosse und Story-Ziele" },
-  { id: "incubator_charge", name: "Brutladung", icon: "○", image: "/assets/items/incubator-charge.png", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 60 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
-  { id: "ether_dust", name: "Etherstaub", icon: "✦", image: "/assets/items/ether-dust.png", rarity: "Gewöhnlich", description: "Universelles Herstellmaterial für Trainingsdaten, Brutladungen und Evolutionskerne.", source: "Kampf, Zeit-Expeditionen und Offline-Erträge" },
+  { id: "training_data", inventoryCategory: "consumables", name: "Trainingsdaten", icon: "↗", image: "/assets/items/training-data.png", rarity: "Gewöhnlich", description: "Erhöht das normale Level eines Monsters sofort um 1 – ohne Goldkosten.", source: "Normale Expeditionen", action: "train" },
+  { id: "evolution_core", inventoryCategory: "materials", name: "Evolutionskern", icon: "◇", image: "/assets/items/evolution-core.png", rarity: "Episch", description: "Drei Kerne entwickeln ein Rookie ab Level 20 in seine nächste Form.", source: "Zonenbosse und Story-Ziele" },
+  { id: "incubator_charge", inventoryCategory: "consumables", name: "Brutladung", icon: "○", image: "/assets/items/incubator-charge.png", rarity: "Selten", description: "Verkürzt eine laufende Inkubation sofort um 60 Sekunden.", source: "Seltene Expeditionsbeute", action: "accelerate" },
+  { id: "ether_dust", inventoryCategory: "materials", name: "Etherstaub", icon: "✦", image: "/assets/items/ether-dust.png", rarity: "Gewöhnlich", description: "Universelles Herstellmaterial für Trainingsdaten, Brutladungen und Evolutionskerne.", source: "Kampf, Zeit-Expeditionen und Offline-Erträge" },
 ];
 
 export const emptyInventory = (): Record<ItemId, number> => ({
