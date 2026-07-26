@@ -1227,6 +1227,36 @@
   letter-spacing: .8px;
 }
 
+/* The generated d08 frame has transparent outer corners. A full-size
+   gradient underneath therefore bleeds past the silver perimeter. Keep the
+   frame transparent and paint the violet fill only inside its safe area. */
+.combat-shell--ui-kit .combat-loot-hud #collect-cache {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  background-color: transparent !important;
+  background-image: var(--kit-primary-control) !important;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: none;
+}
+.combat-shell--ui-kit .combat-loot-hud #collect-cache::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 7px 18px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, rgba(194, 169, 255, .92), rgba(107, 74, 190, .95));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .22), inset 0 -5px 12px rgba(53, 32, 111, .25);
+  pointer-events: none;
+}
+.combat-shell--ui-kit .combat-loot-hud #collect-cache > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 820px) {
   .combat-shell--ui-kit .combat-loot-hud {
     width: auto;
