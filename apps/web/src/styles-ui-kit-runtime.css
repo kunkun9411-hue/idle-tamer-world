@@ -812,3 +812,197 @@
   .combat-shell--ui-kit .combat-monster-selector,
   .combat-shell--ui-kit .combat-console-hud { transition: none; }
 }
+
+/* V2.3 cleanup: stage selectors are chrome, not opaque cards. The generated
+   frame remains visible while the live battlefield can breathe through it. */
+.combat-shell--ui-kit .combat-zone-tab,
+.combat-shell--ui-kit .combat-zone-tab:hover:not(:disabled),
+.combat-shell--ui-kit .combat-zone-tab.is-active {
+  background-color: transparent !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 8px 18px rgba(0, 0, 0, .14);
+}
+.combat-shell--ui-kit .combat-zone-tab:not(.is-active) { opacity: .62; }
+.combat-shell--ui-kit .combat-zone-tab.is-active { opacity: 1; }
+
+/* Loot is a live status panel: zero-value cards and the dead action disappear
+   instead of making the player parse an empty three-column grid. */
+.combat-shell--ui-kit .combat-loot-values > span[hidden],
+.combat-shell--ui-kit .combat-loot-empty[hidden],
+.combat-shell--ui-kit .combat-loot-hud #collect-cache[hidden] { display: none !important; }
+.combat-shell--ui-kit .combat-loot-empty {
+  margin: 12px 0 10px;
+  color: rgba(231, 226, 242, .58);
+  font-size: 10px;
+  text-align: center;
+}
+.combat-shell--ui-kit .combat-loot-hud.is-empty .combat-capacity { opacity: .45; }
+
+/* Compact inventory overlay. The frame is the generated V2.3 asset; text and
+   slots stay HTML so labels remain crisp, translatable and data-driven. */
+.combat-inventory-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  background: rgba(4, 4, 10, .58);
+  backdrop-filter: blur(7px);
+}
+.combat-inventory-modal {
+  position: fixed;
+  z-index: 81;
+  top: 50%;
+  left: 50%;
+  width: min(860px, calc(100vw - 42px));
+  aspect-ratio: 3 / 2;
+  max-height: calc(100vh - 72px);
+  transform: translate(-50%, -50%);
+  color: #f3effb;
+  filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .58));
+}
+.combat-inventory-modal__frame {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+.combat-inventory-modal__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 13px;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(42px, 6vw, 70px) clamp(56px, 7vw, 92px) clamp(40px, 5vw, 64px);
+}
+.combat-inventory-modal__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.combat-inventory-modal__header h2 {
+  margin: 3px 0 2px;
+  font: 700 clamp(22px, 3vw, 34px)/1 var(--display);
+  letter-spacing: -.035em;
+}
+.combat-inventory-modal__header small {
+  color: rgba(225, 219, 239, .57);
+  font-size: 10px;
+}
+.combat-inventory-modal__close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(238, 233, 249, .78);
+  background: rgba(6, 6, 13, .62);
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+.combat-inventory-modal__close:hover { color: #fff; background: rgba(133, 91, 235, .3); }
+.combat-inventory-tabs {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px;
+  border: 1px solid rgba(205, 190, 244, .13);
+  border-radius: 10px;
+  background: rgba(8, 8, 15, .58);
+}
+.combat-inventory-tabs button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 7px;
+  color: rgba(232, 226, 246, .56);
+  background: transparent;
+  font: 700 9px/1 var(--display);
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.combat-inventory-tabs button small { display: block; margin-top: 4px; color: rgba(213, 198, 246, .46); font: 600 8px/1 var(--body); letter-spacing: 0; }
+.combat-inventory-tabs button.is-active {
+  color: #fff;
+  background-image: var(--kit-secondary-control);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 16px rgba(144, 100, 241, .13);
+}
+.combat-inventory-tabs button.is-active small { color: #cbb8ff; }
+.combat-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 7px;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px 3px 4px;
+  scrollbar-color: rgba(178, 146, 255, .54) transparent;
+}
+.combat-inventory-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 1px solid rgba(210, 198, 235, .14);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(32, 30, 46, .75), rgba(9, 9, 16, .86));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .045), inset 0 0 16px rgba(98, 67, 165, .08);
+}
+.combat-inventory-slot.is-empty { opacity: .56; }
+.combat-inventory-slot.is-empty > span { color: rgba(220, 211, 235, .18); font: 600 7px var(--body); }
+.combat-inventory-slot img { width: 66%; height: 66%; object-fit: contain; filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .42)); }
+.combat-inventory-slot strong {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  color: #f5efff;
+  font: 700 9px/1 var(--body);
+  text-shadow: 0 1px 4px #000;
+}
+.combat-inventory-slot small {
+  position: absolute;
+  right: 4px;
+  bottom: -14px;
+  left: 4px;
+  overflow: hidden;
+  color: rgba(231, 225, 242, .5);
+  font-size: 7px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combat-inventory-hint {
+  min-height: 12px;
+  margin: 0;
+  color: rgba(224, 216, 238, .5);
+  font-size: 9px;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .combat-inventory-modal { width: min(640px, calc(100vw - 18px)); }
+  .combat-inventory-modal__content { padding: 36px 39px 32px; gap: 9px; }
+  .combat-inventory-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .combat-inventory-slot small { display: none; }
+  .combat-inventory-tabs button { font-size: 8px; }
+}
+
+/* Incubation buttons keep the generated silver/purple plate as the only
+   perimeter; the former CSS outline made a second colored border. */
+.app-shell--incubation .incubator-panel .primary-button,
+.app-shell--incubation .incubator-panel .secondary-button {
+  border-color: transparent !important;
+  outline: 0;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .1), 0 8px 18px rgba(0, 0, 0, .2);
+}
+.app-shell--incubation .incubator-panel .primary-button:focus-visible,
+.app-shell--incubation .incubator-panel .secondary-button:focus-visible {
+  outline: 2px solid rgba(201, 178, 255, .68);
+  outline-offset: 3px;
+}

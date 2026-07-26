@@ -48,6 +48,7 @@ import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./g
 type View = "expedition" | "objectives" | "dispatch" | "habitat" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
 type NoticeTone = "violet" | "success" | "warning";
 type CombatPanel = "missions" | "loot" | "duo" | "monsters" | "log";
+type InventoryCategory = "gems" | "consumables" | "materials" | "other";
 
 interface UiNotice {
   title: string;
@@ -94,6 +95,8 @@ let prestigeActivating = false;
 let starterDialogOpen = false;
 let activeCombatPanel: CombatPanel | null = null;
 let combatFocusMode = false;
+let inventoryModalOpen = false;
+let inventoryCategory: InventoryCategory = "gems";
 let pointerInteractionActive = false;
 let keyboardInteractionActive = false;
 let renderDeferred = false;
@@ -777,6 +780,7 @@ function setView(view: View): void {
   activeView = view;
   activeCombatPanel = null;
   combatFocusMode = false;
+  inventoryModalOpen = false;
   window.scrollTo({ top: 0, behavior: "auto" });
   render();
   if (view === "guild") void synchronizeGuild();
@@ -1075,7 +1079,7 @@ function topShell(content: string): string {
 function combatShell(content: string): string {
   return `
     <div class="combat-shell combat-shell--ui-kit combat-shell--${game.currentZoneId} ${combatFocusMode ? "is-focus-mode" : ""}">${content}</div>
-    ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
+    ${inventoryModalOpen ? combatInventoryModal() : ""}${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
 }
 
 function prestigeShell(content: string): string {
@@ -1153,7 +1157,7 @@ function combatRail(): string {
     ["dispatch", "Missionen"],
     ["guild", "Gilde"],
   ];
-  return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => `<button class="${view === "expedition" ? "is-active" : ""}" data-view="${view}" title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`).join("")}</nav>`;
+  return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => `<button class="${view === "expedition" ? "is-active" : ""}" ${view === "inventory" ? "data-inventory-toggle=\"true\"" : `data-view=\"${view}\"`} title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`).join("")}</nav>`;
 }
 
 function combatMonsterSelector(): string {
@@ -1163,6 +1167,74 @@ function combatMonsterSelector(): string {
     const dispatched = isMonsterDispatched(game, monster.uid);
     return `<button class="combat-monster-option ${selected ? "is-active" : ""}" data-active="${monster.uid}" ${selected || dispatched ? "disabled" : ""} style="--monster-accent:${definition.accent}" title="${dispatched ? "Monster ist auf Expedition" : `${definition.name} als Front wählen`}">${monsterAvatar(monster)}<span><strong>${definition.name}</strong><small>LV ${monster.level} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</small></span>${selected ? "<i>AKTIV</i>" : dispatched ? "<i>ENTSANDT</i>" : ""}</button>`;
   }).join("")}</div><button class="combat-manage-team" data-view="habitat">DUO &amp; LEVEL ${icon("arrow")}</button></section>`;
+}
+
+interface InventorySlotData {
+  id: string;
+  name: string;
+  image: string;
+  amount: number;
+  rarity?: string;
+  detail?: string;
+}
+
+const INVENTORY_CATEGORY_LABELS: Record<InventoryCategory, string> = {
+  gems: "GEMS",
+  consumables: "VERBRAUCH",
+  materials: "MATERIALIEN",
+  other: "SONSTIGES",
+};
+
+function inventorySlots(category: InventoryCategory): InventorySlotData[] {
+  if (category === "gems") {
+    return GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).map((gem) => ({
+      id: gem.id,
+      name: gem.name,
+      image: gem.image,
+      amount: game.gemInventory[gem.id] ?? 0,
+      rarity: GEM_RARITIES[gem.rarity].name,
+      detail: gemEffect(gem.id),
+    }));
+  }
+  if (category === "consumables") {
+    return ITEMS.filter((item) => item.action && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      amount: game.inventory[item.id] ?? 0,
+      rarity: item.rarity,
+      detail: item.action === "train" ? "Monstertraining" : "Inkubation",
+    }));
+  }
+  if (category === "materials") {
+    return ITEMS.filter((item) => !item.action && (game.inventory[item.id] ?? 0) > 0).map((item) => ({
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      amount: game.inventory[item.id] ?? 0,
+      rarity: item.rarity,
+      detail: "Etherwerkstatt",
+    }));
+  }
+  return Object.entries(game.eggInventory)
+    .filter(([, amount]) => amount > 0)
+    .flatMap(([definitionId, amount]) => {
+      const definition = MONSTERS.find((entry) => entry.id === definitionId);
+      if (!definition) return [];
+      return [{ id: `egg-${definitionId}`, name: `${definition.name}-Ei`, image: eggImage(definitionId), amount, rarity: "Signal", detail: elementLabel[definition.element] }];
+    });
+}
+
+function combatInventoryModal(): string {
+  const slots = inventorySlots(inventoryCategory);
+  const occupied = slots.length;
+  const categoryLabel = INVENTORY_CATEGORY_LABELS[inventoryCategory];
+  const slotMarkup = Array.from({ length: 64 }, (_, index) => {
+    const entry = slots[index];
+    if (!entry) return `<div class="combat-inventory-slot is-empty" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></div>`;
+    return `<div class="combat-inventory-slot is-filled combat-inventory-slot--${inventoryCategory}" title="${escapeHtml(entry.name)} · ${entry.amount} Stück"><img src="${entry.image}" alt="${escapeHtml(entry.name)}" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong><small>${escapeHtml(entry.name)}</small></div>`;
+  }).join("");
+  return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v1.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${occupied}/64 belegte Slots · ${categoryLabel}</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${(Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[]).map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${inventorySlots(category).length}</small></button>`).join("")}</nav><div class="combat-inventory-grid" aria-label="64 Inventarslots">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
 }
 
 function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {
@@ -1251,7 +1323,7 @@ function expeditionView(): string {
           <div class="versus"><span>VS</span><small>AUTO</small></div>
           <div class="fighter fighter--enemy">${combatEnemyMarkup(battle, bossStage)}</div>
         </div>
-        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span>${icon("inventory")}<small>FUNDE</small><b data-live="pending-finds">${pendingFindCount}</b></span></div><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "disabled" : ""}>${cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`}</button></aside>
+        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span data-loot-kind="gold" ${game.pendingGold > 0 ? "" : "hidden"}>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span data-loot-kind="eggs" ${game.pendingEggs.length > 0 ? "" : "hidden"}>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span data-loot-kind="finds" ${pendingFindCount > 0 ? "" : "hidden"}>${icon("inventory")}<small>FUNDE</small><b data-live="pending-finds">${pendingFindCount}</b></span></div><p class="combat-loot-empty" ${cacheEmpty ? "" : "hidden"}>Keine Beute bereit.</p><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "hidden" : ""}>EINSAMMELN ${icon("arrow")}</button></aside>
         <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
         <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}" data-live="combat-objectives">${combatObjectiveMarkup()}</section>
         ${combatMonsterSelector()}
@@ -1691,10 +1763,19 @@ function refreshCombatUi(now = performance.now(), structural = false): void {
   const lootHud = document.querySelector<HTMLElement>(".combat-loot-hud");
   lootHud?.classList.toggle("is-empty", cacheEmpty);
   lootHud?.classList.toggle("has-loot", !cacheEmpty);
+  const lootGold = document.querySelector<HTMLElement>('[data-loot-kind="gold"]');
+  const lootEggs = document.querySelector<HTMLElement>('[data-loot-kind="eggs"]');
+  const lootFinds = document.querySelector<HTMLElement>('[data-loot-kind="finds"]');
+  if (lootGold) lootGold.hidden = game.pendingGold <= 0;
+  if (lootEggs) lootEggs.hidden = game.pendingEggs.length === 0;
+  if (lootFinds) lootFinds.hidden = pendingFindCount === 0;
+  const lootEmptyCopy = document.querySelector<HTMLElement>(".combat-loot-empty");
+  if (lootEmptyCopy) lootEmptyCopy.hidden = !cacheEmpty;
   const collectButton = document.querySelector<HTMLButtonElement>("#collect-cache");
   if (collectButton) {
-    collectButton.disabled = cacheEmpty;
-    collectButton.innerHTML = cacheEmpty ? "SPEICHER LEER" : `EINSAMMELN ${icon("arrow")}`;
+    collectButton.hidden = cacheEmpty;
+    collectButton.disabled = false;
+    collectButton.innerHTML = `EINSAMMELN ${icon("arrow")}`;
   }
   const lootBadge = liveElement("control-badge-loot");
   if (lootBadge) {
@@ -1830,6 +1911,7 @@ function bindModalKeyboard(): void {
       event.preventDefault();
       if (starterDialogOpen) starterDialogOpen = false;
       else if (showOfflineReport) showOfflineReport = false;
+      else if (inventoryModalOpen) inventoryModalOpen = false;
       render();
       return;
     }
@@ -1898,11 +1980,25 @@ function bindEvents(): void {
     if (event.target.id === "guild-vote-form") void submitGuildVote(event.target);
   });
   app.addEventListener("click", (event) => {
+    const closeInventory = event.target instanceof Element && event.target.closest("[data-close-combat-inventory]");
+    if (closeInventory) {
+      inventoryModalOpen = false;
+      return render();
+    }
     const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
     if (!target || target.disabled) return;
     const run = (key: string, action: () => void): void => runSingleAction(key, action);
 
     if (target.dataset.qa) return run(`qa:${target.dataset.qa}`, () => applyQaState(target.dataset.qa as QaPreset));
+    if (target.dataset.inventoryToggle) {
+      inventoryModalOpen = true;
+      inventoryCategory = "gems";
+      return render();
+    }
+    if (target.dataset.inventoryCategory) {
+      inventoryCategory = target.dataset.inventoryCategory as InventoryCategory;
+      return render();
+    }
     if (target.dataset.view) return setView(target.dataset.view as View);
     if (target.dataset.combatPanel) return toggleCombatPanel(target.dataset.combatPanel as CombatPanel);
     if (target.hasAttribute("data-home")) return setView("expedition");
@@ -1964,6 +2060,7 @@ function bindEvents(): void {
       case "cancel-account-deletion": return void cancelAccountDeletion();
       case "logout-account": return void logoutAccount();
       case "combat-focus-toggle": return toggleCombatFocus();
+      case "close-combat-inventory": inventoryModalOpen = false; return render();
       case "collect-cache": return run("collect-cache", collectCache);
       case "offline-collect": return run("offline-collect", collectOfflineRewards);
       case "hatch-egg": return run("hatch", hatchIncubation);
