@@ -277,13 +277,16 @@
 .combat-shell--ui-kit .combat-duel .versus span { width: 48px; height: 48px; font-size: 15px; }
 
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar__platform {
-  width: 76%;
-  height: 32px;
-  bottom: 4px;
-  opacity: .86;
-  border-color: color-mix(in srgb, var(--monster-accent), transparent 42%);
-  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--monster-accent), transparent 88%) 0 30%, transparent 72%);
-  box-shadow: 0 0 26px color-mix(in srgb, var(--monster-accent), transparent 76%), inset 0 0 18px color-mix(in srgb, var(--monster-accent), transparent 84%);
+  width: 72%;
+  height: 19%;
+  bottom: 1%;
+  opacity: .56;
+  border: 0;
+  border-radius: 50%;
+  background: url("/assets/ui/kit/combat/arena-anchor-v1.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--monster-accent), transparent 84%);
+  filter: saturate(.86) brightness(.82) drop-shadow(0 8px 12px rgba(0, 0, 0, .28));
+  mix-blend-mode: screen;
 }
 
 .combat-shell--ui-kit .combat-duel .fighter .monster-avatar.is-hit {
