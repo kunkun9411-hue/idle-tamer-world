@@ -1201,9 +1201,10 @@ function combatMonsterModal(): string {
     const support = monster.uid === supportUid;
     const dispatched = isMonsterDispatched(game, monster.uid);
     const cost = levelCost(monster.level);
+    const status = active ? "FRONT" : support ? "SUPPORT" : dispatched ? "EXPEDITION" : definition.combatRole.toUpperCase();
     return `<article class="combat-monster-modal__card ${active ? "is-active" : ""} ${support ? "is-support" : ""}" style="--monster-accent:${definition.accent}">
-      <div class="combat-monster-modal__visual">${monsterAvatar(monster)}<span class="combat-monster-modal__role">${active ? "FRONT" : support ? "SUPPORT" : dispatched ? "EXPEDITION" : definition.combatRole.toUpperCase()}</span></div>
-      <div class="combat-monster-modal__copy"><div><strong>${definition.name}</strong><small>${EVOLUTION_LABELS[monster.evolution]} · LV ${monster.level} · HYPER ${monster.hyperLevel}</small></div><span>${monsterMaxHp(monster, game.prestigeCount)} HP · ${monsterAttack(monster, game.prestigeCount)} ATK</span></div>
+      <div class="combat-monster-modal__visual">${monsterAvatar(monster)}</div>
+      <div class="combat-monster-modal__copy"><div class="combat-monster-modal__copy-head"><strong>${definition.name}</strong><span class="combat-monster-modal__role">${status}</span></div><small>${EVOLUTION_LABELS[monster.evolution]} · LV ${monster.level} · HYPER ${monster.hyperLevel}</small><div class="combat-monster-modal__stats"><span>HP <b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span>ATK <b>${monsterAttack(monster, game.prestigeCount)}</b></span></div></div>
       <div class="combat-monster-modal__actions"><button class="secondary-button" data-active="${monster.uid}" ${active || dispatched ? "disabled" : ""}>${active ? "FRONT AKTIV" : dispatched ? "ENTSANDT" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${support || active || dispatched ? "disabled" : ""}>${support ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < cost || dispatched ? "disabled" : ""}>RUN-LEVEL +1 <small>${cost} G</small></button></div>
     </article>`;
   }).join("");

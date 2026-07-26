@@ -1363,6 +1363,123 @@
   outline: 0;
   box-shadow: inset 0 1px rgba(255, 255, 255, .1), 0 8px 18px rgba(0, 0, 0, .2);
 }
+
+/* Player-first pass for the compact battle team window. Sprites stay clear;
+   role/status moves into the information column and actions sit directly
+   beneath each card instead of floating over the artwork. */
+.combat-monster-modal {
+  width: min(800px, calc(100vw - 34px));
+  aspect-ratio: 3 / 2;
+  max-height: calc(100vh - 42px);
+}
+.combat-monster-modal__content {
+  padding: clamp(34px, 4.7vw, 54px) clamp(54px, 6.8vw, 82px) clamp(30px, 4vw, 46px);
+  gap: 8px;
+}
+.combat-monster-modal__grid {
+  align-content: start;
+  grid-auto-rows: minmax(0, auto);
+  padding-top: 1px;
+}
+.combat-monster-modal__card {
+  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-rows: minmax(112px, 1fr) auto;
+  align-content: stretch;
+  min-height: 174px;
+  padding: 9px 10px 10px;
+}
+.combat-monster-modal__visual {
+  min-height: 112px;
+}
+.combat-monster-modal__visual .monster-avatar {
+  width: 108px;
+  height: 108px;
+}
+.combat-monster-modal__visual .monster-avatar__platform {
+  width: 72%;
+  bottom: 7px;
+}
+.combat-monster-modal__copy {
+  align-self: center;
+  padding-top: 0;
+}
+.combat-monster-modal__copy-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.combat-monster-modal__copy-head strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combat-monster-modal__copy > small {
+  display: block;
+  margin-top: 5px;
+  color: rgba(230, 226, 238, .48);
+  font-size: 7px;
+  white-space: nowrap;
+}
+.combat-monster-modal__role {
+  position: static;
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 4px 5px;
+  border-radius: 5px;
+  font-size: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.combat-monster-modal__stats {
+  display: flex;
+  gap: 11px;
+  margin-top: 13px;
+  color: rgba(224, 216, 238, .5);
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.combat-monster-modal__stats b {
+  margin-left: 3px;
+  color: rgba(242, 237, 250, .82);
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.combat-monster-modal__actions {
+  gap: 5px;
+}
+.combat-monster-modal__actions button {
+  min-height: 30px;
+  padding: 5px 6px;
+  font-size: 6px;
+  line-height: 1.1;
+}
+.combat-monster-modal__actions button small {
+  display: inline;
+  margin: 0 0 0 3px;
+  font-size: 5px;
+}
+
+@media (max-width: 700px) {
+  .combat-monster-modal {
+    width: min(640px, calc(100vw - 18px));
+    aspect-ratio: 3 / 4;
+    max-height: calc(100vh - 24px);
+  }
+  .combat-monster-modal__content {
+    padding: 36px 39px 32px;
+    gap: 8px;
+  }
+  .combat-monster-modal__grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .combat-monster-modal__card {
+    min-height: 148px;
+  }
+}
 .app-shell--incubation .incubator-panel .primary-button:focus-visible,
 .app-shell--incubation .incubator-panel .secondary-button:focus-visible {
   outline: 2px solid rgba(201, 178, 255, .68);
