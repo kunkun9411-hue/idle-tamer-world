@@ -519,7 +519,10 @@
 .combat-shell--ui-kit .combat-objective-progress,
 .combat-shell--ui-kit .attack-cycle > div,
 .combat-shell--ui-kit .hp-track {
-  background-image: none;
+  background-image: var(--kit-slim-control);
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .combat-shell--ui-kit .combat-duel .nameplate {
   width: min(238px, 76%);
