@@ -681,6 +681,32 @@
 .habitat-page .monster-card__actions button { min-height: 28px; padding-inline: 5px; font-size: 6px; }
 .habitat-page .monster-card__actions button small { font-size: 5px; }
 .habitat-page .empty-slot { min-height: 338px; padding: 16px; }
+.habitat-page .monster-card__controls {
+  margin-top: 7px;
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+.habitat-page .monster-card__controls summary {
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  border: 1px solid rgba(168, 139, 255, .18);
+  border-radius: 7px;
+  color: var(--violet-bright);
+  background: rgba(168, 139, 255, .045);
+  cursor: pointer;
+  font-size: 6px;
+  font-weight: 750;
+  letter-spacing: .75px;
+  list-style: none;
+}
+.habitat-page .monster-card__controls summary::-webkit-details-marker { display: none; }
+.habitat-page .monster-card__controls summary::after { content: "+"; color: var(--muted); font-size: 12px; font-weight: 400; }
+.habitat-page .monster-card__controls[open] summary::after { content: "−"; }
+.habitat-page .monster-card__controls summary span { color: var(--muted); font-size: 5px; }
+.habitat-page .monster-card__controls .monster-card__actions { margin-top: 6px; }
 
 @media (max-width: 1240px) {
   .habitat-page .roster-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }

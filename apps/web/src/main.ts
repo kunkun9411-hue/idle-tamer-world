@@ -1403,7 +1403,7 @@ function gemLoadout(monster: MonsterInstance): string {
   </section>`;
 }
 
-function monsterCard(monster: MonsterInstance): string {
+function monsterCardLegacy(monster: MonsterInstance): string {
   const lineage = getMonster(monster.definitionId);
   const definition = getMonsterForm(monster);
   const isActive = monster.uid === game.activeMonsterUid;
@@ -1419,6 +1419,17 @@ function monsterCard(monster: MonsterInstance): string {
       ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS`
       : "";
   return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span><small>ATK</small><b>${monsterAttack(monster, game.prestigeCount)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP${persistenceNote}</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>EVOLUTION</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>DATEN +1 <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
+}
+
+function monsterCard(monster: MonsterInstance): string {
+  const html = monsterCardLegacy(monster);
+  const actionsStart = html.indexOf('<div class="monster-card__actions">');
+  const actionsEnd = html.indexOf('</div></article>', actionsStart);
+  if (actionsStart < 0 || actionsEnd < 0) return html;
+  const actionsClose = '</div></article>';
+  const actions = html.slice(actionsStart, actionsEnd + '</div>'.length);
+  const role = monster.uid === game.activeMonsterUid ? 'FRONT' : monster.uid === game.supportMonsterUid ? 'SUPPORT' : '';
+  return `${html.slice(0, actionsStart)}<details class="monster-card__controls"><summary>VERWALTEN <span>${role}</span></summary>${actions}</details>${html.slice(actionsEnd + actionsClose.length)}`;
 }
 
 function incubationView(): string {
