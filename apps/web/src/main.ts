@@ -20,6 +20,7 @@ import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { formatGameNumber } from "./game/number-scale";
 import { applyAuthoritativeRunSnapshot, combatMonsterForAuthority } from "./game/online-run-state";
+import { authoritativeCacheHasRewards, shouldShowOfflineReport } from "./game/offline-rewards";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
 import { applyQaPreset, type QaPreset } from "./game/qa-tools";
 import {
@@ -177,7 +178,13 @@ async function synchronizeOnlineRun(showReport = false): Promise<void> {
   try {
     const response = await accountClient.bootstrapRun();
     applyOnlineRun(response.snapshot);
-    if (showReport && (response.settlement.victoriesAdded > 0 || response.snapshot.cacheSlotsUsed > 0)) showOfflineReport = true;
+    if (showReport) {
+      showOfflineReport = shouldShowOfflineReport(true, {
+        offlineSeconds: loaded.offlineSeconds,
+        cacheSlotsUsed: game.cacheSlotsUsed,
+        pendingGold: game.pendingGold,
+      }, response.snapshot);
+    }
     clientUiState = "online";
     render();
   } catch (error) {
@@ -435,8 +442,20 @@ async function collectOfflineRewards(): Promise<void> {
   const items = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
   const gems = game.pendingGems.length;
   if (isRunOnline()) {
+    if (!onlineRun || !authoritativeCacheHasRewards(onlineRun)) {
+      showNotice("Willkommen zurück", "Dein Offline-Fortschritt ist bereits synchronisiert. Im Kampfspeicher wartet aktuell keine weitere Beute.", "success");
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+      return;
+    }
     const response = await sendOnlineRunCommand({ type: "cache.claim" });
-    if (response) showNotice("Willkommen zurück", `${response.event.payload.gold ?? gold} serverseitig berechnetes Gold wurde eingesammelt.`, "success");
+    if (response) {
+      const payload = response.event.payload;
+      showNotice(
+        "Willkommen zurück",
+        `${payload.gold ?? gold} Gold, ${payload.eggs ?? eggs} Eier, ${payload.items ?? items} Materialien und ${payload.gems ?? gems} Gems wurden sicher eingesammelt.`,
+        "success",
+      );
+    }
     else render();
   } else if (service.collectCache()) {
     showNotice("Willkommen zurück", `${gold} Gold, ${eggs} Eier, ${items} Materialien und ${gems} Gems wurden eingesammelt.`, "success");
@@ -853,7 +872,11 @@ function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
   clientUiState = "online";
   activeView = "expedition";
   starterDialogOpen = !serverStarter;
-  showOfflineReport = Boolean(serverStarter && (loaded.offlineSeconds > 0 || game.cacheSlotsUsed > 0));
+  showOfflineReport = Boolean(serverStarter && shouldShowOfflineReport(isRunOnline(), {
+    offlineSeconds: loaded.offlineSeconds,
+    cacheSlotsUsed: game.cacheSlotsUsed,
+    pendingGold: game.pendingGold,
+  }));
   battle = createBattleState();
   render();
   if (serverStarter) void synchronizeOnlineRun(true);

@@ -166,9 +166,34 @@ const formatPercent = (percent) => `${Number.isInteger(percent) ? percent : perc
 
 const getBlockCode = (data, block) => `${data.roadmap}.${String(block.id).padStart(2, "0")}`;
 
+const isRoadmapInProgress = (data) => data.status === "in_progress";
+
+const resolveActiveStep = (data, block) => {
+  const namedIndex = typeof data.activeStep === "string"
+    ? block.steps.findIndex((step) => step.name === data.activeStep)
+    : -1;
+  const legacyIndex = Number.isInteger(data.activeStep)
+    ? data.activeStep - 1
+    : -1;
+  const openIndex = block.steps.findIndex((step) => !step.done);
+  const index = namedIndex >= 0
+    ? namedIndex
+    : legacyIndex >= 0 && legacyIndex < block.steps.length
+      ? legacyIndex
+      : openIndex >= 0
+        ? openIndex
+        : Math.max(block.steps.length - 1, 0);
+
+  return {
+    index,
+    number: index + 1,
+    step: block.steps[index],
+  };
+};
+
 const getState = (block, data) => {
   if (block.steps.every((step) => step.done)) return "Fertig";
-  if (data.status === "active" && block.id === data.activeBlock) return "Aktiv";
+  if (isRoadmapInProgress(data) && block.id === data.activeBlock) return "Aktiv";
   return "Später";
 };
 
@@ -180,7 +205,7 @@ const renderCard = (block, data, selectedId) => {
       class="block-card"
       type="button"
       data-block-id="${block.id}"
-      data-active="${data.status === "active" && block.id === data.activeBlock}"
+      data-active="${isRoadmapInProgress(data) && block.id === data.activeBlock}"
       aria-pressed="${block.id === selectedId}"
       style="--card-accent:${accentVariables[block.accent] ?? accentVariables.violet}"
     >
@@ -197,14 +222,15 @@ const renderCard = (block, data, selectedId) => {
 
 const renderDetail = (block, data) => {
   const percent = getPercent(block);
-  const isActive = data.status === "active" && block.id === data.activeBlock;
+  const isActive = isRoadmapInProgress(data) && block.id === data.activeBlock;
+  const activeStep = resolveActiveStep(data, block);
   document.querySelector("#detail-kicker").innerHTML = `<span></span> ${getBlockCode(data, block)} · ${escapeHtml(block.kicker)}`;
   document.querySelector("#detail-title").textContent = block.title;
   document.querySelector("#detail-percent").textContent = `${percent}%`;
   document.querySelector("#detail-summary").textContent = block.summary;
   document.querySelector("#detail-visual").innerHTML = (visualTemplates[block.visual] ?? visualTemplates.backend)();
   document.querySelector("#step-list").innerHTML = block.steps.map((step, index) => `
-    <article class="step-item" data-done="${step.done}" data-current="${isActive && index + 1 === data.activeStep}">
+    <article class="step-item" data-done="${step.done}" data-current="${isActive && index === activeStep.index}">
       <span class="step-icon" aria-hidden="true">✓</span>
       <strong>${index + 1}. ${escapeHtml(step.name)}</strong>
       <p>${escapeHtml(step.note)}</p>
@@ -215,7 +241,7 @@ const renderDetail = (block, data) => {
       ? "Dieser Block ist abgenommen und eingefroren. Roadmap A wird nur für kritische Fehler erneut geöffnet."
       : "Dieser Block ist abgenommen. Er wird nur für Fehlerkorrekturen erneut geöffnet."
     : isActive
-      ? `Aktuell aktiv: ${getBlockCode(data, block)}, Schritt ${data.activeStep} – ${block.steps[data.activeStep - 1].name}.`
+      ? `Aktuell aktiv: ${getBlockCode(data, block)}, Schritt ${activeStep.number} – ${activeStep.step.name}.`
       : `Dieser Block startet nach der Abnahme von ${data.roadmap}.${String(block.id - 1).padStart(2, "0")}.`;
   document.querySelector("#detail-hint").textContent = hint;
 };
@@ -247,10 +273,10 @@ const init = async () => {
   document.querySelector("#switch-a-progress").textContent = `${aTotals.completed}/${aTotals.total} · ${formatPercent(aTotals.percent)}`;
   document.querySelector("#switch-b-progress").textContent = `${activeTotals.completed}/${activeTotals.total} · ${formatPercent(activeTotals.percent)}`;
   document.querySelector("#active-block-label").textContent = `${getBlockCode(activeData, activeBlock)} · ${activeBlock.title}`;
-  const activeStep = activeData.activeStep ?? activeBlock.steps.length;
+  const activeStep = resolveActiveStep(activeData, activeBlock);
   document.querySelector("#active-step-label").textContent = activeData.status === "complete"
     ? "ABGESCHLOSSEN · ÜBERGABE AN C"
-    : `${activeStep} · ${activeBlock.steps[activeStep - 1].name}`;
+    : `${activeStep.number} · ${activeStep.step.name}`;
   document.querySelector("#completed-label").textContent = `${activeTotals.completed} / ${activeTotals.total} B-Gates`;
   document.querySelector("#updated-label").textContent = activeData.updated;
 

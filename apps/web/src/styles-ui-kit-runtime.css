@@ -1069,6 +1069,7 @@
   backdrop-filter: blur(7px);
 }
 .combat-inventory-modal {
+  --frame-footer-safe-space: clamp(52px, 7.5vh, 70px);
   position: fixed;
   z-index: 81;
   top: 50%;
@@ -1110,7 +1111,7 @@
   gap: 13px;
   height: 100%;
   min-height: 0;
-  padding: clamp(42px, 6vw, 70px) clamp(56px, 7vw, 92px) clamp(40px, 5vw, 64px);
+  padding: clamp(42px, 6vw, 70px) clamp(56px, 7vw, 92px) var(--frame-footer-safe-space);
 }
 .combat-inventory-modal__header {
   display: flex;
@@ -1248,15 +1249,24 @@
   transform: translate(50%, 0);
 }
 .combat-inventory-hint {
-  min-height: 12px;
+  display: grid;
+  place-items: center;
+  align-self: end;
+  min-height: 28px;
   margin: 0;
-  color: rgba(224, 216, 238, .5);
-  font-size: 9px;
+  padding: 6px 12px;
+  border-top: 1px solid rgba(205, 190, 244, .12);
+  border-radius: 7px;
+  color: rgba(235, 229, 247, .72);
+  background: linear-gradient(90deg, transparent, rgba(14, 12, 24, .52) 15%, rgba(14, 12, 24, .52) 85%, transparent);
+  font: 500 clamp(9px, .72vw, 10px)/1.4 var(--body);
   text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 700px) {
   .combat-inventory-modal { width: min(640px, calc(100vw - 18px)); }
-  .combat-inventory-modal__content { padding: 36px 39px 32px; gap: 9px; }
+  .combat-inventory-modal__content { padding: 36px 39px var(--frame-footer-safe-space); gap: 9px; }
   .combat-inventory-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .combat-inventory-tabs button { font-size: 8px; }
 }
@@ -1272,6 +1282,7 @@
   backdrop-filter: blur(7px);
 }
 .combat-monster-modal {
+  --frame-footer-safe-space: clamp(52px, 7.5vh, 70px);
   position: fixed;
   z-index: 81;
   top: 50%;
@@ -1304,7 +1315,7 @@
   gap: 10px;
   height: 100%;
   min-height: 0;
-  padding: clamp(40px, 5.6vw, 64px) clamp(56px, 7vw, 88px) clamp(38px, 5vw, 58px);
+  padding: clamp(40px, 5.6vw, 64px) clamp(56px, 7vw, 88px) var(--frame-footer-safe-space);
 }
 .combat-monster-modal__header .combat-inventory-modal__header { min-width: 0; }
 .combat-monster-modal__header h2 { margin: 3px 0 2px; font: 700 clamp(22px, 3vw, 34px)/1 var(--display); letter-spacing: -.035em; }
@@ -1349,7 +1360,7 @@
 
 @media (max-width: 700px) {
   .combat-monster-modal { width: min(640px, calc(100vw - 18px)); aspect-ratio: 3 / 4; max-height: calc(100vh - 24px); }
-  .combat-monster-modal__content { padding: 36px 39px 32px; gap: 8px; }
+  .combat-monster-modal__content { padding: 36px 39px var(--frame-footer-safe-space); gap: 8px; }
   .combat-monster-modal__grid { grid-template-columns: 1fr; gap: 6px; }
   .combat-monster-modal__card { min-height: 126px; }
   .gem-monster-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1373,7 +1384,7 @@
   max-height: calc(100vh - 42px);
 }
 .combat-monster-modal__content {
-  padding: clamp(34px, 4.7vw, 54px) clamp(54px, 6.8vw, 82px) clamp(30px, 4vw, 46px);
+  padding: clamp(34px, 4.7vw, 54px) clamp(54px, 6.8vw, 82px) var(--frame-footer-safe-space);
   gap: 8px;
 }
 .combat-monster-modal__grid {
@@ -1469,7 +1480,7 @@
     max-height: calc(100vh - 24px);
   }
   .combat-monster-modal__content {
-    padding: 36px 39px 32px;
+    padding: 36px 39px var(--frame-footer-safe-space);
     gap: 8px;
   }
   .combat-monster-modal__grid {

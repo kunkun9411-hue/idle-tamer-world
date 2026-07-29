@@ -18,6 +18,38 @@ const roadmapSources = [
 const problems = [];
 const results = [];
 
+export const validateActivePointer = (data, label = `Roadmap ${data.roadmap ?? "?"}`) => {
+  const pointerProblems = [];
+  if (data.status !== "in_progress") pointerProblems.push(`${label}: aktuelle Roadmap muss status=in_progress besitzen.`);
+
+  const activeBlock = (data.blocks ?? []).find((block) => block.id === data.activeBlock);
+  if (!activeBlock) {
+    pointerProblems.push(`${label}: aktiver Block ${data.activeBlock} existiert nicht.`);
+    return pointerProblems;
+  }
+
+  const firstOpenStep = activeBlock.steps?.find((step) => !step.done);
+  if (!firstOpenStep) {
+    pointerProblems.push(`${label}: aktiver Block ${data.activeBlock} besitzt keinen offenen Schritt.`);
+  }
+
+  if (typeof data.activeStep !== "string" || data.activeStep.trim() === "") {
+    pointerProblems.push(`${label}: activeStep muss den Namen des aktiven Schritts enthalten.`);
+    return pointerProblems;
+  }
+
+  const selectedStep = activeBlock.steps?.find((step) => step.name === data.activeStep);
+  if (!selectedStep) {
+    pointerProblems.push(`${label}: aktiver Schritt "${data.activeStep}" existiert in Block ${data.activeBlock} nicht.`);
+  } else if (selectedStep.done) {
+    pointerProblems.push(`${label}: aktiver Schritt "${data.activeStep}" ist bereits abgeschlossen.`);
+  } else if (firstOpenStep && selectedStep !== firstOpenStep) {
+    pointerProblems.push(`${label}: aktiver Schritt muss der erste offene Schritt "${firstOpenStep.name}" sein.`);
+  }
+
+  return pointerProblems;
+};
+
 const parseProgressRows = (document, roadmapId) => {
   const rows = new Map();
   const blockPattern = roadmapId === "A" ? /^[1-8]$/ : /^B\.0[1-8]$/;
@@ -63,11 +95,7 @@ for (const source of roadmapSources) {
       problems.push(`${label}: eingefrorene Roadmap enthält offene Schritte.`);
     }
   } else {
-    if (data.status !== "active") problems.push(`${label}: aktuelle Roadmap muss status=active besitzen.`);
-    if (!ids.has(data.activeBlock)) problems.push(`${label}: aktiver Block ${data.activeBlock} existiert nicht.`);
-    if (!Number.isInteger(data.activeStep) || data.activeStep < 1 || data.activeStep > 4) {
-      problems.push(`${label}: activeStep muss zwischen 1 und 4 liegen.`);
-    }
+    problems.push(...validateActivePointer(data, label));
   }
 
   const progressRows = parseProgressRows(document, source.id);

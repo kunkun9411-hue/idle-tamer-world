@@ -1,6 +1,19 @@
-# Roadmap-A-UI-Übergabe
+# Roadmap-A/B-UI-Arbeitsübergabe
 
-Status: **A.08.4 und Roadmap B.08.4 abgenommen – Übergabe an Roadmap C**
+Status: **Roadmap A 32/32 abgeschlossen · Roadmap B 28/32 · Übergabe an Roadmap C gesperrt**
+
+## Aktuelle Statusautorität
+
+Der maschinenlesbare Status in
+`apps/web/public/roadmap/roadmap-status.json` ist die maßgebliche Quelle für
+Roadmap B. `docs/ROADMAP_B_DESIGN_UI.md` bildet diesen Status als
+Arbeitsdokument ab. Diese Übergabe ist nur eine Bedien- und Quellenübersicht
+und darf keinen davon abweichenden Gate-Stand freigeben.
+
+Aktuell sind **B.03.3, B.03.4, B.08.3 und B.08.4 offen**. Damit stehen
+**28 von 32 Gates** auf abgeschlossen. Roadmap C darf erst beginnen, nachdem
+die Kampfszene aus Spielersicht geprüft und abgenommen, der Gesamtpolish erneut
+geprüft und beide Quellen auf 32/32 synchronisiert wurden.
 
 ## Schnellstart
 
@@ -36,7 +49,8 @@ pnpm ui:capture
 | Welche Farben und Basiskomponenten gelten? | `../UI_SYSTEM.md` |
 | Welche neuen Tokens und Komponenten werden zuerst gebaut? | `B01_DESIGN_SYSTEM_PLAN.md` |
 | Welche seriellen UI-Elemente kommen als Nächstes? | `B01_NEXT_SERIAL_GATE.md` (G26/G27/G28/G29/G30/G31/G32/G33/G34/G35/G36/H09/H10/H11/H12 abgenommen; Serienliste abgeschlossen) |
-| Wie weit sind B.02–B.08? | `B02_B08_PROGRESS.md` (alle 32 B-Gates abgenommen, C-Grenzen dokumentiert) |
+| Was ist der maßgebliche Roadmap-B-Status? | `apps/web/public/roadmap/roadmap-status.json` (aktuell 28/32; B.03 und B.08 offen) |
+| Wie weit sind B.02–B.08? | `B02_B08_PROGRESS.md` (nachweisbare Vorarbeit und offene Abnahmegrenzen) |
 | Wie funktionieren Avatar und Rahmen? | `AVATAR_FRAME_CONTRACT.md` |
 | Welche Assetmaße gelten? | `../ASSET_PIPELINE.md`, `../PIXELLAB_ANIMATION_CONTRACT.md` und UI-Katalog |
 | Was darf UI niemals übernehmen? | `../API_CONTRACT_V8.md` und `../ONLINE_ARCHITECTURE.md` |
@@ -57,8 +71,13 @@ Eine behobene Schuld muss aus Katalog, Dokument und Testallowlist gemeinsam entf
 4. `pnpm ui:audit` ausführen;
 5. `pnpm ui:capture` erzeugen und Bilder vergleichen;
 6. relevante E2E-, Kontrast- und Tastaturtests ausführen;
-7. erst dann das jeweilige B-Gate abhaken. Dieser Ablauf ist für Roadmap C und
-   spätere UI-Erweiterungen wiederzuverwenden.
+7. erst dann das jeweilige B-Gate abhaken.
+
+Die vier offenen Gates werden erst nach derselben Prüfkette in
+`apps/web/public/roadmap/roadmap-status.json` und
+`docs/ROADMAP_B_DESIGN_UI.md` gemeinsam geschlossen. Dieser Ablauf ist für
+Roadmap C und spätere UI-Erweiterungen wiederzuverwenden; er ist selbst keine
+Freigabe für Roadmap C.
 
 ## Unverrückbare Grenze
 
