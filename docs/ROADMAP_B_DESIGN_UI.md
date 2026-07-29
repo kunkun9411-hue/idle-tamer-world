@@ -3,7 +3,7 @@
 - Stand: 26. Juli 2026
 - Status: **aktiv – visuelle Nacharbeit offen**
 - Übergabe: **noch keine Übergabe an Roadmap C**
-- Aktives Gate: **B.03.3 – Kampfszene visuell prüfen**
+- Aktives Gate: **B.03.3 – vollständige Live-Spielerprüfung abschließen**
 - Statusdaten: `apps/web/public/roadmap/roadmap-status.json`
 
 Die gemessene Ausgangsbasis mit 16 Flächen, Zustandsmatrix und priorisiertem UX-Backlog steht in `ui/SCENE_INVENTORY.md`. Der eingefrorene technische Übergabevertrag und die offenen UX-Themen stehen in `ROADMAP_A_COMPLETION.md`. Beides ist verbindlicher Eingang für B.01.
@@ -25,7 +25,12 @@ Roadmap B macht aus dem technisch funktionierenden Systemfundament ein geschloss
 | B.07 | Responsive Design und Zugänglichkeit | [x] | [x] | [x] | [x] | Fertig |
 | B.08 | Gesamtpolish und Übergabe an C | [x] | [x] | [ ] | [ ] | Wartet auf B.03 |
 
-Gesamtfortschritt: **28 von 32 Gates abgeschlossen (87,5 %)**. B.03 und B.08 bleiben bewusst offen, bis die Kampfszene auch visuell abgenommen ist. Roadmap A bleibt separat bei 32/32 eingefroren; Roadmap C startet erst nach der echten B-Abnahme.
+Gesamtfortschritt: **28 von 32 Gates abgeschlossen (87,5 %)**. QA-01 bis
+QA-05 aus der Spielerprüfung sind technisch geschlossen; die dabei gefundene
+mobile Eingabeblockade ist behoben und regressionsgesichert. B.03 und B.08
+bleiben dennoch bewusst offen, bis der deployte Stand als zusammenhängendes
+Spiel live geprüft und anschließend formal abgenommen ist. Roadmap A bleibt
+separat bei 32/32 eingefroren; Roadmap C startet erst nach der echten B-Abnahme.
 
 ## Arbeitsmodell
 
@@ -164,7 +169,11 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 ## Übergabe an Roadmap C
 
-Die Übergabe ist **noch gesperrt**. Der nächste Abnahmeschritt ist eine echte visuelle Spielersicht auf die Kampfszene: beide Monster mittig in einer klaren Safe-Area, kompakte Nameplates und HP-Balken, keine Kollision mit Dock oder Panels. Erst danach wird B.08 erneut geprüft und Roadmap C geöffnet.
+Die Übergabe ist **noch gesperrt**. Desktop-, Tablet- und Mobile-Captures sowie
+die Zwei-Monster-/Support-/Zonenbonus-Strecke bestätigen inzwischen klare
+Safe-Areas, kompakte Nameplates und kollisionsfreie Bedienleisten. Der nächste
+Abnahmeschritt ist die vollständige Live-Spielerprüfung des deployten Standes.
+Erst danach werden B.03 und B.08 formal abgenommen und Roadmap C geöffnet.
 # B.01.2 Build-Stand - 2026-07-26
 
 Der modulare Bausatz ist in den ersten produktionsnahen Familien umgesetzt: A08-A18 Rahmengeometrie, B01-B14 Innenflächen, Zustandslicht und Materialtexturen, C01-C16 Leisten/Ornamente, D01-D16 Aktionen/Steuerung, E01-E05, E09-E11, E14 und E18 Wert-/Fortschrittsfassungen plus die acht CSS-/Rotationsableitungen E06-E08, E12-E13 und E15-E17, F01-F16 Ökonomie-/Itemicons, G01-G36 Systemicons inklusive G11 Gilden-DNA, G16 Post, G18 Audio an, G19 Audio aus und G27 Vorwärts als Ableitungen, G21 Information, G22 Warnung, G23 Erfolg, G24 Fehler, G25 Schließen, G26 Zurück, G28 Hinzufügen, G29 Entfernen, G30 Sperre, G31 Filter, G32 Sortieren, G33 Suche, G34 Aktualisieren, G35 Menü und G36 Mehr/Optionen sowie H01-H12 Identitätslayer. Runtime, Manifest, Katalog, Desktop-/Tablet-/Mobile-E2E und Asset-Budget sind grün; die serielle UI-Liste ist vollständig. B.01.4 ist visuell abgenommen und der Designsystem-Freeze gilt für B.02–B.08.

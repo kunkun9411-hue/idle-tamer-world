@@ -1,25 +1,29 @@
 # B.08 · Gesamtpolish und Übergabe
 
-Stand: **26. Juli 2026 · B.08.4 abgenommen und an Roadmap C übergeben**
+Stand: **29. Juli 2026 · B.08.1/B.08.2 abgeschlossen, B.08.3/B.08.4 offen**
 
 ## Übergabekriterien
 
-- UI-Kit: 136 Rasterelemente, 10 CSS-/Rotationsableitungen, 257 Manifest-IDs;
-- Runtime-Budget: 8,39 MB unter dem 8,5-MB-Limit;
-- visuelle Referenzen: 14 Szenen je Desktop/Tablet/Mobile-Capture-Satz;
+- UI-Kit: 136 Rasterelemente, 10 CSS-/Rotationsableitungen, 271 Manifest-IDs;
+- Foundation-Budget: 15,33 MB unter dem aktuellen 16-MB-Limit;
+- visuelle Referenzen: aktuelle Desktop/Tablet/Mobile-Capture-Sätze;
 - reproduzierbare Regression: Roadmap-, Unit-, E2E-, Layout-Audit-, Capture-
   und Produktionsbuild-Befehle;
-- keine offene Layoutschuld in der UI-Audit-Allowlist;
-- C-Übergabe bleibt auf Darstellung/Feedback begrenzt; serverautoritative
+- keine bekannte P0/P1-Layoutschuld in der automatisierten Referenzmatrix;
+- vollständiger Live-Spielerlauf nach dem finalen Deployment;
+- C-Übergabe erst nach synchroner B.03- und B.08-Abnahme; serverautoritative
   Wirtschaft, Besitz, Zeit, Rechte und Gildenledger bleiben unverändert.
 
 ## Abnahmebefund
 
-Die 14 Szenen je Desktop/Tablet/Mobile wurden mit reduzierter Bewegung neu
-erzeugt und visuell geprüft; der Live-Gildenhub ist zusätzlich unter
-`apps/web/artifacts/ui-captures/live-guild.png` festgehalten. Der neue B07/B08-
-E2E-Lauf prüft Mikrofeedback, Fokusmodus, Reduced Motion, 2×-Typografiestress
-und reproduzierbare Capture-Erzeugung. `pnpm check:roadmap`, Assetvalidator,
-Unit-/Vertragstests, 31 lokale E2E, Layout-Audit, Capture und Produktionsbuild
-sind grün. Roadmap B ist damit eingefroren; Wirtschaft, Besitz, Zeit, Rechte
-und Gildenledger bleiben unverändert serverautoritativ.
+Der Lauf vom 26. Juli bleibt ein historischer technischer Nachweis, aber keine
+aktuelle B.08-Abnahme. Die Folgeprüfung vom 29. Juli schließt QA-01 bis QA-05
+technisch, ergänzt eine isolierte Zwei-Monster-/Support-/Zonenbonus-Strecke und
+sichert die gefundene mobile Eingabeblockade in der Responsive-Regression ab.
+Desktop-, Tablet- und Mobile-Captures wurden erneut visuell geprüft.
+
+Roadmap B bleibt trotzdem bei **28/32**. B.03.3/B.03.4 und davon abhängig
+B.08.3/B.08.4 bleiben offen, bis die vollständige Live-Spielerprüfung und die
+anschließende Gesamtpolish-Abnahme abgeschlossen sind. Es gibt noch keine
+Übergabe an Roadmap C. Wirtschaft, Besitz, Zeit, Rechte und Gildenledger
+bleiben unverändert serverautoritativ.

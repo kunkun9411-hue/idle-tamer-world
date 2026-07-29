@@ -20,6 +20,7 @@ for (const viewport of UI_VIEWPORTS) {
     const target = `${captureRoot}/${viewport.id}`;
     await mkdir(target, { recursive: true });
     const shot = async (name: string, fullPage = false): Promise<void> => {
+      await page.waitForFunction(() => [...document.images].every((image) => image.complete));
       await page.screenshot({ path: `${target}/${name}.png`, fullPage, animations: "disabled" });
     };
 
@@ -46,20 +47,31 @@ for (const viewport of UI_VIEWPORTS) {
 
     await activate(page, '[data-combat-panel="missions"]');
     await shot("05-combat-missions");
-    await activate(page, ".combat-objectives-link");
-    await shot("06-objectives", true);
+    await activate(page, '[data-combat-panel="missions"]');
 
-    for (const [index, view] of ["dispatch", "habitat", "incubation", "inventory", "research", "guild"].entries()) {
-      await activate(page, `.main-nav [data-view="${view}"]`);
-      await shot(`${String(index + 7).padStart(2, "0")}-${view}`, true);
+    await activate(page, ".combat-rail [data-monster-toggle]");
+    await expect(page.getByRole("dialog", { name: "Monster", exact: true })).toBeVisible();
+    await shot("06-monster-quick");
+    await page.getByRole("button", { name: "Monsterfenster schließen" }).click();
+
+    await activate(page, ".combat-rail [data-inventory-toggle]");
+    await expect(page.getByRole("dialog", { name: "Inventar", exact: true })).toBeVisible();
+    await shot("07-inventory-quick");
+    await page.getByRole("button", { name: "Inventar schließen" }).click();
+
+    for (const [index, view] of ["dispatch", "incubation", "research", "guild"].entries()) {
+      await activate(page, `.combat-rail [data-view="${view}"]`);
+      await shot(`${String(index + 8).padStart(2, "0")}-${view}`, true);
+      await activate(page, '.main-nav [data-view="expedition"]');
+      await expect(page.getByTestId("combat-scene")).toBeVisible();
     }
 
-    await activate(page, '.topbar [data-view="profile"]');
-    await shot("13-profile", true);
+    await activate(page, '.profile-chip[data-view="profile"]');
+    await shot("12-profile", true);
     await activate(page, '.main-nav [data-view="expedition"]');
     await expect(page.getByTestId("combat-scene")).toBeVisible();
     await activate(page, "#start-prestige");
     await expect(page.getByTestId("prestige-scene")).toBeVisible();
-    await shot("14-prestige", true);
+    await shot("13-prestige", true);
   });
 }

@@ -1,14 +1,37 @@
 import { ZONES } from "./catalog";
 import { createMonster } from "./rules";
-import type { GameState } from "./types";
+import type { GameState, MonsterInstance } from "./types";
 
 export type QaPreset = "zone-next" | "zone-10" | "resources" | "combat" | "prestige";
 
-const ensureStarter = (state: GameState): void => {
-  if (state.roster.length > 0) return;
+const ensureStarter = (state: GameState): MonsterInstance => {
+  const active = state.roster.find((monster) => monster.uid === state.activeMonsterUid);
+  if (active) return active;
+  if (state.roster[0]) {
+    state.activeMonsterUid = state.roster[0].uid;
+    return state.roster[0];
+  }
   const starter = createMonster("pyrook", 1, 1, 0, "rookie", () => "qa-pyrook");
   state.roster.push(starter);
   state.activeMonsterUid = starter.uid;
+  return starter;
+};
+
+const ensureCombatPair = (state: GameState): void => {
+  const front = ensureStarter(state);
+  const reserveDefinitionId = front.definitionId === "bramblet" ? "pyrook" : "bramblet";
+  let reserve = state.roster.find((monster) => monster.uid !== front.uid && monster.definitionId === reserveDefinitionId);
+  reserve ??= state.roster.find((monster) => monster.uid !== front.uid);
+  if (!reserve) {
+    reserve = createMonster(reserveDefinitionId, 1, 1, 0, "rookie", () => `qa-${reserveDefinitionId}`);
+    state.roster.push(reserve);
+  }
+
+  state.activeMonsterUid = front.uid;
+  state.supportMonsterUid = "";
+  state.expeditions = state.expeditions.filter((expedition) =>
+    expedition.monsterUid !== front.uid && expedition.monsterUid !== reserve.uid,
+  );
 };
 
 export const unlockThroughZone = (state: GameState, requestedZoneNumber: number): void => {
@@ -40,6 +63,7 @@ export const applyQaPreset = (state: GameState, preset: QaPreset): void => {
       for (const monster of state.roster) state.fragments[monster.definitionId] = (state.fragments[monster.definitionId] ?? 0) + 500;
       break;
     case "combat":
+      ensureCombatPair(state);
       for (const monster of state.roster) {
         monster.level = Math.max(monster.level, 100);
         monster.hyperLevel = Math.max(monster.hyperLevel, 10);

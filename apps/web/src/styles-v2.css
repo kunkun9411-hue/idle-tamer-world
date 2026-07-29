@@ -812,7 +812,14 @@ footer { opacity: .76; }
 }
 
 @media (max-width: 760px) {
-  .qa-panel { overflow-x: auto; }
+  .qa-panel {
+    top: 62px;
+    right: 8px;
+    bottom: auto;
+    left: 8px;
+    max-width: none;
+    overflow-x: auto;
+  }
   .qa-panel > span { display: none; }
   .qa-panel button { white-space: nowrap; }
 }

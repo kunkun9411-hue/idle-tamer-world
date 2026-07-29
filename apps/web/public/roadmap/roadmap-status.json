@@ -1,7 +1,7 @@
 {
   "roadmap": "B",
   "status": "in_progress",
-  "updated": "26. Juli 2026 · B.03 Kampfszene nach visueller Prüfung wieder geöffnet",
+  "updated": "29. Juli 2026 · QA-Folgeprüfung grün, vollständige Live-Abnahme offen",
   "activeBlock": 3,
   "activeStep": "Prüfen",
   "blocks": [
@@ -43,8 +43,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "HUD-Prioritäten, Zwei-Monster-Bühne und einklappbare Nebeninformationen im B03-Vertrag festgelegt" },
         { "name": "Bauen", "done": true, "note": "Kampf-Dock, Frontwahl, Duo, Speicher, Aufträge, Kampflog und Fokusmodus umgesetzt" },
-        { "name": "Prüfen", "done": false, "note": "Visuelle Nachprüfung offen: Monsterposition, Nameplates und HP-Balken müssen kompakter und mittiger abgenommen werden" },
-        { "name": "Abnehmen", "done": false, "note": "Noch nicht freigegeben; B.03 bleibt bis zur Spielerabnahme offen" }
+        { "name": "Prüfen", "done": false, "note": "Desktop, Tablet und Mobile sowie Front/Support/Zonenbonus sind automatisiert und visuell geprüft; vollständiger Live-Spielerlauf des deployten Stands bleibt offen" },
+        { "name": "Abnehmen", "done": false, "note": "Noch nicht freigegeben; B.03 bleibt bis zur vollständigen Live-Spielerabnahme offen" }
       ]
     },
     {
@@ -100,7 +100,7 @@
         { "name": "Planen", "done": true, "note": "1280×720, 1024×768 und 390×844 sowie Fokus-, Kontrast-, Touch- und Reduced-Motion-Regeln verbindlich festgelegt" },
         { "name": "Bauen", "done": true, "note": "Responsive Raster, einklappbare Kampfpanels, sichtbare Fokusführung und Motion-Fallbacks umgesetzt" },
         { "name": "Prüfen", "done": true, "note": "31/31 lokale E2E, Layout-Audit, Capture-Satz, WCAG-Kontrast, Keyboard, Reduced Motion und 2×-Typografiestress grün" },
-        { "name": "Abnehmen", "done": true, "note": "Alle drei Referenz-Viewports bleiben ohne P0/P1-Layoutschuld innerhalb der Breite und Kernaktionen bleiben erreichbar" }
+        { "name": "Abnehmen", "done": true, "note": "Technische Baseline: alle drei Referenz-Viewports bleiben innerhalb der Breite und Kernaktionen erreichbar; echte Geräte-Smokes folgen in Roadmap D" }
       ]
     },
     {
@@ -111,9 +111,9 @@
       "visual": "launch",
       "accent": "gold",
       "steps": [
-        { "name": "Planen", "done": true, "note": "136 UI-Kit-Rasterelemente, 10 Ableitungen, 14 Szenen je Viewport, 8,5-MB-Budget und C-Übergaberegeln festgelegt" },
+        { "name": "Planen", "done": true, "note": "136 UI-Kit-Rasterelemente, 10 Ableitungen, aktuelle Capture-Matrix, 16-MB-Foundation-Budget und C-Übergaberegeln festgelegt" },
         { "name": "Bauen", "done": true, "note": "Mikrofeedback, Fokusmodus, Zustandsfeedback, textfreie Chrome-Bausteine und reduzierte Bewegung geschlossen" },
-        { "name": "Prüfen", "done": false, "note": "Wartet auf die echte visuelle Abnahme der Kampfszene und des restlichen Gesamtpolish" },
+        { "name": "Prüfen", "done": false, "note": "QA-01 bis QA-05 sind technisch behoben; wartet auf vollständigen Live-Spielerlauf, B.03-Abnahme und erneute Gesamtpolish-Prüfung" },
         { "name": "Abnehmen", "done": false, "note": "Roadmap B wird nicht an C übergeben, solange B.03 und B.08 offen sind" }
       ]
     }

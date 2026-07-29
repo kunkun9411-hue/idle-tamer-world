@@ -44,6 +44,7 @@ import {
 } from "./game/rules";
 import { loadGame, resetGame, STORAGE_KEY, storageKeyForNamespace, type StorageDependencies } from "./game/storage";
 import { SYSTEM_MESSAGES } from "./game/system-messages";
+import { TEST_CHEST_REWARD, testChestOpenResult, testChestPresentation } from "./game/test-chest";
 import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./game/types";
 
 type View = "expedition" | "objectives" | "dispatch" | "habitat" | "gems" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
@@ -399,17 +400,15 @@ function dismissNotice(): void {
 
 function openTestChest(): void {
   if (!testChestAvailable) return;
-  testChestAvailable = false;
-  inventoryModalOpen = false;
+  const result = testChestOpenResult(isRunOnline());
+  if (result.consumeChest) testChestAvailable = false;
   monsterModalOpen = false;
-  if (isRunOnline()) {
-    showNotice("Ether-Truhe geöffnet", "UI-Testbeute: +250 Gold · +3 Etherstaub. Die echte Truhenbuchung folgt später als serverseitige Transaktion.", "success");
-    return;
+  if (result.creditRewards) {
+    game.resources.gold += TEST_CHEST_REWARD.gold;
+    game.inventory[TEST_CHEST_REWARD.itemId] += TEST_CHEST_REWARD.itemAmount;
+    service.save();
   }
-  game.resources.gold += 250;
-  game.inventory.ether_dust += 3;
-  service.save();
-  showNotice("Ether-Truhe geöffnet", "+250 Gold · +3 Etherstaub wurden testweise in dein Inventar gelegt.", "success");
+  showNotice(result.title, result.message, result.tone);
 }
 
 function applyQaState(preset: QaPreset): void {
@@ -1303,8 +1302,19 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
       detail: "Etherwerkstatt",
     }));
   }
+  const chestPresentation = testChestPresentation(isRunOnline());
   const chest: InventorySlotData[] = testChestAvailable
-    ? [{ id: "ether-cache", name: "Ether-Truhe", image: "/assets/ui/inventory/ether-chest-v1.png", amount: 1, rarity: "Testbeute", detail: "Vorschau öffnen", action: "open-chest" }]
+    ? [{
+        id: "ether-cache",
+        name: "Ether-Truhe",
+        image: "/assets/ui/inventory/ether-chest-v1.png",
+        amount: 1,
+        rarity: "Testbeute",
+        description: chestPresentation.description,
+        detail: chestPresentation.detail,
+        source: "Entwicklungsgegenstand",
+        action: "open-chest",
+      }]
     : [];
   return chest.concat(Object.entries(game.eggInventory)
     .filter(([, amount]) => amount > 0)
@@ -1330,7 +1340,10 @@ function combatInventoryModal(): string {
     const entry = slots[index];
     if (!entry) return `<div class="combat-inventory-slot is-empty" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></div>`;
     const tooltip = [entry.name, entry.rarity, entry.amount > 1 ? `${entry.amount} Stück` : "1 Stück", entry.description, entry.detail ? `Effekt: ${entry.detail}` : "", entry.source].filter(Boolean).join(" · ");
-    if (entry.action === "open-chest") return `<button class="combat-inventory-slot is-filled is-actionable combat-inventory-slot--${inventoryCategory}" data-open-chest="${entry.id}" data-tooltip="${escapeHtml(`${tooltip} · Öffnen`)}" aria-label="${escapeHtml(entry.name)} öffnen"><img src="${entry.image}" alt="" loading="lazy"><strong>ÖFFNEN</strong></button>`;
+    if (entry.action === "open-chest") {
+      const chestPresentation = testChestPresentation(isRunOnline());
+      return `<button class="combat-inventory-slot is-filled is-actionable combat-inventory-slot--${inventoryCategory}" data-open-chest="${entry.id}" data-tooltip="${escapeHtml(`${tooltip} · ${chestPresentation.actionLabel}`)}" aria-label="${escapeHtml(entry.name)} ${chestPresentation.actionLabel.toLowerCase()}"><img src="${entry.image}" alt="" loading="lazy"><strong>${chestPresentation.actionLabel}</strong></button>`;
+    }
     return `<div class="combat-inventory-slot is-filled combat-inventory-slot--${inventoryCategory}" data-tooltip="${escapeHtml(tooltip)}" role="img" aria-label="${escapeHtml(tooltip)}"><img src="${entry.image}" alt="" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong></div>`;
   }).join("");
   return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${occupied}/64 belegte Slots · ${categoryLabel}</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${(Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[]).map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${inventorySlots(category).length}</small></button>`).join("")}</nav><div class="combat-inventory-grid${needsScroll ? " has-overflow" : ""}" aria-label="64 Inventarslots">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;

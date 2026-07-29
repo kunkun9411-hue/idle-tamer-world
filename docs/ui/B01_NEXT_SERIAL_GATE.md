@@ -278,20 +278,22 @@ Produktentscheidung bleibt ein eigener Schritt.
 
 ### Roadmap-B-Blöcke nach B.01
 
-B.02–B.08 sind **vollständig abgenommen**. Die vier Schritte wurden weiterhin
-in der Reihenfolge Planen → Bauen → Prüfen → Abnehmen geschlossen; die
-folgende Tabelle ist jetzt der eingefrorene Exit-Nachweis für die Übergabe an
-Roadmap C.
+Die folgende Tabelle ist der **historische technische Baseline-Nachweis** vom
+26. Juli. Sie schließt B.01 als Designsystem-Freeze ab, ist aber keine aktuelle
+Freigabe von B.03 oder B.08. Der verbindliche Status steht in
+`apps/web/public/roadmap/roadmap-status.json` und
+`docs/ROADMAP_B_DESIGN_UI.md`: Roadmap B bleibt bei 28/32, B.03 und B.08 sind
+offen und es gibt keine Übergabe an Roadmap C.
 
 | Block | Planen | Bauen | Prüfen | Abnehmen / eindeutiges Exit-Kriterium |
 | --- | --- | --- | --- | --- |
 | B.02 Navigation | Spielerwege und Hierarchie festgelegt | Hauptnavigation, Kontextaktionen und mobile Dock umgesetzt | `navigation-ia.spec.ts`, Responsive- und Layout-Audit grün | Kampf, Sammlung, Brut, Forschung, Gilde und Profil eindeutig erreichbar |
-| B.03 Kampfszene/HUD | Kampfzentrum, HUD-Prioritäten und versteckbare Panels festgelegt | Bühne, Monster, Teamwahl, Gegnerstatus und Panel-Chrome umgesetzt | Fokus-/Zwei-Monster-E2E und Captures grün | Bühne bleibt die dominante Spielfläche |
+| B.03 Kampfszene/HUD | Kampfzentrum, HUD-Prioritäten und versteckbare Panels festgelegt | Bühne, Monster, Teamwahl, Gegnerstatus und Panel-Chrome umgesetzt | Fokus-/Zwei-Monster-E2E und Captures als technische Baseline grün | **aktuell offen:** vollständige Live-Spielerprüfung und formale Abnahme |
 | B.04 Sammlung/Entwicklung | Run-/Permanent-Ebenen und Reset-Grenzen festgelegt | Habitat, Brut, Inventar, Forschung, Gems und Prestige umgesetzt | State-Matrix, Core-Loop und Zone-10-Gate grün | Run-Fortschritt und permanente Entwicklung unterscheidbar |
 | B.05 Profil/Identität | Avatar-, Rahmen-, Besitz- und Auswahl-Hierarchie festgelegt | Profilfläche, Layer und Identitätsornamente umgesetzt | Auswahl-, Fallback-, Responsive- und Live-Gilden-Nachweis grün | Dieselbe Identität bleibt in Profil, Gilde und Sozial-Leerzuständen konsistent; Ranglistenlogik startet in C |
 | B.06 Gilde/Soziales | DNA, Rollen, Ziele, Boss, Expedition, Freunde, Chat, Moderation festgelegt | Servergespeister Hub und Feature-Flag-Aus-Zustand umgesetzt | 4/4, 7/7, 8/8, 7/7 Integrationen plus Live-Browser-Capture grün | Kooperation nachvollziehbar und moderierbar |
-| B.07 Responsive/A11y | Viewports, Eingaben, Kontrast, Fokus, Zoom, Touch und Bewegung festgelegt | Responsive Raster, Tastaturführung und Motion-Fallbacks umgesetzt | Layout-Audit, Matrix, 2×-Typografiestress, Keyboard und Reduced Motion grün | Drei Referenz-Viewports ohne P0/P1-Layoutschuld |
-| B.08 Polish/Übergabe | Budget, Szenenmatrix und C-Übergabekriterien festgelegt | Mikrofeedback, Übergänge, Restzustände und visuelle Schulden geschlossen | Gesamtregression, Captures, Live-Capture und Build grün | Roadmap B eingefroren und an C übergeben |
+| B.07 Responsive/A11y | Viewports, Eingaben, Kontrast, Fokus, Zoom, Touch und Bewegung festgelegt | Responsive Raster, Tastaturführung und Motion-Fallbacks umgesetzt | Layout-Audit, Matrix, 2×-Typografiestress, Keyboard und Reduced Motion grün | historische Baseline; echte Geräte-Smokes folgen in Roadmap D |
+| B.08 Polish/Übergabe | Budget, Szenenmatrix und C-Übergabekriterien festgelegt | Mikrofeedback, Übergänge, Restzustände und visuelle Schulden technisch bearbeitet | Gesamtregression, Captures, Live-Capture und Build als technische Baseline grün | **aktuell offen:** B.08.3/B.08.4; keine Übergabe an C |
 
 Die vorherigen Layoutschulden – mobile Navigationskollision und Accountleisten-
 Überlauf – sind durch das einreihige 7er-Dock und das kompakte Desktop-Raster

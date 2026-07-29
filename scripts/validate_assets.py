@@ -28,8 +28,8 @@ UI_KIT_ROOT = PUBLIC / "assets" / "ui" / "kit"
 UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 10, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 140}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 120_000}
+EXPECTED_KIND_COUNTS = {"monster": 16, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 148}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 2_000_000}
 
 
 def validate(path: Path) -> None:
@@ -263,10 +263,12 @@ def main() -> None:
     if kind_counts != EXPECTED_KIND_COUNTS:
         raise ValueError(f"asset manifest: kind counts {kind_counts}, expected {EXPECTED_KIND_COUNTS}")
     total_bytes = sum(asset["bytes"] for asset in assets)
-    # The reusable B.01 kit now includes the generated identity family; keep a
-    # bounded, explicit budget while allowing the complete 120-raster catalog.
-    if total_bytes > 8_500_000:
-        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 8.5 MB budget")
+    # The reusable B.01 kit, high-resolution inventory frame family and first
+    # evolution sprites share this contract. Keep the current foundation
+    # release explicitly bounded; later delivery optimization can split source
+    # masters from compressed runtime variants without weakening validation.
+    if total_bytes > 16_000_000:
+        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 16 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
     print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + {len(ui_chrome_files)} UI chrome + {len(ui_kit_files)} UI kit + 1 branding + {len(prestige_files)} prestige assets")
 

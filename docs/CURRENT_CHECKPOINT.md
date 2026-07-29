@@ -1,6 +1,6 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Stand: 26. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
+Stand: 29. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
 
 ## Projektstand
 
@@ -53,10 +53,16 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - vollständigen Serverneustart bestanden; Docker, Datenbank, API, Web, Proxy und Backup-Timer kamen automatisch zurück
 - A.08-QA-Account und Testgilde vollständig entfernt; exakt zwei vorher vorhandene Accounts blieben erhalten
 - A.08.4: Abschlussbericht veröffentlicht, Roadmap A bei 100 % eingefroren und B.01 historisch bei 0/32 aktiviert
-- B.01.2/B.01.3/B.01.4: 136 textfreie Rasterelemente, zehn CSS-/Rotationsableitungen, 257 Manifest-IDs und 8.39 MB Runtime-Budget geprüft; UI-Katalog, Asset-Validator, Desktop/Tablet/Mobile-Captures und E2E grün, visuell eingefroren
+- B.01.2/B.01.3/B.01.4: 136 textfreie Rasterelemente, zehn CSS-/Rotationsableitungen, aktuell 271 Manifest-IDs und 15,33 MB im 16-MB-Foundation-Budget geprüft; UI-Katalog, Asset-Validator, Desktop/Tablet/Mobile-Captures und E2E grün, visuell eingefroren
 - B.01.2: Login und Offline-Bericht auf generierte Rahmen, echten HTML-Text und 12-px-Mindestrollen migriert; Desktop, Tablet und 390×844 bleiben innerhalb ihrer Viewports
 - B.06-Backend-/Live-Nachweis: Dev-API mit `FEATURE_GUILDS=true` und `FEATURE_GUILD_DNA=true` neu gebaut; Foundation 4/4, Auth 7/7, Run 8/8 und Guild/Social 7/7 gegen `idle_tamer_test` grün; aktive Browser-E2E/Capture auf der Dev-Domain grün, QA-Konto/Testgilde danach entfernt
 - UI-Kit-Runtime-Brücke: Kampf-HUD, Kontroll-Dock, Seitenüberschriften und zentrale Arbeitsflächen verwenden jetzt die textfreien B01/B02/B03-/Chrome-Flächen; UI-Audit und B07/B08-E2E bleiben grün
+- B.03-Folgeprüfung: QA-01 bis QA-05 technisch geschlossen; Monster- und
+  Inventar-Schnellfenster, Truhenfeedback sowie Front/Support/Zonenbonus sind in
+  Desktop, Tablet und Mobile automatisiert geprüft
+- Mobile-P1 behoben: widersprüchliche Kampf-Schnellleisten-Anker konnten die
+  Bühne unsichtbar überdecken; Responsive-E2E prüft nun Monster-Sichtbarkeit,
+  geladene Sprites und Kollisionsfreiheit der Bedienleisten
 
 Die genauen Fälle stehen in:
 
@@ -107,9 +113,12 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 Roadmap A ist abgeschlossen. Roadmap B bleibt nach der visuellen Spielerprüfung bewusst offen: B.03 (Kampfszene) und B.08 (Gesamtpolish) sind noch nicht abgenommen.
 
-1. Kampfszene in Desktop, Tablet und Mobile visuell abnehmen;
-2. HP-/Nameplate-Dichte und Monster-Safe-Area gegen echte Spielersicht prüfen;
-3. B.08 erst danach erneut prüfen und die Übergabe an Roadmap C freigeben;
+1. aktuellen Stand deployen und den zusammenhängenden Live-Spielerweg erneut
+   vollständig durchspielen;
+2. dabei Kampfszene, Schnellfenster, Truhe, Duo und Rückkehrwege gegen die
+   automatisierten Desktop-/Tablet-/Mobile-Belege vergleichen;
+3. B.03 nur bei schuldenfreiem Live-Befund abnehmen, danach B.08 erneut prüfen
+   und erst dann die Übergabe an Roadmap C freigeben;
 4. Roadmap D weiterhin erst nach C für Abnahme, Balance, Sicherheit und Last vorbereiten.
 
 Die erste Runtime-Brücke des UI-Baukastens ist in `ui/UI_KIT_RUNTIME_BRIDGE.md`

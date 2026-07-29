@@ -1345,6 +1345,39 @@
       "sha256": "4f60493e40948134bc0891a2c1fe4c7cb117ea0fa281556981c97eaf63532713"
     },
     {
+      "id": "ui.chrome.offline-report-frame-v2",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/offline-report-frame-v2.png",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 55536,
+      "sha256": "f8a8866b184cd5845cee5ce1e950939d478459498396569ae8b79972840a311a"
+    },
+    {
+      "id": "ui.chrome.offline-report-frame-v3",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/offline-report-frame-v3.png",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 80191,
+      "sha256": "cf150bf6279385e0329d9b679ef6400d5dfb61ed6b11ca4b46c4105a268d4e30"
+    },
+    {
+      "id": "ui.chrome.offline-report-frame-v4",
+      "kind": "ui",
+      "path": "/assets/ui/chrome/offline-report-frame-v4.png",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 53328,
+      "sha256": "d30d657931b0aab566e50a54fd180bcae604d0fe1abdc1b55cd4b102eb582d26"
+    },
+    {
       "id": "ui.chrome.panel-frame-v1",
       "kind": "ui",
       "path": "/assets/ui/chrome/panel-frame-v1.webp",
@@ -1354,17 +1387,6 @@
       "alpha": true,
       "bytes": 71476,
       "sha256": "893609465ae12e5fd433f97b5dd88d25c745da839619e7a7c650caa630c22fe0"
-    },
-    {
-      "id": "ui.chrome.offline-report-frame-v2",
-      "kind": "ui",
-      "path": "/assets/ui/chrome/offline-report-frame-v4.png",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "alpha": true,
-      "bytes": 53328,
-      "sha256": "d30d657931b0aab566e50a54fd180bcae604d0fe1abdc1b55cd4b102eb582d26"
     },
     {
       "id": "ui.chrome.primary-button-frame-v1",
@@ -1673,6 +1695,17 @@
       "alpha": true,
       "bytes": 2858,
       "sha256": "2e38109727a43eadcdfb73994dbda27cd2714afd173148e0351e343a4709b1f3"
+    },
+    {
+      "id": "ui.kit.control.d08-filled-v2",
+      "kind": "ui",
+      "path": "/assets/ui/kit/control/d08-filled-v2.png",
+      "format": "png",
+      "width": 384,
+      "height": 96,
+      "alpha": true,
+      "bytes": 19451,
+      "sha256": "8ed67ecbb4bb71779306fe7527bb3045ab4e6cd73d29fc3c35c7f3ca4b381dab"
     },
     {
       "id": "ui.kit.control.d08-v1",

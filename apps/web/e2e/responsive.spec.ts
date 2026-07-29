@@ -24,7 +24,7 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
   const selectors = [".fighter--player", ".fighter--enemy", ".combat-rail", ".combat-control-dock"];
   const boxes = await page.evaluate((targets) => Object.fromEntries(targets.map((selector) => {
     const rect = document.querySelector(selector)?.getBoundingClientRect();
-    return [selector, rect ? { x: rect.x, width: rect.width, height: rect.height } : null];
+    return [selector, rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null];
   })), selectors);
   for (const selector of selectors) {
     const box = boxes[selector];
@@ -32,7 +32,47 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
     expect(box!.height, `${selector} must occupy visible space`).toBeGreaterThan(0);
     expect(box!.x, `${selector} starts inside the viewport`).toBeGreaterThanOrEqual(-1);
     expect(box!.x + box!.width, `${selector} ends inside the viewport`).toBeLessThanOrEqual(layout.innerWidth + 1);
+    expect(box!.y, `${selector} starts inside the viewport`).toBeGreaterThanOrEqual(-1);
+    expect(box!.y + box!.height, `${selector} ends inside the viewport`).toBeLessThanOrEqual((page.viewportSize()?.height ?? 0) + 1);
   }
+  const rail = boxes[".combat-rail"]!;
+  for (const selector of [".fighter--player", ".fighter--enemy"]) {
+    const fighter = boxes[selector]!;
+    const overlapWidth = Math.min(rail.x + rail.width, fighter.x + fighter.width) - Math.max(rail.x, fighter.x);
+    const overlapHeight = Math.min(rail.y + rail.height, fighter.y + fighter.height) - Math.max(rail.y, fighter.y);
+    expect(overlapWidth > 4 && overlapHeight > 4, `${selector} must not be covered by the primary navigation`).toBe(false);
+  }
+
+  const fighterVisibility = await page.evaluate(() => [".fighter--player", ".fighter--enemy"].map((selector) => {
+    const fighter = document.querySelector<HTMLElement>(selector);
+    const image = fighter?.querySelector<HTMLImageElement>(".monster-avatar img");
+    if (!fighter || !image) return { selector, visible: false, reason: "missing fighter or image" };
+    const rect = image.getBoundingClientRect();
+    const fighterStyle = getComputedStyle(fighter);
+    const imageStyle = getComputedStyle(image);
+    const visible = image.complete
+      && image.naturalWidth > 0
+      && rect.width > 40
+      && rect.height > 40
+      && rect.top >= 0
+      && rect.bottom <= innerHeight
+      && fighterStyle.display !== "none"
+      && fighterStyle.visibility === "visible"
+      && Number.parseFloat(fighterStyle.opacity) > 0
+      && imageStyle.display !== "none"
+      && imageStyle.visibility === "visible"
+      && Number.parseFloat(imageStyle.opacity) > 0;
+    return {
+      selector,
+      visible,
+      complete: image.complete,
+      naturalWidth: image.naturalWidth,
+      rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height },
+      fighterStyle: { display: fighterStyle.display, visibility: fighterStyle.visibility, opacity: fighterStyle.opacity },
+      imageStyle: { display: imageStyle.display, visibility: imageStyle.visibility, opacity: imageStyle.opacity },
+    };
+  }));
+  for (const result of fighterVisibility) expect(result.visible, JSON.stringify(result)).toBe(true);
 
   await page.locator('[data-combat-panel="missions"]').click();
   await page.locator("#start-prestige").click();
