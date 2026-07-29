@@ -1062,10 +1062,31 @@ function navButton(view: View, label: string, locked = false): string {
   return `<button class="nav-button ${activeView === view ? "is-active" : ""}" data-view="${view}" aria-label="${label}" aria-current="${activeView === view ? "page" : "false"}"><span>${icon(view)}</span><b><span class="nav-label-full">${label}</span><span class="nav-label-short">${shortLabel[view]}</span></b>${locked ? '<i title="Vorschau ab Rang 10">10</i>' : ""}</button>`;
 }
 
-function accountAvatar(size: "small" | "large" = "small"): string {
+function accountAvatar(size: "small" | "large" = "small", showActiveMonster = false): string {
   const avatar = AVATARS.find((entry) => entry.id === game.profile.avatarId) ?? AVATARS[0];
   const frame = FRAMES.find((entry) => entry.id === game.profile.frameId) ?? FRAMES[0];
-  return `<span class="account-avatar account-avatar--${size}" style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]};--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}"><i>${avatar.glyph}</i></span>`;
+  const monster = showActiveMonster ? activeMonster() : null;
+  const monsterForm = monster ? getMonsterForm(monster) : null;
+  const portrait = monsterForm?.sprite
+    ? `<img src="${monsterForm.sprite}" alt="" aria-hidden="true" draggable="false">`
+    : `<i>${avatar.glyph}</i>`;
+  return `<span class="account-avatar account-avatar--${size} ${monsterForm?.sprite ? "has-portrait" : ""}" style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]};--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}">${portrait}</span>`;
+}
+
+function playerAccountCard(): string {
+  const rank = rankForVictories(game.totalVictories);
+  const displayName = escapeHtml(accountBootstrap?.profile.displayName ?? game.playerName);
+  return `<button class="profile-chip player-account-card" data-view="profile" title="Profil, Avatar und Rahmen" aria-label="Profil von ${displayName} öffnen">
+    ${accountAvatar("small", true)}
+    <span class="player-account-card__copy">
+      <strong>${displayName}</strong>
+      <span class="player-account-card__metrics">
+        <span class="player-account-card__metric player-account-card__metric--rank" title="Tamer-Rang"><i>${icon("shield")}</i><small>RANG</small><b data-live="rank">${rank}</b></span>
+        <span class="player-account-card__metric" title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span>
+        <span class="player-account-card__metric" title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span>
+      </span>
+    </span>
+  </button>`;
 }
 
 function syncIndicator(): string {
@@ -1095,7 +1116,6 @@ function qaPanel(): string {
 }
 
 function topShell(content: string): string {
-  const rank = rankForVictories(game.totalVictories);
   return `
     <div class="app-shell app-shell--ui-kit app-shell--${activeView} app-shell--zone-${game.currentZoneId}">
       <div class="ambient ambient--game" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -1104,14 +1124,7 @@ function topShell(content: string): string {
         <nav class="main-nav" aria-label="Spielbereiche">
           ${navButton("expedition", "Kampf")}${activeView === "objectives" ? navButton("objectives", "Aufträge") : ""}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
         </nav>
-        <div class="topbar__account">
-          <div class="resources" aria-label="Ressourcen">
-            <span title="Run-Gold">${resourceIcon("gold")}<b>${formatNumber(game.resources.gold)}</b></span>
-            <span title="Prestige-Kerne">${resourceIcon("cores")}<b>${formatNumber(game.resources.cores)}</b></span>
-          </div>
-          <span class="rank-chip"><small>RANG</small>${rank}</span>
-          <button class="profile-chip" data-view="profile" title="Profil, Avatar und Rahmen" aria-label="Profil öffnen">${accountAvatar()}</button>
-        </div>
+        <div class="topbar__account">${playerAccountCard()}</div>
       </header>
       <main>${content}</main>
       <footer><div><span>VISUAL BUILD V2</span><i></i><span>SAVE V${game.version}</span><i></i><span>API PROTOKOLL ${API_PROTOCOL_VERSION}</span></div>${syncIndicator()}<button class="text-button" id="reset-game">Spielstand zurücksetzen</button></footer>
@@ -1390,8 +1403,6 @@ function expeditionView(): string {
   const zoneProgress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
   const bossStage = zoneProgress.stage >= zone.stages;
   const playerAttackProgress = battle.status === "fighting" ? Math.max(3, Math.min(100, 100 - ((battle.playerNextAttackAt - performance.now()) / 1_650) * 100)) : 100;
-  const rank = rankForVictories(game.totalVictories);
-
   return `
     <main class="combat-main" data-testid="combat-scene">
       <section class="combat-battlefield battle-stage battle-stage--${zone.id} battle-stage--${battle.status}" style="--battle-background:url('${zoneBackgroundUrl(zone.backgroundKey)}')">
@@ -1399,7 +1410,7 @@ function expeditionView(): string {
         <div class="combat-vignette" aria-hidden="true"></div>
         <header class="combat-top-hud">
           ${combatZoneTabs()}
-          <div class="combat-account"><div class="resources"><span title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span><span title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span></div><span class="rank-chip"><small>RANG</small><b data-live="rank">${rank}</b></span><button class="profile-chip" data-view="profile" title="Profil öffnen">${accountAvatar()}</button></div>
+          <div class="combat-account">${playerAccountCard()}</div>
         </header>
         ${combatRail()}
         <div class="battle-state-banner battle-state-banner--${battle.status}" data-live="battle-banner" ${battle.status === "fighting" ? "hidden" : ""}><small>${battle.status === "victory" ? "SIGNAL GESICHERT" : "RESONANZ WIRD NEU GEKOPPELT"}</small><strong>${battle.status === "victory" ? "STAGE GESCHAFFT" : "REGENERATION"}</strong></div>
