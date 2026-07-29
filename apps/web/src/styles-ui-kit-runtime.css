@@ -1069,7 +1069,7 @@
   backdrop-filter: blur(7px);
 }
 .combat-inventory-modal {
-  --frame-footer-safe-space: clamp(52px, 7.5vh, 70px);
+  --frame-footer-safe-space: clamp(64px, 9vh, 82px);
   position: fixed;
   z-index: 81;
   top: 50%;
@@ -1282,7 +1282,7 @@
   backdrop-filter: blur(7px);
 }
 .combat-monster-modal {
-  --frame-footer-safe-space: clamp(52px, 7.5vh, 70px);
+  --frame-footer-safe-space: clamp(64px, 9vh, 82px);
   position: fixed;
   z-index: 81;
   top: 50%;
