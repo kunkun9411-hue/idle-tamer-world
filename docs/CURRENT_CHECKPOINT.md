@@ -67,6 +67,22 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - Mobile-P1 behoben: widersprüchliche Kampf-Schnellleisten-Anker konnten die
   Bühne unsichtbar überdecken; Responsive-E2E prüft nun Monster-Sichtbarkeit,
   geladene Sprites und Kollisionsfreiheit der Bedienleisten
+- Spieler-Polish-Folge vom 30. Juli: Die vollständige Profilkarte mit Avatar,
+  Name, Rang, Gold und Prestige-Kernen bleibt jetzt auch auf 390×844 in Kampf
+  und normalen Seiten sichtbar. Profilhero und Avatar-Katalog verwenden echte
+  vorhandene HD-Porträts statt Buchstaben-Platzhaltern.
+- Mobile Rückkehr, Navigation und Leerzustände nachgezogen: Der Offline-Bericht
+  besitzt klare Text-/Button-Abstände und eine 44-px-Aktion, Aufträge bleiben
+  bei exakt acht Navigationsplätzen, Expeditionskarten sind inhaltsnah und das
+  Monsterarchiv führt direkt zu Brutstation oder Expeditionen.
+- Forschungs- und Gildentexte sind spielerbezogen: Forschung zeigt Kosten,
+  Besitz und Mangelzustand pro Karte; Gildenoberflächen verwenden keine
+  internen Datenbank-/Serverbegriffe mehr.
+- Backend-Korrektur für Rückkehrberichte: Eier, Materialien und Gems werden als
+  neu hinzugekommene Differenz gemeldet, nicht als bereits wartender
+  Gesamtbestand des Kampfspeichers. Der Vollcheck besteht nun mit 67 Web-,
+  24 API-, 11 Datenbank-Unit-, 6 Core- und 50 lokalen Browsertests; zwei
+  credentialgebundene Live-E2E bleiben im lokalen Lauf erwartungsgemäß aus.
 
 Die genauen Fälle stehen in:
 

@@ -79,6 +79,31 @@ interface RunContext {
   pending: ({ id: string; gold: bigint; slots: number; victories: number } & PendingProgressionLoot) | null;
 }
 
+interface ProgressionLootTotals {
+  eggs: number;
+  items: number;
+  gems: number;
+}
+
+const dropTotal = (drops: Record<string, number> | undefined): number =>
+  Object.values(drops ?? {}).reduce((sum, amount) => sum + amount, 0);
+
+export const progressionLootDelta = (
+  before: PendingProgressionLoot | null,
+  after: PendingProgressionLoot | null,
+): ProgressionLootTotals => {
+  const beforeTotals = {
+    eggs: dropTotal(before?.eggs),
+    items: dropTotal(before?.items),
+    gems: dropTotal(before?.gems),
+  };
+  return {
+    eggs: dropTotal(after?.eggs) - beforeTotals.eggs,
+    items: dropTotal(after?.items) - beforeTotals.items,
+    gems: dropTotal(after?.gems) - beforeTotals.gems,
+  };
+};
+
 const safeRevision = (raw: string): number => {
   const revision = Number(raw);
   if (!Number.isSafeInteger(revision)) throw new Error("Run revision exceeded the safe API range.");
@@ -245,9 +270,11 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
 }> => {
   const before = `${context.state.progressionStatus}|${context.state.nextCombatAtMs}`;
   const firstTotalVictory = context.state.totalVictories;
-  let eggsAdded = 0;
-  let itemsAdded = 0;
-  let gemsAdded = 0;
+  const pendingBefore = context.pending ? {
+    eggs: { ...context.pending.eggs },
+    items: { ...context.pending.items },
+    gems: { ...context.pending.gems },
+  } : null;
   const settlement = settleAuthoritativeRun(
     context.state,
     now.getTime(),
@@ -256,9 +283,6 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
   context.state = settlement.state;
   if (settlement.victoriesAdded > 0) {
     const loot = deterministicCombatLoot(context.playerId, firstTotalVictory, settlement.victoriesAdded, context.eggPity, context.prestigeCount);
-    eggsAdded = Object.values(loot.eggs).reduce((sum, amount) => sum + amount, 0);
-    itemsAdded = Object.values(loot.items).reduce((sum, amount) => sum + amount, 0);
-    gemsAdded = Object.values(loot.gems).reduce((sum, amount) => sum + amount, 0);
     context.eggPity = loot.nextEggPity;
     const mergeDrops = (current: Record<string, number>, added: Record<string, number>): Record<string, number> => {
       const merged = { ...current };
@@ -299,12 +323,13 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
       };
     }
   }
+  const lootDelta = progressionLootDelta(pendingBefore, context.pending);
   return {
     victoriesAdded: settlement.victoriesAdded,
     goldAdded: settlement.goldAdded,
-    eggsAdded,
-    itemsAdded,
-    gemsAdded,
+    eggsAdded: lootDelta.eggs,
+    itemsAdded: lootDelta.items,
+    gemsAdded: lootDelta.gems,
     changed: settlement.victoriesAdded > 0 || before !== `${context.state.progressionStatus}|${context.state.nextCombatAtMs}`,
   };
 };

@@ -171,9 +171,14 @@ Am Ende von Roadmap B besitzt jede relevante Funktion einen konsistenten Desktop
 
 Die Übergabe ist **noch gesperrt**. Desktop-, Tablet- und Mobile-Captures sowie
 die Zwei-Monster-/Support-/Zonenbonus-Strecke bestätigen inzwischen klare
-Safe-Areas, kompakte Nameplates und kollisionsfreie Bedienleisten. Der nächste
-Abnahmeschritt ist die vollständige Live-Spielerprüfung des deployten Standes.
-Erst danach werden B.03 und B.08 formal abgenommen und Roadmap C geöffnet.
+Safe-Areas, kompakte Nameplates und kollisionsfreie Bedienleisten. Die
+Spieler-Polish-Folge vom 30. Juli ergänzt vollständige mobile Profilkarten,
+echte Avatar-Porträts, einen kollisionsfreien Offline-Bericht, kompaktere
+Expeditions- und Habitat-Zustände sowie verständliche Forschungs- und
+Gilden-Texte. Der lokale Vollcheck und alle drei Capture-Viewports sind grün.
+Der nächste Abnahmeschritt ist dennoch die vollständige Live-Spielerprüfung des
+deployten Stands. Erst danach werden B.03 und B.08 formal abgenommen und
+Roadmap C geöffnet.
 # B.01.2 Build-Stand - 2026-07-26
 
 Der modulare Bausatz ist in den ersten produktionsnahen Familien umgesetzt: A08-A18 Rahmengeometrie, B01-B14 Innenflächen, Zustandslicht und Materialtexturen, C01-C16 Leisten/Ornamente, D01-D16 Aktionen/Steuerung, E01-E05, E09-E11, E14 und E18 Wert-/Fortschrittsfassungen plus die acht CSS-/Rotationsableitungen E06-E08, E12-E13 und E15-E17, F01-F16 Ökonomie-/Itemicons, G01-G36 Systemicons inklusive G11 Gilden-DNA, G16 Post, G18 Audio an, G19 Audio aus und G27 Vorwärts als Ableitungen, G21 Information, G22 Warnung, G23 Erfolg, G24 Fehler, G25 Schließen, G26 Zurück, G28 Hinzufügen, G29 Entfernen, G30 Sperre, G31 Filter, G32 Sortieren, G33 Suche, G34 Aktualisieren, G35 Menü und G36 Mehr/Optionen sowie H01-H12 Identitätslayer. Runtime, Manifest, Katalog, Desktop-/Tablet-/Mobile-E2E und Asset-Budget sind grün; die serielle UI-Liste ist vollständig. B.01.4 ist visuell abgenommen und der Designsystem-Freeze gilt für B.02–B.08.

@@ -1107,22 +1107,34 @@ function navButton(view: View, label: string, locked = false): string {
   return `<button class="nav-button ${activeView === view ? "is-active" : ""}" data-view="${view}" aria-label="${label}" aria-current="${activeView === view ? "page" : "false"}"><span>${icon(view)}</span><b><span class="nav-label-full">${label}</span><span class="nav-label-short">${shortLabel[view]}</span></b>${locked ? '<i title="Vorschau ab Rang 10">10</i>' : ""}</button>`;
 }
 
-function accountAvatar(size: "small" | "large" = "small", showActiveMonster = false): string {
+const AVATAR_PORTRAITS: Record<string, string> = {
+  wanderer: "/assets/monsters/pyrook_idle_right.png",
+  keeper: "/assets/monsters/nyxlet_idle_right.png",
+  knight: "/assets/monsters/voltfin_idle_right.png",
+  breeder: "/assets/monsters/mossbit_idle_left.png",
+  researcher: "/assets/monsters/glimmite_idle_right.png",
+  void: "/assets/monsters/riftjaw_idle_right.png",
+};
+
+function avatarPortrait(avatarId: string): string | undefined {
+  return AVATAR_PORTRAITS[avatarId];
+}
+
+function accountAvatar(size: "small" | "large" = "small"): string {
   const avatar = AVATARS.find((entry) => entry.id === game.profile.avatarId) ?? AVATARS[0];
   const frame = FRAMES.find((entry) => entry.id === game.profile.frameId) ?? FRAMES[0];
-  const monster = showActiveMonster ? activeMonster() : null;
-  const monsterForm = monster ? getMonsterForm(monster) : null;
-  const portrait = monsterForm?.sprite
-    ? `<img src="${monsterForm.sprite}" alt="" aria-hidden="true" draggable="false">`
+  const portraitAsset = avatarPortrait(avatar.id);
+  const portrait = portraitAsset
+    ? `<img src="${portraitAsset}" alt="" aria-hidden="true" draggable="false">`
     : `<i>${avatar.glyph}</i>`;
-  return `<span class="account-avatar account-avatar--${size} ${monsterForm?.sprite ? "has-portrait" : ""}" style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]};--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}">${portrait}</span>`;
+  return `<span class="account-avatar account-avatar--${size} ${portraitAsset ? "has-portrait" : ""}" style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]};--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}">${portrait}</span>`;
 }
 
 function playerAccountCard(): string {
   const rank = rankForVictories(game.totalVictories);
   const displayName = escapeHtml(accountBootstrap?.profile.displayName ?? game.playerName);
   return `<button class="profile-chip player-account-card" data-view="profile" title="Profil, Avatar und Rahmen" aria-label="Profil von ${displayName} öffnen">
-    ${accountAvatar("small", true)}
+    ${accountAvatar("small")}
     <span class="player-account-card__copy">
       <span class="player-account-card__identity"><strong>${displayName}</strong><i title="Aktives Tamer-Profil">${icon("shield")}</i></span>
       <span class="player-account-card__metrics">
@@ -1497,7 +1509,7 @@ function pageHeading(kicker: string, title: string, copy: string, meta: string, 
 
 function habitatView(): string {
   if (game.roster.length === 0) return starterGate();
-  return `<section class="page page--kit habitat-page">${pageHeading("MONSTER · SAMMLUNG", "Monster", "Archiv und permanente Entwicklung. Front und temporäres Run-Level verwaltest du direkt im Kampf.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}<div class="roster-grid roster-grid--compact">${game.roster.map(monsterCard).join("")}<div class="empty-slot"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Weitere Rookie-Monster schlüpfen aus Eiern des Hauptkampfs.</small></div></div></section>`;
+  return `<section class="page page--kit habitat-page">${pageHeading("MONSTER · SAMMLUNG", "Monster", "Archiv und permanente Entwicklung. Front und temporäres Run-Level verwaltest du direkt im Kampf.", `${game.roster.length} ENTDECKT · ${game.roster.length}/10 ARCHIV`)}<div class="roster-grid roster-grid--compact">${game.roster.map(monsterCard).join("")}<div class="empty-slot habitat-empty-state"><span>${icon("spark")}</span><strong>Unbekannte Resonanz</strong><small>Finde Eier auf Expeditionen und brüte sie aus, um neue Rookie-Linien zu entdecken.</small><div class="habitat-empty-state__actions"><button class="primary-button" data-view="incubation">ZUR BRUTSTATION</button><button class="secondary-button" data-view="dispatch">EXPEDITIONEN ANSEHEN</button></div></div></div></section>`;
 }
 
 function gemTargetMonster(): MonsterInstance | null {
@@ -1737,7 +1749,7 @@ function profileView(): string {
   return `<section class="page page--kit profile-page">${pageHeading("ACCOUNT · KOSMETIK", "Tamer-Profil", "Runder Avatar und Rahmen werden als getrennte Katalogeinträge gespeichert. So können Events, Gilden und Erfolge später neue Kombinationen freischalten.", `RANG ${rank} · ${game.totalVictories} SIEGE`)}
     <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${accountBootstrap?.profile.displayName ?? game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>ACCOUNT-STATUS</small><b>${accountBootstrap ? "ONLINE · PROFIL & STARTER" : "LOCAL-PROTOTYPE"}</b><span>${accountBootstrap?.account.emailMasked ?? "Noch ohne Backendkonto"}</span>${accountBootstrap ? '<button class="text-button" id="logout-account">ACCOUNT ABMELDEN</button>' : ""}</aside></section>
     ${systemInbox()}${playerSettings()}
-    <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">AVATARE</span><h2>Tamer-Identität</h2></div><span>RUND · WECHSELBAR</span></div><div class="cosmetic-grid">${AVATARS.map((avatar) => { const unlocked = isAvatarUnlocked(game, avatar.id); const selected = avatar.id === game.profile.avatarId; return `<button class="cosmetic-card panel ${selected ? "is-selected" : ""}" data-avatar="${avatar.id}" ${unlocked ? "" : "disabled"} style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]}"><span class="cosmetic-avatar"><i>${avatar.glyph}</i></span><strong>${avatar.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${avatar.unlock}`}</small></button>`; }).join("")}</div></div>
+    <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">AVATARE</span><h2>Tamer-Identität</h2></div><span>RUND · WECHSELBAR</span></div><div class="cosmetic-grid">${AVATARS.map((avatar) => { const unlocked = isAvatarUnlocked(game, avatar.id); const selected = avatar.id === game.profile.avatarId; const portrait = avatarPortrait(avatar.id); return `<button class="cosmetic-card panel ${selected ? "is-selected" : ""}" data-avatar="${avatar.id}" ${unlocked ? "" : "disabled"} style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]}"><span class="cosmetic-avatar ${portrait ? "has-portrait" : ""}">${portrait ? `<img src="${portrait}" alt="" aria-hidden="true" draggable="false">` : `<i>${avatar.glyph}</i>`}</span><strong>${avatar.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${avatar.unlock}`}</small></button>`; }).join("")}</div></div>
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">RAHMEN</span><h2>Profilrahmen</h2></div><span>SEPARATER KATALOG</span></div><div class="frame-grid">${FRAMES.map((frame) => { const unlocked = isFrameUnlocked(game, frame.id); const selected = frame.id === game.profile.frameId; return `<button class="frame-card panel ${selected ? "is-selected" : ""}" data-frame="${frame.id}" ${unlocked ? "" : "disabled"} style="--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}"><span><i></i></span><div><strong>${frame.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${frame.unlock}`}</small></div></button>`; }).join("")}</div></div>
   </section>`;
 }
@@ -1752,7 +1764,19 @@ function starterDialog(): string {
 }
 
 function researchView(): string {
-  return `<section class="page page--kit">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${game.resources.cores} KERNE VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => { const level = game.research[research.id]; const cost = researchCost(level); const isMax = level >= research.maxLevel; return `<article class="research-card panel"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || game.resources.cores < cost ? "disabled" : ""}>${isMax ? "MAXIMAL" : `ERFORSCHEN · ${cost} P`}</button></article>`; }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section>${craftingWorkbench()}</section>`;
+  const cores = game.resources.cores;
+  const coreLabel = (amount: number): string => amount === 1 ? "KERN" : "KERNE";
+  return `<section class="page page--kit">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${cores} ${coreLabel(cores)} VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => {
+    const level = game.research[research.id];
+    const cost = researchCost(level);
+    const isMax = level >= research.maxLevel;
+    const affordable = cores >= cost;
+    const state = isMax ? "max" : affordable ? "ready" : "insufficient";
+    const action = isMax
+      ? "MAXIMAL"
+      : `${affordable ? "ERFORSCHEN" : "ZU WENIG KERNE"} · ${cost} ${coreLabel(cost)} KOSTEN · ${cores} ${coreLabel(cores)} BESITZ`;
+    return `<article class="research-card panel" data-research-card="${research.id}" data-research-state="${state}"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || !affordable ? "disabled" : ""}>${action}</button></article>`;
+  }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section>${craftingWorkbench()}</section>`;
 }
 
 function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
@@ -1760,12 +1784,12 @@ function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
 }
 
 function guildView(): string {
-  if (!isGuildOnline()) return `<section class="page page--kit guild-page guild-page--offline">${pageHeading("ONLINE-GEMEINSCHAFT", "Gilden-DNA", "Gemeinsam Gene freischalten, Expeditionen abschließen und dauerhafte Gildenboni entwickeln.", "ONLINE VERFÜGBAR")}<div class="locked-callout"><span class="guild-offline__mark">${icon("guild")}</span><div><b>Für Gilden-DNA mit dem Spielserver verbinden</b><small>Im lokalen UI-Test ist die Gemeinschaft nicht verbunden. Nach der Anmeldung auf dem Onlineserver stehen Gilden, Freunde und Chat bereit.</small></div><button class="secondary-button" data-view="expedition">ZURÜCK ZUM KAMPF</button></div></section>`;
-  if (!guildSnapshot) return `<section class="page page--kit guild-page">${pageHeading("SERVERAUTORITATIV", "Gilden-DNA", "Mitgliedschaften, Gene und Chat werden geladen.", "LIVE-SYNC")}<div class="guild-loading panel"><span class="status-orb fighting"></span><b>DNA-ARCHIV WIRD SYNCHRONISIERT</b></div></section>`;
+  if (!isGuildOnline()) return `<section class="page page--kit guild-page guild-page--offline">${pageHeading("GEMEINSCHAFT", "Gilden-DNA", "Gemeinsam Gene freischalten, Expeditionen abschließen und dauerhafte Gildenboni entwickeln.", "DERZEIT NICHT VERFÜGBAR")}<div class="locked-callout"><span class="guild-offline__mark">${icon("guild")}</span><div><b>Gildenbereich derzeit nicht verfügbar</b><small>Du kannst den Hauptkampf und deine Sammlung weiter nutzen. Sobald der Gildenbereich verfügbar ist, findest du hier Gilden, Freunde und Chat.</small></div><button class="secondary-button" data-view="expedition">ZURÜCK ZUM KAMPF</button></div></section>`;
+  if (!guildSnapshot) return `<section class="page page--kit guild-page">${pageHeading("GEMEINSCHAFT", "Gildendaten werden geladen", "Mitgliedschaft, Gene und Nachrichten werden gerade aktualisiert.", "WIRD GELADEN")}<div class="guild-loading panel"><span class="status-orb fighting"></span><b>GILDENBEREICH WIRD GELADEN</b></div></section>`;
   const membership = guildSnapshot.membership;
   if (!membership) {
     const joinLocked = Date.parse(guildSnapshot.joinAvailableAt) > Date.now();
-    return `<section class="page page--kit guild-page">${pageHeading("SERVERAUTORITATIV · ONLINE", "Finde deine Gilde", "Gründe eine eigene Gemeinschaft oder tritt einer offenen Gilde bei. Mitgliedschaft, Rollen und Ressourcen liegen ausschließlich in PostgreSQL.", `${guildSnapshot.directory.length} GILDEN SICHTBAR`)}
+    return `<section class="page page--kit guild-page">${pageHeading("GILDEN-DNA · GEMEINSCHAFT", "Finde deine Gilde", "Gründe eine eigene Gemeinschaft oder tritt einer offenen Gilde bei. Deine Mitgliedschaft und DNA-Ressourcen bleiben dauerhaft erhalten.", `${guildSnapshot.directory.length} GILDEN SICHTBAR`)}
       ${joinLocked ? `<div class="guild-cooldown panel">${icon("shield")}<span><b>GILDENWECHSEL-SPERRE</b><small>Neuer Beitritt ab ${new Date(guildSnapshot.joinAvailableAt).toLocaleString("de-DE")}.</small></span></div>` : ""}
       ${guildSnapshot.invitations.length ? `<section class="guild-invitations panel"><span class="eyebrow">OFFENE EINLADUNGEN</span>${guildSnapshot.invitations.map((invite) => `<article><span class="guild-tag">${escapeHtml(invite.guildTag)}</span><div><b>${escapeHtml(invite.guildName)}</b><small>von ${escapeHtml(invite.invitedByDisplayName)} · gültig bis ${new Date(invite.expiresAt).toLocaleDateString("de-DE")}</small></div><button data-guild-invite-accept="${invite.inviteId}" ${joinLocked ? "disabled" : ""}>ANNEHMEN</button><button class="danger-text" data-guild-invite-decline="${invite.inviteId}">ABLEHNEN</button></article>`).join("")}</section>` : ""}
       <div class="guild-onboarding-grid"><form id="guild-create-form" class="panel guild-create-card"><span class="eyebrow">NEUE GILDE</span><h2>Eigenes Chromosom gründen</h2><label>Name<input name="name" minlength="3" maxlength="32" placeholder="Etherwacht" required></label><label>Tag<input name="tag" minlength="2" maxlength="5" placeholder="ETW" required></label><label>Beschreibung<textarea name="description" maxlength="240" placeholder="Wofür steht eure Gilde?"></textarea></label><button class="primary-button" ${joinLocked || guildSyncBusy ? "disabled" : ""}>GILDE GRÜNDEN ${icon("arrow")}</button></form>

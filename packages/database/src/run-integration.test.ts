@@ -93,6 +93,40 @@ integration("PostgreSQL 18 authoritative run store", () => {
     await expect(pool.query("SELECT count(*)::int AS count FROM pending_reward_batches WHERE player_id = $1 AND claimed_at IS NULL", [account.playerId])).resolves.toMatchObject({ rows: [{ count: 1 }] });
   });
 
+  it("reports only newly settled loot when the combat cache already contains rewards", async () => {
+    const account = await createRun("settlement-delta");
+    const existing = { eggs: 4, items: 7, gems: 3 };
+    await pool.query("UPDATE player_run_levels SET level = 100 WHERE player_id = $1", [account.playerId]);
+    await pool.query("UPDATE player_runs SET next_combat_at = $2 WHERE player_id = $1", [account.playerId, new Date(now.getTime() - 60_000)]);
+    await pool.query(
+      `INSERT INTO pending_reward_batches
+         (player_id, source, gold, slot_count, victory_count, content_release_id, balance_release_id,
+          egg_drops, item_drops, gem_drops, created_at, updated_at)
+       VALUES ($1, 'combat', 100, 10, 10, 'foundation-1.0.0', 'low-numbers-1.0.0',
+               $2::jsonb, $3::jsonb, $4::jsonb, $5, $5)`,
+      [
+        account.playerId,
+        JSON.stringify({ mossbit: existing.eggs }),
+        JSON.stringify({ training_data: existing.items }),
+        JSON.stringify({ "common-crimson-triangle": existing.gems }),
+        now,
+      ],
+    );
+
+    const result = await runStore.bootstrap(account.userId, now);
+    const pendingEggs = result.snapshot.collection.pendingEggs.length;
+    const pendingItems = Object.values(result.snapshot.collection.pendingItems).reduce((sum, amount) => sum + Number(amount), 0);
+    const pendingGems = result.snapshot.collection.pendingGems.length;
+
+    expect(result.settlement.victoriesAdded).toBeGreaterThan(0);
+    expect(result.settlement.eggsAdded).toBe(pendingEggs - existing.eggs);
+    expect(result.settlement.itemsAdded).toBe(pendingItems - existing.items);
+    expect(result.settlement.gemsAdded).toBe(pendingGems - existing.gems);
+    expect(result.settlement.eggsAdded).not.toBe(pendingEggs);
+    expect(result.settlement.itemsAdded).not.toBe(pendingItems);
+    expect(result.settlement.gemsAdded).not.toBe(pendingGems);
+  });
+
   it("books one cache claim when the identical command arrives in parallel", async () => {
     const account = await createRun("parallel-claim");
     await pool.query("UPDATE player_run_levels SET level = 100 WHERE player_id = $1", [account.playerId]);

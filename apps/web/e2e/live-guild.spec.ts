@@ -57,6 +57,7 @@ test("active online guild hub exposes DNA, social and shared activity surfaces",
   await page.locator('.combat-rail [data-view="guild"]').click();
   await expect(page.locator(".guild-page")).toBeVisible({ timeout: 20_000 });
   await expect(page.getByText("Finde deine Gilde", { exact: true })).toBeVisible();
+  await expect(page.locator(".guild-page")).not.toContainText(/UI-Test|Spielserver|Onlineserver|serverautoritativ|PostgreSQL/iu);
 
   const create = page.locator("#guild-create-form");
   await create.locator('input[name="name"]').fill(liveGuildName as string);

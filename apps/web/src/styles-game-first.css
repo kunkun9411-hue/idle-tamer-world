@@ -643,6 +643,10 @@ body.is-combat-active #app { height: 100svh; overflow: hidden; }
   .login-panel__mobile-brand { margin-bottom: 42px; }
   .login-panel h2 { font-size: 31px; }
   .login-panel__backend { margin-top: 18px; }
+  .login-form__meta { gap: 12px; padding-inline: 8px; }
+  .login-form__meta label,
+  .login-form__meta button { min-width: 0; }
+  .login-form__meta button { text-align: right; }
 
   .combat-top-hud { grid-template-columns: 34px 1fr auto; }
   .combat-brand .brand__mark { width: 30px; height: 30px; }

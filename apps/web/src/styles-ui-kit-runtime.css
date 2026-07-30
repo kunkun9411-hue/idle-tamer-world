@@ -885,6 +885,30 @@
 .habitat-page .monster-card__actions button { min-height: 28px; padding-inline: 5px; font-size: 6px; }
 .habitat-page .monster-card__actions button small { font-size: 5px; }
 .habitat-page .empty-slot { min-height: 338px; padding: 16px; }
+.habitat-page .habitat-empty-state {
+  min-height: 240px;
+  align-self: start;
+  padding: 18px 14px;
+}
+.habitat-page .habitat-empty-state > span { width: 44px; height: 44px; margin-bottom: 11px; }
+.habitat-page .habitat-empty-state small { max-width: 270px; }
+.habitat-empty-state__actions {
+  width: min(100%, 270px);
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+}
+.habitat-page .habitat-empty-state__actions button {
+  width: 100%;
+  min-height: 34px;
+  margin: 0;
+  padding-inline: 8px;
+  font-size: 7px;
+}
+@media (max-width: 540px) {
+  .habitat-page .habitat-empty-state__actions button { min-height: 44px; }
+}
 .habitat-page .monster-card__controls {
   margin-top: 7px;
   border-top: 1px solid var(--line);
@@ -1249,6 +1273,70 @@
   .combat-shell--ui-kit .combat-account { right: 0; }
   .combat-shell--ui-kit .combat-account .resources span:nth-child(2),
   .combat-shell--ui-kit .combat-account .rank-chip { display: none; }
+}
+
+@media (max-width: 520px) {
+  /* Phone HUD uses two deliberate rows: identity first, zone navigation
+     second. This keeps every account value readable without laying the card
+     over the stage tabs or shrinking it to an unexplained avatar button. */
+  .app-shell--ui-kit .topbar__account .player-account-card.profile-chip {
+    width: 224px;
+    min-width: 224px;
+    height: 48px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 7px;
+    padding: 4px 8px 4px 5px;
+    border-radius: 9px;
+  }
+  .app-shell--ui-kit .topbar__account .player-account-card .account-avatar--small {
+    width: 34px;
+    height: 34px;
+  }
+  .app-shell--ui-kit .topbar__account .player-account-card__copy {
+    display: grid;
+  }
+
+  .combat-shell--ui-kit .combat-top-hud {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    min-height: 90px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 48px 36px;
+    justify-content: stretch;
+    justify-items: stretch;
+    gap: 6px;
+  }
+  .combat-shell--ui-kit .combat-account {
+    position: static;
+    grid-row: 1;
+    justify-self: start;
+  }
+  .combat-shell--ui-kit .combat-account .player-account-card.profile-chip {
+    width: 224px;
+    min-width: 224px;
+    height: 48px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 7px;
+    padding: 4px 8px 4px 5px;
+    border-radius: 9px;
+  }
+  .combat-shell--ui-kit .combat-account .player-account-card .account-avatar--small {
+    width: 34px;
+    height: 34px;
+  }
+  .combat-shell--ui-kit .combat-account .player-account-card__copy {
+    display: grid;
+  }
+  .combat-shell--ui-kit .combat-zone-tabs {
+    grid-row: 2;
+    width: 100%;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .combat-shell--ui-kit .combat-world-label { top: 106px; }
+  .combat-shell--ui-kit .combat-duel { inset: 130px 0 292px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2082,6 +2170,13 @@
   filter: drop-shadow(0 0 12px rgba(125, 83, 227, .08));
 }
 
+.offline-report__actions {
+  gap: 10px;
+}
+.offline-report__actions .silver-ether-action {
+  margin-top: 0;
+}
+
 @media (max-width: 820px) {
   .combat-shell--ui-kit .combat-loot-hud {
     width: auto;
@@ -2107,5 +2202,11 @@
   .combat-shell--ui-kit .combat-loot-hud .primary-button {
     width: min(250px, 92%);
     min-height: 30px;
+  }
+}
+
+@media (max-width: 540px) {
+  .offline-report__actions .silver-ether-action {
+    min-height: 44px;
   }
 }

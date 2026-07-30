@@ -85,3 +85,27 @@ Roadmap B darf Navigation, Hierarchie, Darstellung und Feedback vollständig ver
 # UI-Baukasten-Batch 2026-07-22
 
 Schritt 2 enthält jetzt den vollständigen visuellen Produktionssatz: 18 modulare Rahmenmodule, 14 Innenflächen, 42 Leisten-/Aktions-/Wertprimitive, 16 textfreie Ressourcen-/Item-Icons, 34 textfreie System-/Navigationsicons und 12 Identitätslayer. Die 136 Rasterelemente werden mit `scripts/prepare_ui_kit.py` erzeugt, über `apps/web/public/assets/ui/kit/ui-kit-manifest.json` ausgeliefert und im UI-Katalog (`/dev/ui-catalog.html#identity-kit`) als echte Karten dargestellt; zehn CSS-/Rotationsableitungen sind zusätzlich als `#info-variants` bzw. `#system-variants` sichtbar. Chroma-Quellen und HD-Master bleiben versioniert; Texte, Zahlen und Zustände werden ausschließlich als HTML/CSS gesetzt. G11 Gilden-DNA, G16 Post, G18 Audio an, G21 Information, G22 Warnung, G23 Erfolg, G24 Fehler, G25 Schließen, G26 Zurück, G28 Hinzufügen, G29 Entfernen, G30 Sperre, G31 Filter, G32 Sortieren, G33 Suche, G34 Aktualisieren, G35 Menü, G36 Mehr/Optionen, H09 Rollenplakette Verteidigung, H10 Rollenplakette Support, H11 Rangfassung klein und H12 Rangfassung groß sind abgenommen; G19 Audio aus und G27 Vorwärts sind als CSS-Zustände/Ableitung aus G18/G26 freigegeben, die serielle UI-Liste ist abgeschlossen.
+
+# Spieler-Polish-Folge 2026-07-30
+
+Der aktuelle lokale Stand schließt die in der echten Spieler- und
+Capture-Prüfung bestätigten P1/P2-Befunde, ohne Roadmap B formal
+vorwegzunehmen:
+
+- vollständige Profilkarte auf Desktop, Tablet und Mobile in Kampf und
+  Standardseiten;
+- echte vorhandene HD-Porträts in Profilhero, Avatar-Katalog und HUD;
+- kollisionsfreier Offline-Bericht mit 44-px-Mobile-Aktion;
+- achtteilige Objectives-Navigation ohne zusätzlichen oder abgeschnittenen
+  Slot;
+- kompakte Expeditionskarten und ein handlungsorientierter Habitat-Leerzustand;
+- verständliche Forschungszustände mit Kosten und Besitz sowie
+  spielerbezogene Gilden-Texte;
+- autoritative Rückkehrberichte melden nur neu hinzugekommene Beute statt den
+  bereits wartenden Gesamtbestand.
+
+Nachweis: `pnpm check:all`, `pnpm ui:audit` und `pnpm ui:capture` sind grün.
+Der Vollcheck umfasst 67 Web-, 24 API-, 11 Datenbank-Unit-, 6 Core- und 50
+lokale Browsertests; die zwei credentialgebundenen Live-E2E werden erst gegen
+den deployten Stand ausgeführt. **B.03.3, B.03.4, B.08.3 und B.08.4 bleiben
+bis zu dieser Live-Spielerabnahme offen; Roadmap B bleibt bei 28/32.**

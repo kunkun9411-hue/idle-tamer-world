@@ -167,9 +167,10 @@
 .dispatch-slot__reward strong { margin-top: 3px; color: #c9b9ef; font-size: 7px; }
 .dispatch-slot > button { min-width: 145px; min-height: 37px; }
 .dispatch-page .subsection-heading { margin-top: 30px; }
-.dispatch-contracts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.dispatch-contract { min-height: 280px; display: flex; flex-direction: column; padding: 17px; }
-.dispatch-contract.is-locked { opacity: .5; }
+.dispatch-contracts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; }
+.dispatch-contract { display: flex; flex-direction: column; padding: 17px; }
+.dispatch-contract:has(.dispatch-candidates) { min-height: 280px; }
+.dispatch-contract.is-locked { opacity: .72; }
 .dispatch-contract__heading { display: grid; grid-template-columns: 43px 1fr; gap: 12px; }
 .dispatch-contract__heading > span { width: 41px; height: 41px; display: grid; place-items: center; border: 1px solid rgba(168,139,255,.18); border-radius: 10px; color: #b39cea; background: rgba(168,139,255,.05); }
 .dispatch-contract__heading svg { width: 19px; height: 19px; }
@@ -194,7 +195,7 @@
 .dispatch-candidates strong { font-size: 9px; }
 .dispatch-candidates small { margin-top: 3px; color: var(--muted); font-size: 6px; }
 .dispatch-candidates svg { width: 13px; height: 13px; }
-.dispatch-contract__blocked { min-height: 53px; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: auto; padding-top: 13px; color: var(--dim); font-size: 6px; letter-spacing: .55px; text-align: center; }
+.dispatch-contract__blocked { min-height: 28px; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 13px; color: var(--muted); font-size: 7px; letter-spacing: .55px; text-align: center; }
 .dispatch-contract__blocked svg { width: 14px; height: 14px; flex: 0 0 auto; }
 
 .tutorial-coach { position: absolute; z-index: 24; left: 50%; bottom: 98px; width: min(610px, 48vw); display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 12px; padding: 13px 14px; transform: translateX(-50%); border-color: rgba(168,139,255,.28); background: linear-gradient(135deg, rgba(31,28,43,.96), rgba(12,12,18,.96)); box-shadow: 0 22px 60px rgba(0,0,0,.5), inset 0 0 30px rgba(168,139,255,.035); backdrop-filter: blur(20px); }
