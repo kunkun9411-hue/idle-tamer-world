@@ -34,7 +34,20 @@ html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; background: var(--bg); }
 button { font: inherit; }
 :where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--violet-bright) !important; outline-offset: 3px !important; }
-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+button svg,
+.primary-button svg,
+.secondary-button svg,
+.outline-button svg,
+.ghost-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: #08080c; }
 .ambient::before { content: ""; position: absolute; inset: 0; opacity: .28; background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px); background-size: 54px 54px; mask-image: linear-gradient(to bottom, black, transparent 78%); }
