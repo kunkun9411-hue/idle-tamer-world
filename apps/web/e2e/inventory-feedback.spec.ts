@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { openCombatArea } from "./helpers/combat-navigation";
+
 const enterLocalCombat = async (page: import("@playwright/test").Page): Promise<void> => {
   await page.goto("/");
   await page.getByTestId("login-submit").click();
@@ -17,7 +19,7 @@ test("opening the local Ether chest keeps inventory and reward feedback visible"
   const gold = page.locator('.player-account-card [data-live="run-gold"]');
   await expect(gold).toHaveText("100");
 
-  await page.locator(".combat-rail [data-inventory-toggle]").click();
+  await openCombatArea(page, "[data-inventory-toggle]");
   const inventory = page.getByRole("dialog", { name: "Inventar", exact: true });
   await expect(inventory).toBeVisible();
   await inventory.locator('[data-inventory-category="other"]').click();

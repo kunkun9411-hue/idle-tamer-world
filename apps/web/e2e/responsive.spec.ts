@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { createInitialState, createMonster } from "../src/game/rules";
 import { STORAGE_KEY } from "../src/game/storage";
+import { openCombatArea } from "./helpers/combat-navigation";
 
 test("starter flow and combat HUD fit the configured viewport", async ({ page }) => {
   await page.goto("/");
@@ -68,7 +69,8 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
   expect(layout.documentWidth).toBeLessThanOrEqual(layout.innerWidth + 1);
   expect(layout.bodyWidth).toBeLessThanOrEqual(layout.innerWidth + 1);
 
-  const selectors = [".fighter--player", ".fighter--enemy", ".combat-rail", ".combat-control-dock"];
+  const mobileCombatNavigation = (page.viewportSize()?.width ?? 0) <= 620;
+  const selectors = [".fighter--player", ".fighter--enemy", ".combat-control-dock", ...(mobileCombatNavigation ? [] : [".combat-rail"])];
   const boxes = await page.evaluate((targets) => Object.fromEntries(targets.map((selector) => {
     const rect = document.querySelector(selector)?.getBoundingClientRect();
     return [selector, rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null];
@@ -82,11 +84,11 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
     expect(box!.y, `${selector} starts inside the viewport`).toBeGreaterThanOrEqual(-1);
     expect(box!.y + box!.height, `${selector} ends inside the viewport`).toBeLessThanOrEqual((page.viewportSize()?.height ?? 0) + 1);
   }
-  const rail = boxes[".combat-rail"]!;
+  const primaryNavigation = boxes[mobileCombatNavigation ? ".combat-control-dock" : ".combat-rail"]!;
   for (const selector of [".fighter--player", ".fighter--enemy"]) {
     const fighter = boxes[selector]!;
-    const overlapWidth = Math.min(rail.x + rail.width, fighter.x + fighter.width) - Math.max(rail.x, fighter.x);
-    const overlapHeight = Math.min(rail.y + rail.height, fighter.y + fighter.height) - Math.max(rail.y, fighter.y);
+    const overlapWidth = Math.min(primaryNavigation.x + primaryNavigation.width, fighter.x + fighter.width) - Math.max(primaryNavigation.x, fighter.x);
+    const overlapHeight = Math.min(primaryNavigation.y + primaryNavigation.height, fighter.y + fighter.height) - Math.max(primaryNavigation.y, fighter.y);
     expect(overlapWidth > 4 && overlapHeight > 4, `${selector} must not be covered by the primary navigation`).toBe(false);
   }
 
@@ -261,7 +263,7 @@ test("static routes keep the complete player account card in the header", async 
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   if (await page.getByTestId("offline-report").count()) await page.getByTestId("offline-collect").click();
-  await page.locator('.combat-rail [data-view="research"]').click();
+  await openCombatArea(page, '[data-view="research"]');
   await expect(page.locator(".app-shell--research")).toBeVisible();
 
   const card = page.locator(".topbar__account .player-account-card");
@@ -313,7 +315,7 @@ test("mobile collection routes stay compact without hiding choices", async ({ pa
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   if (await page.getByTestId("offline-report").count()) await page.getByTestId("offline-collect").click();
-  await page.locator('.combat-rail [data-view="dispatch"]').click();
+  await openCombatArea(page, '[data-view="dispatch"]');
   await expect(page.locator(".dispatch-page")).toBeVisible();
 
   const viewportWidth = page.viewportSize()?.width ?? 0;

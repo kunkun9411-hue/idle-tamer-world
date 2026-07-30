@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { createInitialState, createMonster } from "../src/game/rules";
 import { STORAGE_KEY } from "../src/game/storage";
+import { openCombatArea } from "./helpers/combat-navigation";
 
 test("dispatch contracts stay content-dense without shrinking candidate actions", async ({ page }) => {
   const state = createInitialState();
@@ -21,7 +22,7 @@ test("dispatch contracts stay content-dense without shrinking candidate actions"
   if (await page.getByTestId("offline-report").count()) {
     await page.getByTestId("offline-collect").click();
   }
-  await page.locator('.combat-rail [data-view="dispatch"]').click();
+  await openCombatArea(page, '[data-view="dispatch"]');
 
   const contracts = page.locator(".dispatch-contracts");
   const blockedCards = contracts.locator(".dispatch-contract:has(.dispatch-contract__blocked)");

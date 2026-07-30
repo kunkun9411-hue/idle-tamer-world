@@ -284,7 +284,10 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
 .prestige-copy p { max-width: 390px; margin: 0; color: #aaa6b2; font-size: 12px; line-height: 1.75; }
 .prestige-access-seal { width: max-content; display: flex; align-items: center; gap: 8px; margin-top: 20px; padding: 7px 11px; border: 1px solid rgba(192,174,247,.18); border-radius: 99px; color: #b7accf; background: rgba(9,9,15,.48); font-size: 7px; letter-spacing: 1.25px; backdrop-filter: blur(8px); }
 .prestige-access-seal i { width: 5px; height: 5px; border-radius: 50%; background: #b59aff; box-shadow: 0 0 11px #9f7dff; }
-.ether-crystal-stage { min-height: 500px; position: relative; z-index: 2; display: grid; place-items: center; align-self: center; isolation: isolate; perspective: 900px; }
+.ether-crystal-stage { min-height: 500px; position: relative; z-index: 2; display: grid; place-items: center; align-self: center; overflow: clip; contain: paint; isolation: isolate; perspective: 900px; }
+@supports not (overflow: clip) {
+  .ether-crystal-stage { overflow: hidden; }
+}
 .ether-crystal-stage::before { content: ""; position: absolute; z-index: -1; width: min(480px, 96%); height: 150px; bottom: 60px; border-radius: 50%; background: radial-gradient(ellipse, rgba(177,145,255,.31), rgba(108,77,194,.1) 38%, transparent 69%); filter: blur(10px); opacity: calc(.38 + var(--ether-charge) * .0045); }
 .ether-crystal-stage::after { content: ""; position: absolute; z-index: -2; width: min(600px, 112%); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(177,145,255,.12), transparent 64%); filter: blur(8px); }
 .ether-beam { position: absolute; z-index: -1; top: 3%; bottom: 84px; width: 90px; opacity: calc(.17 + var(--ether-charge) * .0045); background: linear-gradient(90deg, transparent, rgba(148,113,244,.07) 25%, rgba(222,210,255,.32) 50%, rgba(148,113,244,.07) 75%, transparent); filter: blur(4px); clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%); -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 86%, transparent); animation: etherBeamPulse 3.8s ease-in-out infinite; }
@@ -303,7 +306,7 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
 .ether-orbit i { position: absolute; top: 50%; left: -4px; width: 8px; height: 8px; border-radius: 50%; background: #ded5ff; box-shadow: 0 0 18px #a884ff, 0 0 36px rgba(142,102,255,.5); }
 .ether-orbit i:nth-child(2) { top: 7%; left: 70%; }
 .ether-orbit i:nth-child(3) { top: 82%; left: 73%; }
-.ether-ritual-ring { position: absolute; z-index: 1; left: 50%; top: 48%; display: block; aspect-ratio: 1; object-fit: contain; pointer-events: none; transform-style: preserve-3d; filter: drop-shadow(0 0 18px rgba(143,105,243,.25)); }
+.ether-ritual-ring { max-width: calc(100% - 32px); position: absolute; z-index: 1; left: 50%; top: 48%; display: block; aspect-ratio: 1; object-fit: contain; pointer-events: none; transform-style: preserve-3d; filter: drop-shadow(0 0 18px rgba(143,105,243,.25)); }
 .ether-ritual-ring--outer { width: 405px; opacity: .55; animation: etherOrbit 19s linear infinite; }
 .ether-ritual-ring--inner { width: 285px; opacity: .28; animation: etherOrbitReverse 13s linear infinite; }
 .ether-fragments { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
@@ -433,8 +436,7 @@ body.is-prestige-active { overflow: auto; background: #05050a; }
   .ether-sigil--inner { width: 245px; height: 245px; }
   .ether-orbit--outer { width: 330px; height: 330px; }
   .ether-orbit--inner { width: 250px; height: 250px; }
-  .ether-ritual-ring--outer { width: 330px; }
-  .ether-ritual-ring--inner { width: 250px; }
+  .ether-ritual-ring { display: none; }
   .ether-release-burst { width: 420px; }
   .ether-crystal { width: 150px; }
   .ether-pedestal { bottom: 88px; }

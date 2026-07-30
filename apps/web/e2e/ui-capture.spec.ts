@@ -4,10 +4,15 @@ import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 
 import { UI_VIEWPORTS } from "../src/dev/ui-catalog-data";
+import { openCombatArea } from "./helpers/combat-navigation";
 
 const captureRoot = fileURLToPath(new URL("../../../artifacts/ui-captures/", import.meta.url));
 
 const activate = async (page: Page, selector: string): Promise<void> => {
+  if (selector.startsWith(".combat-rail ")) {
+    await openCombatArea(page, selector.slice(".combat-rail ".length));
+    return;
+  }
   const locator = page.locator(selector);
   await expect(locator).toHaveCount(1);
   await locator.evaluate((element) => (element as HTMLButtonElement).click());
@@ -45,6 +50,12 @@ for (const viewport of UI_VIEWPORTS) {
     if (await page.locator("#skip-tutorial").count()) await page.locator("#skip-tutorial").click();
     await expect(page.getByTestId("combat-scene")).toBeVisible();
     await shot("04-combat");
+    if (await page.locator("#combat-areas-toggle").isVisible()) {
+      await page.locator("#combat-areas-toggle").click();
+      await expect(page.getByRole("dialog", { name: "Bereiche", exact: true })).toBeVisible();
+      await shot("04-combat-areas");
+      await page.getByRole("button", { name: "Bereiche schließen" }).click();
+    }
 
     await activate(page, '[data-combat-panel="missions"]');
     await shot("05-combat-missions");
@@ -82,7 +93,15 @@ for (const viewport of UI_VIEWPORTS) {
     await activate(page, '.combat-objective-hud [data-view="objectives"]');
     await expect(page.locator(".objectives-page")).toBeVisible();
     await expect(page.locator(".main-nav .nav-button")).toHaveCount(8);
-    expect(await page.locator(".main-nav").evaluate((nav) => nav.scrollWidth <= nav.clientWidth + 1 && nav.scrollHeight <= nav.clientHeight + 1)).toBe(true);
+    const navFit = await page.locator(".main-nav").evaluate((nav) => ({
+      clientWidth: nav.clientWidth,
+      scrollWidth: nav.scrollWidth,
+      clientHeight: nav.clientHeight,
+      scrollHeight: nav.scrollHeight,
+    }));
+    expect(navFit.scrollWidth, JSON.stringify(navFit)).toBeLessThanOrEqual(navFit.clientWidth + 1);
+    expect(navFit.scrollHeight, JSON.stringify(navFit)).toBeLessThanOrEqual(navFit.clientHeight + 1);
+    await shot("15-objectives-viewport");
     await shot("15-objectives", true);
     await activate(page, '.objective-overview [data-view="expedition"]');
     await expect(page.getByTestId("combat-scene")).toBeVisible();

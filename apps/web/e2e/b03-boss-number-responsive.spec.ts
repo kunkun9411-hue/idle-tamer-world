@@ -85,7 +85,7 @@ const openFixture = async (page: Page, fixture: MatrixFixture): Promise<void> =>
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 };
 
-const expectStageGeometry = async (page: Page): Promise<void> => {
+const expectStageGeometry = async (page: Page, expectBossScale = false): Promise<void> => {
   const geometry = await page.evaluate(() => {
     const selectors = [
       ".fighter--player",
@@ -138,7 +138,19 @@ const expectStageGeometry = async (page: Page): Promise<void> => {
         })
       : [];
     const images = [...document.querySelectorAll<HTMLImageElement>(".fighter .monster-avatar img")]
-      .map((image) => ({ complete: image.complete, naturalWidth: image.naturalWidth }));
+      .map((image) => {
+        const rect = image.getBoundingClientRect();
+        return {
+          complete: image.complete,
+          naturalWidth: image.naturalWidth,
+          left: rect.left,
+          right: rect.right,
+          width: rect.width,
+          height: rect.height,
+        };
+      });
+    const accountCardWidth = document.querySelector<HTMLElement>(".combat-account .player-account-card")?.getBoundingClientRect().width ?? 0;
+    const bossPresent = Boolean(document.querySelector(".fighter--enemy .monster-avatar--boss"));
     return {
       viewport,
       documentWidth: document.documentElement.scrollWidth,
@@ -147,6 +159,8 @@ const expectStageGeometry = async (page: Page): Promise<void> => {
       longValues,
       bannerOverlaps,
       images,
+      accountCardWidth,
+      bossPresent,
     };
   });
 
@@ -161,14 +175,22 @@ const expectStageGeometry = async (page: Page): Promise<void> => {
   expect(geometry.longValues).toHaveLength(2);
   for (const value of geometry.longValues) {
     expect(value.text).not.toBe("");
-    expect(value.fontSize, `${value.live}: ${value.text} font size`).toBeGreaterThanOrEqual(7);
+    const minimumFontSize = geometry.viewport.width <= 620 && value.live === "run-gold" ? 9 : 7;
+    expect(value.fontSize, `${value.live}: ${value.text} font size`).toBeGreaterThanOrEqual(minimumFontSize);
     expect(value.clipped, `${value.live}: ${value.text} (${value.clientWidth}/${value.scrollWidth}px)`).toBe(false);
   }
+  if (geometry.viewport.width <= 620) expect(geometry.accountCardWidth).toBeGreaterThanOrEqual(280);
   expect(geometry.bannerOverlaps).toEqual([]);
   expect(geometry.images.length).toBeGreaterThanOrEqual(2);
   for (const image of geometry.images) {
     expect(image.complete).toBe(true);
     expect(image.naturalWidth).toBeGreaterThan(0);
+    expect(image.left).toBeGreaterThanOrEqual(-1);
+    expect(image.right).toBeLessThanOrEqual(geometry.viewport.width + 1);
+  }
+  if (expectBossScale) {
+    expect(geometry.bossPresent).toBe(true);
+    expect(geometry.images[1].height, "boss art is visually larger than the Rookie").toBeGreaterThanOrEqual(geometry.images[0].height * 1.15);
   }
 };
 
@@ -185,12 +207,13 @@ for (const fixture of matrix) {
     await expect(scene.locator(".combat-zone-tab.is-active small")).toContainText("STAGE 10/10");
     await expect(scene.locator(".fighter--enemy .nameplate small").first()).toHaveText("ZONENBOSS");
     await expect(scene.locator(".fighter--enemy .nameplate strong")).toHaveText(fixture.expectedBoss);
+    await expect(scene.locator(".fighter--enemy .monster-avatar--boss")).toHaveAttribute("data-boss", "true");
     await expect(scene.locator('[data-live="run-gold"]')).toHaveText(fixture.expectedGold);
 
     await scene.locator('[data-combat-panel="loot"]').click();
     await expect(scene.locator(".combat-panel--loot")).toHaveClass(/is-open/);
     await expect(scene.locator('[data-live="pending-gold"]')).toHaveText(fixture.expectedGold);
-    await expectStageGeometry(page);
+    await expectStageGeometry(page, true);
 
     await expect(scene.locator('[data-live="battle-status"]')).toHaveText(fixture.expectedState, { timeout: 4_000 });
     const stateClass = fixture.expectedState === "STAGE GESCHAFFT" ? "victory" : "recovering";

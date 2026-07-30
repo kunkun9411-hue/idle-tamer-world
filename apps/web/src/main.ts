@@ -4,6 +4,7 @@ import "./styles-game-first.css";
 import "./styles-progression-v3.css";
 import "./styles-guild.css";
 import "./styles-ui-kit-runtime.css";
+import "./styles-combat-mobile-nav.css";
 import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, GuildCommand, GuildSnapshot, RunBootstrapResponse, RunCommandResponse } from "@idle-tamer/contracts";
 import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId, RunApiError } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
@@ -94,6 +95,8 @@ let prestigeActivating = false;
 let starterDialogOpen = false;
 let activeCombatPanel: CombatPanel | null = null;
 let combatFocusMode = false;
+let combatAreasOpen = false;
+let restoreCombatAreasFocus = false;
 let inventoryModalOpen = false;
 let monsterModalOpen = false;
 let inventoryCategory: InventoryCategory = "gems";
@@ -498,12 +501,14 @@ async function collectOfflineRewards(): Promise<void> {
 }
 
 function toggleCombatPanel(panel: CombatPanel): void {
+  combatAreasOpen = false;
   combatFocusMode = false;
   activeCombatPanel = activeCombatPanel === panel ? null : panel;
   render();
 }
 
 function toggleCombatFocus(): void {
+  combatAreasOpen = false;
   combatFocusMode = !combatFocusMode;
   activeCombatPanel = null;
   render();
@@ -835,10 +840,11 @@ function confirmPrestige(): void {
     activeView = "expedition";
     battle = createBattleState();
     showNotice("Neue Zeitlinie gestartet", `${reward} permanenter Prestige-Kern wurde gesichert. Hyperlevel, Evolutionen und Gems sind erhalten.`, "success");
-  }, 1_650);
+  }, 2_400);
 }
 
 function setView(view: View): void {
+  combatAreasOpen = false;
   if (game.roster.length === 0 && view !== "profile" && view !== "guild") {
     showLogin = false;
     starterDialogOpen = true;
@@ -1073,7 +1079,9 @@ function encounterAvatar(definitionId: string, side = "right", hit = false): str
   const encounter = getEncounter(definitionId);
   const desiredFacing = side === "left" ? "right" : "left";
   const flipped = encounter.nativeFacing ? encounter.nativeFacing !== desiredFacing : desiredFacing === "left";
-  return `<div class="monster-avatar monster-avatar--${side} ${flipped ? "is-flipped" : ""} ${hit ? "is-hit" : ""}" style="--monster-accent:${encounter.accent}">
+  const bossClass = encounter.isBoss ? "monster-avatar--boss" : "";
+  const battleScale = encounter.battleScale ?? (encounter.isBoss ? 1.22 : 1);
+  return `<div class="monster-avatar monster-avatar--${side} ${bossClass} ${flipped ? "is-flipped" : ""} ${hit ? "is-hit" : ""}" data-encounter-id="${encounter.id}" data-boss="${encounter.isBoss}" style="--monster-accent:${encounter.accent};--combat-art-scale:${battleScale}">
     <span class="monster-avatar__glow"></span><span class="monster-avatar__platform"></span>
     ${encounter.sprite ? `<img class="monster-avatar__sprite" src="${encounter.sprite}" alt="${encounter.name}" width="200" height="200" draggable="false">` : `<span class="monster-avatar__body">${encounter.glyph}</span><small>${encounter.isBoss ? "BOSS-SIGNAL" : "WILDSIGNAL"}</small>`}
   </div>`;
@@ -1198,7 +1206,7 @@ function topShell(content: string): string {
 function combatShell(content: string): string {
   return `
     <div class="combat-shell combat-shell--ui-kit combat-shell--${game.currentZoneId} ${combatFocusMode ? "is-focus-mode" : ""}">${content}</div>
-    ${inventoryModalOpen ? combatInventoryModal() : ""}${monsterModalOpen ? combatMonsterModal() : ""}${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
+    ${inventoryModalOpen ? combatInventoryModal() : ""}${monsterModalOpen ? combatMonsterModal() : ""}${combatAreasOpen ? combatAreasMenu() : ""}${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${offlineReport()}${starterDialog()}`;
 }
 
 function prestigeShell(content: string): string {
@@ -1264,20 +1272,36 @@ function combatZoneTabs(): string {
   }).join("")}</nav>`;
 }
 
+const COMBAT_AREA_ENTRIES: Array<[View, string]> = [
+  ["expedition", "Kampf"],
+  ["habitat", "Monster"],
+  ["incubation", "Brut"],
+  ["inventory", "Inventar"],
+  ["research", "Forschung"],
+  ["dispatch", "Missionen"],
+  ["guild", "Gilde"],
+];
+
+function combatAreaAction(view: View): string {
+  if (view === "inventory") return 'data-inventory-toggle="true"';
+  if (view === "habitat") return 'data-monster-toggle="true"';
+  return `data-view="${view}"`;
+}
+
 function combatRail(): string {
-  const entries: Array<[View, string]> = [
-    ["expedition", "Kampf"],
-    ["habitat", "Monster"],
-    ["incubation", "Brut"],
-    ["inventory", "Inventar"],
-    ["research", "Forschung"],
-    ["dispatch", "Missionen"],
-    ["guild", "Gilde"],
-  ];
-  return `<nav class="combat-rail" aria-label="Spielbereiche">${entries.map(([view, label]) => {
-    const action = view === "inventory" ? "data-inventory-toggle=\"true\"" : view === "habitat" ? "data-monster-toggle=\"true\"" : `data-view=\"${view}\"`;
+  return `<nav class="combat-rail" aria-label="Spielbereiche">${COMBAT_AREA_ENTRIES.map(([view, label]) => {
+    const action = combatAreaAction(view);
     return `<button class="${view === "expedition" ? "is-active" : ""}" ${action} title="${label}" aria-label="${label}">${icon(view)}<span>${label}</span></button>`;
   }).join("")}</nav>`;
+}
+
+function combatAreasMenu(): string {
+  const entries = COMBAT_AREA_ENTRIES.filter(([view]) => view !== "expedition");
+  return `<div class="combat-areas-backdrop" data-close-combat-areas aria-hidden="true"></div>
+    <aside id="combat-areas-menu" class="combat-areas-menu" role="dialog" aria-modal="true" aria-labelledby="combat-areas-title">
+      <header><div><span class="eyebrow">SPIELBEREICHE</span><h2 id="combat-areas-title">Bereiche</h2><small>Wechsle direkt aus dem laufenden Kampf.</small></div><button id="close-combat-areas" type="button" aria-label="Bereiche schließen">×</button></header>
+      <nav aria-label="Weitere Spielbereiche">${entries.map(([view, label]) => `<button ${combatAreaAction(view)} aria-label="${label}">${icon(view)}<span>${label}</span></button>`).join("")}</nav>
+    </aside>`;
 }
 
 function combatMonsterSelector(): string {
@@ -1421,7 +1445,7 @@ function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {
     { panel: "duo", label: "Duo", iconName: "habitat", badge: game.supportMonsterUid ? undefined : "+" },
     { panel: "log", label: "Kampflog", iconName: "expedition" },
   ];
-  return `<nav class="combat-control-dock" aria-label="Kampfoptionen">${controls.map((control) => `<button class="${activeCombatPanel === control.panel ? "is-active" : ""}" data-combat-panel="${control.panel}" aria-pressed="${activeCombatPanel === control.panel}" title="${control.label}">${icon(control.iconName)}<span>${control.label}</span><i data-live="control-badge-${control.panel}" ${control.badge ? "" : "hidden"}>${control.badge ?? ""}</i></button>`).join("")}<button class="combat-focus-button ${combatFocusMode ? "is-active" : ""}" id="combat-focus-toggle" aria-pressed="${combatFocusMode}" title="${combatFocusMode ? "HUD einblenden" : "Fokusmodus"}">${icon("eye")}<span>${combatFocusMode ? "HUD ein" : "Fokus"}</span></button></nav>`;
+  return `<nav class="combat-control-dock" aria-label="Kampfoptionen">${controls.map((control) => `<button class="${activeCombatPanel === control.panel ? "is-active" : ""}" data-combat-panel="${control.panel}" aria-pressed="${activeCombatPanel === control.panel}" title="${control.label}">${icon(control.iconName)}<span>${control.label}</span><i data-live="control-badge-${control.panel}" ${control.badge ? "" : "hidden"}>${control.badge ?? ""}</i></button>`).join("")}<button class="combat-focus-button ${combatFocusMode ? "is-active" : ""}" id="combat-focus-toggle" aria-pressed="${combatFocusMode}" title="${combatFocusMode ? "HUD einblenden" : "Fokusmodus"}">${icon("eye")}<span>${combatFocusMode ? "HUD ein" : "Fokus"}</span></button><button id="combat-areas-toggle" aria-controls="combat-areas-menu" aria-expanded="${combatAreasOpen}" title="Bereiche">${icon("spark")}<span>Bereiche</span></button></nav>`;
 }
 
 function tutorialCoach(): string {
@@ -2105,6 +2129,10 @@ function render(): void {
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
   bindModalKeyboard();
+  if (restoreCombatAreasFocus) {
+    restoreCombatAreasFocus = false;
+    queueMicrotask(() => document.querySelector<HTMLButtonElement>("#combat-areas-toggle")?.focus());
+  }
 }
 
 function flushDeferredUi(): void {
@@ -2126,6 +2154,10 @@ function bindModalKeyboard(): void {
       else if (showOfflineReport) showOfflineReport = false;
       else if (inventoryModalOpen) inventoryModalOpen = false;
       else if (monsterModalOpen) monsterModalOpen = false;
+      else if (combatAreasOpen) {
+        combatAreasOpen = false;
+        restoreCombatAreasFocus = true;
+      }
       render();
       return;
     }
@@ -2194,6 +2226,12 @@ function bindEvents(): void {
     if (event.target.id === "guild-vote-form") void submitGuildVote(event.target);
   });
   app.addEventListener("click", (event) => {
+    const closeAreas = event.target instanceof Element && event.target.closest("[data-close-combat-areas]");
+    if (closeAreas) {
+      combatAreasOpen = false;
+      restoreCombatAreasFocus = true;
+      return render();
+    }
     const closeInventory = event.target instanceof Element && event.target.closest("[data-close-combat-inventory]");
     if (closeInventory) {
       inventoryModalOpen = false;
@@ -2210,11 +2248,13 @@ function bindEvents(): void {
 
     if (target.dataset.qa) return run(`qa:${target.dataset.qa}`, () => applyQaState(target.dataset.qa as QaPreset));
     if (target.dataset.inventoryToggle) {
+      combatAreasOpen = false;
       inventoryModalOpen = true;
       monsterModalOpen = false;
       return render();
     }
     if (target.dataset.monsterToggle) {
+      combatAreasOpen = false;
       monsterModalOpen = !monsterModalOpen;
       inventoryModalOpen = false;
       return render();
@@ -2289,6 +2329,17 @@ function bindEvents(): void {
       case "cancel-account-deletion": return void cancelAccountDeletion();
       case "logout-account": return void logoutAccount();
       case "combat-focus-toggle": return toggleCombatFocus();
+      case "combat-areas-toggle":
+        combatAreasOpen = true;
+        activeCombatPanel = null;
+        combatFocusMode = false;
+        inventoryModalOpen = false;
+        monsterModalOpen = false;
+        return render();
+      case "close-combat-areas":
+        combatAreasOpen = false;
+        restoreCombatAreasFocus = true;
+        return render();
       case "close-combat-inventory": inventoryModalOpen = false; return render();
       case "close-combat-monsters": monsterModalOpen = false; return render();
       case "collect-cache": return run("collect-cache", collectCache);

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { knownUiDebtIdsForWidth } from "../src/dev/ui-catalog-data";
+import { openCombatArea } from "./helpers/combat-navigation";
 
 const enterLocalCombat = async (page: import("@playwright/test").Page): Promise<void> => {
   await page.goto("/");
@@ -44,7 +45,7 @@ test("layout debt matches the explicit A.08 handoff allowlist", async ({ page })
   ] as const;
 
   for (const quickWindow of quickWindows) {
-    await page.locator(quickWindow.toggle).click();
+    await openCombatArea(page, quickWindow.toggle.replace(".combat-rail ", ""));
     const dialog = page.getByRole("dialog", { name: quickWindow.name, exact: true });
     await expect(dialog).toHaveCount(1);
     await expect(dialog).toBeVisible();
@@ -67,7 +68,7 @@ test("layout debt matches the explicit A.08 handoff allowlist", async ({ page })
     await expect(dialog).toHaveCount(0);
   }
 
-  await page.locator('.combat-rail [data-view="research"]').click();
+  await openCombatArea(page, '[data-view="research"]');
   await expect(page.locator(".app-shell--research")).toBeVisible();
   const accountOverflow = await page.evaluate(() => {
     const rect = document.querySelector<HTMLElement>(".topbar__account")?.getBoundingClientRect();

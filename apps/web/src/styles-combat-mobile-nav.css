@@ -1,0 +1,200 @@
+/*
+ * Version 0.8 mobile combat navigation
+ *
+ * The battle keeps one permanent six-action dock. Less frequent destinations
+ * live in a compact bottom sheet so every route stays named and reachable
+ * without covering the monsters with a second fixed navigation row.
+ */
+
+.combat-areas-backdrop,
+.combat-areas-menu,
+#combat-areas-toggle {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .combat-shell--ui-kit .combat-rail {
+    display: none;
+  }
+
+  .combat-shell--ui-kit .combat-control-dock {
+    position: fixed;
+    z-index: 50;
+    left: 6px;
+    right: 6px;
+    bottom: max(6px, env(safe-area-inset-bottom));
+    width: auto;
+    min-height: 54px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 3px;
+    padding: 3px;
+    overflow: visible;
+    border: 1px solid rgba(218, 208, 247, .18);
+    border-radius: 12px;
+    background: rgba(9, 8, 15, .94);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, .46), 0 0 22px rgba(132, 94, 230, .09);
+    transform: none;
+    backdrop-filter: blur(18px);
+  }
+
+  .combat-shell--ui-kit .combat-control-dock button,
+  .combat-shell--ui-kit .combat-control-dock #combat-areas-toggle {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    height: 48px;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    place-items: center;
+    gap: 1px;
+    margin: 0;
+    padding: 5px 1px 4px;
+    border-radius: 8px;
+  }
+
+  .combat-shell--ui-kit .combat-control-dock button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .combat-shell--ui-kit .combat-control-dock button > span {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .combat-shell--ui-kit .combat-control-dock button > i {
+    right: 2px;
+    top: 2px;
+  }
+
+  .combat-shell--ui-kit.is-focus-mode .combat-control-dock {
+    left: auto;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: 56px;
+    display: flex;
+  }
+
+  .combat-areas-backdrop {
+    position: fixed;
+    z-index: 83;
+    inset: 0;
+    display: block;
+    background: rgba(3, 4, 8, .7);
+    backdrop-filter: blur(7px);
+  }
+
+  .combat-areas-menu {
+    position: fixed;
+    z-index: 84;
+    left: 6px;
+    right: 6px;
+    bottom: calc(max(6px, env(safe-area-inset-bottom)) + 62px);
+    display: grid;
+    gap: 12px;
+    max-height: calc(100dvh - 82px - env(safe-area-inset-bottom));
+    padding: 16px;
+    overflow-y: auto;
+    border: 1px solid rgba(207, 191, 247, .28);
+    border-radius: 15px;
+    color: #f2eef8;
+    background:
+      radial-gradient(circle at 50% 0, rgba(148, 103, 242, .16), transparent 42%),
+      linear-gradient(155deg, rgba(25, 23, 37, .98), rgba(8, 9, 15, .99));
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .62), inset 0 1px rgba(255, 255, 255, .06);
+  }
+
+  .combat-areas-menu > header {
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .combat-areas-menu h2 {
+    margin: 4px 0 2px;
+    font: 650 24px/1 var(--display);
+  }
+
+  .combat-areas-menu header small {
+    color: rgba(232, 226, 242, .58);
+    font-size: 10px;
+  }
+
+  .combat-areas-menu header > button {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border: 1px solid rgba(218, 208, 247, .16);
+    border-radius: 50%;
+    color: #eee8f7;
+    background: rgba(7, 7, 13, .72);
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .combat-areas-menu nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .combat-areas-menu nav button {
+    min-width: 0;
+    min-height: 64px;
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border: 1px solid rgba(218, 208, 247, .16);
+    border-radius: 10px;
+    color: rgba(242, 237, 249, .86);
+    background: linear-gradient(155deg, rgba(72, 61, 103, .34), rgba(12, 12, 20, .86));
+    box-shadow: inset 0 1px rgba(255, 255, 255, .05);
+    cursor: pointer;
+  }
+
+  .combat-areas-menu nav button:hover,
+  .combat-areas-menu nav button:focus-visible {
+    border-color: rgba(200, 178, 255, .48);
+    color: #fff;
+    background: linear-gradient(155deg, rgba(127, 91, 215, .44), rgba(22, 18, 35, .92));
+  }
+
+  .combat-areas-menu nav button svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .combat-areas-menu nav button span {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 359px) {
+  .combat-shell--ui-kit .combat-control-dock button > span {
+    font-size: 8px;
+  }
+
+  .combat-areas-menu {
+    padding: 13px;
+  }
+
+  .combat-areas-menu nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

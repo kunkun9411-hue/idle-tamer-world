@@ -17,6 +17,7 @@ export interface EncounterDefinition {
   design: string;
   sprite?: string;
   nativeFacing?: "left" | "right";
+  battleScale?: number;
 }
 
 const enemy = (definition: Omit<EncounterDefinition, "isBoss">): EncounterDefinition => ({
@@ -24,12 +25,14 @@ const enemy = (definition: Omit<EncounterDefinition, "isBoss">): EncounterDefini
   isBoss: false,
   sprite: definition.sprite ?? `/assets/enemies/${definition.id}_idle_left.png`,
   nativeFacing: definition.nativeFacing ?? "left",
+  battleScale: definition.battleScale ?? 1,
 });
 const boss = (definition: Omit<EncounterDefinition, "isBoss">): EncounterDefinition => ({
   ...definition,
   isBoss: true,
   sprite: definition.sprite ?? `/assets/bosses/${definition.id}_idle_left.png`,
   nativeFacing: definition.nativeFacing ?? "left",
+  battleScale: definition.battleScale ?? 1.22,
 });
 
 /**

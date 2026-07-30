@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { createInitialState, createMonster } from "../src/game/rules";
 import { STORAGE_KEY } from "../src/game/storage";
+import { openCombatArea } from "./helpers/combat-navigation";
 
 const viewports = [
   { name: "desktop", width: 1280, height: 720 },
@@ -20,7 +21,7 @@ const openHabitat = async (page: Page): Promise<void> => {
   await page.getByTestId("login-submit").click();
   if (await page.getByTestId("offline-report").count()) await page.getByTestId("offline-collect").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
-  await page.locator('.combat-rail [data-monster-toggle]').click();
+  await openCombatArea(page, "[data-monster-toggle]");
   await page.locator('.combat-monster-modal__footer [data-view="habitat"]').click();
   await expect(page.locator(".habitat-page")).toBeVisible();
 };
