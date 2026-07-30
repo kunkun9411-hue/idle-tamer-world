@@ -12,10 +12,8 @@ import { elementLabel, getMonster, getMonsterForm, MONSTERS } from "./game/conte
 import { findEncounter, getEncounter } from "./game/encounters";
 import { canCraft, CRAFTING_RECIPES, getCraftingRecipe } from "./game/crafting";
 import { canStartExpedition, EXPEDITIONS, EXPEDITION_SLOT_COUNT, expeditionMatchCount, expeditionRewardMultiplier, getExpedition, isMonsterDispatched, type ExpeditionDefinition } from "./game/expeditions";
-import { API_PROTOCOL_VERSION } from "./game/api-contract";
 import { clientStatusCopy, type ClientUiState } from "./game/client-status";
 import { isAvatarUnlocked, isFrameUnlocked, LocalGameService } from "./game/game-service";
-import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { formatGameNumber } from "./game/number-scale";
 import { applyAuthoritativeRunSnapshot, combatMonsterForAuthority } from "./game/online-run-state";
@@ -69,7 +67,6 @@ const activeStorageKey = persistedAccountNamespace ? storageKeyForNamespace(pers
 const storageDependencies: StorageDependencies = { storageKey: activeStorageKey };
 const loaded = loadGame(storageDependencies);
 const service = new LocalGameService(loaded.state, Math.random, storageDependencies);
-const servicePort = new LocalGameServicePort(service);
 const game = service.state;
 let activeView: View = "expedition";
 let showLogin = true;
@@ -142,7 +139,7 @@ async function synchronizeGuild(): Promise<void> {
     guildSnapshot = (await accountClient.bootstrapGuild()).snapshot;
     synchronized = true;
   } catch (error) {
-    showNotice("Gildenserver nicht erreichbar", error instanceof Error ? error.message : "Die Gildendaten konnten nicht geladen werden.", "warning");
+    showNotice("Gildendaten nicht erreichbar", "Die Gildendaten konnten nicht geladen werden. Bitte versuche es gleich noch einmal.", "warning");
   } finally {
     guildSyncBusy = false;
   }
@@ -151,11 +148,11 @@ async function synchronizeGuild(): Promise<void> {
 
 async function sendGuildCommand(command: GuildCommand): Promise<boolean> {
   if (!guildSnapshot) {
-    showNotice("Gildenaktion noch nicht bereit", "Die Gildendaten werden zuerst vollständig geladen.", "warning");
+    showNotice("Gildenaktion noch nicht bereit", "Deine Gildendaten werden noch geladen.", "warning");
     return false;
   }
   if (!await waitForSynchronization(() => guildSyncBusy)) {
-    showNotice("Gildensynchronisierung dauert länger", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
+    showNotice("Gildendaten werden noch aktualisiert", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
     return false;
   }
   guildSyncBusy = true;
@@ -207,7 +204,7 @@ async function synchronizeOnlineRun(showReport = false): Promise<void> {
     render();
   } catch (error) {
     clientUiState = error instanceof RunApiError && error.status === 401 ? "local" : "offline";
-    showNotice("Online-Run nicht erreichbar", error instanceof Error ? error.message : "Der Run-Server antwortet nicht.", "warning");
+    showNotice("Fortschritt nicht erreichbar", "Deine Kampfdaten konnten gerade nicht aktualisiert werden. Bitte versuche es gleich noch einmal.", "warning");
   } finally {
     runSyncBusy = false;
   }
@@ -215,11 +212,11 @@ async function synchronizeOnlineRun(showReport = false): Promise<void> {
 
 async function sendOnlineRunCommand(command: Parameters<AccountClient["runCommand"]>[0]): Promise<RunCommandResponse | null> {
   if (!onlineRun) {
-    showNotice("Run noch nicht bereit", "Dein serverseitiger Spielstand wird zuerst vollständig geladen.", "warning");
+    showNotice("Spielstand noch nicht bereit", "Dein aktueller Fortschritt wird noch geladen.", "warning");
     return null;
   }
   if (!await waitForSynchronization(() => runSyncBusy)) {
-    showNotice("Runsynchronisierung dauert länger", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
+    showNotice("Fortschritt wird noch aktualisiert", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
     return null;
   }
   runSyncBusy = true;
@@ -366,7 +363,7 @@ function tickBattle(now: number): void {
       battle.status = "victory";
       battle.recoveryUntil = now + 1_800;
       if (isRunOnline()) {
-        addLog("Kampf beendet. Der Server bestätigt Fortschritt und Beute unabhängig vom Browser.");
+        addLog("Kampf beendet. Fortschritt und Beute werden sicher gespeichert.");
         void synchronizeOnlineRun();
         refreshCombatUi(now, true);
         return;
@@ -458,8 +455,8 @@ async function collectCache(): Promise<void> {
     if (response) {
       const payload = response.event.payload;
       showNotice(
-        "Beute serverseitig gesichert",
-        `${payload.gold ?? gold} Gold, ${payload.eggs ?? eggs} Eier, ${payload.items ?? items} Materialien und ${payload.gems ?? gems} Gems wurden exakt einmal gebucht.`,
+        "Beute sicher eingesammelt",
+        `${payload.gold ?? gold} Gold, ${payload.eggs ?? eggs} Eier, ${payload.items ?? items} Materialien und ${payload.gems ?? gems} Gems wurden ins Inventar übertragen.`,
         "success",
       );
     }
@@ -477,7 +474,7 @@ async function collectOfflineRewards(): Promise<void> {
   if (isRunOnline()) {
     if (!onlineRun || !authoritativeCacheHasRewards(onlineRun)) {
       onlineReturnSettlement = null;
-      showNotice("Willkommen zurück", "Dein Offline-Fortschritt ist bereits synchronisiert. Im Kampfspeicher wartet aktuell keine weitere Beute.", "success");
+      showNotice("Willkommen zurück", "Dein Fortschritt ist bereits aktuell. Im Kampfspeicher wartet momentan keine weitere Beute.", "success");
       window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
       return;
     }
@@ -517,7 +514,7 @@ async function levelUp(uid: string): Promise<void> {
   if (isRunOnline()) {
     if (!monster) return;
     const response = await sendOnlineRunCommand({ type: "monster.level_up", definitionId: monster.definitionId });
-    if (response) showNotice("Run-Level serverseitig erhöht", `${getMonsterForm(monster).name} ist jetzt Level ${response.event.payload.level}.`, "success");
+    if (response) showNotice("Run-Level erhöht", `${getMonsterForm(monster).name} ist jetzt Level ${response.event.payload.level}.`, "success");
     return;
   }
   if (!service.levelUp(uid)) return;
@@ -528,7 +525,7 @@ async function levelUp(uid: string): Promise<void> {
 async function trainWithData(uid: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "monster.train", monsterUid: uid });
-    if (response) showNotice("Trainingsdaten verwendet", `Run-Level ${response.event.payload.level} wurde serverseitig bestätigt.`, "success");
+    if (response) showNotice("Trainingsdaten verwendet", `Run-Level ${response.event.payload.level} ist jetzt aktiv.`, "success");
     return;
   }
   if (!service.trainWithData(uid)) return;
@@ -552,7 +549,7 @@ async function evolveMonster(uid: string): Promise<void> {
 async function upgradeHyper(uid: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "monster.hyper_up", monsterUid: uid });
-    if (response) { battle = createBattleState(); showNotice("Permanente Resonanz", `Hyperlevel ${response.event.payload.hyperLevel} ist serverseitig gesichert.`, "success"); }
+    if (response) { battle = createBattleState(); showNotice("Permanente Resonanz", `Hyperlevel ${response.event.payload.hyperLevel} wurde dauerhaft gespeichert.`, "success"); }
     return;
   }
   if (!service.upgradeHyper(uid)) return;
@@ -564,7 +561,7 @@ async function upgradeHyper(uid: string): Promise<void> {
 async function equipGem(uid: string, gemId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "gem.equip", monsterUid: uid, gemId });
-    if (response) { battle = createBattleState(); showNotice("Gem eingesetzt", `${getGem(gemId)?.name ?? "Der Gem"} wirkt jetzt auch in der Serversimulation.`, "success"); }
+    if (response) { battle = createBattleState(); showNotice("Gem eingesetzt", `${getGem(gemId)?.name ?? "Der Gem"} verstärkt jetzt dieses Monster.`, "success"); }
     return;
   }
   if (!service.equipGem(uid, gemId)) return;
@@ -578,7 +575,7 @@ async function unequipGem(uid: string, gemId: string): Promise<void> {
     const gem = getGem(gemId);
     if (!gem) return;
     const response = await sendOnlineRunCommand({ type: "gem.unequip", monsterUid: uid, shape: gem.shape });
-    if (response) { battle = createBattleState(); showNotice("Gem gelöst", `${gem.name} liegt wieder im serverseitigen Inventar.`, "success"); }
+    if (response) { battle = createBattleState(); showNotice("Gem gelöst", `${gem.name} liegt wieder in deinem Inventar.`, "success"); }
     return;
   }
   if (!service.unequipGem(uid, gemId)) return;
@@ -589,7 +586,7 @@ async function unequipGem(uid: string, gemId: string): Promise<void> {
 async function makeActive(uid: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "monster.activate", monsterUid: uid });
-    if (response) { battle = createBattleState(); showNotice("Verbindung gewechselt", "Das aktive Monster wurde serverseitig gewechselt.", "success"); }
+    if (response) { battle = createBattleState(); showNotice("Verbindung gewechselt", "Dein neues Frontmonster ist jetzt aktiv.", "success"); }
     return;
   }
   if (!service.makeActive(uid)) return;
@@ -601,7 +598,7 @@ async function makeActive(uid: string): Promise<void> {
 async function makeSupport(uid: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "monster.support", monsterUid: uid });
-    if (response) { battle = createBattleState(); showNotice("Support verbunden", "Das Kampfduo und sein Zonenbonus sind serverseitig aktiv.", "success"); }
+    if (response) { battle = createBattleState(); showNotice("Support verbunden", "Dein Kampfduo und sein Zonenbonus sind jetzt aktiv.", "success"); }
     return;
   }
   if (!service.makeSupport(uid)) return;
@@ -616,7 +613,7 @@ async function makeSupport(uid: string): Promise<void> {
 async function selectZone(zoneId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "zone.select", zoneId });
-    if (response) showNotice("Expeditionsziel serverseitig geändert", `${getZone(zoneId).name} ist jetzt deine aktive Zone.`, "success");
+    if (response) showNotice("Expeditionsziel geändert", `${getZone(zoneId).name} ist jetzt deine aktive Zone.`, "success");
     return;
   }
   if (!service.selectZone(zoneId)) return;
@@ -633,7 +630,7 @@ async function chooseStarter(definitionId: string): Promise<void> {
       accountBootstrap = response.bootstrap;
     } catch (error) {
       authBusy = false;
-      showNotice("Starterwahl nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      showNotice("Starterwahl nicht gespeichert", error instanceof AccountApiError ? error.message : "Deine Wahl konnte gerade nicht gespeichert werden.", "warning");
       return;
     }
     authBusy = false;
@@ -653,7 +650,7 @@ async function chooseStarter(definitionId: string): Promise<void> {
 async function startIncubation(definitionId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "incubation.start", definitionId });
-    if (response) showNotice("Inkubation gestartet", `${getMonster(definitionId).name}-Ei wird nach Serverzeit ausgebrütet.`, "success");
+    if (response) showNotice("Inkubation gestartet", `${getMonster(definitionId).name}-Ei wird jetzt ausgebrütet.`, "success");
     return;
   }
   if (!service.startIncubation(definitionId)) return;
@@ -681,7 +678,7 @@ async function hatchIncubation(): Promise<void> {
 async function accelerateIncubation(): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "incubation.accelerate" });
-    if (response) showNotice("Brutladung eingesetzt", "Die serverseitige Fertigzeit wurde um 60 Sekunden verkürzt.", "success");
+    if (response) showNotice("Brutladung eingesetzt", "Die verbleibende Brutzeit wurde um 60 Sekunden verkürzt.", "success");
     return;
   }
   if (service.useIncubatorCharge()) showNotice("Brutladung eingesetzt", "Die Inkubation wurde um 60 Sekunden verkürzt.", "success");
@@ -694,7 +691,7 @@ async function setAvatar(avatarId: string): Promise<void> {
       const response = await accountClient.command({ type: "profile.avatar", avatarId }, accountBootstrap.profile.revision, clientInstanceId);
       accountBootstrap = response.bootstrap;
     } catch (error) {
-      showNotice("Avatar nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      showNotice("Avatar nicht gespeichert", error instanceof AccountApiError ? error.message : "Dein Avatar konnte gerade nicht gespeichert werden.", "warning");
       return;
     }
   }
@@ -708,7 +705,7 @@ async function setFrame(frameId: string): Promise<void> {
       const response = await accountClient.command({ type: "profile.frame", frameId }, accountBootstrap.profile.revision, clientInstanceId);
       accountBootstrap = response.bootstrap;
     } catch (error) {
-      showNotice("Rahmen nicht gespeichert", error instanceof AccountApiError ? error.message : "Der Account-Server ist nicht erreichbar.", "warning");
+      showNotice("Rahmen nicht gespeichert", error instanceof AccountApiError ? error.message : "Dein Rahmen konnte gerade nicht gespeichert werden.", "warning");
       return;
     }
   }
@@ -740,7 +737,7 @@ async function claimMilestone(target: number): Promise<void> {
 async function claimObjective(objectiveId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "objective.claim", objectiveId });
-    if (response) showNotice("Belohnung geborgen", "Der Auftrag wurde serverseitig geprüft und gebucht.", "success");
+    if (response) showNotice("Belohnung geborgen", "Die Auftragsbelohnung wurde genau einmal gutgeschrieben.", "success");
     return;
   }
   const objective = OBJECTIVES.find((entry) => entry.id === objectiveId);
@@ -751,7 +748,7 @@ async function claimObjective(objectiveId: string): Promise<void> {
 async function startTimedExpedition(slot: number, definitionId: string, monsterUid: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "expedition.start", slot, definitionId, monsterUid });
-    if (response) showNotice("Expedition gestartet", "Monster, Slot und Rückkehrzeit sind serverseitig reserviert.", "success");
+    if (response) showNotice("Expedition gestartet", "Monster und Expeditionsplatz sind bis zur Rückkehr belegt.", "success");
     return;
   }
   const definition = getExpedition(definitionId);
@@ -763,7 +760,7 @@ async function startTimedExpedition(slot: number, definitionId: string, monsterU
 async function claimTimedExpedition(expeditionId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "expedition.claim", expeditionId });
-    if (response) showNotice("Expedition abgeschlossen", `${response.event.payload.gold} Gold und Materialien wurden serverseitig gebucht.`, "success");
+    if (response) showNotice("Expedition abgeschlossen", `${response.event.payload.gold} Gold und Materialien wurden deinem Inventar gutgeschrieben.`, "success");
     return;
   }
   const expedition = game.expeditions.find((entry) => entry.id === expeditionId);
@@ -777,7 +774,7 @@ async function claimTimedExpedition(expeditionId: string): Promise<void> {
 async function craftRecipe(recipeId: string): Promise<void> {
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "crafting.craft", recipeId });
-    if (response) showNotice("Herstellung abgeschlossen", "Kosten und Ergebnis wurden atomar im Ledger gebucht.", "success");
+    if (response) showNotice("Herstellung abgeschlossen", "Die Kosten wurden abgezogen und das Ergebnis in dein Inventar gelegt.", "success");
     return;
   }
   const recipe = getCraftingRecipe(recipeId);
@@ -948,7 +945,7 @@ async function signIn(form: HTMLFormElement): Promise<void> {
   } catch (error) {
     authBusy = false;
     authMessageTone = "error";
-    authMessage = error instanceof AccountApiError ? error.message : "Der Account-Server ist gerade nicht erreichbar.";
+    authMessage = error instanceof AccountApiError ? error.message : "Die Anmeldung ist gerade nicht erreichbar. Bitte versuche es später noch einmal.";
     clientUiState = "local";
     render();
   }
@@ -971,7 +968,7 @@ async function registerAccount(form: HTMLFormElement): Promise<void> {
     });
     authMode = "login";
     authMessageTone = "success";
-    authMessage = "Account vorbereitet. Der interne Entwicklungsbetrieb verschickt noch keine externen E-Mails – das Testteam bestätigt deinen Zugang über die private Entwicklungs-Mailbox.";
+    authMessage = "Account vorbereitet. Dein Zugang wartet noch auf die Bestätigung durch das Testteam.";
   } catch (error) {
     authMessageTone = "error";
     authMessage = error instanceof AccountApiError ? error.message : "Die Registrierung konnte nicht abgeschlossen werden.";
@@ -1149,7 +1146,7 @@ function playerAccountCard(): string {
 function syncIndicator(): string {
   const healthy = service.lastSaveResult.ok && clientUiState !== "error";
   const copy = clientStatusCopy(clientUiState);
-  const authority = clientUiState === "online" || isRunOnline() ? "SERVER" : servicePort.mode.toUpperCase();
+  const authority = clientUiState === "online" || isRunOnline() ? "ACCOUNT" : "DIESES GERÄT";
   return `<div class="sync-indicator ${healthy ? "is-synced" : "is-error"}" title="${copy.message}" data-testid="sync-indicator"><i></i><span><b>${healthy ? copy.title.toUpperCase() : "SPEICHERFEHLER"}</b><small>${healthy ? `${timeFormatter.format(game.lastSavedAt)} · ${authority}` : "Browser-Speicher prüfen"}</small></span></div>`;
 }
 
@@ -1185,7 +1182,9 @@ function topShell(content: string): string {
         <div class="topbar__account">${playerAccountCard()}</div>
       </header>
       <main>${content}</main>
-      <footer><div><span>VISUAL BUILD V2</span><i></i><span>SAVE V${game.version}</span><i></i><span>API PROTOKOLL ${API_PROTOCOL_VERSION}</span></div>${syncIndicator()}<button class="text-button" id="reset-game">Spielstand zurücksetzen</button></footer>
+      <footer><div><span>IDLE TAMER WORLD</span><i></i><span>FORTSCHRITT WIRD AUTOMATISCH GESPEICHERT</span></div>${syncIndicator()}${accountApiEnabled && accountBootstrap
+        ? `<button class="text-button" data-view="profile">PROFIL &amp; EINSTELLUNGEN</button>`
+        : `<button class="text-button" id="reset-game">Spielstand zurücksetzen</button>`}</footer>
     </div>
     ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
 }
@@ -1207,14 +1206,14 @@ function loginShell(): string {
         <form id="login-form" class="login-form">
           <label for="login-identifier"><span>E-MAIL</span><input id="login-identifier" name="identifier" type="email" autocomplete="username" value="${accountApiEnabled ? "" : "demo@idletamer.local"}" required></label>
           <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="${accountApiEnabled ? "" : "demo"}" required></label>
-          <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled title="Im Entwicklungsbetrieb noch nicht verfügbar">Passwort vergessen</button></div>
+          <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled title="Passwort-Wiederherstellung ist derzeit nicht verfügbar">Passwort vergessen</button></div>
           <button class="primary-button primary-button--large silver-ether-action login-submit" type="submit" data-testid="login-submit" ${authBusy || clientUiState === "loading" ? "disabled" : ""}>${authBusy ? "VERBINDUNG WIRD GEPRÜFT …" : `EINLOGGEN ${icon("arrow")}`}</button>
         </form>` : `
         <form id="register-form" class="login-form">
           <label for="register-email"><span>E-MAIL</span><input id="register-email" name="email" type="email" autocomplete="email" required></label>
           <label for="register-name"><span>TAMER-NAME</span><input id="register-name" name="displayName" type="text" autocomplete="nickname" minlength="3" maxlength="20" required></label>
           <label for="register-password"><span>PASSPHRASE · MINDESTENS 15 ZEICHEN</span><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required></label>
-          <label class="login-policy"><input name="policy" type="checkbox" required><span>Ich akzeptiere die Entwicklungs-Nutzungsbedingungen und Datenschutzhinweise.</span></label>
+          <label class="login-policy"><input name="policy" type="checkbox" required><span>Ich akzeptiere die Nutzungsbedingungen und Datenschutzhinweise.</span></label>
           <button class="primary-button primary-button--large silver-ether-action login-submit" type="submit" ${authBusy ? "disabled" : ""}>${authBusy ? "ACCOUNT WIRD VORBEREITET …" : `ACCOUNT ERSTELLEN ${icon("arrow")}`}</button>
         </form>`;
   return `
@@ -1235,7 +1234,7 @@ function loginShell(): string {
         <div class="login-panel__mobile-brand">${officialLogoMarkup()}</div>
         <span class="eyebrow">ACCOUNT-ZUGANG</span>
         <h2 id="login-title">${authMode === "login" ? "Willkommen zurück." : "Neue Resonanz beginnen."}</h2>
-        <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Accountprofil und dein Starter werden online gesichert. Im internen Entwicklungsbetrieb bestätigt das Testteam neue Zugänge."}</p>
+        <p>${authMode === "login" ? "Einloggen, Offline-Ertrag prüfen und direkt in den automatischen Kampf zurückkehren." : "Dein Profil und dein Starter bleiben dauerhaft gespeichert. Neue Zugänge müssen vor dem ersten Login bestätigt werden."}</p>
         <img class="silver-ether-divider login-panel__divider" src="/assets/ui/chrome/ether-divider-v1.webp" alt="" aria-hidden="true">
         <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
         ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" data-testid="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
@@ -1369,7 +1368,7 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
         rarity: "Testbeute",
         description: chestPresentation.description,
         detail: chestPresentation.detail,
-        source: "Entwicklungsgegenstand",
+        source: "Archivtruhe",
         action: "open-chest",
       }]
     : [];
@@ -1496,7 +1495,7 @@ function expeditionView(): string {
         <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
         <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}" data-live="combat-objectives">${combatObjectiveMarkup()}</section>
         ${combatMonsterSelector()}
-        <section class="combat-console-hud combat-panel--log ${activeCombatPanel === "log" ? "is-open" : ""}"><div class="combat-console-status"><span class="status-orb ${battle.status}" data-live="battle-status-orb"></span><div><strong data-live="battle-status">${battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT"}</strong><small data-live="battle-log">${battle.log[0]}</small></div></div><div class="combat-attack-cycle"><span><small>NÄCHSTE AKTION</small><b>${playerDefinition.name}</b></span><div><i data-live="attack-progress" style="width:${playerAttackProgress}%"></i></div></div><small class="combat-save-state"><i></i>${service.lastSaveResult.ok ? "LOKAL GESICHERT" : "SPEICHERFEHLER"}</small></section>
+        <section class="combat-console-hud combat-panel--log ${activeCombatPanel === "log" ? "is-open" : ""}"><div class="combat-console-status"><span class="status-orb ${battle.status}" data-live="battle-status-orb"></span><div><strong data-live="battle-status">${battle.status === "victory" ? "STAGE GESCHAFFT" : battle.status === "recovering" ? "REGENERATION" : "KAMPF LÄUFT"}</strong><small data-live="battle-log">${battle.log[0]}</small></div></div><div class="combat-attack-cycle"><span><small>NÄCHSTE AKTION</small><b>${playerDefinition.name}</b></span><div><i data-live="attack-progress" style="width:${playerAttackProgress}%"></i></div></div><small class="combat-save-state"><i></i>${service.lastSaveResult.ok ? "FORTSCHRITT GESPEICHERT" : "SPEICHERFEHLER"}</small></section>
         ${combatControlDock(Boolean(claimable), cacheEmpty)}
         ${tutorialCoach()}
       </section>
@@ -1533,15 +1532,14 @@ function gemLoadout(monster: MonsterInstance): string {
   const shapes: GemShape[] = ["triangle", "square", "diamond"];
   const available = GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0);
   const bonuses = monsterGemBonuses(monster);
-  const onlineMode = isRunOnline();
   return `<section class="gem-workbench panel">
-    <div class="gem-workbench__heading"><div><span class="eyebrow">GEM-AUSRÜSTUNG · ${onlineMode ? "SERVERBESTÄTIGT" : "PERMANENT"}</span><h2>${definition.name}s Grundwerte</h2><p>${onlineMode ? "Jede Form besitzt drei feste Slots. Der Spielserver bestätigt jede Änderung und ihre Kampfwirkung." : "Jede Form besitzt drei feste Slots. Die Form liefert die Basis, der Gem verstärkt sie."}</p></div><span><small>AKTIVER BONUS</small><b>+${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP</b></span></div>
+    <div class="gem-workbench__heading"><div><span class="eyebrow">GEM-AUSRÜSTUNG · PERMANENT</span><h2>${definition.name}s Grundwerte</h2><p>Jede Form besitzt drei feste Slots. Die Form liefert die Basis, der Gem verstärkt sie dauerhaft.</p></div><span><small>AKTIVER BONUS</small><b>+${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP</b></span></div>
     <div class="gem-loadout">${shapes.map((shape) => {
       const gemId = monster.gemSlots[shape];
       const gem = gemId ? getGem(gemId) : undefined;
       return `<article class="gem-slot ${gem ? "is-filled" : ""}" style="--gem-color:${gem ? GEM_COLORS[gem.color].hex : "#938da0"}">${gem ? `<img src="${gem.image}" alt="${gem.name}"><div><small>${GEM_SHAPES[shape].name.toUpperCase()} · ${GEM_RARITIES[gem.rarity].name.toUpperCase()}</small><strong>${gem.name}</strong><span>${gemEffect(gem.id)}</span></div><button data-unequip-gem="${gem.id}" data-monster="${monster.uid}" aria-label="${gem.name} ablegen">×</button>` : `<span>${GEM_SHAPES[shape].glyph}</span><div><small>${GEM_SHAPES[shape].name.toUpperCase()}-SLOT</small><strong>Noch leer</strong><span>${shape === "triangle" ? "Angriff" : shape === "square" ? "Leben" : "Ausgewogen"}</span></div>`}</article>`;
     }).join("")}</div>
-    <div class="gem-inventory"><div><span class="eyebrow">VERFÜGBARE GEMS</span><small>Farben bilden später Element-Sets. Form und Seltenheit bestimmen schon jetzt den Effekt.</small></div>${available.length > 0 ? `<div class="gem-inventory__grid">${available.map((gem) => `<button class="gem-chip gem-chip--${gem.rarity}" data-equip-gem="${gem.id}" data-monster="${monster.uid}" style="--gem-color:${GEM_COLORS[gem.color].hex}"><img src="${gem.image}" alt=""><span><small>${GEM_RARITIES[gem.rarity].name}</small><strong>${gem.name}</strong><em>${gemEffect(gem.id)} · ${game.gemInventory[gem.id]}×</em></span></button>`).join("")}</div>` : `<span class="gem-inventory__empty">Alle verfügbaren Gems sind eingesetzt. Zonenbosse können neue Gems hinterlassen.</span>`}</div>
+    <div class="gem-inventory"><div><span class="eyebrow">VERFÜGBARE GEMS</span><small>Farbe, Form und Seltenheit zeigen dir auf einen Blick, welchen Effekt ein Gem verstärkt.</small></div>${available.length > 0 ? `<div class="gem-inventory__grid">${available.map((gem) => `<button class="gem-chip gem-chip--${gem.rarity}" data-equip-gem="${gem.id}" data-monster="${monster.uid}" style="--gem-color:${GEM_COLORS[gem.color].hex}"><img src="${gem.image}" alt=""><span><small>${GEM_RARITIES[gem.rarity].name}</small><strong>${gem.name}</strong><em>${gemEffect(gem.id)} · ${game.gemInventory[gem.id]}×</em></span></button>`).join("")}</div>` : `<span class="gem-inventory__empty">Alle verfügbaren Gems sind eingesetzt. Zonenbosse können neue Gems hinterlassen.</span>`}</div>
   </section>`;
 }
 
@@ -1555,11 +1553,9 @@ function monsterCardLegacy(monster: MonsterInstance): string {
   const fragments = game.fragments[monster.definitionId] ?? 0;
   const evolutionReady = canEvolve(monster, game.inventory.evolution_core, fragments);
   const bonuses = monsterGemBonuses(monster);
-  const persistenceNote = isRunOnline()
-    ? " · SERVERBESTÄTIGT"
-    : game.prestigeCount > 0
-      ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS`
-      : "";
+  const persistenceNote = game.prestigeCount > 0
+    ? ` · PRESTIGE +${(game.prestigeCount * BALANCE.prestige.playerBaseStatPerPrestige * 100).toFixed(1).replace(".0", "").replace(".", ",")}% BASIS`
+    : "";
   return `<article class="monster-card panel ${isActive ? "is-active" : ""} ${isSupport ? "is-support" : ""}" style="--monster-accent:${definition.accent}"><div class="monster-card__top"><span>${elementLabel[lineage.element]} · ${COMBAT_ROLE_LABELS[definition.combatRole]}</span><small>${EVOLUTION_LABELS[monster.evolution]} · GEN ${monster.generation}</small></div>${monsterAvatar(monster)}<div class="monster-card__body"><div><h3>${definition.name}</h3><span>${definition.role}</span></div>${isActive ? '<b class="active-badge">FRONT</b>' : isSupport ? '<b class="active-badge active-badge--support">SUPPORT</b>' : ""}<div class="stat-line"><span><small>RUN-LEVEL</small><b>${monster.level}</b></span><span><small>HYPER</small><b>${monster.hyperLevel}</b></span><span><small>HP</small><b>${monsterMaxHp(monster, game.prestigeCount)}</b></span><span><small>ATK</small><b>${monsterAttack(monster, game.prestigeCount)}</b></span></div><small class="gem-stat-note">GEMS · +${bonuses.attackPercent}% ATK · +${bonuses.hpPercent}% HP${persistenceNote}</small>${monster.evolution === "rookie" ? `<div class="evolution-line"><span><small>NÄCHSTE FORM</small><b>${lineage.evolution.name}</b></span><em>Level ${BALANCE.evolution.requiredLevel} · ${BALANCE.evolution.coreCost} Kerne · ${BALANCE.evolution.fragmentCost} Fragmente</em><button class="evolve-button" data-evolve="${monster.uid}" ${evolutionReady ? "" : "disabled"}>EVOLUTION</button></div>` : `<div class="evolution-line is-complete"><span><small>EVOLUTION PERMANENT</small><b>${lineage.name} → ${lineage.evolution.name}</b></span><em>Bestimmt neue Grundwerte und bleibt bei Prestige erhalten</em></div>`}<div class="fragment-line">${resourceIcon("fragments")}<span><small>ART-FRAGMENTE</small><b>${fragments} VERFÜGBAR</b></span><i><em style="width:${Math.min(100, (fragments / permanentCost) * 100)}%"></em></i></div></div><div class="monster-card__actions"><button class="secondary-button" data-active="${monster.uid}" ${isActive ? "disabled" : ""}>${isActive ? "FRONT AKTIV" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${isSupport || isActive ? "disabled" : ""}>${isSupport ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < normalCost ? "disabled" : ""}>RUN-LEVEL +1 <small>${normalCost} G · RESET</small></button><button class="secondary-button" data-train="${monster.uid}" ${game.inventory.training_data <= 0 ? "disabled" : ""}>DATEN +1 <small>${game.inventory.training_data}×</small></button><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} F · PERMANENT</small></button></div></article>`;
 }
 
@@ -1590,7 +1586,7 @@ function eggCard(definitionId: string, amount: number): string {
 }
 
 function craftingWorkbench(): string {
-  return `<section class="crafting-workbench panel"><div class="crafting-workbench__heading"><span>${icon("research")}</span><div><small>ETHERWERKSTATT · FESTE REZEPTE</small><h2>Materialien veredeln</h2><p>Jedes Ergebnis ist garantiert. Im Onlinebetrieb werden Kosten und Ausgabe gemeinsam und atomar gebucht.</p></div><strong>${game.inventory.ether_dust}× ETHERSTAUB</strong></div><div class="crafting-recipes">${CRAFTING_RECIPES.map((recipe) => {
+  return `<section class="crafting-workbench panel"><div class="crafting-workbench__heading"><span>${icon("research")}</span><div><small>ETHERWERKSTATT · FESTE REZEPTE</small><h2>Materialien veredeln</h2><p>Jedes Rezept zeigt dir vorher die genauen Kosten. Materialien werden nur verbraucht, wenn die Herstellung gelingt.</p></div><strong>${game.inventory.ether_dust}× ETHERSTAUB</strong></div><div class="crafting-recipes">${CRAFTING_RECIPES.map((recipe) => {
     const output = ITEMS.find((item) => item.id === recipe.output.itemId);
     const available = canCraft(game, recipe);
     const costs = [`${recipe.goldCost} Gold`, ...Object.entries(recipe.itemCosts).map(([itemId, amount]) => `${amount}× ${ITEMS.find((item) => item.id === itemId)?.name ?? itemId}`)];
@@ -1631,7 +1627,7 @@ function objectivesView(): string {
   const achievements = OBJECTIVES.filter((objective) => objective.cadence === "achievement");
   const claimable = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
   const completedAchievements = achievements.filter((objective) => game.claimedObjectives.includes(objectiveClaimKey(game, objective))).length;
-  return `<section class="page page--kit objectives-page">${pageHeading("AUFTRÄGE · ERFOLGE", "Resonanz-Aufträge", "Kurze Ziele führen durch die vorhandenen Systeme. Im Onlinebetrieb zählt ausschließlich serverbestätigter Fortschritt aus echten Spielaktionen.", `${claimable} BELOHNUNGEN BEREIT`)}
+  return `<section class="page page--kit objectives-page">${pageHeading("AUFTRÄGE · ERFOLGE", "Resonanz-Aufträge", "Kurze Ziele führen dich durch die vorhandenen Systeme. Fortschritt entsteht nur durch deine tatsächlichen Spielaktionen.", `${claimable} BELOHNUNGEN BEREIT`)}
     <section class="objective-overview panel"><div><span>${icon("objectives")}</span><div><small>AKTIVE PERIODE</small><strong>${game.objectivePeriods.dailyKey}</strong><em>WOCHE ${game.objectivePeriods.weeklyKey}</em></div></div><div><span><small>TÄGLICH</small><b>${daily.filter((objective) => objectiveProgress(game, objective) >= objective.target).length}/${daily.length}</b></span><span><small>WÖCHENTLICH</small><b>${weekly.filter((objective) => objectiveProgress(game, objective) >= objective.target).length}/${weekly.length}</b></span><span><small>ERFOLGE</small><b>${completedAchievements}/${achievements.length}</b></span></div><button class="secondary-button" data-view="expedition">ZURÜCK ZUM KAMPF</button></section>
     <div class="subsection-heading"><div><span class="eyebrow">HEUTE</span><h2>Tägliche Aufträge</h2></div><span>UTC · AUTOMATISCHER WECHSEL</span></div><div class="objective-grid">${daily.map(objectiveCard).join("")}</div>
     <div class="subsection-heading"><div><span class="eyebrow">DIESE WOCHE</span><h2>Wochenziele</h2></div><span>${game.objectivePeriods.weeklyKey}</span></div><div class="objective-grid">${weekly.map(objectiveCard).join("")}</div>
@@ -1713,7 +1709,7 @@ function dispatchView(): string {
     .find((slot) => !game.expeditions.some((entry) => entry.slot === slot));
   const ready = game.expeditions.filter((entry) => entry.completesAt <= Date.now()).length;
   return `<section class="page page--kit dispatch-page">${pageHeading("ZEIT · SAMMLUNG", "Monster-Expeditionen", "Nicht eingesetzte Monster übernehmen zeitbasierte Aufträge. Rollen, Elemente und Evolutionen erhöhen die Belohnung, ohne den Hauptkampf zu unterbrechen.", `${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV · ${ready} BEREIT`, "dispatch-ready")}
-    <section class="dispatch-rules panel"><span>${icon("shield")}</span><div><strong>Klare Bindung statt Doppelverwendung</strong><small>Front, Support und bereits entsandte Monster stehen nicht zur Auswahl. Start- und Endzeit werden gespeichert; Reload und Offline-Zeit erzeugen keine zweite Belohnung.</small></div><button class="secondary-button" data-view="expedition">ZUM HAUPTKAMPF</button></section>
+    <section class="dispatch-rules panel"><span>${icon("shield")}</span><div><strong>Jedes Monster hat genau eine Aufgabe</strong><small>Front, Support und bereits entsandte Monster stehen nicht zur Auswahl. Auch nach dem Neuladen oder einer Spielpause erhältst du jede Belohnung genau einmal.</small></div><button class="secondary-button" data-view="expedition">ZUM HAUPTKAMPF</button></section>
     <div class="dispatch-slots">${Array.from({ length: EXPEDITION_SLOT_COUNT }, (_, index) => activeExpeditionCard(index + 1)).join("")}</div>
     <div class="subsection-heading"><div><span class="eyebrow">VERFÜGBARE SIGNALE</span><h2>Auftragsbrett</h2></div><span>6 MISSIONEN · 3 ZONEN</span></div>
     <div class="dispatch-contracts">${EXPEDITIONS.map((definition) => dispatchDefinitionCard(definition, freeSlot)).join("")}</div>
@@ -1723,7 +1719,7 @@ function dispatchView(): string {
 function systemInbox(): string {
   const available = SYSTEM_MESSAGES.filter((message) => message.available(game));
   const unread = available.filter((message) => !game.claimedSystemMessages.includes(message.id)).length;
-  return `<section class="profile-system panel"><div class="profile-section-heading"><div><span class="eyebrow">SYSTEMPOST · LOKAL</span><h2>Archiv-Nachrichten</h2><p>Nur Systemhinweise und einmalige Belohnungen. Echte Spielermails folgen erst mit Accounts und Server.</p></div><strong>${unread} OFFEN</strong></div><div class="system-message-list">${available.map((message) => {
+  return `<section class="profile-system panel"><div class="profile-section-heading"><div><span class="eyebrow">ARCHIVPOST</span><h2>Archiv-Nachrichten</h2><p>Hier findest du wichtige Hinweise und einmalige Belohnungen für deinen Fortschritt.</p></div><strong>${unread} OFFEN</strong></div><div class="system-message-list">${available.map((message) => {
     const claimed = game.claimedSystemMessages.includes(message.id);
     const rewards = [message.reward?.gold ? `${message.reward.gold} Gold` : "", ...Object.entries(message.reward?.items ?? {}).map(([itemId, amount]) => `${amount}× ${ITEMS.find((item) => item.id === itemId)?.name ?? itemId}`)].filter(Boolean);
     return `<article class="system-message ${claimed ? "is-claimed" : ""}"><span>${message.category === "welcome" ? icon("spark") : icon("objectives")}</span><div><small>${message.category === "welcome" ? "WILLKOMMEN" : "FORTSCHRITT"}</small><strong>${message.title}</strong><p>${message.body}</p>${rewards.length ? `<em>${rewards.join(" · ")}</em>` : ""}</div><button class="${claimed ? "secondary-button" : "primary-button"}" data-system-message="${message.id}" ${claimed ? "disabled" : ""}>${claimed ? "BESTÄTIGT" : "BERGEN"}</button></article>`;
@@ -1736,7 +1732,7 @@ function playerSettings(): string {
     { key: "combatEffects", title: "Kampfeffekte", copy: "Trefferblitze und Schadenszahlen im automatischen Kampf." },
     { key: "reducedMotion", title: "Reduzierte Bewegung", copy: "Stoppt längere Schwebe-, Puls- und Szenenanimationen." },
   ];
-  return `<section class="profile-settings panel"><div class="profile-section-heading"><div><span class="eyebrow">KOMFORT · BARRIEREARM</span><h2>Darstellung &amp; Feedback</h2><p>Alle Einstellungen werden im Spielstand gespeichert und später accountweit synchronisiert.</p></div></div><div class="settings-grid">${toggles.map((setting) => {
+  return `<section class="profile-settings panel"><div class="profile-section-heading"><div><span class="eyebrow">KOMFORT · BARRIEREARM</span><h2>Darstellung &amp; Feedback</h2><p>Alle Einstellungen werden direkt mit deinem Spielstand gespeichert.</p></div></div><div class="settings-grid">${toggles.map((setting) => {
     const enabled = Boolean(game.settings[setting.key]);
     return `<button class="setting-toggle ${enabled ? "is-enabled" : ""}" data-setting="${setting.key}" data-setting-value="${!enabled}"><span><strong>${setting.title}</strong><small>${setting.copy}</small></span><i><em></em></i></button>`;
   }).join("")}<div class="setting-format"><span><strong>Zahlenformat</strong><small>Lesbare Werte bleiben bis 1e15 erhalten. Erst danach wechselt das Spiel automatisch zur wissenschaftlichen Darstellung.</small></span><div><button class="${game.settings.numberFormat === "compact" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="compact">1,2 MIO.</button><button class="${game.settings.numberFormat === "full" ? "is-active" : ""}" data-setting="numberFormat" data-setting-value="full">1.200.000</button></div></div></div></section>`;
@@ -1746,8 +1742,8 @@ function profileView(): string {
   const rank = rankForVictories(game.totalVictories);
   const activeAvatar = AVATARS.find((entry) => entry.id === game.profile.avatarId) ?? AVATARS[0];
   const activeFrame = FRAMES.find((entry) => entry.id === game.profile.frameId) ?? FRAMES[0];
-  return `<section class="page page--kit profile-page">${pageHeading("ACCOUNT · KOSMETIK", "Tamer-Profil", "Runder Avatar und Rahmen werden als getrennte Katalogeinträge gespeichert. So können Events, Gilden und Erfolge später neue Kombinationen freischalten.", `RANG ${rank} · ${game.totalVictories} SIEGE`)}
-    <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${accountBootstrap?.profile.displayName ?? game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>ACCOUNT-STATUS</small><b>${accountBootstrap ? "ONLINE · PROFIL & STARTER" : "LOCAL-PROTOTYPE"}</b><span>${accountBootstrap?.account.emailMasked ?? "Noch ohne Backendkonto"}</span>${accountBootstrap ? '<button class="text-button" id="logout-account">ACCOUNT ABMELDEN</button>' : ""}</aside></section>
+  return `<section class="page page--kit profile-page">${pageHeading("ACCOUNT · KOSMETIK", "Tamer-Profil", "Wähle Avatar und Rahmen unabhängig voneinander. Events, Gilden und Erfolge können weitere Kombinationen freischalten.", `RANG ${rank} · ${game.totalVictories} SIEGE`)}
+    <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${accountBootstrap?.profile.displayName ?? game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>PROFILSTATUS</small><b>${accountBootstrap ? "ACCOUNT VERBUNDEN" : "GASTPROFIL"}</b><span>${accountBootstrap?.account.emailMasked ?? "Auf diesem Gerät gespeichert"}</span>${accountBootstrap ? '<button class="text-button" id="logout-account">ACCOUNT ABMELDEN</button>' : ""}</aside></section>
     ${systemInbox()}${playerSettings()}
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">AVATARE</span><h2>Tamer-Identität</h2></div><span>RUND · WECHSELBAR</span></div><div class="cosmetic-grid">${AVATARS.map((avatar) => { const unlocked = isAvatarUnlocked(game, avatar.id); const selected = avatar.id === game.profile.avatarId; const portrait = avatarPortrait(avatar.id); return `<button class="cosmetic-card panel ${selected ? "is-selected" : ""}" data-avatar="${avatar.id}" ${unlocked ? "" : "disabled"} style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]}"><span class="cosmetic-avatar ${portrait ? "has-portrait" : ""}">${portrait ? `<img src="${portrait}" alt="" aria-hidden="true" draggable="false">` : `<i>${avatar.glyph}</i>`}</span><strong>${avatar.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${avatar.unlock}`}</small></button>`; }).join("")}</div></div>
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">RAHMEN</span><h2>Profilrahmen</h2></div><span>SEPARATER KATALOG</span></div><div class="frame-grid">${FRAMES.map((frame) => { const unlocked = isFrameUnlocked(game, frame.id); const selected = frame.id === game.profile.frameId; return `<button class="frame-card panel ${selected ? "is-selected" : ""}" data-frame="${frame.id}" ${unlocked ? "" : "disabled"} style="--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}"><span><i></i></span><div><strong>${frame.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${frame.unlock}`}</small></div></button>`; }).join("")}</div></div>
@@ -1760,7 +1756,7 @@ function starterGate(): string {
 
 function starterDialog(): string {
   if (!starterDialogOpen || game.roster.length > 0) return "";
-  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title" data-testid="starter-dialog"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jeder Starter besitzt eine feste erste Evolution. Werte und Namen lassen sich zentral im Monsterkatalog ändern.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}" data-testid="starter-${monster.id}" ${authBusy ? "disabled" : ""}>${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} ${accountApiEnabled ? "Diese Wahl wird jetzt einmalig auf deinem Account gespeichert." : "Im lokalen UI-Testmodus bleibt die Wahl nur in diesem Browser."}</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
+  return `<div class="modal-backdrop starter-backdrop" role="presentation"><section class="modal starter-modal" role="dialog" aria-modal="true" aria-labelledby="starter-title" data-testid="starter-dialog"><button class="modal__close" id="close-starter" aria-label="Starterwahl schließen">×</button><span class="eyebrow">ZEHN ROOKIE-LINIEN · EINE ERSTE WAHL</span><h2 id="starter-title">Welche Resonanz antwortet dir?</h2><p>Jede Linie besitzt eigene Stärken, eine feste Rolle und mehrere dauerhafte Entwicklungsstufen.</p><div class="starter-grid">${MONSTERS.map((monster) => { const preview = createMonster(monster.id, 1); return `<article class="starter-card" style="--monster-accent:${monster.accent}"><div class="starter-card__visual">${monsterAvatar(preview)}</div><div><span class="eyebrow">${elementLabel[monster.element]} · ${monster.role}</span><h3>${monster.name}</h3><p>${monster.description}</p><div class="starter-evolution"><span>${monster.glyph}</span><i>→</i><span>${monster.evolution.glyph}</span><small>${monster.evolution.name}</small></div><button class="primary-button" data-starter="${monster.id}" data-testid="starter-${monster.id}" ${authBusy ? "disabled" : ""}>${monster.name.toUpperCase()} WÄHLEN</button></div></article>`; }).join("")}</div><div class="starter-modal__foot"><span>${icon("shield")} ${accountApiEnabled ? "Diese Wahl wird einmalig mit deinem Account gespeichert." : "Deine Wahl wird auf diesem Gerät gespeichert."}</span><button class="text-button" id="close-starter-alt">SPÄTER ENTSCHEIDEN</button></div></section></div>`;
 }
 
 function researchView(): string {
@@ -1804,9 +1800,9 @@ function guildView(): string {
     <header class="guild-command-hero panel"><div><span class="eyebrow">[${escapeHtml(membership.tag)}] · ${membership.role.toUpperCase()}</span><h1>${escapeHtml(membership.name)}</h1><p>${escapeHtml(membership.description || "Gemeinsame Resonanz ohne Beschreibung.")}</p></div><div class="guild-command-stats"><span><small>MITGLIEDER</small><b>${membership.memberCount}/${membership.memberLimit}</b></span><span><small>GILDEN-DNA</small><b>${membership.dnaBalance}</b></span><span><small>DEIN DNA-VORRAT</small><b>${membership.personalDna}</b></span></div><div class="guild-command-actions"><button class="secondary-button" data-guild-donate="10" ${Number(membership.personalDna) < 10 ? "disabled" : ""}>10 DNA SPENDEN</button><button class="text-button danger-text" id="guild-leave">GILDE VERLASSEN</button></div></header>
     <section class="guild-management-bar panel"><span><b>${membership.joinPolicy === "open" ? "OFFENER BEITRITT" : "NUR EINLADUNG"}</b><small>Offiziere dürfen einladen und Gene investieren. Jedes Mitglied darf eine DNA-Abstimmung anstoßen.</small></span>${canManage ? `<form id="guild-invite-form"><input name="displayName" minlength="3" maxlength="20" placeholder="Tamer einladen" required><button class="secondary-button">EINLADEN</button></form>` : ""}<form id="guild-vote-form"><select name="subject">${GUILD_GENES.map((gene) => `<option value="${gene.id}">${escapeHtml(gene.name)}</option>`).join("")}</select><button class="secondary-button">DNA-ABSTIMMUNG</button></form>${membership.role === "leader" ? `<button data-guild-policy="${membership.joinPolicy === "open" ? "invite" : "open"}">${membership.joinPolicy === "open" ? "AUF EINLADUNG STELLEN" : "BEITRITT ÖFFNEN"}</button>` : ""}</section>
     <div class="guild-live-grid"><section class="panel guild-dna-live"><div class="section-heading"><span><small>CHROMOSOM 01</small><h2>Lebende Gilden-DNA</h2></span><strong>${membership.genes.reduce((sum, gene) => sum + gene.level, 0)} GEN-STUFEN</strong></div><div class="dna-live-layout"><div class="dna-visual"><div class="dna-axis"></div><div class="dna-helix">${membership.genes.map((gene, index) => { const definition = GUILD_GENES.find((entry) => entry.id === gene.geneId)!; return `<div class="dna-gene ${gene.level > 0 ? "is-unlocked" : ""}" style="--gene-index:${index};--gene-color:${definition.color}"><i></i><span><small>LV ${gene.level}/${gene.maxLevel}</small>${escapeHtml(definition.chromosome)}</span><i></i></div>`; }).join("")}</div></div><div class="guild-gene-list">${membership.genes.map((gene) => { const definition = GUILD_GENES.find((entry) => entry.id === gene.geneId)!; return `<article class="guild-gene-card ${gene.level > 0 ? "is-active" : ""}" style="--gene-color:${definition.color}"><span><small>${escapeHtml(definition.chromosome)}</small><b>${escapeHtml(definition.name)}</b><em>${escapeHtml(definition.description)}</em></span><strong>+${(definition.effectPerLevel * gene.level).toFixed(2).replace(".00", "").replace(".", ",")}${definition.effectUnit}</strong><button data-guild-gene="${gene.geneId}" ${!canManage || gene.nextCost === null || BigInt(membership.dnaBalance) < BigInt(gene.nextCost ?? "0") ? "disabled" : ""}>${gene.nextCost ? `${gene.nextCost} DNA · VERBESSERN` : "MAXIMAL"}</button></article>`; }).join("")}</div></div></section>
-      <aside class="guild-activity-column"><section class="panel guild-boss-card"><span class="eyebrow">WOCHENBOSS · ${escapeHtml(membership.boss.periodKey)}</span><h2>Chromawyrm Prime</h2><p>Jedes Mitglied greift getrennt mit 30 Sekunden Abklingzeit an. Der letzte Treffer bucht die Belohnung atomar.</p><div class="guild-boss-orb"><i style="--boss-health:${Math.max(0, bossHp / bossMax * 100)}%"></i><b>${membership.boss.hp}</b><small>/ ${membership.boss.maxHp} HP</small></div><span class="guild-personal-damage">DEIN SCHADEN · ${membership.boss.personalDamage}</span><button class="primary-button" id="guild-boss-attack" ${bossReady ? "" : "disabled"}>${membership.boss.defeated ? "BOSS BESIEGT" : bossReady ? "AUTO-DUO ENTSENDEN" : "ANGRIFF LÄDT"}</button></section>
+      <aside class="guild-activity-column"><section class="panel guild-boss-card"><span class="eyebrow">WOCHENBOSS · ${escapeHtml(membership.boss.periodKey)}</span><h2>Chromawyrm Prime</h2><p>Jedes Mitglied greift getrennt mit 30 Sekunden Abklingzeit an. Nach dem letzten Treffer erhält jedes berechtigte Mitglied seine Belohnung genau einmal.</p><div class="guild-boss-orb"><i style="--boss-health:${Math.max(0, bossHp / bossMax * 100)}%"></i><b>${membership.boss.hp}</b><small>/ ${membership.boss.maxHp} HP</small></div><span class="guild-personal-damage">DEIN SCHADEN · ${membership.boss.personalDamage}</span><button class="primary-button" id="guild-boss-attack" ${bossReady ? "" : "disabled"}>${membership.boss.defeated ? "BOSS BESIEGT" : bossReady ? "AUTO-DUO ENTSENDEN" : "ANGRIFF LÄDT"}</button></section>
       <section class="panel guild-task-card"><span class="eyebrow">GEMEINSAME TAGESZIELE</span>${membership.tasks.map((task) => { const definition = GUILD_TASKS.find((entry) => entry.id === task.taskId); const progress = Number(task.progress); const target = Math.max(1, Number(task.target)); return `<article><span><b>${escapeHtml(definition?.name ?? task.taskId)}</b><small>${task.progress}/${task.target} · +${task.rewardDna} DNA</small></span><i><em style="width:${Math.min(100, progress / target * 100)}%"></em></i><button data-guild-task="${task.taskId}" ${!task.completed || task.claimed ? "disabled" : ""}>${task.claimed ? "GEBORGEN" : "BERGEN"}</button></article>`; }).join("")}</section>
-      <section class="panel guild-expedition-card"><span class="eyebrow">GEMEINSAME EXPEDITION</span><h2>${GUILD_EXPEDITION.name}</h2>${membership.expedition ? `<p>${membership.expedition.status === "active" ? `Rückkehr ${new Date(membership.expedition.completesAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}` : membership.expedition.status === "claimable" ? `${membership.expedition.rewardDna} DNA bereit` : "Heute geborgen"}</p><button class="primary-button" data-guild-expedition-claim="${membership.expedition.expeditionId}" ${membership.expedition.status !== "claimable" ? "disabled" : ""}>${membership.expedition.status === "claimable" ? "RÜCKKEHR BERGEN" : membership.expedition.status === "claimed" ? "ABGESCHLOSSEN" : "EXPEDITION LÄUFT"}</button>` : `<p>Ein gemeinsamer Fünf-Minuten-Auftrag pro Tag. Die Belohnung fließt direkt und prüfbar ins Gilden-Ledger.</p><button class="primary-button" id="guild-expedition-start" ${!canManage ? "disabled" : ""}>EXPEDITION STARTEN</button>`}</section>
+      <section class="panel guild-expedition-card"><span class="eyebrow">GEMEINSAME EXPEDITION</span><h2>${GUILD_EXPEDITION.name}</h2>${membership.expedition ? `<p>${membership.expedition.status === "active" ? `Rückkehr ${new Date(membership.expedition.completesAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}` : membership.expedition.status === "claimable" ? `${membership.expedition.rewardDna} DNA bereit` : "Heute geborgen"}</p><button class="primary-button" data-guild-expedition-claim="${membership.expedition.expeditionId}" ${membership.expedition.status !== "claimable" ? "disabled" : ""}>${membership.expedition.status === "claimable" ? "RÜCKKEHR BERGEN" : membership.expedition.status === "claimed" ? "ABGESCHLOSSEN" : "EXPEDITION LÄUFT"}</button>` : `<p>Ein gemeinsamer Fünf-Minuten-Auftrag pro Tag. Nach der Rückkehr wird die DNA-Belohnung der Gilde gutgeschrieben.</p><button class="primary-button" id="guild-expedition-start" ${!canManage ? "disabled" : ""}>EXPEDITION STARTEN</button>`}</section>
       ${membership.votes.length ? `<section class="panel guild-vote-card"><span class="eyebrow">OFFENE ABSTIMMUNGEN</span>${membership.votes.map((vote) => `<article><b>${vote.kind === "gene_upgrade" ? `Gen: ${escapeHtml(GUILD_GENES.find((gene) => gene.id === vote.subject)?.name ?? vote.subject)}` : `Beitritt: ${escapeHtml(vote.subject)}`}</b><small>JA ${vote.yes} · NEIN ${vote.no} · ${vote.eligibleVoters} Stimmberechtigte</small><span><button data-guild-vote="${vote.voteId}" data-guild-vote-choice="yes" ${vote.myChoice === "yes" ? "disabled" : ""}>JA</button><button data-guild-vote="${vote.voteId}" data-guild-vote-choice="no" ${vote.myChoice === "no" ? "disabled" : ""}>NEIN</button>${canManage ? `<button data-guild-vote-resolve="${vote.voteId}">AUSWERTEN</button>` : ""}</span></article>`).join("")}</section>` : ""}</aside></div>
     <div class="guild-social-grid"><section class="panel guild-member-panel"><div class="section-heading"><span><small>ROSTER</small><h2>Mitglieder</h2></span></div>${membership.members.map((member) => `<article class="guild-member-row"><span class="profile-medallion frame-${member.frameId}"><i>${escapeHtml(member.displayName.slice(0, 1))}</i></span><div><b>${escapeHtml(member.displayName)}</b><small>${member.role.toUpperCase()} · ${member.contribution} DNA</small></div>${canManage && member.playerId !== accountBootstrap?.profile.playerId && member.role !== "leader" ? `<button data-guild-role="${member.playerId}" data-guild-role-value="${member.role === "officer" ? "member" : "officer"}">${member.role === "officer" ? "ZUM MITGLIED" : "ZUM OFFIZIER"}</button>${membership.role === "leader" ? `<button data-guild-leadership="${member.playerId}">LEITUNG</button>` : ""}<button class="danger-text" data-guild-kick="${member.playerId}">ENTFERNEN</button>` : ""}${member.playerId !== accountBootstrap?.profile.playerId ? `<button class="danger-text" data-player-report="${member.playerId}">MELDEN</button>` : ""}</article>`).join("")}</section>
       <section class="panel guild-chat-panel"><div class="section-heading"><span><small>MODERIERT · LETZTE 50</small><h2>Gildenchat</h2></span></div><div class="guild-chat-log">${membership.chat.length ? membership.chat.map((message) => `<article><span><b>${escapeHtml(message.displayName)}</b><small>${new Date(message.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}${message.playerId !== accountBootstrap?.profile.playerId ? `<button data-message-report="${message.messageId}" data-message-player="${message.playerId}">MELDEN</button>` : ""}</small></span><p>${escapeHtml(message.body)}</p></article>`).join("") : `<small>Noch keine Nachricht. Begrüße deine Gilde.</small>`}</div><form id="guild-chat-form"><input name="body" maxlength="280" autocomplete="off" placeholder="Nachricht an [${escapeHtml(membership.tag)}]" required><button class="primary-button">SENDEN</button></form></section>${guildFriendsMarkup(guildSnapshot.friends)}</div>
@@ -1873,10 +1869,10 @@ function offlineReport(): string {
   }, onlineReturnSettlement);
   const serverReport = activity.authority === "server";
   const intro = serverReport
-    ? "Dein Run wurde mit dem Spielserver synchronisiert. Während deiner Abwesenheit hat dein Team automatisch weitergekämpft."
+    ? "Dein Fortschritt wurde aktualisiert. Während deiner Abwesenheit hat dein Team automatisch weitergekämpft."
     : `Du warst <strong>${formatOfflineDuration(activity.durationSeconds ?? 0)}</strong> offline. Dein Team hat in dieser Zeit automatisch weitergekämpft.`;
   const summary = serverReport
-    ? `Seit der letzten Serversynchronisierung wurden <strong>${activity.victoriesAdded} Kämpfe</strong> und <strong>${formatNumber(activity.goldAdded)} Gold</strong> verbucht.`
+    ? `Seit deiner letzten Rückkehr wurden <strong>${activity.victoriesAdded} Kämpfe</strong> gewonnen und <strong>${formatNumber(activity.goldAdded)} Gold</strong> gesammelt.`
     : `In <strong>${formatOfflineDuration(activity.durationSeconds ?? 0)}</strong> wurden <strong>${formatNumber(activity.goldAdded)} Gold</strong> und <strong>${activity.itemCountAdded} Materialien</strong> für dich geborgen.`;
   return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
     <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/offline-report-frame-v4.png" alt="" aria-hidden="true">
@@ -1886,7 +1882,7 @@ function offlineReport(): string {
     <p>${intro}</p>
     <img class="silver-ether-divider offline-report__divider" src="/assets/ui/chrome/ether-divider-v1.webp" alt="" aria-hidden="true">
     <div class="offline-report__rewards">
-      <span><small>${serverReport ? "KÄMPFE SEIT SYNC" : "ZEIT OFFLINE"}</small><b>${serverReport ? activity.victoriesAdded : formatOfflineDuration(activity.durationSeconds ?? 0)}</b></span>
+      <span><small>${serverReport ? "GEWONNENE KÄMPFE" : "ZEIT OFFLINE"}</small><b>${serverReport ? activity.victoriesAdded : formatOfflineDuration(activity.durationSeconds ?? 0)}</b></span>
       <span>${resourceIcon("gold")}<small>GESAMMELTES GOLD</small><b>+${formatNumber(activity.goldAdded)}</b></span>
       <span>${icon("inventory")}<small>MATERIALIEN</small><b>+${activity.itemCountAdded}</b></span>
       <span>${icon("shield")}<small>${serverReport ? "WEITERE FUNDE" : "SPEICHERPLÄTZE"}</small><b>+${serverReport ? activity.eggsAdded + activity.gemsAdded : activity.slotsAdded}</b></span>
@@ -2137,7 +2133,7 @@ function bindModalKeyboard(): void {
 
 async function runGuildAction(command: GuildCommand, success: string): Promise<void> {
   if (!await sendGuildCommand(command)) return;
-  showNotice("Gildenserver bestätigt", success, "success");
+  showNotice("Gildenaktion gespeichert", success, "success");
   render();
 }
 
@@ -2246,7 +2242,7 @@ function bindEvents(): void {
     if (target.dataset.systemMessage) return run(`message:${target.dataset.systemMessage}`, () => claimSystemMessage(target.dataset.systemMessage ?? ""));
     if (target.dataset.research) return run(`research:${target.dataset.research}`, () => buyResearch(target.dataset.research as ResearchId));
     if (target.dataset.guildJoin) return run(`guild-join:${target.dataset.guildJoin}`, () => void runGuildAction({ type: "guild.join", guildId: target.dataset.guildJoin ?? "" }, "Du bist der Gilde beigetreten."));
-    if (target.dataset.guildDonate) return run("guild-donate", () => void runGuildAction({ type: "guild.donate", amount: Number(target.dataset.guildDonate) }, "Deine DNA-Spende wurde im Gilden-Ledger gebucht."));
+    if (target.dataset.guildDonate) return run("guild-donate", () => void runGuildAction({ type: "guild.donate", amount: Number(target.dataset.guildDonate) }, "Deine DNA-Spende wurde dem Gildenvorrat gutgeschrieben."));
     if (target.dataset.guildGene) return run(`guild-gene:${target.dataset.guildGene}`, () => void runGuildAction({ type: "guild.gene_upgrade", geneId: target.dataset.guildGene ?? "" }, "Das Gen leuchtet jetzt eine Stufe stärker."));
     if (target.dataset.guildTask) return run(`guild-task:${target.dataset.guildTask}`, () => void runGuildAction({ type: "guild.task_claim", taskId: target.dataset.guildTask ?? "" }, "Die gemeinsame Aufgabe wurde genau einmal geborgen."));
     if (target.dataset.guildRole) return run(`guild-role:${target.dataset.guildRole}`, () => void runGuildAction({ type: "guild.role_set", playerId: target.dataset.guildRole ?? "", role: target.dataset.guildRoleValue === "officer" ? "officer" : "member" }, "Die Gildenrolle wurde geändert."));
@@ -2259,9 +2255,9 @@ function bindEvents(): void {
     if (target.dataset.guildPolicy) return run("guild-policy", () => void runGuildAction({ type: "guild.policy_set", joinPolicy: target.dataset.guildPolicy === "invite" ? "invite" : "open" }, "Die Beitrittsregel wurde geändert."));
     if (target.dataset.guildInviteAccept) return run(`guild-invite-accept:${target.dataset.guildInviteAccept}`, () => void runGuildAction({ type: "guild.invite_accept", inviteId: target.dataset.guildInviteAccept ?? "" }, "Du bist der eingeladenen Gilde beigetreten."));
     if (target.dataset.guildInviteDecline) return run(`guild-invite-decline:${target.dataset.guildInviteDecline}`, () => void runGuildAction({ type: "guild.invite_decline", inviteId: target.dataset.guildInviteDecline ?? "" }, "Die Einladung wurde abgelehnt."));
-    if (target.dataset.guildVote) return run(`guild-vote:${target.dataset.guildVote}`, () => void runGuildAction({ type: "guild.vote_cast", voteId: target.dataset.guildVote ?? "", choice: target.dataset.guildVoteChoice === "no" ? "no" : "yes" }, "Deine Stimme ist serverseitig gespeichert."));
+    if (target.dataset.guildVote) return run(`guild-vote:${target.dataset.guildVote}`, () => void runGuildAction({ type: "guild.vote_cast", voteId: target.dataset.guildVote ?? "", choice: target.dataset.guildVoteChoice === "no" ? "no" : "yes" }, "Deine Stimme wurde gespeichert."));
     if (target.dataset.guildVoteResolve) return run(`guild-vote-resolve:${target.dataset.guildVoteResolve}`, () => void runGuildAction({ type: "guild.vote_resolve", voteId: target.dataset.guildVoteResolve ?? "" }, "Die Abstimmung wurde nach der aktuellen Mehrheit ausgewertet."));
-    if (target.dataset.guildExpeditionClaim) return run(`guild-expedition-claim:${target.dataset.guildExpeditionClaim}`, () => void runGuildAction({ type: "guild.expedition_claim", expeditionId: target.dataset.guildExpeditionClaim ?? "" }, "Die Expeditions-DNA wurde ins unveränderliche Ledger gebucht."));
+    if (target.dataset.guildExpeditionClaim) return run(`guild-expedition-claim:${target.dataset.guildExpeditionClaim}`, () => void runGuildAction({ type: "guild.expedition_claim", expeditionId: target.dataset.guildExpeditionClaim ?? "" }, "Die Expeditions-DNA wurde der Gilde gutgeschrieben."));
     if (target.dataset.friendAccept) return run(`friend-accept:${target.dataset.friendAccept}`, () => void runGuildAction({ type: "friend.accept", playerId: target.dataset.friendAccept ?? "" }, "Die Freundschaft ist bestätigt."));
     if (target.dataset.friendRemove) return run(`friend-remove:${target.dataset.friendRemove}`, () => void runGuildAction({ type: "friend.remove", playerId: target.dataset.friendRemove ?? "" }, "Die Freundschaft wurde gelöst."));
     if (target.dataset.playerBlock) return run(`player-block:${target.dataset.playerBlock}`, () => {

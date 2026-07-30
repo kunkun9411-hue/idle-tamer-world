@@ -83,6 +83,21 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
   Gesamtbestand des Kampfspeichers. Der Vollcheck besteht nun mit 67 Web-,
   24 API-, 11 Datenbank-Unit-, 6 Core- und 50 lokalen Browsertests; zwei
   credentialgebundene Live-E2E bleiben im lokalen Lauf erwartungsgemäß aus.
+- Mobile Kampfbedienung nachhierarchisiert: Der im Kampf redundante globale
+  `Kampf`-Eintrag ist auf 390 px ausgeblendet. Fünf direkte Kampfaktionen bilden
+  die primäre Reihe; sechs beschriftete Bereichsziele liegen ruhiger darunter.
+  Alle elf sichtbaren Ziele behalten mindestens 44 px Höhe, überdecken sich
+  nicht und bleiben ohne horizontales Scrollen erreichbar.
+- Spielsprache bereinigt: sichtbare Hinweise, Toasts, Forschung, Expeditionen,
+  Profil, Gilde, Offline-Rückkehr und Footer erklären jetzt Ergebnis und
+  Spielerwirkung statt Ledger, Atomizität, Serverautorität oder
+  API-Protokollen. Online-Accounts erhalten im Footer Profil/Einstellungen
+  statt der lokalen Reset-Aktion.
+- Capture-Evidenz ist deterministisch: Jeder Viewport-Ordner wird vor einem
+  neuen Lauf geleert und enthält danach exakt 17 Szenen plus zwei
+  Offline-Interaktionszustände. Der aktuelle Vollcheck besteht mit 67 Web-,
+  24 API-, 11 Datenbank-Unit-, 6 Core- und 53 lokalen Browsertests; zusätzlich
+  sind drei Layout-Audits und drei frische Capture-Läufe grün.
 
 Die genauen Fälle stehen in:
 

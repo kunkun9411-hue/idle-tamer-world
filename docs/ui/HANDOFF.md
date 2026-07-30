@@ -38,7 +38,11 @@ pnpm ui:capture
 
 `ui:audit` prüft Desktop, Tablet und 390×844. Neue Überlagerungen oder Überläufe lassen den Test fehlschlagen. Die UI-Schulden-Allowlist ist leer; jeder neue Befund muss einem späteren Block zugeordnet werden.
 
-`ui:capture` erzeugt für 1280×720, 1024×768 und 390×844 jeweils 17 Vergleichsbilder von Login, Starterwahl, Offline-Rückkehr, Kampf, den Kampf-Schnellfenstern, Aufträgen, Expeditionen, Habitat, Brut, Inventar, Forschung, Gilde, Profil und Prestige. Die Bilder landen unter `artifacts/ui-captures/` und werden nicht eingecheckt.
+`ui:capture` erzeugt für 1280×720, 1024×768 und 390×844 jeweils 17
+Szenenbilder plus Fokus- und Hover-Zustand der Offline-Rückkehr. Vor jedem Lauf
+wird nur der jeweilige Viewport-Ordner neu aufgebaut, damit keine veralteten
+Dateien den aktuellen Nachweis verfälschen. Die Bilder landen unter
+`artifacts/ui-captures/` und werden nicht eingecheckt.
 
 ## Verbindliche Quellen
 
@@ -103,9 +107,14 @@ vorwegzunehmen:
   spielerbezogene Gilden-Texte;
 - autoritative Rückkehrberichte melden nur neu hinzugekommene Beute statt den
   bereits wartenden Gesamtbestand.
+- die mobile Kampfszene trennt fünf primäre Kampfaktionen von sechs ruhigeren
+  Bereichszielen; der dort redundante globale Kampf-Eintrag entfällt;
+- sämtliche sichtbare Spielertexte erklären Wirkung und Ergebnis statt
+  interne Begriffe wie Ledger, atomare Buchung, Serverautorität oder
+  API-Protokoll; der Online-Footer führt sicher zu Profil/Einstellungen.
 
 Nachweis: `pnpm check:all`, `pnpm ui:audit` und `pnpm ui:capture` sind grün.
-Der Vollcheck umfasst 67 Web-, 24 API-, 11 Datenbank-Unit-, 6 Core- und 50
+Der Vollcheck umfasst 67 Web-, 24 API-, 11 Datenbank-Unit-, 6 Core- und 53
 lokale Browsertests; die zwei credentialgebundenen Live-E2E werden erst gegen
 den deployten Stand ausgeführt. **B.03.3, B.03.4, B.08.3 und B.08.4 bleiben
 bis zu dieser Live-Spielerabnahme offen; Roadmap B bleibt bei 28/32.**

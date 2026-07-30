@@ -74,6 +74,7 @@ test("active online guild hub exposes DNA, social and shared activity surfaces",
   await expect(page.locator(".guild-expedition-card")).toBeVisible();
   await expect(page.locator(".guild-chat-panel")).toContainText("Gildenchat");
   await expect(page.locator("[data-guild-gene]").first()).toBeVisible();
+  await expect(page.locator(".guild-page")).not.toContainText(/UI-Test|Spielserver|Onlineserver|serverautoritativ|PostgreSQL|Ledger|atomar/iu);
 
   await page.screenshot({ path: `${captureRoot}/live-guild.png`, fullPage: true });
 });

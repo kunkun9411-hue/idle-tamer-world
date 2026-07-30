@@ -66,6 +66,8 @@ test("navigation IA keeps quick access in combat and returns every core route ho
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await page.locator('.combat-objective-hud [data-view="objectives"]').click();
   await expect(page.locator(".objectives-page")).toBeVisible();
+  await expect(page.locator(".objectives-page")).toContainText("Fortschritt entsteht nur durch deine tatsächlichen Spielaktionen.");
+  await expect(page.locator(".objectives-page")).not.toContainText(/Onlinebetrieb|serverbestätigt|Backend|atomar/iu);
   await expect(page.locator(".main-nav .nav-button")).toHaveCount(8);
   await expect(page.locator('.main-nav [data-view="objectives"]')).toHaveAttribute("aria-current", "page");
   await expect(page.locator('.main-nav [data-view="expedition"]')).toHaveCount(0);

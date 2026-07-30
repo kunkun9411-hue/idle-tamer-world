@@ -24,6 +24,11 @@ test("profile keeps avatar and frame selection as separate visible choices", asy
   await expect(page.locator(".profile-hero .account-avatar img")).toHaveAttribute("src", /pyrook_idle_right\.png$/);
   await expect(page.locator(".profile-page .cosmetic-avatar i")).toHaveCount(0);
   await expect(page.locator('.frame-card[data-frame="silver"]')).toHaveClass(/is-selected/);
+  await expect(page.locator(".profile-hero")).toContainText("GASTPROFIL");
+  await expect(page.locator(".profile-page")).not.toContainText(/LOCAL-PROTOTYPE|Backendkonto|SYSTEMPOST · LOKAL|Accounts und Server|später accountweit/iu);
+  await expect(page.locator("footer")).toContainText("FORTSCHRITT WIRD AUTOMATISCH GESPEICHERT");
+  await expect(page.locator("footer")).not.toContainText(/VISUAL BUILD|SAVE V|API PROTOKOLL/iu);
+  await expect(page.locator("footer #reset-game")).toBeVisible();
   await page.locator('.cosmetic-card[data-avatar="keeper"]').click();
   await page.locator('.frame-card[data-frame="violet"]').click();
   await expect(page.locator('.cosmetic-card[data-avatar="keeper"]')).toHaveClass(/is-selected/);
@@ -46,7 +51,7 @@ test("guild surface explains the online requirement instead of rendering a dead 
   await expect(page.locator(".locked-callout")).toContainText("Gildenbereich derzeit nicht verfügbar");
   await expect(page.locator(".locked-callout")).toContainText("Gilden, Freunde und Chat");
   await expect(page.locator(".locked-callout [data-view=expedition]")).toBeVisible();
-  await expect(page.locator(".guild-page")).not.toContainText(/UI-Test|Spielserver|Onlineserver|serverautoritativ|PostgreSQL/iu);
+  await expect(page.locator(".guild-page")).not.toContainText(/UI-Test|Spielserver|Onlineserver|serverautoritativ|PostgreSQL|Ledger|atomar/iu);
 });
 
 test("research cards distinguish ready, insufficient and maximal core states", async ({ page }) => {
@@ -86,5 +91,7 @@ test("research cards distinguish ready, insufficient and maximal core states", a
     await expect(nonMaximal.nth(index).locator("button")).toContainText("KOSTEN");
     await expect(nonMaximal.nth(index).locator("button")).toContainText("BESITZ");
   }
-  await expect(page.locator(".research-page, .app-shell--research")).not.toContainText(/\bP\b/u);
+  const researchSurface = page.locator(".app-shell--research");
+  await expect(researchSurface).toContainText("Materialien werden nur verbraucht, wenn die Herstellung gelingt.");
+  await expect(researchSurface).not.toContainText(/\bP\b|Onlinebetrieb|atomar|serverbestätigt|Backend|SQL|PostgreSQL/iu);
 });

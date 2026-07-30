@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 import { expect, test, type Page } from "@playwright/test";
@@ -18,6 +18,7 @@ for (const viewport of UI_VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.emulateMedia({ reducedMotion: "reduce" });
     const target = `${captureRoot}/${viewport.id}`;
+    await rm(target, { recursive: true, force: true });
     await mkdir(target, { recursive: true });
     const shot = async (name: string, fullPage = false): Promise<void> => {
       await page.waitForFunction(() => [...document.images].every((image) => image.complete));

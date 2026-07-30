@@ -175,7 +175,11 @@ Safe-Areas, kompakte Nameplates und kollisionsfreie Bedienleisten. Die
 Spieler-Polish-Folge vom 30. Juli ergänzt vollständige mobile Profilkarten,
 echte Avatar-Porträts, einen kollisionsfreien Offline-Bericht, kompaktere
 Expeditions- und Habitat-Zustände sowie verständliche Forschungs- und
-Gilden-Texte. Der lokale Vollcheck und alle drei Capture-Viewports sind grün.
+Gilden-Texte. Die jüngste Folge trennt auf kleinen Displays primäre
+Kampfaktionen von sekundären Bereichszielen, entfernt den dort redundanten
+Kampf-Eintrag und ersetzt interne Buchungs-/Serverbegriffe durch
+spielerbezogene Wirkungstexte. Der lokale Vollcheck und alle drei frisch
+bereinigten Capture-Viewports sind grün.
 Der nächste Abnahmeschritt ist dennoch die vollständige Live-Spielerprüfung des
 deployten Stands. Erst danach werden B.03 und B.08 formal abgenommen und
 Roadmap C geöffnet.

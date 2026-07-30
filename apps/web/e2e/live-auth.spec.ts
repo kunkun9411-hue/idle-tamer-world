@@ -68,6 +68,8 @@ test("one account keeps the same profile and starter across two real browser con
     await firstPage.locator('.combat-rail [data-view="research"]').click();
     await firstPage.locator('.main-nav [data-view="gems"]').click();
     await expect(firstPage.locator(".gems-page")).toBeVisible();
+    await expect(firstPage.locator('footer [data-view="profile"]')).toHaveText("PROFIL & EINSTELLUNGEN");
+    await expect(firstPage.locator("footer #reset-game")).toHaveCount(0);
     const foundationGem = firstPage.locator('[data-equip-gem="common-crimson-triangle"]');
     await expect(foundationGem).toContainText("1×");
     await foundationGem.click();
