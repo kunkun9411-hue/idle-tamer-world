@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { AuthoritativeRunSnapshot } from "@idle-tamer/contracts";
 
-import { authoritativeCacheHasRewards, shouldShowOfflineReport } from "./offline-rewards";
+import { authoritativeCacheHasRewards, returnReportActivity, shouldShowOfflineReport } from "./offline-rewards";
 
 const snapshot = (overrides: Partial<AuthoritativeRunSnapshot> = {}): AuthoritativeRunSnapshot => ({
   revision: 3,
@@ -76,5 +76,35 @@ describe("offline return report authority", () => {
 
   it("keeps local prototype offline progress independent from the server snapshot", () => {
     expect(shouldShowOfflineReport(false, { offlineSeconds: 60, cacheSlotsUsed: 0, pendingGold: 0 })).toBe(true);
+  });
+
+  it("never presents stale browser offline values as server-authoritative rewards", () => {
+    const local = { offlineSeconds: 8 * 60 * 60, offlineGold: 99_999, offlineSlots: 90, offlineItemCount: 44 };
+    expect(returnReportActivity(true, local, {
+      victoriesAdded: 2,
+      goldAdded: "26",
+      eggsAdded: 0,
+      itemsAdded: 0,
+      gemsAdded: 0,
+    })).toEqual({
+      authority: "server",
+      durationSeconds: null,
+      victoriesAdded: 2,
+      goldAdded: 26,
+      slotsAdded: 0,
+      itemCountAdded: 0,
+      eggsAdded: 0,
+      gemsAdded: 0,
+    });
+    expect(returnReportActivity(false, local)).toEqual({
+      authority: "local",
+      durationSeconds: 8 * 60 * 60,
+      victoriesAdded: 90,
+      goldAdded: 99_999,
+      slotsAdded: 90,
+      itemCountAdded: 44,
+      eggsAdded: 0,
+      gemsAdded: 0,
+    });
   });
 });

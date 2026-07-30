@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { UI_GENERATED_CHROME } from "../src/dev/ui-catalog-data";
+
 test("UI catalog exposes its contracts without page errors or horizontal overflow", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -97,8 +99,8 @@ test("UI catalog exposes its contracts without page errors or horizontal overflo
     image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
   )))).toBe(true);
   await expect(page.getByRole("heading", { name: "Generierte Identität, echter UI-Text" })).toBeVisible();
-  await expect(page.locator(".generated-chrome-card")).toHaveCount(4);
-  await expect(page.locator(".generated-chrome-card img")).toHaveCount(4);
+  await expect(page.locator(".generated-chrome-card")).toHaveCount(UI_GENERATED_CHROME.length);
+  await expect(page.locator(".generated-chrome-card img")).toHaveCount(UI_GENERATED_CHROME.length);
   await page.locator("#generated").scrollIntoViewIfNeeded();
   await expect.poll(() => page.locator(".generated-chrome-card img").evaluateAll((images) => images.every((image) => (
     image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0

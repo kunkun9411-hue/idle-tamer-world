@@ -235,9 +235,19 @@ const persistState = async (client: PoolClient, context: RunContext, revision: n
   }
 };
 
-const settleContext = async (client: PoolClient, context: RunContext, now: Date): Promise<{ victoriesAdded: number; goldAdded: bigint; changed: boolean }> => {
+const settleContext = async (client: PoolClient, context: RunContext, now: Date): Promise<{
+  victoriesAdded: number;
+  goldAdded: bigint;
+  eggsAdded: number;
+  itemsAdded: number;
+  gemsAdded: number;
+  changed: boolean;
+}> => {
   const before = `${context.state.progressionStatus}|${context.state.nextCombatAtMs}`;
   const firstTotalVictory = context.state.totalVictories;
+  let eggsAdded = 0;
+  let itemsAdded = 0;
+  let gemsAdded = 0;
   const settlement = settleAuthoritativeRun(
     context.state,
     now.getTime(),
@@ -246,6 +256,9 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
   context.state = settlement.state;
   if (settlement.victoriesAdded > 0) {
     const loot = deterministicCombatLoot(context.playerId, firstTotalVictory, settlement.victoriesAdded, context.eggPity, context.prestigeCount);
+    eggsAdded = Object.values(loot.eggs).reduce((sum, amount) => sum + amount, 0);
+    itemsAdded = Object.values(loot.items).reduce((sum, amount) => sum + amount, 0);
+    gemsAdded = Object.values(loot.gems).reduce((sum, amount) => sum + amount, 0);
     context.eggPity = loot.nextEggPity;
     const mergeDrops = (current: Record<string, number>, added: Record<string, number>): Record<string, number> => {
       const merged = { ...current };
@@ -289,6 +302,9 @@ const settleContext = async (client: PoolClient, context: RunContext, now: Date)
   return {
     victoriesAdded: settlement.victoriesAdded,
     goldAdded: settlement.goldAdded,
+    eggsAdded,
+    itemsAdded,
+    gemsAdded,
     changed: settlement.victoriesAdded > 0 || before !== `${context.state.progressionStatus}|${context.state.nextCombatAtMs}`,
   };
 };
@@ -402,9 +418,9 @@ export class PostgresRunStore implements RunStore {
         settlement: {
           victoriesAdded: settled.victoriesAdded,
           goldAdded: settled.goldAdded.toString(),
-          eggsAdded: currentSnapshot.collection.pendingEggs.length,
-          itemsAdded: Object.values(currentSnapshot.collection.pendingItems).reduce((sum, amount) => sum + Number(amount), 0),
-          gemsAdded: currentSnapshot.collection.pendingGems.length,
+          eggsAdded: settled.eggsAdded,
+          itemsAdded: settled.itemsAdded,
+          gemsAdded: settled.gemsAdded,
         },
       };
     });

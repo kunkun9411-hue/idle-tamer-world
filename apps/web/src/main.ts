@@ -4,7 +4,7 @@ import "./styles-game-first.css";
 import "./styles-progression-v3.css";
 import "./styles-guild.css";
 import "./styles-ui-kit-runtime.css";
-import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, GuildCommand, GuildSnapshot, RunCommandResponse } from "@idle-tamer/contracts";
+import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, GuildCommand, GuildSnapshot, RunBootstrapResponse, RunCommandResponse } from "@idle-tamer/contracts";
 import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId, RunApiError } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
 import { GUILD_EXPEDITION, GUILD_GENES, GUILD_TASKS } from "@idle-tamer/content";
@@ -14,13 +14,12 @@ import { canCraft, CRAFTING_RECIPES, getCraftingRecipe } from "./game/crafting";
 import { canStartExpedition, EXPEDITIONS, EXPEDITION_SLOT_COUNT, expeditionMatchCount, expeditionRewardMultiplier, getExpedition, isMonsterDispatched, type ExpeditionDefinition } from "./game/expeditions";
 import { API_PROTOCOL_VERSION } from "./game/api-contract";
 import { clientStatusCopy, type ClientUiState } from "./game/client-status";
-import { CONTENT_RELEASE_ID } from "./game/contract-versions";
 import { isAvatarUnlocked, isFrameUnlocked, LocalGameService } from "./game/game-service";
 import { LocalGameServicePort } from "./game/game-service-port";
 import { currentChapter, MILESTONES, nextMilestone, RESEARCH, type ResearchId } from "./game/progression";
 import { formatGameNumber } from "./game/number-scale";
 import { applyAuthoritativeRunSnapshot, combatMonsterForAuthority } from "./game/online-run-state";
-import { authoritativeCacheHasRewards, shouldShowOfflineReport } from "./game/offline-rewards";
+import { authoritativeCacheHasRewards, returnReportActivity, shouldShowOfflineReport } from "./game/offline-rewards";
 import { isObjectiveClaimable, objectiveClaimKey, objectiveProgress, OBJECTIVES, refreshObjectivePeriods, type ObjectiveDefinition } from "./game/objectives";
 import { applyQaPreset, type QaPreset } from "./game/qa-tools";
 import {
@@ -76,6 +75,7 @@ let activeView: View = "expedition";
 let showLogin = true;
 let accountBootstrap: AccountBootstrapResponse | null = null;
 let onlineRun: AuthoritativeRunSnapshot | null = null;
+let onlineReturnSettlement: RunBootstrapResponse["settlement"] | null = null;
 let guildSnapshot: GuildSnapshot | null = null;
 let guildSyncBusy = false;
 let lastGuildSync = 0;
@@ -124,6 +124,15 @@ function isGuildOnline(): boolean {
   return accountApiEnabled && Boolean(accountBootstrap?.features.guilds);
 }
 
+async function waitForSynchronization(isBusy: () => boolean, timeoutMs = 8_000): Promise<boolean> {
+  const deadline = performance.now() + timeoutMs;
+  while (isBusy()) {
+    if (performance.now() >= deadline) return false;
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 50));
+  }
+  return true;
+}
+
 async function synchronizeGuild(): Promise<void> {
   if (!isGuildOnline() || guildSyncBusy) return;
   guildSyncBusy = true;
@@ -141,7 +150,14 @@ async function synchronizeGuild(): Promise<void> {
 }
 
 async function sendGuildCommand(command: GuildCommand): Promise<boolean> {
-  if (!guildSnapshot || guildSyncBusy) return false;
+  if (!guildSnapshot) {
+    showNotice("Gildenaktion noch nicht bereit", "Die Gildendaten werden zuerst vollständig geladen.", "warning");
+    return false;
+  }
+  if (!await waitForSynchronization(() => guildSyncBusy)) {
+    showNotice("Gildensynchronisierung dauert länger", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
+    return false;
+  }
   guildSyncBusy = true;
   try {
     const response = await accountClient.guildCommand(command, guildSnapshot.revision, clientInstanceId);
@@ -180,6 +196,7 @@ async function synchronizeOnlineRun(showReport = false): Promise<void> {
     const response = await accountClient.bootstrapRun();
     applyOnlineRun(response.snapshot);
     if (showReport) {
+      onlineReturnSettlement = response.settlement;
       showOfflineReport = shouldShowOfflineReport(true, {
         offlineSeconds: loaded.offlineSeconds,
         cacheSlotsUsed: game.cacheSlotsUsed,
@@ -197,7 +214,14 @@ async function synchronizeOnlineRun(showReport = false): Promise<void> {
 }
 
 async function sendOnlineRunCommand(command: Parameters<AccountClient["runCommand"]>[0]): Promise<RunCommandResponse | null> {
-  if (!onlineRun || runSyncBusy) return null;
+  if (!onlineRun) {
+    showNotice("Run noch nicht bereit", "Dein serverseitiger Spielstand wird zuerst vollständig geladen.", "warning");
+    return null;
+  }
+  if (!await waitForSynchronization(() => runSyncBusy)) {
+    showNotice("Runsynchronisierung dauert länger", "Bitte versuche die Aktion gleich noch einmal. Es wurde nichts verändert.", "warning");
+    return null;
+  }
   runSyncBusy = true;
   try {
     const response = await accountClient.runCommand(command, onlineRun.revision, clientInstanceId);
@@ -428,7 +452,14 @@ async function collectCache(): Promise<void> {
   const gems = game.pendingGems.length;
   if (isRunOnline()) {
     const response = await sendOnlineRunCommand({ type: "cache.claim" });
-    if (response) showNotice("Beute serverseitig gesichert", `${response.event.payload.gold ?? gold} Gold wurden exakt einmal gebucht.`, "success");
+    if (response) {
+      const payload = response.event.payload;
+      showNotice(
+        "Beute serverseitig gesichert",
+        `${payload.gold ?? gold} Gold, ${payload.eggs ?? eggs} Eier, ${payload.items ?? items} Materialien und ${payload.gems ?? gems} Gems wurden exakt einmal gebucht.`,
+        "success",
+      );
+    }
     return;
   }
   if (service.collectCache()) showNotice("Beute gesichert", `${gold} Gold, ${eggs} Eier, ${items} Materialien und ${gems} Gems wurden übertragen.`, "success");
@@ -442,12 +473,14 @@ async function collectOfflineRewards(): Promise<void> {
   const gems = game.pendingGems.length;
   if (isRunOnline()) {
     if (!onlineRun || !authoritativeCacheHasRewards(onlineRun)) {
+      onlineReturnSettlement = null;
       showNotice("Willkommen zurück", "Dein Offline-Fortschritt ist bereits synchronisiert. Im Kampfspeicher wartet aktuell keine weitere Beute.", "success");
       window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
       return;
     }
     const response = await sendOnlineRunCommand({ type: "cache.claim" });
     if (response) {
+      onlineReturnSettlement = null;
       const payload = response.event.payload;
       showNotice(
         "Willkommen zurück",
@@ -1091,7 +1124,8 @@ function playerAccountCard(): string {
 function syncIndicator(): string {
   const healthy = service.lastSaveResult.ok && clientUiState !== "error";
   const copy = clientStatusCopy(clientUiState);
-  return `<div class="sync-indicator ${healthy ? "is-synced" : "is-error"}" title="${copy.message}" data-testid="sync-indicator"><i></i><span><b>${healthy ? copy.title.toUpperCase() : "SPEICHERFEHLER"}</b><small>${healthy ? `${timeFormatter.format(game.lastSavedAt)} · ${servicePort.mode.toUpperCase()}` : "Browser-Speicher prüfen"}</small></span></div>`;
+  const authority = clientUiState === "online" || isRunOnline() ? "SERVER" : servicePort.mode.toUpperCase();
+  return `<div class="sync-indicator ${healthy ? "is-synced" : "is-error"}" title="${copy.message}" data-testid="sync-indicator"><i></i><span><b>${healthy ? copy.title.toUpperCase() : "SPEICHERFEHLER"}</b><small>${healthy ? `${timeFormatter.format(game.lastSavedAt)} · ${authority}` : "Browser-Speicher prüfen"}</small></span></div>`;
 }
 
 function clientStatusMarkup(): string {
@@ -1121,7 +1155,7 @@ function topShell(content: string): string {
       <header class="topbar">
         <button class="brand" data-home aria-label="Zur Idle-Tamer-Homepage">${brandMarkup()}</button>
         <nav class="main-nav" aria-label="Spielbereiche">
-          ${navButton("expedition", "Kampf")}${activeView === "objectives" ? navButton("objectives", "Aufträge") : ""}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
+          ${activeView === "objectives" ? navButton("objectives", "Aufträge") : navButton("expedition", "Kampf")}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
         </nav>
         <div class="topbar__account">${playerAccountCard()}</div>
       </header>
@@ -1148,7 +1182,7 @@ function loginShell(): string {
         <form id="login-form" class="login-form">
           <label for="login-identifier"><span>E-MAIL</span><input id="login-identifier" name="identifier" type="email" autocomplete="username" value="${accountApiEnabled ? "" : "demo@idletamer.local"}" required></label>
           <label for="login-password"><span>PASSWORT</span><input id="login-password" name="password" type="password" autocomplete="current-password" value="${accountApiEnabled ? "" : "demo"}" required></label>
-          <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled>Passwort vergessen</button></div>
+          <div class="login-form__meta"><label><input name="rememberMe" type="checkbox" checked> <span>Angemeldet bleiben</span></label><button type="button" disabled title="Im Entwicklungsbetrieb noch nicht verfügbar">Passwort vergessen</button></div>
           <button class="primary-button primary-button--large silver-ether-action login-submit" type="submit" data-testid="login-submit" ${authBusy || clientUiState === "loading" ? "disabled" : ""}>${authBusy ? "VERBINDUNG WIRD GEPRÜFT …" : `EINLOGGEN ${icon("arrow")}`}</button>
         </form>` : `
         <form id="register-form" class="login-form">
@@ -1181,8 +1215,6 @@ function loginShell(): string {
         <div class="auth-mode-tabs"><button id="auth-mode-login" class="${authMode === "login" ? "is-active" : ""}" type="button">EINLOGGEN</button><button id="auth-mode-register" class="${authMode === "register" ? "is-active" : ""}" type="button">REGISTRIEREN</button></div>
         ${authMessage ? `<div class="auth-message auth-message--${authMessageTone}" role="status">${authMessage}${deletionPending ? '<button class="secondary-button" id="cancel-account-deletion" data-testid="cancel-account-deletion" type="button">LÖSCHUNG ABBRECHEN</button>' : ""}</div>` : ""}
         ${accountForm}
-        <div class="login-panel__backend"><span>${icon("shield")}</span><div><strong>${accountApiEnabled ? "Account, Sammlung & Gilden online" : "Lokaler UI-Testmodus"}</strong><small>${accountApiEnabled ? "Kampf, Besitz, Zeitjobs, Prestige und soziale Änderungen werden von PostgreSQL bestätigt." : "Der Entwicklungsbrowser nutzt weiterhin den schnellen lokalen Testzugang."}</small></div></div>
-        <small class="login-panel__version">CLIENT V0.2 · SAVE V${game.version} · API ${API_PROTOCOL_VERSION} · CONTENT ${CONTENT_RELEASE_ID}</small>
       </section>
     </main>
     ${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
@@ -1243,7 +1275,7 @@ function combatMonsterModal(): string {
       <div class="combat-monster-modal__actions"><button class="secondary-button" data-active="${monster.uid}" ${active || dispatched ? "disabled" : ""}>${active ? "FRONT AKTIV" : dispatched ? "ENTSANDT" : "ALS FRONT"}</button><button class="secondary-button" data-support="${monster.uid}" ${support || active || dispatched ? "disabled" : ""}>${support ? "SUPPORT AKTIV" : "ALS SUPPORT"}</button><button class="primary-button" data-level="${monster.uid}" ${game.resources.gold < cost || dispatched ? "disabled" : ""}>RUN-LEVEL +1 <small>${cost} G</small></button></div>
     </article>`;
   }).join("");
-  return `<div class="combat-monster-modal-backdrop" data-close-combat-monsters aria-hidden="true"></div><aside class="combat-monster-modal" role="dialog" aria-modal="true" aria-labelledby="combat-monster-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-monster-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">KAMPFTEAM · SCHNELLZUGRIFF</span><h2 id="combat-monster-title">Monster</h2><small>Front, Support und temporäres Run-Level direkt im Kampf verwalten.</small></div><button class="combat-inventory-modal__close" id="close-combat-monsters" type="button" aria-label="Monsterfenster schließen">×</button></header><div class="combat-monster-modal__summary"><span><b>${game.roster.length}</b> Resonanzen</span><span><b>${activeUid ? "1" : "0"}</b> Front</span><span><b>${supportUid ? "1" : "0"}</b> Support</span></div><div class="combat-monster-modal__grid">${cards}</div><p class="combat-inventory-hint">Run-Level wird mit Gold bezahlt und beim Prestige zurückgesetzt. Hyperlevel, Evolution und Gems bleiben im separaten Ausrüstungsbereich.</p></div></aside>`;
+  return `<div class="combat-monster-modal-backdrop" data-close-combat-monsters aria-hidden="true"></div><aside class="combat-monster-modal ${game.roster.length <= 2 ? "is-compact" : ""}" role="dialog" aria-modal="true" aria-labelledby="combat-monster-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-monster-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">KAMPFTEAM · SCHNELLZUGRIFF</span><h2 id="combat-monster-title">Monster</h2><small>Front, Support und temporäres Run-Level direkt im Kampf verwalten.</small></div><button class="combat-inventory-modal__close" id="close-combat-monsters" type="button" aria-label="Monsterfenster schließen">×</button></header><div class="combat-monster-modal__summary"><span><b>${game.roster.length}</b> Resonanzen</span><span><b>${activeUid ? "1" : "0"}</b> Front</span><span><b>${supportUid ? "1" : "0"}</b> Support</span></div><div class="combat-monster-modal__grid">${cards}</div><div class="combat-monster-modal__footer"><span>PERMANENTE SYSTEME</span><div><button class="secondary-button" data-view="habitat" title="Hyperlevel und Evolution verwalten">ARCHIV &amp; HYPER</button><button class="secondary-button" data-view="gems" title="Permanente Gem-Ausrüstung verwalten">GEMS</button></div></div></div></aside>`;
 }
 
 interface InventorySlotData {
@@ -1396,7 +1428,7 @@ function combatObjectiveMarkup(): string {
     : upcoming
       ? `<div><small>NÄCHSTER STORY-KNOTEN</small><strong>${upcoming.title}</strong><span>${game.totalVictories} / ${upcoming.target} Siege</span></div><div class="combat-objective-progress"><i style="width:${missionPercent}%"></i></div>`
       : `<div><small>KAPITEL ABGESCHLOSSEN</small><strong>Das nächste Signal wartet.</strong><span>500 / 500 Siege</span></div>`;
-  return `${milestone}<button class="combat-prestige" id="start-prestige" title="Beute wird beim Prestige automatisch gesichert"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button>`;
+  return `${milestone}<button class="combat-prestige" id="start-prestige" title="Beute wird beim Prestige automatisch gesichert"><span>∞</span><div><small>${prestigeZoneReady ? `ETHER-KRISTALL ${game.runVictories}/100` : `PRESTIGE-ZUGANG · ZONE ${game.highestZoneNumber}/${BALANCE.prestige.requiredZoneNumber}`}</small><strong>${prestigeReward > 0 ? `${prestigeReward} KERN${prestigeReward === 1 ? "" : "E"} BEREIT` : prestigeZoneReady ? "PRESTIGE ANSEHEN" : `AB ZONE ${BALANCE.prestige.requiredZoneNumber}`}</strong><i><em style="width:${prestigeProgress}%"></em></i></div></button><button class="combat-objectives-link" data-view="objectives">ALLE AUFTRÄGE ${icon("arrow")}</button>`;
 }
 
 function expeditionView(): string {
@@ -1508,8 +1540,10 @@ function monsterCard(monster: MonsterInstance): string {
   const actionsStart = html.indexOf('<div class="monster-card__actions">');
   const actionsEnd = html.indexOf('</div></article>', actionsStart);
   if (actionsStart < 0 || actionsEnd < 0) return html;
-  const actionsClose = '</div></article>';
-  return `${html.slice(0, actionsStart)}${html.slice(actionsEnd + actionsClose.length)}`;
+  const permanentCost = hyperLevelCost(monster.hyperLevel);
+  const fragments = game.fragments[monster.definitionId] ?? 0;
+  const permanentAction = `<div class="monster-card__permanent-action"><span><small>PERMANENTE VERBESSERUNG</small><strong>Hyperlevel ${monster.hyperLevel}</strong><em>Bleibt bei jedem Prestige erhalten</em></span><button class="secondary-button" data-hyper="${monster.uid}" ${fragments < permanentCost ? "disabled" : ""}>HYPER +1 <small>${permanentCost} FRAGMENTE</small></button></div>`;
+  return `${html.slice(0, actionsStart)}${permanentAction}</article>`;
 }
 
 function incubationView(): string {
@@ -1528,7 +1562,7 @@ function eggCard(definitionId: string, amount: number): string {
 }
 
 function craftingWorkbench(): string {
-  return `<section class="crafting-workbench panel"><div class="crafting-workbench__heading"><span>${icon("research")}</span><div><small>ETHERWERKSTATT · FESTE REZEPTE</small><h2>Materialien veredeln</h2><p>Jedes Ergebnis ist garantiert. Kosten und Ausgabe werden später in einer einzigen SQL-Transaktion gebucht.</p></div><strong>${game.inventory.ether_dust}× ETHERSTAUB</strong></div><div class="crafting-recipes">${CRAFTING_RECIPES.map((recipe) => {
+  return `<section class="crafting-workbench panel"><div class="crafting-workbench__heading"><span>${icon("research")}</span><div><small>ETHERWERKSTATT · FESTE REZEPTE</small><h2>Materialien veredeln</h2><p>Jedes Ergebnis ist garantiert. Im Onlinebetrieb werden Kosten und Ausgabe gemeinsam und atomar gebucht.</p></div><strong>${game.inventory.ether_dust}× ETHERSTAUB</strong></div><div class="crafting-recipes">${CRAFTING_RECIPES.map((recipe) => {
     const output = ITEMS.find((item) => item.id === recipe.output.itemId);
     const available = canCraft(game, recipe);
     const costs = [`${recipe.goldCost} Gold`, ...Object.entries(recipe.itemCosts).map(([itemId, amount]) => `${amount}× ${ITEMS.find((item) => item.id === itemId)?.name ?? itemId}`)];
@@ -1543,7 +1577,7 @@ function inventoryView(): string {
     <div class="inventory-summary panel"><div><span class="eyebrow">KAMPFSPEICHER</span><strong>${game.cacheSlotsUsed} / ${activeCacheCapacity()} Plätze belegt</strong><small>${Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0)} Materialien, ${game.pendingEggs.length} Eier und ${game.pendingGems.length} Gems warten auf Abholung.</small></div><button class="primary-button" id="collect-cache" ${game.cacheSlotsUsed === 0 && game.pendingGold === 0 && game.pendingGems.length === 0 ? "disabled" : ""}>BEUTE EINSAMMELN ${icon("arrow")}</button></div>
     <div class="item-grid">${ITEMS.map((item) => `<article class="item-card panel item-card--${item.rarity.toLowerCase()}"><span class="item-card__icon"><img src="${item.image}" alt=""></span><div><span class="eyebrow">${item.rarity.toUpperCase()}</span><h2>${item.name}</h2><p>${item.description}</p><small>QUELLE · ${item.source}</small></div><b class="item-count">${game.inventory[item.id]}×</b>${item.action === "train" && active ? `<button class="secondary-button" data-train="${active.uid}" ${game.inventory[item.id] <= 0 ? "disabled" : ""}>${getMonsterForm(active).name} TRAINIEREN</button>` : item.action === "accelerate" ? `<button class="secondary-button" id="accelerate-incubation" ${!game.incubation || game.inventory[item.id] <= 0 ? "disabled" : ""}>BRUTZEIT −60s</button>` : item.id === "ether_dust" ? `<span class="item-reserved">ROHSTOFF · ETHERWERKSTATT</span>` : `<span class="item-reserved">VERBRAUCH · EVOLUTION</span>`}</article>`).join("")}</div>
     ${craftingWorkbench()}
-    <div class="inventory-gem-callout panel"><div><span class="eyebrow">GEM-AUSRÜSTUNG</span><strong>${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} Gems im Inventar</strong><small>Dreieck verstärkt Angriff, Quadrat verstärkt Leben, Raute verstärkt beides. Fünf Farben und drei Seltenheiten sind vorbereitet.</small></div><div>${GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).slice(0, 5).map((gem) => `<img src="${gem.image}" alt="${gem.name}" title="${gem.name}">`).join("")}</div><button class="secondary-button" data-view="habitat">GEMS AUSRÜSTEN</button></div>
+    <div class="inventory-gem-callout panel"><div><span class="eyebrow">GEM-AUSRÜSTUNG</span><strong>${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} Gems im Inventar</strong><small>Dreieck verstärkt Angriff, Quadrat verstärkt Leben, Raute verstärkt beides. Fünf Farben und drei Seltenheiten sind vorbereitet.</small></div><div>${GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).slice(0, 5).map((gem) => `<img src="${gem.image}" alt="${gem.name}" title="${gem.name}">`).join("")}</div><button class="secondary-button" data-view="gems">GEMS AUSRÜSTEN</button></div>
     <div class="inventory-note panel"><span>${icon("shield")}</span><div><strong>Backend-Regel</strong><small>Der Browser zeigt Bestände nur an. Im Onlinebetrieb bestätigt ausschließlich der Server jeden Fund, Verbrauch und Tausch.</small></div></div>
   </section>`;
 }
@@ -1581,7 +1615,7 @@ function objectivesView(): string {
   const achievements = OBJECTIVES.filter((objective) => objective.cadence === "achievement");
   const claimable = OBJECTIVES.filter((objective) => isObjectiveClaimable(game, objective)).length;
   const completedAchievements = achievements.filter((objective) => game.claimedObjectives.includes(objectiveClaimKey(game, objective))).length;
-  return `<section class="page page--kit objectives-page">${pageHeading("AUFTRÄGE · ERFOLGE", "Resonanz-Aufträge", "Kurze Ziele führen durch die vorhandenen Systeme. Fortschritt entsteht nur aus echten Spielaktionen und wird später serverseitig bestätigt.", `${claimable} BELOHNUNGEN BEREIT`)}
+  return `<section class="page page--kit objectives-page">${pageHeading("AUFTRÄGE · ERFOLGE", "Resonanz-Aufträge", "Kurze Ziele führen durch die vorhandenen Systeme. Im Onlinebetrieb zählt ausschließlich serverbestätigter Fortschritt aus echten Spielaktionen.", `${claimable} BELOHNUNGEN BEREIT`)}
     <section class="objective-overview panel"><div><span>${icon("objectives")}</span><div><small>AKTIVE PERIODE</small><strong>${game.objectivePeriods.dailyKey}</strong><em>WOCHE ${game.objectivePeriods.weeklyKey}</em></div></div><div><span><small>TÄGLICH</small><b>${daily.filter((objective) => objectiveProgress(game, objective) >= objective.target).length}/${daily.length}</b></span><span><small>WÖCHENTLICH</small><b>${weekly.filter((objective) => objectiveProgress(game, objective) >= objective.target).length}/${weekly.length}</b></span><span><small>ERFOLGE</small><b>${completedAchievements}/${achievements.length}</b></span></div><button class="secondary-button" data-view="expedition">ZURÜCK ZUM KAMPF</button></section>
     <div class="subsection-heading"><div><span class="eyebrow">HEUTE</span><h2>Tägliche Aufträge</h2></div><span>UTC · AUTOMATISCHER WECHSEL</span></div><div class="objective-grid">${daily.map(objectiveCard).join("")}</div>
     <div class="subsection-heading"><div><span class="eyebrow">DIESE WOCHE</span><h2>Wochenziele</h2></div><span>${game.objectivePeriods.weeklyKey}</span></div><div class="objective-grid">${weekly.map(objectiveCard).join("")}</div>
@@ -1722,7 +1756,7 @@ function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
 }
 
 function guildView(): string {
-  if (!isGuildOnline()) return `<section class="page page--kit guild-page">${pageHeading("ONLINE-SYSTEM", "Gilden-DNA", "Das Gildensystem ist auf dieser Umgebung noch nicht freigeschaltet.", "FEATURE-FLAG AUS")}<div class="locked-callout"><b>FEATURE-FLAG GUILDS IST AUS</b></div></section>`;
+  if (!isGuildOnline()) return `<section class="page page--kit guild-page guild-page--offline">${pageHeading("ONLINE-GEMEINSCHAFT", "Gilden-DNA", "Gemeinsam Gene freischalten, Expeditionen abschließen und dauerhafte Gildenboni entwickeln.", "ONLINE VERFÜGBAR")}<div class="locked-callout"><span class="guild-offline__mark">${icon("guild")}</span><div><b>Für Gilden-DNA mit dem Spielserver verbinden</b><small>Im lokalen UI-Test ist die Gemeinschaft nicht verbunden. Nach der Anmeldung auf dem Onlineserver stehen Gilden, Freunde und Chat bereit.</small></div><button class="secondary-button" data-view="expedition">ZURÜCK ZUM KAMPF</button></div></section>`;
   if (!guildSnapshot) return `<section class="page page--kit guild-page">${pageHeading("SERVERAUTORITATIV", "Gilden-DNA", "Mitgliedschaften, Gene und Chat werden geladen.", "LIVE-SYNC")}<div class="guild-loading panel"><span class="status-orb fighting"></span><b>DNA-ARCHIV WIRD SYNCHRONISIERT</b></div></section>`;
   const membership = guildSnapshot.membership;
   if (!membership) {
@@ -1803,22 +1837,35 @@ function offlineReport(): string {
   if (!showOfflineReport) return "";
   const offlineMaterialCount = Object.values(loaded.offlineItems).reduce((sum, amount) => sum + amount, 0);
   const pendingMaterialCount = Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0);
+  const activity = returnReportActivity(isRunOnline(), {
+    offlineSeconds: loaded.offlineSeconds,
+    offlineGold: loaded.offlineGold,
+    offlineSlots: loaded.offlineSlots,
+    offlineItemCount: offlineMaterialCount,
+  }, onlineReturnSettlement);
+  const serverReport = activity.authority === "server";
+  const intro = serverReport
+    ? "Dein Run wurde mit dem Spielserver synchronisiert. Während deiner Abwesenheit hat dein Team automatisch weitergekämpft."
+    : `Du warst <strong>${formatOfflineDuration(activity.durationSeconds ?? 0)}</strong> offline. Dein Team hat in dieser Zeit automatisch weitergekämpft.`;
+  const summary = serverReport
+    ? `Seit der letzten Serversynchronisierung wurden <strong>${activity.victoriesAdded} Kämpfe</strong> und <strong>${formatNumber(activity.goldAdded)} Gold</strong> verbucht.`
+    : `In <strong>${formatOfflineDuration(activity.durationSeconds ?? 0)}</strong> wurden <strong>${formatNumber(activity.goldAdded)} Gold</strong> und <strong>${activity.itemCountAdded} Materialien</strong> für dich geborgen.`;
   return `<div class="offline-report-backdrop" role="presentation"><section class="offline-report" role="dialog" aria-modal="true" aria-labelledby="offline-report-title" data-testid="offline-report">
     <img class="silver-ether-panel-frame offline-report__generated-frame" src="/assets/ui/chrome/offline-report-frame-v4.png" alt="" aria-hidden="true">
     <div class="offline-report__signal"><span>${icon("spark")}</span><i></i></div>
     <span class="eyebrow">EXPEDITION FORTGESETZT</span>
     <h2 id="offline-report-title">Willkommen zurück.</h2>
-    <p>Du warst <strong>${formatOfflineDuration(loaded.offlineSeconds)}</strong> offline. Dein Team hat in dieser Zeit automatisch weitergekämpft.</p>
+    <p>${intro}</p>
     <img class="silver-ether-divider offline-report__divider" src="/assets/ui/chrome/ether-divider-v1.webp" alt="" aria-hidden="true">
     <div class="offline-report__rewards">
-      <span><small>ZEIT OFFLINE</small><b>${formatOfflineDuration(loaded.offlineSeconds)}</b></span>
-      <span>${resourceIcon("gold")}<small>GESAMMELTES GOLD</small><b>+${formatNumber(loaded.offlineGold)}</b></span>
-      <span>${icon("inventory")}<small>MATERIALIEN</small><b>+${offlineMaterialCount}</b></span>
-      <span>${icon("shield")}<small>SPEICHERPLÄTZE</small><b>+${loaded.offlineSlots}</b></span>
+      <span><small>${serverReport ? "KÄMPFE SEIT SYNC" : "ZEIT OFFLINE"}</small><b>${serverReport ? activity.victoriesAdded : formatOfflineDuration(activity.durationSeconds ?? 0)}</b></span>
+      <span>${resourceIcon("gold")}<small>GESAMMELTES GOLD</small><b>+${formatNumber(activity.goldAdded)}</b></span>
+      <span>${icon("inventory")}<small>MATERIALIEN</small><b>+${activity.itemCountAdded}</b></span>
+      <span>${icon("shield")}<small>${serverReport ? "WEITERE FUNDE" : "SPEICHERPLÄTZE"}</small><b>+${serverReport ? activity.eggsAdded + activity.gemsAdded : activity.slotsAdded}</b></span>
     </div>
     <div class="offline-report__cache"><div><small>JETZT IM KAMPFSPEICHER</small><strong>${formatNumber(game.pendingGold)} Gold · ${game.pendingEggs.length} Eier · ${pendingMaterialCount} Materialien · ${game.pendingGems.length} Gems</strong></div><span>${game.cacheSlotsUsed}/${activeCacheCapacity()}</span></div>
     <small class="offline-report__note">Offline-Fortschritt ist durch die Kapazität deines Kampfspeichers begrenzt.</small>
-    <div class="offline-report__actions"><p>In <strong>${formatOfflineDuration(loaded.offlineSeconds)}</strong> wurden <strong>${formatNumber(loaded.offlineGold)} Gold</strong> und <strong>${offlineMaterialCount} Materialien</strong> für dich geborgen.</p><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect">EINSAMMELN ${icon("arrow")}</button></div>
+    <div class="offline-report__actions"><p>${summary}</p><button class="primary-button primary-button--large silver-ether-action" id="offline-collect" data-testid="offline-collect">EINSAMMELN ${icon("arrow")}</button></div>
   </section></div>`;
 }
 

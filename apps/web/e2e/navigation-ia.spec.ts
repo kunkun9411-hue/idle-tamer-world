@@ -59,7 +59,13 @@ test("navigation IA keeps quick access in combat and returns every core route ho
   await goalsToggle.click();
   await expect(goalsPanel).toBeHidden();
 
-  await page.locator('.profile-chip[data-view="profile"]').last().click();
+  const playerCard = page.locator('.player-account-card[data-view="profile"]').last();
+  await expect(playerCard, "Player identity and currencies must form one profile card").toHaveCount(1);
+  await expect(playerCard.locator(".account-avatar.has-portrait")).toHaveCount(1);
+  await expect(playerCard.locator(".player-account-card__copy > strong")).not.toBeEmpty();
+  await expect(playerCard.locator(".player-account-card__metric")).toHaveCount(3);
+  await expect(page.locator(".combat-account > .resources, .combat-account > .rank-chip")).toHaveCount(0);
+  await playerCard.click();
   await expect(page.locator("section.page")).toBeVisible();
   await page.locator(".main-nav [data-view=expedition]").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();

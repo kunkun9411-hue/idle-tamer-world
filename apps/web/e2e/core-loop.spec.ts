@@ -119,11 +119,11 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("offline-report")).toBeVisible();
-  await expect(page.locator(".offline-report__generated-frame")).toHaveAttribute("src", "/assets/ui/chrome/panel-frame-v1.webp");
+  await expect(page.locator(".offline-report__generated-frame")).toHaveAttribute("src", "/assets/ui/chrome/offline-report-frame-v4.png");
   await expect(page.locator(".offline-report__divider")).toHaveAttribute("src", "/assets/ui/chrome/ether-divider-v1.webp");
   await expect(page.locator(".offline-report__actions button")).toHaveCount(1);
   await expect(page.locator("#offline-continue")).toHaveCount(0);
-  await expect(page.getByTestId("offline-collect")).toHaveCSS("background-image", /primary-button-frame-v1\.webp/);
+  await expect(page.getByTestId("offline-collect")).toHaveCSS("background-image", /d08-filled-v2\.png/);
   await expect(page.getByTestId("offline-collect")).toHaveCSS("box-shadow", "none");
   expect(await page.getByTestId("offline-collect").evaluate((element) => getComputedStyle(element, "::after").display)).toBe("none");
   await page.keyboard.press("Tab");
@@ -149,9 +149,13 @@ test("offline claim to hatch, permanent upgrades and Prestige remains consistent
   await page.locator("#hatch-egg").click();
   await expect(page.getByText("Fragmente gewonnen")).toBeVisible();
 
-  await page.locator('[data-view="habitat"]').first().click();
+  await page.locator('.main-nav [data-view="habitat"]').click();
+  await expect(page.locator(".habitat-page")).toBeVisible();
   await page.locator('[data-hyper="e2e-pyrook"]').click();
   await page.locator('[data-evolve="e2e-pyrook"]').click();
+
+  await page.locator('.main-nav [data-view="gems"]').click();
+  await expect(page.locator(".gems-page")).toBeVisible();
   await page.locator('[data-equip-gem][data-monster="e2e-pyrook"]').first().click();
 
   await page.locator('[data-view="expedition"]').first().click();

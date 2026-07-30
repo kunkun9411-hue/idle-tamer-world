@@ -83,7 +83,13 @@ integration("PostgreSQL 18 authoritative run store", () => {
     expect(result.snapshot).toMatchObject({ revision: 1, cacheSlotsUsed: 90, cacheCapacity: 90, progressionStatus: "cache_full", runVictories: "90" });
     expect(result.settlement.victoriesAdded).toBe(90);
     expect(BigInt(result.settlement.goldAdded)).toBeGreaterThan(0n);
-    await expect(runStore.bootstrap(account.userId, new Date(now.getTime() + 1_000))).resolves.toMatchObject({ snapshot: { revision: 1 }, settlement: { victoriesAdded: 0, goldAdded: "0" } });
+    expect(result.settlement.eggsAdded).toBe(result.snapshot.collection.pendingEggs.length);
+    expect(result.settlement.itemsAdded).toBe(Object.values(result.snapshot.collection.pendingItems).reduce((sum, amount) => sum + Number(amount), 0));
+    expect(result.settlement.gemsAdded).toBe(result.snapshot.collection.pendingGems.length);
+    await expect(runStore.bootstrap(account.userId, new Date(now.getTime() + 1_000))).resolves.toMatchObject({
+      snapshot: { revision: 1 },
+      settlement: { victoriesAdded: 0, goldAdded: "0", eggsAdded: 0, itemsAdded: 0, gemsAdded: 0 },
+    });
     await expect(pool.query("SELECT count(*)::int AS count FROM pending_reward_batches WHERE player_id = $1 AND claimed_at IS NULL", [account.playerId])).resolves.toMatchObject({ rows: [{ count: 1 }] });
   });
 

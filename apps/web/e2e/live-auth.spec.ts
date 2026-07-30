@@ -63,11 +63,21 @@ test("one account keeps the same profile and starter across two real browser con
       const body = await response.json() as { snapshot?: { activeMonster?: { level?: number } } };
       return { status: response.status, level: body.snapshot?.activeMonster?.level };
     })).toEqual({ status: 200, level: 2 });
+
+    await firstPage.getByRole("button", { name: "Monsterfenster schließen" }).click();
+    await firstPage.locator('.combat-rail [data-view="research"]').click();
+    await firstPage.locator('.main-nav [data-view="gems"]').click();
+    await expect(firstPage.locator(".gems-page")).toBeVisible();
     const foundationGem = firstPage.locator('[data-equip-gem="common-crimson-triangle"]');
     await expect(foundationGem).toContainText("1×");
     await foundationGem.click();
-    await expect(firstPage.getByText("Gem-Ausrüstung folgt in Block 6", { exact: true })).toBeVisible();
-    await expect(foundationGem).toContainText("1×");
+    await expect(firstPage.getByText("Gem eingesetzt", { exact: true })).toBeVisible();
+    await expect(firstPage.locator('.gem-slot.is-filled img[alt="Karmin-Dreieck"]')).toBeVisible();
+    await expect.poll(() => firstPage.evaluate(async () => {
+      const response = await fetch("/api/v1/run", { credentials: "include" });
+      const body = await response.json() as { snapshot?: { collection?: { roster?: Array<{ gemSlots?: { triangle?: string } }> } } };
+      return { status: response.status, gem: body.snapshot?.collection?.roster?.[0]?.gemSlots?.triangle };
+    })).toEqual({ status: 200, gem: "common-crimson-triangle" });
     const firstNamespace = await firstPage.evaluate((key) => localStorage.getItem(key), ACTIVE_ACCOUNT_NAMESPACE_KEY);
     expect(firstNamespace).toMatch(/^[0-9a-f-]{36}$/u);
 
@@ -77,9 +87,14 @@ test("one account keeps the same profile and starter across two real browser con
     await expect(secondPage.getByTestId("starter-dialog")).toHaveCount(0);
     await expect.poll(() => secondPage.evaluate(async () => {
       const response = await fetch("/api/v1/run", { credentials: "include" });
-      const body = await response.json() as { snapshot?: { activeMonster?: { definitionId?: string; level?: number } } };
-      return { status: response.status, monster: body.snapshot?.activeMonster?.definitionId, level: body.snapshot?.activeMonster?.level };
-    })).toEqual({ status: 200, monster: "pyrook", level: 2 });
+      const body = await response.json() as { snapshot?: { activeMonster?: { definitionId?: string; level?: number }; collection?: { roster?: Array<{ gemSlots?: { triangle?: string } }> } } };
+      return {
+        status: response.status,
+        monster: body.snapshot?.activeMonster?.definitionId,
+        level: body.snapshot?.activeMonster?.level,
+        gem: body.snapshot?.collection?.roster?.[0]?.gemSlots?.triangle,
+      };
+    })).toEqual({ status: 200, monster: "pyrook", level: 2, gem: "common-crimson-triangle" });
     const secondNamespace = await secondPage.evaluate((key) => localStorage.getItem(key), ACTIVE_ACCOUNT_NAMESPACE_KEY);
     expect(secondNamespace).toBe(firstNamespace);
 

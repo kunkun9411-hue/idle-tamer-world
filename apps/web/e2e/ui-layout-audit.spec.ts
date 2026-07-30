@@ -57,7 +57,7 @@ test("layout debt matches the explicit A.08 handoff allowlist", async ({ page })
     const contentCollision = await dialog.evaluate((element, windowName) => {
       const selectors = windowName === "Inventar"
         ? [".combat-inventory-modal__header", ".combat-inventory-tabs", ".combat-inventory-grid", ".combat-inventory-hint"]
-        : [".combat-inventory-modal__header", ".combat-monster-modal__summary", ".combat-monster-modal__grid", ".combat-inventory-hint"];
+        : [".combat-inventory-modal__header", ".combat-monster-modal__summary", ".combat-monster-modal__grid", ".combat-monster-modal__footer"];
       const rectangles = selectors.map((selector) => element.querySelector<HTMLElement>(selector)?.getBoundingClientRect());
       if (rectangles.some((rect) => !rect)) return true;
       return rectangles.slice(1).some((rect, index) => rect!.top < rectangles[index]!.bottom - 1);

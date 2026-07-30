@@ -29,13 +29,14 @@ test("profile keeps avatar and frame selection as separate visible choices", asy
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 });
 
-test("guild surface explains its disabled feature flag instead of rendering a dead panel", async ({ page }) => {
+test("guild surface explains the online requirement instead of rendering a dead panel", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("login-submit").click();
   if (await page.getByTestId("starter-dialog").count()) await page.getByTestId("starter-pyrook").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await page.locator('.combat-rail [data-view="guild"]').click();
   await expect(page.locator(".guild-page")).toBeVisible();
-  await expect(page.getByText("FEATURE-FLAG GUILDS IST AUS")).toBeVisible();
-  await expect(page.locator(".locked-callout")).toContainText("FEATURE-FLAG GUILDS IST AUS");
+  await expect(page.locator(".locked-callout")).toContainText("Für Gilden-DNA mit dem Spielserver verbinden");
+  await expect(page.locator(".locked-callout")).toContainText("Gilden, Freunde und Chat");
+  await expect(page.locator(".locked-callout [data-view=expedition]")).toBeVisible();
 });

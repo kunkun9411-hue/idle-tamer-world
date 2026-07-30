@@ -833,6 +833,36 @@
 .habitat-page .evolution-line .evolve-button { min-height: 30px; padding-inline: 7px; font-size: 6px; }
 .habitat-page .fragment-line { min-height: 31px; gap: 5px; }
 .habitat-page .fragment-line .resource-icon { width: 21px; height: 21px; }
+.habitat-page .monster-card__permanent-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 7px 8px;
+  border: 1px solid rgba(182, 155, 244, .18);
+  border-radius: 7px;
+  background: linear-gradient(90deg, rgba(128, 91, 210, .08), rgba(11, 10, 18, .38));
+}
+.habitat-page .monster-card__permanent-action span { min-width: 0; }
+.habitat-page .monster-card__permanent-action small,
+.habitat-page .monster-card__permanent-action strong,
+.habitat-page .monster-card__permanent-action em { display: block; }
+.habitat-page .monster-card__permanent-action span > small {
+  color: var(--violet-bright);
+  font-size: 5px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+.habitat-page .monster-card__permanent-action strong { margin-top: 2px; color: #f0ebf8; font-size: 8px; }
+.habitat-page .monster-card__permanent-action em { margin-top: 2px; color: var(--muted); font-size: 5px; font-style: normal; }
+.habitat-page .monster-card__permanent-action button {
+  min-height: 30px;
+  min-width: 92px;
+  padding: 4px 8px;
+  font-size: 6px;
+}
+.habitat-page .monster-card__permanent-action button small { margin-top: 2px; font-size: 5px; }
 .habitat-page .monster-card__actions { margin-top: 7px; gap: 4px; }
 .habitat-page .monster-card__actions button { min-height: 28px; padding-inline: 5px; font-size: 6px; }
 .habitat-page .monster-card__actions button small { font-size: 5px; }
@@ -868,6 +898,11 @@
   .habitat-page .roster-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 900px) {
+  .app-shell--ui-kit .main-nav .nav-button {
+    min-width: 0 !important;
+    flex: 1 1 0;
+    padding-inline: 2px;
+  }
   .habitat-page .roster-grid--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .habitat-page .gem-workbench__heading { align-items: flex-start; }
   .habitat-page .gem-inventory { grid-template-columns: 1fr; }
@@ -1234,6 +1269,29 @@
   text-align: center;
 }
 .combat-shell--ui-kit .combat-loot-hud.is-empty .combat-capacity { opacity: .45; }
+.combat-shell--ui-kit .combat-objectives-link {
+  width: 100%;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 7px;
+  border: 1px solid rgba(190, 166, 246, .14);
+  border-radius: 7px;
+  color: rgba(224, 214, 246, .72);
+  background: rgba(143, 106, 223, .055);
+  cursor: pointer;
+  font: 800 6px/1 var(--body);
+  letter-spacing: .09em;
+}
+.combat-shell--ui-kit .combat-objectives-link:hover,
+.combat-shell--ui-kit .combat-objectives-link:focus-visible {
+  color: #fff;
+  border-color: rgba(198, 175, 252, .34);
+  background: rgba(143, 106, 223, .12);
+}
+.combat-shell--ui-kit .combat-objectives-link svg { width: 12px; height: 12px; }
 
 /* Compact inventory overlay. The frame is the generated V2.3 asset; text and
    slots stay HTML so labels remain crisp, translatable and data-driven. */
@@ -1503,6 +1561,13 @@
   min-height: 0;
   padding: clamp(40px, 5.6vw, 64px) clamp(56px, 7vw, 88px) var(--frame-footer-safe-space);
 }
+.combat-monster-modal .combat-inventory-modal__close {
+  position: absolute;
+  z-index: 4;
+  top: clamp(34px, 4.7vw, 54px);
+  right: clamp(54px, 6.8vw, 82px);
+  flex: 0 0 auto;
+}
 .combat-monster-modal__header .combat-inventory-modal__header { min-width: 0; }
 .combat-monster-modal__header h2 { margin: 3px 0 2px; font: 700 clamp(22px, 3vw, 34px)/1 var(--display); letter-spacing: -.035em; }
 .combat-monster-modal__header small { display: block; max-width: 420px; color: rgba(225, 219, 239, .57); font-size: 9px; line-height: 1.35; }
@@ -1565,6 +1630,7 @@
    role/status moves into the information column and actions sit directly
    beneath each card instead of floating over the artwork. */
 .combat-monster-modal {
+  --frame-footer-safe-space: 132px;
   width: min(800px, calc(100vw - 34px));
   aspect-ratio: 3 / 2;
   max-height: calc(100vh - 42px);
@@ -1658,6 +1724,63 @@
   margin: 0 0 0 3px;
   font-size: 5px;
 }
+.combat-monster-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  padding: 6px 8px 5px;
+  border-top: 1px solid rgba(205, 190, 244, .12);
+  border-radius: 7px;
+  background: linear-gradient(90deg, transparent, rgba(14, 12, 24, .56) 12%, rgba(14, 12, 24, .56) 88%, transparent);
+}
+.combat-monster-modal__footer > span {
+  color: rgba(205, 190, 244, .58);
+  font: 800 7px/1 var(--body);
+  letter-spacing: .1em;
+}
+.combat-monster-modal__footer > div { display: flex; gap: 5px; }
+.combat-monster-modal__footer button {
+  min-height: 27px;
+  padding: 4px 9px;
+  font-size: 6px;
+  white-space: nowrap;
+}
+
+.guild-page--offline .locked-callout {
+  min-height: 132px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 22px;
+  border-color: rgba(181, 153, 244, .18);
+  background: linear-gradient(110deg, rgba(92, 60, 158, .1), rgba(11, 10, 18, .58));
+}
+.guild-page--offline .guild-offline__mark {
+  grid-column: auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(188, 160, 255, .2);
+  border-radius: 14px;
+  color: var(--violet-bright);
+  background: rgba(154, 114, 237, .07);
+}
+.guild-page--offline .guild-offline__mark svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+}
+.guild-page--offline .locked-callout > div { min-width: 0; }
+.guild-page--offline .locked-callout > div b,
+.guild-page--offline .locked-callout > div small { display: block; grid-column: auto; }
+.guild-page--offline .locked-callout > div b { margin: 0; color: #ece7f5; font-size: 15px; }
+.guild-page--offline .locked-callout > div small { margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.guild-page--offline .locked-callout > button { min-width: 168px; }
 
 @media (max-width: 700px) {
   .combat-monster-modal {
@@ -1676,12 +1799,45 @@
   .combat-monster-modal__card {
     min-height: 148px;
   }
+  .combat-monster-modal__footer { justify-content: center; gap: 8px; }
+  .guild-page--offline .locked-callout {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    min-height: 0;
+    padding: 18px;
+  }
+  .guild-page--offline .guild-offline__mark { width: 40px; height: 40px; border-radius: 11px; }
+  .guild-page--offline .locked-callout > div b { font-size: 13px; }
+  .guild-page--offline .locked-callout > div small { font-size: 10px; }
+  .guild-page--offline .locked-callout > button {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* Phone-safe quick windows. The decorative frame remains fixed while only the
    slot/card region scrolls; header, category/summary and hint stay readable in
    the normal grid flow. This deliberately starts below the tablet breakpoint. */
 @media (max-width: 540px) {
+  .app-shell--ui-kit .main-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 46px;
+    height: 94px;
+    padding: 1px 3px;
+    overflow: hidden;
+  }
+  .app-shell--ui-kit .main-nav .nav-button {
+    width: 100%;
+    min-height: 44px;
+    padding: 2px;
+  }
+  .app-shell--ui-kit .main-nav .nav-button > span { width: 17px; height: 17px; }
+  .app-shell--ui-kit .main-nav .nav-button b { font-size: 7px; }
+  .app-shell--ui-kit > main > .page { padding-bottom: 126px; }
+  .app-shell--ui-kit > footer:not(.landing-footer) { margin-bottom: 94px; }
+
   .combat-inventory-modal {
     width: calc(100vw - 18px);
     height: min(620px, calc(100dvh - 20px));
@@ -1695,6 +1851,9 @@
     aspect-ratio: auto;
     max-height: calc(100dvh - 20px);
   }
+  .combat-monster-modal.is-compact {
+    height: min(560px, calc(100dvh - 20px));
+  }
 
   .combat-inventory-modal__content,
   .combat-monster-modal__content {
@@ -1707,6 +1866,11 @@
 
   .combat-monster-modal__content {
     padding-top: 82px;
+    padding-bottom: 84px;
+  }
+  .combat-monster-modal .combat-inventory-modal__close {
+    top: 82px;
+    right: 39px;
   }
 
   .combat-inventory-grid {
@@ -1729,7 +1893,8 @@
     scrollbar-gutter: stable;
   }
 
-  .combat-inventory-hint {
+  .combat-inventory-hint,
+  .combat-monster-modal__footer {
     position: static;
     align-self: stretch;
     min-height: 28px;
@@ -1738,6 +1903,8 @@
     font-size: 9px;
     line-height: 1.35;
   }
+  .combat-monster-modal__footer > span { display: none; }
+  .combat-monster-modal__footer button { min-height: 25px; }
 }
 .app-shell--incubation .incubator-panel .primary-button:focus-visible,
 .app-shell--incubation .incubator-panel .secondary-button:focus-visible {
@@ -1866,6 +2033,11 @@
   background-repeat: no-repeat;
   border-color: transparent !important;
   box-shadow: none;
+}
+.combat-shell--ui-kit .combat-loot-hud #collect-cache:focus-visible,
+.offline-report .silver-ether-action:focus-visible {
+  outline: none;
+  filter: brightness(1.1) drop-shadow(0 0 7px rgba(199, 178, 255, .5)) drop-shadow(0 9px 14px rgba(76, 44, 154, .24));
 }
 
 /* The report frame should support the message, not swallow it. Keep a quiet
