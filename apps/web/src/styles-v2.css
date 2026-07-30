@@ -362,7 +362,7 @@ body::before {
   position: absolute;
   z-index: 10;
   left: 50%;
-  top: 48%;
+  top: 29%;
   min-width: 220px;
   padding: 12px 20px;
   transform: translate(-50%, -50%);

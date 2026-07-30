@@ -164,8 +164,8 @@ test("generated login and offline chrome stay inside the configured viewport", a
       return { panelLeft: panel.left, panelRight: panel.right, controls };
     });
     expect(metaLayout.controls).toHaveLength(2);
-    expect(metaLayout.controls[0].left - metaLayout.panelLeft).toBeGreaterThanOrEqual(24);
-    expect(metaLayout.panelRight - metaLayout.controls[1].right).toBeGreaterThanOrEqual(24);
+    expect(metaLayout.controls[0].left - metaLayout.panelLeft).toBeGreaterThanOrEqual(32);
+    expect(metaLayout.panelRight - metaLayout.controls[1].right).toBeGreaterThanOrEqual(32);
   }
 
   await page.getByTestId("login-submit").click();
@@ -217,6 +217,32 @@ test("objectives replaces combat in the eight-slot mobile navigation", async ({ 
     horizontal: element.scrollWidth <= element.clientWidth + 1,
     vertical: element.scrollHeight <= element.clientHeight + 1,
   }))).toEqual({ horizontal: true, vertical: true });
+  if ((page.viewportSize()?.width ?? 0) <= 540) {
+    const mobileNavigation = await nav.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const buttons = [...element.querySelectorAll<HTMLElement>(".nav-button")].map((button) => {
+        const buttonBounds = button.getBoundingClientRect();
+        const label = button.querySelector<HTMLElement>(".nav-label-short");
+        return {
+          height: buttonBounds.height,
+          left: buttonBounds.left,
+          right: buttonBounds.right,
+          label: label?.textContent?.trim() ?? "",
+          labelVisible: label ? getComputedStyle(label).display !== "none" && label.getBoundingClientRect().width > 0 : false,
+        };
+      });
+      return { height: bounds.height, buttons, viewportWidth: document.documentElement.clientWidth };
+    });
+    expect(mobileNavigation.height).toBeLessThanOrEqual(58);
+    expect(mobileNavigation.buttons).toHaveLength(8);
+    for (const button of mobileNavigation.buttons) {
+      expect(button.height).toBeGreaterThanOrEqual(44);
+      expect(button.left).toBeGreaterThanOrEqual(-1);
+      expect(button.right).toBeLessThanOrEqual(mobileNavigation.viewportWidth + 1);
+      expect(button.label).not.toBe("");
+      expect(button.labelVisible).toBe(true);
+    }
+  }
 
   await page.locator('.objective-overview [data-view="expedition"]').click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
@@ -274,4 +300,51 @@ test("static routes keep the complete player account card in the header", async 
   for (const width of headerLayout.metricWidths) expect(width).toBeGreaterThan(0);
   if (headerLayout.viewportWidth <= 520) expect(headerLayout.card.width).toBeGreaterThanOrEqual(220);
   if (headerLayout.viewportWidth <= 900) expect(headerLayout.header.bottom).toBeLessThan(headerLayout.nav.top);
+});
+
+test("mobile collection routes stay compact without hiding choices", async ({ page }) => {
+  const state = createInitialState(() => Date.now());
+  const starter = createMonster("pyrook", 4, 2, 0, "rookie", () => "responsive-collection-pyrook");
+  state.roster = [starter];
+  state.activeMonsterUid = starter.uid;
+  state.tutorialStep = 4;
+  await page.addInitScript(({ key, save }) => localStorage.setItem(key, JSON.stringify(save)), { key: STORAGE_KEY, save: state });
+
+  await page.goto("/");
+  await page.getByTestId("login-submit").click();
+  if (await page.getByTestId("offline-report").count()) await page.getByTestId("offline-collect").click();
+  await page.locator('.combat-rail [data-view="dispatch"]').click();
+  await expect(page.locator(".dispatch-page")).toBeVisible();
+
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  if (viewportWidth <= 540) {
+    const emptySlots = page.locator(".dispatch-slot.is-empty");
+    await expect(emptySlots).toHaveCount(2);
+    const slotHeights = await emptySlots.evaluateAll((slots) => slots.map((slot) => slot.getBoundingClientRect().height));
+    for (const height of slotHeights) {
+      expect(height).toBeGreaterThanOrEqual(100);
+      expect(height).toBeLessThanOrEqual(112);
+    }
+  }
+
+  await page.locator(".player-account-card").click();
+  await expect(page.locator(".profile-page")).toBeVisible();
+  if (viewportWidth >= 360 && viewportWidth <= 540) {
+    const catalogue = await page.locator(".profile-page .cosmetic-grid").evaluate((grid) => {
+      const cards = [...grid.querySelectorAll<HTMLElement>(".cosmetic-card")].map((card) => card.getBoundingClientRect());
+      return {
+        columns: getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length,
+        firstRow: cards.length >= 2 && Math.abs(cards[0].top - cards[1].top) <= 1,
+        maxCardHeight: Math.max(...cards.map((card) => card.height)),
+      };
+    });
+    expect(catalogue.columns).toBe(2);
+    expect(catalogue.firstRow).toBe(true);
+    expect(catalogue.maxCardHeight).toBeLessThanOrEqual(142);
+
+    await page.setViewportSize({ width: 320, height: 844 });
+    const narrowColumns = await page.locator(".profile-page .cosmetic-grid")
+      .evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length);
+    expect(narrowColumns).toBe(1);
+  }
 });

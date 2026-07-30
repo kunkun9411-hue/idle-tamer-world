@@ -79,6 +79,18 @@ test("research cards distinguish ready, insufficient and maximal core states", a
   await expect(insufficient).toHaveAttribute("data-research-state", "insufficient");
   await expect(insufficient.locator("button")).toBeDisabled();
   await expect(insufficient.locator("button")).toHaveText("ZU WENIG KERNE · 2 KERNE KOSTEN · 1 KERN BESITZ");
+  const insufficientPresentation = await insufficient.locator("button").evaluate((button) => {
+    const style = getComputedStyle(button);
+    return {
+      opacity: Number(style.opacity),
+      color: style.color,
+      width: button.getBoundingClientRect().width,
+      scrollWidth: button.scrollWidth,
+    };
+  });
+  expect(insufficientPresentation.opacity).toBeGreaterThanOrEqual(.8);
+  expect(insufficientPresentation.color).not.toBe("rgba(0, 0, 0, 0)");
+  expect(insufficientPresentation.scrollWidth).toBeLessThanOrEqual(insufficientPresentation.width + 1);
 
   const ready = page.locator('[data-research-card="extraction"]');
   await expect(ready).toHaveAttribute("data-research-state", "ready");

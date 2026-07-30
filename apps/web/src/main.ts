@@ -1127,17 +1127,23 @@ function accountAvatar(size: "small" | "large" = "small"): string {
   return `<span class="account-avatar account-avatar--${size} ${portraitAsset ? "has-portrait" : ""}" style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]};--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}">${portrait}</span>`;
 }
 
+function numberDensity(value: string): "standard" | "long" {
+  return value.length > 10 ? "long" : "standard";
+}
+
 function playerAccountCard(): string {
   const rank = rankForVictories(game.totalVictories);
   const displayName = escapeHtml(accountBootstrap?.profile.displayName ?? game.playerName);
+  const runGold = formatNumber(game.resources.gold);
+  const prestigeCores = formatNumber(game.resources.cores);
   return `<button class="profile-chip player-account-card" data-view="profile" title="Profil, Avatar und Rahmen" aria-label="Profil von ${displayName} öffnen">
     ${accountAvatar("small")}
     <span class="player-account-card__copy">
       <span class="player-account-card__identity"><strong>${displayName}</strong><i title="Aktives Tamer-Profil">${icon("shield")}</i></span>
       <span class="player-account-card__metrics">
         <span class="player-account-card__metric player-account-card__metric--rank" title="Tamer-Rang"><i>${icon("shield")}</i><small>RANG</small><b data-live="rank">${rank}</b></span>
-        <span class="player-account-card__metric" title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span>
-        <span class="player-account-card__metric" title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores">${formatNumber(game.resources.cores)}</b></span>
+        <span class="player-account-card__metric" title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold" data-number-density="${numberDensity(runGold)}">${runGold}</b></span>
+        <span class="player-account-card__metric" title="Prestige-Kerne">${resourceIcon("cores")}<b data-live="prestige-cores" data-number-density="${numberDensity(prestigeCores)}">${prestigeCores}</b></span>
       </span>
     </span>
   </button>`;
@@ -1470,6 +1476,7 @@ function expeditionView(): string {
   const pendingFindCount = pendingMaterialCount + game.pendingGems.length;
   const cacheEmpty = game.pendingGold === 0 && game.pendingEggs.length === 0 && pendingFindCount === 0;
   const capacity = activeCacheCapacity();
+  const pendingGold = formatNumber(game.pendingGold);
   const eggGuarantee = Math.max(1, BALANCE.drops.eggPityMisses + 1 - game.eggPity);
   const zone = getZone(game.currentZoneId);
   const zoneProgress = game.zoneProgress[zone.id] ?? { stage: 1, clears: 0 };
@@ -1491,7 +1498,7 @@ function expeditionView(): string {
           <div class="versus"><span>VS</span><small>AUTO</small></div>
           <div class="fighter fighter--enemy">${combatEnemyMarkup(battle, bossStage)}</div>
         </div>
-        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span data-loot-kind="gold" ${game.pendingGold > 0 ? "" : "hidden"}>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold">${formatNumber(game.pendingGold)}</b></span><span data-loot-kind="eggs" ${game.pendingEggs.length > 0 ? "" : "hidden"}>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span data-loot-kind="materials" ${pendingMaterialCount > 0 ? "" : "hidden"}>${icon("inventory")}<small>MATERIAL</small><b data-live="pending-materials">${pendingMaterialCount}</b></span><span data-loot-kind="gems" ${game.pendingGems.length > 0 ? "" : "hidden"}>${icon("spark")}<small>GEMS</small><b data-live="pending-gems">${game.pendingGems.length}</b></span></div><p class="combat-loot-empty" ${cacheEmpty ? "" : "hidden"}>Keine Beute bereit.</p><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "hidden" : ""}>EINSAMMELN ${icon("arrow")}</button></aside>
+        <aside class="combat-loot-hud combat-panel--loot ${activeCombatPanel === "loot" ? "is-open" : ""} ${cacheEmpty ? "is-empty" : "has-loot"}"><div class="combat-hud-heading"><span><i></i>KAMPFSPEICHER</span><small data-live="cache-slots">${game.cacheSlotsUsed}/${capacity}</small></div><div class="combat-loot-values"><span data-loot-kind="gold" ${game.pendingGold > 0 ? "" : "hidden"}>${resourceIcon("gold")}<small>GOLD</small><b data-live="pending-gold" data-number-density="${numberDensity(pendingGold)}">${pendingGold}</b></span><span data-loot-kind="eggs" ${game.pendingEggs.length > 0 ? "" : "hidden"}>${resourceIcon("eggs")}<small>EIER</small><b data-live="pending-eggs">${game.pendingEggs.length}</b></span><span data-loot-kind="materials" ${pendingMaterialCount > 0 ? "" : "hidden"}>${icon("inventory")}<small>MATERIAL</small><b data-live="pending-materials">${pendingMaterialCount}</b></span><span data-loot-kind="gems" ${game.pendingGems.length > 0 ? "" : "hidden"}>${icon("spark")}<small>GEMS</small><b data-live="pending-gems">${game.pendingGems.length}</b></span></div><p class="combat-loot-empty" ${cacheEmpty ? "" : "hidden"}>Keine Beute bereit.</p><div class="combat-capacity"><i data-live="cache-progress" style="width:${Math.min(100, (game.cacheSlotsUsed / capacity) * 100)}%"></i></div><button class="primary-button" id="collect-cache" ${cacheEmpty ? "hidden" : ""}>EINSAMMELN ${icon("arrow")}</button></aside>
         <aside class="combat-duo-hud combat-panel--duo ${activeCombatPanel === "duo" ? "is-open" : ""}"><div class="combat-hud-heading"><span>EXPEDITIONS-DUO</span><small>${elementLabel[playerLineage.element]}</small></div><div class="combat-duo-line"><div>${monsterAvatar(player)}<span><small>FRONT · ${COMBAT_ROLE_LABELS[playerDefinition.combatRole]}</small><strong>${playerDefinition.name}</strong></span></div><i>+</i><button data-view="habitat">${support ? `${monsterAvatar(support)}<span><small>SUPPORT · ${COMBAT_ROLE_LABELS[getMonsterForm(support).combatRole]}</small><strong>${getMonsterForm(support).name}</strong></span>` : `<b>+</b><span><small>SUPPORT FREI</small><strong>Zuweisen</strong></span>`}</button></div><div class="combat-synergy ${zoneSynergy ? "is-active" : ""}"><small>${zoneSynergy ? "ZONENBONUS AKTIV" : "ROLLEN KOMBINIEREN"}</small><strong>${zoneSynergy?.name ?? "Noch kein Duo-Bonus"}</strong><span>${zoneSynergy?.description ?? zone.synergies.map((entry) => `${COMBAT_ROLE_LABELS[entry.roles[0]]} + ${COMBAT_ROLE_LABELS[entry.roles[1]]}`).join(" oder ")}</span></div><div class="combat-mini-stats"><span><small>ATK</small><b>${playerAttack(player, game.research.power, zoneSynergy?.attackPercent, game.prestigeCount)}</b></span><span><small>HP</small><b>${playerMaxHp(player, game.research.vitality, zoneSynergy?.hpPercent, game.prestigeCount)}</b></span><span><small>EI IN</small><b>≤ ${eggGuarantee}</b></span></div><button class="combat-dispatch-link" data-view="dispatch">ZEIT-EXPEDITIONEN · ${game.expeditions.length}/${EXPEDITION_SLOT_COUNT} AKTIV ${icon("arrow")}</button></aside>
         <section class="combat-objective-hud combat-panel--missions ${activeCombatPanel === "missions" ? "is-open" : ""}" data-live="combat-objectives">${combatObjectiveMarkup()}</section>
         ${combatMonsterSelector()}
@@ -1899,7 +1906,11 @@ function liveElement<T extends HTMLElement>(name: string): T | null {
 
 function setLiveText(name: string, value: string): void {
   const element = liveElement(name);
-  if (element && element.textContent !== value) element.textContent = value;
+  if (!element) return;
+  if (element.textContent !== value) element.textContent = value;
+  if (name === "run-gold" || name === "pending-gold" || name === "prestige-cores") {
+    element.dataset.numberDensity = numberDensity(value);
+  }
 }
 
 function refreshCombatUi(now = performance.now(), structural = false): void {
