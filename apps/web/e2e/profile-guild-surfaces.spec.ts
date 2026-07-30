@@ -25,7 +25,7 @@ test("profile keeps avatar and frame selection as separate visible choices", asy
   await expect(page.locator(".profile-page .cosmetic-avatar i")).toHaveCount(0);
   await expect(page.locator('.frame-card[data-frame="silver"]')).toHaveClass(/is-selected/);
   await expect(page.locator(".profile-hero")).toContainText("GASTPROFIL");
-  await expect(page.locator(".profile-page")).not.toContainText(/LOCAL-PROTOTYPE|Backendkonto|SYSTEMPOST · LOKAL|Accounts und Server|später accountweit/iu);
+  await expect(page.locator(".profile-page")).not.toContainText(/LOCAL-PROTOTYPE|lokaler Tamer-Datensatz|Backendkonto|SYSTEMPOST · LOKAL|Accounts und Server|später accountweit/iu);
   await expect(page.locator("footer")).toContainText("FORTSCHRITT WIRD AUTOMATISCH GESPEICHERT");
   await expect(page.locator("footer")).not.toContainText(/VISUAL BUILD|SAVE V|API PROTOKOLL/iu);
   await expect(page.locator("footer #reset-game")).toBeVisible();
@@ -78,7 +78,7 @@ test("research cards distinguish ready, insufficient and maximal core states", a
   const insufficient = page.locator('[data-research-card="vitality"]');
   await expect(insufficient).toHaveAttribute("data-research-state", "insufficient");
   await expect(insufficient.locator("button")).toBeDisabled();
-  await expect(insufficient.locator("button")).toHaveText("ZU WENIG KERNE · 2 KERNE KOSTEN · 1 KERN BESITZ");
+  await expect(insufficient.locator("button")).toHaveText("2 KERNE BENÖTIGT");
   const insufficientPresentation = await insufficient.locator("button").evaluate((button) => {
     const style = getComputedStyle(button);
     return {
@@ -95,13 +95,13 @@ test("research cards distinguish ready, insufficient and maximal core states", a
   const ready = page.locator('[data-research-card="extraction"]');
   await expect(ready).toHaveAttribute("data-research-state", "ready");
   await expect(ready.locator("button")).toBeEnabled();
-  await expect(ready.locator("button")).toHaveText("ERFORSCHEN · 1 KERN KOSTEN · 1 KERN BESITZ");
+  await expect(ready.locator("button")).toHaveText("ERFORSCHEN · 1 KERN");
 
   const nonMaximal = page.locator('.research-card:not([data-research-state="max"])');
   const nonMaximalCount = await nonMaximal.count();
   for (let index = 0; index < nonMaximalCount; index += 1) {
-    await expect(nonMaximal.nth(index).locator("button")).toContainText("KOSTEN");
-    await expect(nonMaximal.nth(index).locator("button")).toContainText("BESITZ");
+    await expect(nonMaximal.nth(index).locator("button")).toContainText("KERN");
+    await expect(nonMaximal.nth(index).locator("button")).not.toContainText(/KOSTEN|BESITZ/iu);
   }
   const researchSurface = page.locator(".app-shell--research");
   await expect(researchSurface).toContainText("Materialien werden nur verbraucht, wenn die Herstellung gelingt.");

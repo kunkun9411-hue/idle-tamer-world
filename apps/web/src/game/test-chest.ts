@@ -6,7 +6,7 @@ export const TEST_CHEST_REWARD = {
 };
 
 export interface TestChestPresentation {
-  actionLabel: "ÖFFNEN" | "VORSCHAU";
+  actionLabel: "ÖFFNEN" | "PRÜFEN";
   description: string;
   detail: string;
 }
@@ -23,22 +23,22 @@ const rewardSummary = `${TEST_CHEST_REWARD.gold} Gold und ${TEST_CHEST_REWARD.it
 
 export const testChestPresentation = (online: boolean): TestChestPresentation => online
   ? {
-      actionLabel: "VORSCHAU",
-      description: `Vorschauinhalt: ${rewardSummary}.`,
-      detail: "Keine Kontobuchung im Online-Modus",
+      actionLabel: "PRÜFEN",
+      description: `Die versiegelte Truhe enthält ${rewardSummary}.`,
+      detail: "Ether-Versiegelung aktiv",
     }
   : {
       actionLabel: "ÖFFNEN",
       description: `Enthält ${rewardSummary}.`,
-      detail: "Wird sofort lokal gutgeschrieben",
+      detail: "Wird deinem Inventar gutgeschrieben",
     };
 
 export const testChestOpenResult = (online: boolean): TestChestOpenResult => online
   ? {
       consumeChest: false,
       creditRewards: false,
-      title: "Truhenvorschau",
-      message: `${rewardSummary} sind als Inhalt vorgesehen. Es wurde nichts von deinem Online-Konto verbraucht oder gebucht.`,
+      title: "Versiegelte Ether-Truhe",
+      message: `Die Truhe enthält ${rewardSummary}. Ihre Ether-Versiegelung ist noch aktiv und der Inhalt bleibt sicher verwahrt.`,
       tone: "violet",
     }
   : {

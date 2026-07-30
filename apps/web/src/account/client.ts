@@ -43,7 +43,7 @@ const fallbackProblem = (message: string): AuthApiProblem => ({
 
 const parseResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
-    let problem = fallbackProblem("Der Account-Server ist vorübergehend nicht erreichbar.");
+    let problem = fallbackProblem("Die Verbindung ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal.");
     try { problem = await response.json() as AuthApiProblem; } catch { /* keep safe fallback */ }
     throw new AccountApiError(response.status, problem);
   }
@@ -55,11 +55,11 @@ const parseRunResponse = async <T extends { runContractVersion: number }>(respon
   if (!response.ok) {
     const problem = body && "code" in body
       ? body as ApiProblem
-      : { errorContractVersion: 1 as const, code: "UNKNOWN" as const, message: "Der Run-Server ist vorübergehend nicht erreichbar." };
+      : { errorContractVersion: 1 as const, code: "UNKNOWN" as const, message: "Dein Spielstand ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal." };
     throw new RunApiError(response.status, problem);
   }
   if (!body || !("runContractVersion" in body) || body.runContractVersion !== RUN_CONTRACT_VERSION) {
-    throw new RunApiError(response.status, { errorContractVersion: 1, code: "UNKNOWN", message: "Client und Run-Server verwenden unterschiedliche Verträge." });
+    throw new RunApiError(response.status, { errorContractVersion: 1, code: "UNKNOWN", message: "Das Spiel wurde aktualisiert. Bitte lade die Seite neu." });
   }
   return body as T;
 };
@@ -67,7 +67,7 @@ const parseRunResponse = async <T extends { runContractVersion: number }>(respon
 const parseGuildResponse = async <T extends { guildContractVersion: number }>(response: Response): Promise<T> => {
   const body = await parseResponse<T>(response);
   if (body.guildContractVersion !== GUILD_CONTRACT_VERSION) throw new AccountApiError(409, {
-    errorContractVersion: 2, code: "CONFLICT", message: "Client und Gildenserver verwenden unterschiedliche Verträge.", correlationId: "guild-contract",
+    errorContractVersion: 2, code: "CONFLICT", message: "Das Spiel wurde aktualisiert. Bitte lade die Seite neu.", correlationId: "guild-contract",
   });
   return body;
 };
@@ -195,7 +195,7 @@ export class AccountClient {
     if (bootstrap.authContractVersion !== AUTH_CONTRACT_VERSION) throw new AccountApiError(409, {
       errorContractVersion: 2,
       code: "CONFLICT",
-      message: "Client und Account-Server verwenden unterschiedliche Vertragsversionen.",
+      message: "Das Spiel wurde aktualisiert. Bitte lade die Seite neu.",
       correlationId: "client-contract",
     });
     this.csrfToken = bootstrap.csrfToken;

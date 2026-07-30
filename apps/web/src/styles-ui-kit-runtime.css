@@ -873,15 +873,15 @@
   padding: 7px 0;
 }
 .habitat-page .stat-line b { font-size: 10px; }
-.habitat-page .gem-stat-note { margin-top: 4px; font-size: 5px; }
+.habitat-page .gem-stat-note { margin-top: 4px; font-size: 7px; line-height: 1.35; }
 .habitat-page .evolution-line {
   margin-top: 7px;
   padding: 7px;
   gap: 3px 6px;
 }
-.habitat-page .evolution-line span b { font-size: 8px; }
-.habitat-page .evolution-line em { font-size: 6px; }
-.habitat-page .evolution-line .evolve-button { min-height: 30px; padding-inline: 7px; font-size: 6px; }
+.habitat-page .evolution-line span b { font-size: 10px; }
+.habitat-page .evolution-line em { font-size: 8px; line-height: 1.35; }
+.habitat-page .evolution-line .evolve-button { min-height: 32px; padding-inline: 8px; font-size: 8px; }
 .habitat-page .fragment-line { min-height: 31px; gap: 5px; }
 .habitat-page .fragment-line .resource-icon { width: 21px; height: 21px; }
 .habitat-page .monster-card__permanent-action {
@@ -901,19 +901,19 @@
 .habitat-page .monster-card__permanent-action em { display: block; }
 .habitat-page .monster-card__permanent-action span > small {
   color: var(--violet-bright);
-  font-size: 5px;
+  font-size: 7px;
   font-weight: 800;
   letter-spacing: .11em;
 }
-.habitat-page .monster-card__permanent-action strong { margin-top: 2px; color: #f0ebf8; font-size: 8px; }
-.habitat-page .monster-card__permanent-action em { margin-top: 2px; color: var(--muted); font-size: 5px; font-style: normal; }
+.habitat-page .monster-card__permanent-action strong { margin-top: 2px; color: #f0ebf8; font-size: 10px; }
+.habitat-page .monster-card__permanent-action em { margin-top: 2px; color: var(--muted); font-size: 7px; line-height: 1.35; font-style: normal; }
 .habitat-page .monster-card__permanent-action button {
-  min-height: 30px;
+  min-height: 34px;
   min-width: 92px;
   padding: 4px 8px;
-  font-size: 6px;
+  font-size: 8px;
 }
-.habitat-page .monster-card__permanent-action button small { margin-top: 2px; font-size: 5px; }
+.habitat-page .monster-card__permanent-action button small { margin-top: 2px; font-size: 7px; }
 .habitat-page .monster-card__actions { margin-top: 7px; gap: 4px; }
 .habitat-page .monster-card__actions button { min-height: 28px; padding-inline: 5px; font-size: 6px; }
 .habitat-page .monster-card__actions button small { font-size: 5px; }
@@ -1110,10 +1110,13 @@
 .app-shell--ui-kit .primary-button:not(.silver-ether-action),
 .combat-shell--ui-kit .primary-button,
 .prestige-shell--ui-kit .primary-button {
-  background-image: var(--kit-primary-control), linear-gradient(135deg, #bca5f4, #7552c8) !important;
+  background-color: transparent !important;
+  background-image: url("/assets/ui/kit/control/d08-filled-v2.png") !important;
   background-position: center;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  border-color: transparent;
+  box-shadow: none;
 }
 .app-shell--ui-kit .secondary-button,
 .combat-shell--ui-kit .secondary-button,
@@ -1614,8 +1617,18 @@
   font: inherit;
   cursor: pointer;
 }
+.combat-inventory-slot.is-inspectable {
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: help;
+}
 .combat-inventory-slot.is-actionable:hover,
-.combat-inventory-slot.is-actionable:focus-visible {
+.combat-inventory-slot.is-actionable:focus-visible,
+.combat-inventory-slot.is-inspectable:hover,
+.combat-inventory-slot.is-inspectable:focus-visible,
+.combat-inventory-slot.is-tooltip-open {
   border-color: rgba(206, 181, 255, .64);
   background: linear-gradient(145deg, rgba(58, 44, 83, .86), rgba(14, 12, 24, .92));
   box-shadow: inset 0 1px rgba(255, 255, 255, .1), 0 0 18px rgba(152, 111, 245, .2);
@@ -1663,10 +1676,16 @@
   transition: opacity .14s ease, transform .14s ease;
   white-space: normal;
 }
-.combat-inventory-slot[data-tooltip]:hover::after,
-.combat-inventory-slot[data-tooltip]:focus-visible::after {
+.combat-inventory-slot[data-tooltip]:focus-visible::after,
+.combat-inventory-slot.is-tooltip-open[data-tooltip]::after {
   opacity: 1;
   transform: translate(50%, 0);
+}
+@media (hover: hover) and (pointer: fine) {
+  .combat-inventory-slot[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translate(50%, 0);
+  }
 }
 .combat-inventory-hint {
   display: grid;

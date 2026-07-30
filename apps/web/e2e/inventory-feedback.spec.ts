@@ -44,3 +44,41 @@ test("opening the local Ether chest keeps inventory and reward feedback visible"
   await page.screenshot({ path: testInfo.outputPath("ether-chest-feedback.png"), animations: "disabled" });
   expect(pageErrors).toEqual([]);
 });
+
+test("inventory item details remain reachable by keyboard and touch", async ({ page }, testInfo) => {
+  await enterLocalCombat(page);
+  await openCombatArea(page, "[data-inventory-toggle]");
+
+  const inventory = page.getByRole("dialog", { name: "Inventar", exact: true });
+  const inspectableItems = inventory.locator(".combat-inventory-slot.is-inspectable");
+  const inspectableCount = await inspectableItems.count();
+  expect(inspectableCount).toBeGreaterThan(0);
+
+  const item = inspectableItems.nth(0);
+  if (testInfo.project.use.hasTouch) {
+    await item.tap();
+    await expect(item).toHaveClass(/is-tooltip-open/);
+    await expect(item).toHaveAttribute("aria-pressed", "true");
+  } else {
+    await item.focus();
+    await expect(item).toBeFocused();
+    await item.press("Enter");
+    await expect(item).toHaveClass(/is-tooltip-open/);
+    await expect(item).toHaveAttribute("aria-pressed", "true");
+  }
+  await expect.poll(() => item.evaluate((element) => getComputedStyle(element, "::after").opacity)).toBe("1");
+  await expect(item).toHaveAttribute("aria-label", /Effekt:/);
+
+  if (testInfo.project.use.hasTouch) {
+    await item.tap();
+    await expect(item).not.toHaveClass(/is-tooltip-open/);
+    await expect(item).toHaveAttribute("aria-pressed", "false");
+    await expect.poll(() => item.evaluate((element) => getComputedStyle(element, "::after").opacity)).toBe("0");
+  } else {
+    await item.press("Enter");
+    await expect(item).not.toHaveClass(/is-tooltip-open/);
+    await expect(item).toHaveAttribute("aria-pressed", "false");
+    await page.keyboard.press("Tab");
+    await expect.poll(() => item.evaluate((element) => getComputedStyle(element, "::after").opacity)).toBe("0");
+  }
+});

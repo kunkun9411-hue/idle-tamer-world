@@ -16,7 +16,7 @@ export const SYSTEM_MESSAGES: SystemMessageDefinition[] = [
   {
     id: "welcome-protocol",
     title: "Willkommen im Ether-Protokoll",
-    body: "Dein lokaler Tamer-Datensatz wurde angelegt. Dieses Startpaket hilft beim ersten Run.",
+    body: "Deine Resonanz wurde im Ether-Archiv verankert. Dieses Startpaket begleitet dich durch deinen ersten Run.",
     category: "welcome",
     reward: { gold: 100, items: { training_data: 1 } },
     available: () => true,

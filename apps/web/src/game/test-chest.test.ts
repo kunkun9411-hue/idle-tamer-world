@@ -14,17 +14,17 @@ describe("test chest player feedback", () => {
     expect(testChestPresentation(false).actionLabel).toBe("ÖFFNEN");
   });
 
-  it("keeps the online chest intact and labels the action as a non-booking preview", () => {
+  it("keeps the online chest intact and explains its seal in player language", () => {
     expect(testChestOpenResult(true)).toMatchObject({
       consumeChest: false,
       creditRewards: false,
-      title: "Truhenvorschau",
+      title: "Versiegelte Ether-Truhe",
       tone: "violet",
     });
-    expect(testChestOpenResult(true).message).toContain("nichts von deinem Online-Konto");
+    expect(testChestOpenResult(true).message).toContain("Ether-Versiegelung");
     expect(testChestPresentation(true)).toMatchObject({
-      actionLabel: "VORSCHAU",
-      detail: "Keine Kontobuchung im Online-Modus",
+      actionLabel: "PRÜFEN",
+      detail: "Ether-Versiegelung aktiv",
     });
   });
 });

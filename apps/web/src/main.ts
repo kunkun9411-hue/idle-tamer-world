@@ -100,8 +100,9 @@ let restoreCombatAreasFocus = false;
 let inventoryModalOpen = false;
 let monsterModalOpen = false;
 let inventoryCategory: InventoryCategory = "gems";
+let inventoryTooltipKey: string | null = null;
 let gemTargetUid = "";
-let testChestAvailable = true;
+let testChestAvailable = import.meta.env.DEV;
 let pointerInteractionActive = false;
 let keyboardInteractionActive = false;
 let renderDeferred = false;
@@ -231,7 +232,18 @@ async function sendOnlineRunCommand(command: Parameters<AccountClient["runComman
   } catch (error) {
     runSyncBusy = false;
     if (error instanceof RunApiError && error.problem.code === "CONFLICT") await synchronizeOnlineRun();
-    showNotice("Run-Aktion abgelehnt", error instanceof Error ? error.message : "Die Aktion konnte nicht bestätigt werden.", "warning");
+    const message = error instanceof RunApiError
+      ? error.problem.code === "VALIDATION"
+        ? error.problem.message
+        : error.problem.code === "CONFLICT"
+          ? "Ein neuerer Spielstand wurde gefunden. Lade ihn und versuche die Aktion erneut."
+          : error.problem.code === "RATE_LIMITED"
+            ? "Du hast sehr viele Aktionen kurz hintereinander ausgeführt. Bitte warte einen Moment."
+            : error.problem.code === "UNAUTHENTICATED"
+              ? "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
+              : "Die Aktion ist gerade nicht möglich. Es wurde nichts verändert."
+      : "Die Aktion konnte nicht bestätigt werden. Es wurde nichts verändert.";
+    showNotice("Aktion nicht möglich", message, "warning");
     return null;
   } finally {
     runSyncBusy = false;
@@ -857,6 +869,7 @@ function setView(view: View): void {
     activeCombatPanel = null;
     combatFocusMode = false;
     inventoryModalOpen = true;
+    inventoryTooltipKey = null;
     monsterModalOpen = false;
     window.scrollTo({ top: 0, behavior: "auto" });
     render();
@@ -866,6 +879,7 @@ function setView(view: View): void {
   activeCombatPanel = null;
   combatFocusMode = false;
   inventoryModalOpen = false;
+  inventoryTooltipKey = null;
   monsterModalOpen = false;
   window.scrollTo({ top: 0, behavior: "auto" });
   render();
@@ -910,7 +924,7 @@ function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
   if (serverStarter && game.roster.length === 0) service.chooseStarter(serverStarter);
   if (serverStarter && game.roster[0]?.definitionId !== serverStarter) {
     clientUiState = "conflict";
-    authMessage = "Der lokale Starter passt nicht zum Account. Der lokale Spielstand wurde sicherheitshalber nicht geöffnet.";
+    authMessage = "Der gespeicherte Starter passt nicht zu diesem Konto. Bitte lade den neuesten Spielstand.";
     authMessageTone = "error";
     showLogin = true;
     render();
@@ -974,7 +988,7 @@ async function registerAccount(form: HTMLFormElement): Promise<void> {
     });
     authMode = "login";
     authMessageTone = "success";
-    authMessage = "Account vorbereitet. Dein Zugang wartet noch auf die Bestätigung durch das Testteam.";
+    authMessage = "Fast geschafft! Bitte bestätige deine E-Mail-Adresse, um dich einzuloggen.";
   } catch (error) {
     authMessageTone = "error";
     authMessage = error instanceof AccountApiError ? error.message : "Die Registrierung konnte nicht abgeschlossen werden.";
@@ -1395,7 +1409,7 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
         name: "Ether-Truhe",
         image: "/assets/ui/inventory/ether-chest-v1.png",
         amount: 1,
-        rarity: "Testbeute",
+        rarity: "Selten",
         description: chestPresentation.description,
         detail: chestPresentation.detail,
         source: "Archivtruhe",
@@ -1432,7 +1446,9 @@ function combatInventoryModal(): string {
       const chestPresentation = testChestPresentation(isRunOnline());
       return `<button class="combat-inventory-slot is-filled is-actionable combat-inventory-slot--${inventoryCategory}" data-open-chest="${entry.id}" data-tooltip="${escapeHtml(`${tooltip} · ${chestPresentation.actionLabel}`)}" aria-label="${escapeHtml(entry.name)} ${chestPresentation.actionLabel.toLowerCase()}"><img src="${entry.image}" alt="" loading="lazy"><strong>${chestPresentation.actionLabel}</strong></button>`;
     }
-    return `<div class="combat-inventory-slot is-filled combat-inventory-slot--${inventoryCategory}" data-tooltip="${escapeHtml(tooltip)}" role="img" aria-label="${escapeHtml(tooltip)}"><img src="${entry.image}" alt="" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong></div>`;
+    const tooltipKey = `${inventoryCategory}:${entry.id}`;
+    const tooltipOpen = inventoryTooltipKey === tooltipKey;
+    return `<button type="button" class="combat-inventory-slot is-filled is-inspectable${tooltipOpen ? " is-tooltip-open" : ""} combat-inventory-slot--${inventoryCategory}" data-inventory-inspect="${escapeHtml(tooltipKey)}" data-tooltip="${escapeHtml(tooltip)}" aria-label="${escapeHtml(tooltip)}" aria-pressed="${tooltipOpen}"><img src="${entry.image}" alt="" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong></button>`;
   }).join("");
   const sizeClass = visibleSlotCount <= 8 ? "is-compact" : visibleSlotCount <= 16 ? "is-medium" : "";
   return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal ${sizeClass}" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${slots.length} ${categoryLabel} · ${occupied}/64 GESAMT</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${inventoryCategories.map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${categoryCounts.get(category) ?? 0}</small></button>`).join("")}</nav><div class="combat-inventory-grid${needsScroll ? " has-overflow" : ""}" aria-label="${visibleSlotCount} sichtbare Inventarslots, 64 gesamt">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
@@ -1607,7 +1623,7 @@ function incubationView(): string {
   const remaining = incubation ? Math.max(0, Math.ceil((incubation.hatchAt - Date.now()) / 1000)) : 0;
   const eggEntries = Object.entries(game.eggInventory).filter(([, amount]) => amount > 0);
   const progress = incubation ? Math.min(100, ((Date.now() - incubation.startedAt) / (incubation.hatchAt - incubation.startedAt)) * 100) : 0;
-  return `<section class="page page--kit">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-running" src="${eggImage(incubation.definitionId)}" alt="${getMonster(incubation.definitionId).name}-Ei"><b data-live="incubation-percent">${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p data-live="incubation-copy">${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i data-live="incubation-progress" style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button><button class="secondary-button" id="accelerate-incubation" ${ready ? "hidden disabled" : game.inventory.incubator_charge <= 0 ? "disabled" : ""}>BRUTLADUNG −60s · ${game.inventory.incubator_charge}×</button></div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-idle" src="${eggImage()}" alt="Unbestimmtes Monsterei">${hatchNotice ? '<img class="hatch-vfx" src="/assets/effects/hatch/ether-hatch-burst-v1.png" alt="">' : ""}</div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p></div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
+  return `<section class="page page--kit">${pageHeading("INKUBATION · SAMMLUNG", "Ether-Brutstation", "Eier stammen ausschließlich aus Expeditionen. Erstschlüpfe erweitern die Sammlung, Duplikate liefern permanente Art-Fragmente.", `${eggEntries.reduce((sum, [, amount]) => sum + amount, 0)} EIER · 1 INKUBATOR`)}${hatchNotice ? `<div class="hatch-notice panel"><span>${icon("spark")}</span><div><strong>SCHLUPF ABGESCHLOSSEN</strong><small>${hatchNotice}</small></div><button id="close-hatch-notice" aria-label="Hinweis schließen">×</button></div>` : ""}<div class="incubator-layout"><section class="incubator-panel panel"><div class="card-heading"><span class="eyebrow">BRUTSTATION 01</span><span class="soft-chip ${incubation ? "is-live" : ""}">${incubation ? "AKTIV" : "BEREIT"}</span></div>${incubation ? `<div class="incubator-active"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-running" src="${eggImage(incubation.definitionId)}" alt="${getMonster(incubation.definitionId).name}-Ei"><b data-live="incubation-percent">${Math.round(progress)}%</b></div><div><span class="eyebrow">RESONANZAUFBAU</span><h2>${getMonster(incubation.definitionId).name}-Ei</h2><p data-live="incubation-copy">${ready ? "Die Etherschale ist offen. Das Monster kann jetzt schlüpfen." : `Das Ei wird stabilisiert. Noch ungefähr ${remaining} Sekunden.`}</p><div class="mission-progress"><i data-live="incubation-progress" style="width:${progress}%"></i></div><button class="primary-button" id="hatch-egg" ${ready ? "" : "disabled"}>${ready ? `EI ÖFFNEN ${icon("spark")}` : `NOCH ${remaining}s`}</button><button class="secondary-button" id="accelerate-incubation" ${ready ? "hidden disabled" : game.inventory.incubator_charge <= 0 ? "disabled" : ""}>BRUTLADUNG −60s · ${game.inventory.incubator_charge}×</button></div></div>` : `<div class="incubator-empty"><div class="egg-chamber"><img class="incubator-frame" src="/assets/incubator/incubator-frame-v1.png" alt=""><img class="egg-asset is-idle" src="${eggImage()}" alt="Unbestimmtes Monsterei">${hatchNotice ? '<img class="hatch-vfx" src="/assets/effects/hatch/ether-hatch-burst-v1.png" alt="">' : ""}</div><h2>Die Kammer ist frei.</h2><p>Wähle ein Ei aus deinem Inventar, um die Resonanz aufzubauen.</p>${eggEntries.length > 0 ? `<a class="primary-button incubator-empty__action" href="#incubator-egg-inventory">EI AUSWÄHLEN ${icon("arrow")}</a>` : `<button class="secondary-button incubator-empty__action" data-view="expedition">EIER FINDEN</button>`}</div>`}</section><aside class="gene-note panel"><span class="eyebrow">PERMANENTER KREISLAUF</span><h2>Jeder Schlupf zählt.</h2><p>Ein Ei ist niemals wertlos. Bekannte Arten werden automatisch zu den Fragmenten genau dieser Monsterlinie.</p><ol><li><b>01</b><span>Ei in der Expedition finden</span></li><li><b>02</b><span>Neue Art erstmals freischalten</span></li><li><b>03</b><span>Duplikate in 10 Fragmente wandeln</span></li><li><b>04</b><span>Hyperlevel oder Evolution bezahlen</span></li></ol></aside></div><div class="subsection-heading" id="incubator-egg-inventory"><div><span class="eyebrow">EI-INVENTAR</span><h2>Gesicherte Signale</h2></div><span>ARTSPEZIFISCH · NICHT HANDELBAR</span></div><div class="egg-grid">${eggEntries.length > 0 ? eggEntries.map(([definitionId, amount]) => eggCard(definitionId, amount)).join("") : `<div class="empty-slot empty-slot--wide"><span>${icon("incubation")}</span><strong>Noch keine Eier im Inventar</strong><small>Kämpfe weiter oder sammle deinen Kampfspeicher ein.</small><button class="secondary-button" data-view="expedition">ZUR EXPEDITION</button></div>`}</div></section>`;
 }
 
 function eggCard(definitionId: string, amount: number): string {
@@ -1775,9 +1791,9 @@ function profileView(): string {
   const activeFrame = FRAMES.find((entry) => entry.id === game.profile.frameId) ?? FRAMES[0];
   return `<section class="page page--kit profile-page">${pageHeading("ACCOUNT · KOSMETIK", "Tamer-Profil", "Wähle Avatar und Rahmen unabhängig voneinander. Events, Gilden und Erfolge können weitere Kombinationen freischalten.", `RANG ${rank} · ${game.totalVictories} SIEGE`)}
     <section class="profile-hero panel">${accountAvatar("large")}<div><span class="eyebrow">AKTIVES PROFIL</span><h1>${accountBootstrap?.profile.displayName ?? game.playerName}</h1><p>${activeAvatar.name} · ${activeFrame.name}</p><div class="profile-stats"><span><small>MONSTER</small><b>${game.roster.length}/10</b></span><span><small>PRESTIGE</small><b>${game.prestigeCount}</b></span><span><small>ZONEN</small><b>${game.unlockedZoneIds.length}/${ZONES.length}</b></span><span><small>RANG</small><b>${rank}</b></span></div></div><aside><small>PROFILSTATUS</small><b>${accountBootstrap ? "ACCOUNT VERBUNDEN" : "GASTPROFIL"}</b><span>${accountBootstrap?.account.emailMasked ?? "Auf diesem Gerät gespeichert"}</span>${accountBootstrap ? '<button class="text-button" id="logout-account">ACCOUNT ABMELDEN</button>' : ""}</aside></section>
-    ${systemInbox()}${playerSettings()}
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">AVATARE</span><h2>Tamer-Identität</h2></div><span>RUND · WECHSELBAR</span></div><div class="cosmetic-grid">${AVATARS.map((avatar) => { const unlocked = isAvatarUnlocked(game, avatar.id); const selected = avatar.id === game.profile.avatarId; const portrait = avatarPortrait(avatar.id); return `<button class="cosmetic-card panel ${selected ? "is-selected" : ""}" data-avatar="${avatar.id}" ${unlocked ? "" : "disabled"} style="--avatar-a:${avatar.colors[0]};--avatar-b:${avatar.colors[1]}"><span class="cosmetic-avatar ${portrait ? "has-portrait" : ""}">${portrait ? `<img src="${portrait}" alt="" aria-hidden="true" draggable="false">` : `<i>${avatar.glyph}</i>`}</span><strong>${avatar.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${avatar.unlock}`}</small></button>`; }).join("")}</div></div>
     <div class="customization-section"><div class="subsection-heading"><div><span class="eyebrow">RAHMEN</span><h2>Profilrahmen</h2></div><span>SEPARATER KATALOG</span></div><div class="frame-grid">${FRAMES.map((frame) => { const unlocked = isFrameUnlocked(game, frame.id); const selected = frame.id === game.profile.frameId; return `<button class="frame-card panel ${selected ? "is-selected" : ""}" data-frame="${frame.id}" ${unlocked ? "" : "disabled"} style="--frame-a:${frame.colors[0]};--frame-b:${frame.colors[1]}"><span><i></i></span><div><strong>${frame.name}</strong><small>${unlocked ? selected ? "AKTIV" : "AUSWÄHLEN" : `GESPERRT · ${frame.unlock}`}</small></div></button>`; }).join("")}</div></div>
+    ${systemInbox()}${playerSettings()}
   </section>`;
 }
 
@@ -1793,7 +1809,7 @@ function starterDialog(): string {
 function researchView(): string {
   const cores = game.resources.cores;
   const coreLabel = (amount: number): string => amount === 1 ? "KERN" : "KERNE";
-  return `<section class="page page--kit">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${cores} ${coreLabel(cores)} VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => {
+  return `<section class="page page--kit">${pageHeading("KONTO · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in kontoweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${cores} ${coreLabel(cores)} VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => {
     const level = game.research[research.id];
     const cost = researchCost(level);
     const isMax = level >= research.maxLevel;
@@ -1801,9 +1817,11 @@ function researchView(): string {
     const state = isMax ? "max" : affordable ? "ready" : "insufficient";
     const action = isMax
       ? "MAXIMAL"
-      : `${affordable ? "ERFORSCHEN" : "ZU WENIG KERNE"} · ${cost} ${coreLabel(cost)} KOSTEN · ${cores} ${coreLabel(cores)} BESITZ`;
+      : affordable
+        ? `ERFORSCHEN · ${cost} ${coreLabel(cost)}`
+        : `${cost} ${coreLabel(cost)} BENÖTIGT`;
     return `<article class="research-card panel" data-research-card="${research.id}" data-research-state="${state}"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || !affordable ? "disabled" : ""}>${action}</button></article>`;
-  }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section>${craftingWorkbench()}</section>`;
+  }).join("")}</div><section class="research-summary panel"><span class="eyebrow">DAUERHAFTE EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section>${craftingWorkbench()}</section>`;
 }
 
 function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
@@ -2152,7 +2170,10 @@ function bindModalKeyboard(): void {
       event.preventDefault();
       if (starterDialogOpen) starterDialogOpen = false;
       else if (showOfflineReport) showOfflineReport = false;
-      else if (inventoryModalOpen) inventoryModalOpen = false;
+      else if (inventoryModalOpen) {
+        inventoryModalOpen = false;
+        inventoryTooltipKey = null;
+      }
       else if (monsterModalOpen) monsterModalOpen = false;
       else if (combatAreasOpen) {
         combatAreasOpen = false;
@@ -2235,6 +2256,7 @@ function bindEvents(): void {
     const closeInventory = event.target instanceof Element && event.target.closest("[data-close-combat-inventory]");
     if (closeInventory) {
       inventoryModalOpen = false;
+      inventoryTooltipKey = null;
       return render();
     }
     const closeMonsters = event.target instanceof Element && event.target.closest("[data-close-combat-monsters]");
@@ -2251,6 +2273,7 @@ function bindEvents(): void {
       combatAreasOpen = false;
       inventoryModalOpen = true;
       monsterModalOpen = false;
+      inventoryTooltipKey = null;
       return render();
     }
     if (target.dataset.monsterToggle) {
@@ -2261,13 +2284,27 @@ function bindEvents(): void {
     }
     if (target.dataset.inventoryCategory) {
       inventoryCategory = target.dataset.inventoryCategory as InventoryCategory;
+      inventoryTooltipKey = null;
       return render();
+    }
+    if (target.dataset.inventoryInspect !== undefined) {
+      const tooltipKey = target.dataset.inventoryInspect;
+      inventoryTooltipKey = inventoryTooltipKey === tooltipKey ? null : tooltipKey;
+      document.querySelectorAll<HTMLButtonElement>("[data-inventory-inspect]").forEach((item) => {
+        const isOpen = item.dataset.inventoryInspect === inventoryTooltipKey;
+        item.classList.toggle("is-tooltip-open", isOpen);
+        item.setAttribute("aria-pressed", String(isOpen));
+      });
+      return;
     }
     if (target.dataset.gemMonster) {
       gemTargetUid = target.dataset.gemMonster;
       return render();
     }
-    if (target.dataset.openChest) return run(`open-chest:${target.dataset.openChest}`, openTestChest);
+    if (target.dataset.openChest) {
+      inventoryTooltipKey = null;
+      return run(`open-chest:${target.dataset.openChest}`, openTestChest);
+    }
     if (target.dataset.view) return setView(target.dataset.view as View);
     if (target.dataset.combatPanel) return toggleCombatPanel(target.dataset.combatPanel as CombatPanel);
     if (target.hasAttribute("data-home")) return setView("expedition");
@@ -2340,7 +2377,10 @@ function bindEvents(): void {
         combatAreasOpen = false;
         restoreCombatAreasFocus = true;
         return render();
-      case "close-combat-inventory": inventoryModalOpen = false; return render();
+      case "close-combat-inventory":
+        inventoryModalOpen = false;
+        inventoryTooltipKey = null;
+        return render();
       case "close-combat-monsters": monsterModalOpen = false; return render();
       case "collect-cache": return run("collect-cache", collectCache);
       case "offline-collect": return run("offline-collect", collectOfflineRewards);
