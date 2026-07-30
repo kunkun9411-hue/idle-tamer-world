@@ -88,6 +88,29 @@ test("combat navigation separates battle tools from global destinations on phone
     await globalNav.locator("[data-inventory-toggle]").click();
     await expect(page.getByRole("dialog", { name: "Inventar", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Inventar schließen" }).click();
+
+    await page.locator(".player-account-card").click();
+    await expect(page.locator(".profile-page")).toBeVisible();
+    const profileNavigation = await page.evaluate(() => {
+      const usableWidth = document.documentElement.clientWidth;
+      const navigation = document.querySelector<HTMLElement>(".main-nav")!.getBoundingClientRect();
+      const buttons = [...document.querySelectorAll<HTMLElement>(".main-nav .nav-button")].map((button) => {
+        const rect = button.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, height: rect.height };
+      });
+      return {
+        usableWidth,
+        navigation: { left: navigation.left, right: navigation.right },
+        buttons,
+      };
+    });
+    expect(profileNavigation.navigation.left).toBeGreaterThanOrEqual(0);
+    expect(profileNavigation.navigation.right).toBeLessThanOrEqual(profileNavigation.usableWidth + 1);
+    for (const button of profileNavigation.buttons) {
+      expect(button.left).toBeGreaterThanOrEqual(0);
+      expect(button.right).toBeLessThanOrEqual(profileNavigation.usableWidth + 1);
+      expect(button.height).toBeGreaterThanOrEqual(44);
+    }
   } else {
     await expect(combatEntry).toBeVisible();
     await expect(globalNav.locator("button:visible")).toHaveCount(7);

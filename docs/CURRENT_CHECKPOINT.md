@@ -98,6 +98,14 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
   Offline-Interaktionszustände. Der aktuelle Vollcheck besteht mit 67 Web-,
   24 API-, 11 Datenbank-Unit-, 6 Core- und 53 lokalen Browsertests; zusätzlich
   sind drei Layout-Audits und drei frische Capture-Läufe grün.
+- Credentialgebundene Live-Prüfung: Zwei kurzlebige, bestätigte QA-Accounts
+  haben auf `idle-tamer-world.de` den Zwei-Browser-Authfluss und den aktiven
+  Gildenhub vollständig durchlaufen. Beide Accounts, ihre Testgilde und die
+  Mailboxeinträge wurden danach gezielt entfernt; der Bestand lag vorher und
+  nachher bei drei Dev-Accounts. Die anschließende Spielerprüfung bei 390×844
+  fand noch eine `100vw`-Kante an der globalen Navigation auf langen Seiten.
+  Sie nutzt nun die tatsächlich verfügbare Breite neben dem Scrollbalken und
+  ist mit einem eigenen Profilseiten-Regressionscheck abgesichert.
 
 Die genauen Fälle stehen in:
 

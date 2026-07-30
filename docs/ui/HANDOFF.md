@@ -112,6 +112,9 @@ vorwegzunehmen:
 - sämtliche sichtbare Spielertexte erklären Wirkung und Ergebnis statt
   interne Begriffe wie Ledger, atomare Buchung, Serverautorität oder
   API-Protokoll; der Online-Footer führt sicher zu Profil/Einstellungen.
+- die Live-Prüfung bei 390×844 hält auch auf langen Unterseiten die komplette
+  globale Navigation innerhalb der tatsächlich nutzbaren Breite; ein eigener
+  Profilseiten-Check schützt gegen die frühere `100vw`-Kante am Scrollbalken.
 
 Nachweis: `pnpm check:all`, `pnpm ui:audit` und `pnpm ui:capture` sind grün.
 Der Vollcheck umfasst 67 Web-, 24 API-, 11 Datenbank-Unit-, 6 Core- und 53
