@@ -453,7 +453,7 @@ footer > div:first-child i { width: 2px; height: 2px; border-radius: 50%; backgr
 .ui-notice strong, .offline-toast strong { color: var(--silver-2); font-size: 10px; }
 .ui-notice small, .offline-toast small { margin-top: 4px; color: var(--muted); font-size: 8px; line-height: 1.45; }
 .ui-notice button, .offline-toast button { border: 0; color: var(--dim); background: none; cursor: pointer; font-size: 18px; }
-.ui-notice > i { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--violet-bright); animation: noticeLife 3.6s linear forwards; }
+.ui-notice > i { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--violet-bright); animation: noticeLife 6s linear forwards; }
 .ui-notice--success > i { background: var(--success); }
 .modal-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 20px; background: rgba(5,5,8,.74); backdrop-filter: blur(13px); }
 .modal { width: min(540px, 100%); position: relative; padding: 38px; border: 1px solid rgba(210,202,231,.2); border-radius: 21px; background: linear-gradient(145deg, #1c1b25, #101016); box-shadow: 0 40px 120px #000; text-align: center; }

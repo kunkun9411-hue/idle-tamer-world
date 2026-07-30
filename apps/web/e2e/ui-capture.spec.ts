@@ -72,8 +72,10 @@ for (const viewport of UI_VIEWPORTS) {
     await activate(page, '.main-nav [data-view="gems"]');
     await shot("13-gems", true);
     await activate(page, '.main-nav [data-view="inventory"]');
-    await shot("14-inventory", true);
-    await activate(page, '.main-nav [data-view="expedition"]');
+    await expect(page.getByTestId("combat-scene")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Inventar", exact: true })).toBeVisible();
+    await shot("14-inventory");
+    await page.getByRole("button", { name: "Inventar schließen" }).click();
     await expect(page.getByTestId("combat-scene")).toBeVisible();
     await activate(page, '[data-combat-panel="missions"]');
     await activate(page, '.combat-objective-hud [data-view="objectives"]');

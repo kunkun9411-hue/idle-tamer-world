@@ -51,6 +51,14 @@ test("navigation IA keeps quick access in combat and returns every core route ho
     await expect(page.getByTestId("combat-scene")).toBeVisible();
   }
 
+  await page.locator('.combat-rail [data-view="research"]').click();
+  await expect(page.locator(".research-grid")).toBeVisible();
+  await page.locator('.main-nav [data-view="inventory"]').click();
+  await expect(page.getByTestId("combat-scene"), "Inventory from a detail page returns to the live battle").toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Inventar", exact: true }), "Every inventory entry opens the same slot inventory").toBeVisible();
+  await page.getByRole("button", { name: "Inventar schließen" }).click();
+  await expect(page.getByTestId("combat-scene")).toBeVisible();
+
   const goalsToggle = page.locator('[data-combat-panel="missions"]');
   const goalsPanel = page.locator(".combat-objective-hud");
   await goalsToggle.click();
@@ -62,7 +70,8 @@ test("navigation IA keeps quick access in combat and returns every core route ho
   const playerCard = page.locator('.player-account-card[data-view="profile"]').last();
   await expect(playerCard, "Player identity and currencies must form one profile card").toHaveCount(1);
   await expect(playerCard.locator(".account-avatar.has-portrait")).toHaveCount(1);
-  await expect(playerCard.locator(".player-account-card__copy > strong")).not.toBeEmpty();
+  await expect(playerCard.locator(".player-account-card__identity > strong")).not.toBeEmpty();
+  await expect(playerCard.locator(".player-account-card__identity > i")).toBeVisible();
   await expect(playerCard.locator(".player-account-card__metric")).toHaveCount(3);
   await expect(page.locator(".combat-account > .resources, .combat-account > .rank-chip")).toHaveCount(0);
   await playerCard.click();

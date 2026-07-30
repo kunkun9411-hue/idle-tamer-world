@@ -38,7 +38,7 @@ pnpm ui:capture
 
 `ui:audit` prüft Desktop, Tablet und 390×844. Neue Überlagerungen oder Überläufe lassen den Test fehlschlagen. Die UI-Schulden-Allowlist ist leer; jeder neue Befund muss einem späteren Block zugeordnet werden.
 
-`ui:capture` erzeugt für 1280×720, 1024×768 und 390×844 jeweils 14 Vergleichsbilder von Login, Starterwahl, Kampf, Kampf-HUD, Aufträgen, Expeditionen, Habitat, Brut, Inventar, Forschung, Gilde, Profil und Prestige. Die Bilder landen unter `artifacts/ui-captures/` und werden nicht eingecheckt.
+`ui:capture` erzeugt für 1280×720, 1024×768 und 390×844 jeweils 17 Vergleichsbilder von Login, Starterwahl, Offline-Rückkehr, Kampf, den Kampf-Schnellfenstern, Aufträgen, Expeditionen, Habitat, Brut, Inventar, Forschung, Gilde, Profil und Prestige. Die Bilder landen unter `artifacts/ui-captures/` und werden nicht eingecheckt.
 
 ## Verbindliche Quellen
 

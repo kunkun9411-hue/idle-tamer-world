@@ -1,6 +1,6 @@
 # Roadmap B · B.02–B.08 Arbeitsstand
 
-Stand: **29. Juli 2026, Roadmap B bei 28/32 – B.03 und B.08 offen**
+Stand: **30. Juli 2026, Roadmap B bei 28/32 – B.03 und B.08 offen**
 
 Dieses Dokument trennt nachweisbare Vorarbeit von einer formalen Abnahme. Kein
 Block wird dadurch vorzeitig freigegeben. B.01 ist nach B.01.4 visuell
@@ -18,8 +18,8 @@ Dokument. Roadmap C ist bis zur synchronen Abnahme von B.03 und B.08 gesperrt.
 
 | Block | Bereits nachweisbar | Noch offen für die formale Abnahme |
 | --- | --- | --- |
-| B.02 Navigation | `navigation-ia.spec.ts` prüft Ziele als Kampfpanel sowie Monster und Inventar als gegenseitig ausschließende Kampf-Schnellfenster. Expeditionen, Brut, Forschung und Gilde bleiben eigene Szenen; Profil und die Rückkehr zum Kampf sind ebenfalls geprüft. Das mobile 7er-Dock bleibt bei 390/820 px einreihig. | geschlossen: B.02.4 intern abgenommen und als Fertig im öffentlichen Status markiert |
-| B.03 Kampfszene/HUD | B03-Vertrag, Fokus-/Zwei-Monster-QA-Fixture, Core-Loop, Responsive-Checks und aktuelle Desktop-/Tablet-/Mobile-Captures prüfen Monsterposition, kompakte Nameplates, beide Bedienleisten sowie Front/Support/Zonenbonus. Die am 29. Juli gefundene mobile Eingabeblockade ist behoben und regressionsgesichert. | **offen:** vollständige Live-Spielerprüfung des zusammenhängenden Spiels und danach formale B.03.3/B.03.4-Abnahme |
+| B.02 Navigation | `navigation-ia.spec.ts` prüft Ziele als Kampfpanel sowie Monster und Inventar als gegenseitig ausschließende Kampf-Schnellfenster. Jeder Inventar-Einstieg öffnet jetzt dasselbe 64-Slot-Fenster in der Kampfszene; die frühere Inventar-Unterseite ist entfernt und Herstellung liegt unter Forschung. Expeditionen, Brut, Forschung und Gilde bleiben eigene Szenen; Profil und die Rückkehr zum Kampf sind ebenfalls geprüft. Das mobile 7er-Dock bleibt bei 390/820 px einreihig. | geschlossen: B.02.4 intern abgenommen und als Fertig im öffentlichen Status markiert |
+| B.03 Kampfszene/HUD | B03-Vertrag, Fokus-/Zwei-Monster-QA-Fixture, Core-Loop, Responsive-Checks und aktuelle Desktop-/Tablet-/Mobile-Captures prüfen Monsterposition, kompakte Nameplates, beide Bedienleisten sowie Front/Support/Zonenbonus. Die am 29. Juli gefundene mobile Eingabeblockade ist behoben und regressionsgesichert. Die Spieleridentität ist als gemeinsame Avatar-/Name-/Rang-/Währungskarte statt loser HUD-Chips umgesetzt. | **offen:** vollständige Live-Spielerprüfung des zusammenhängenden Spiels und danach formale B.03.3/B.03.4-Abnahme |
 | B.04 Sammlung/Entwicklung | `state-matrix.spec.ts` deckt leere Brut-/Habitat-Zustände und die gesperrte Prestige-Bestätigung ab; Core-Loop deckt Ei, Fragment, Hyperlevel, Evolution und Gem aus. | geschlossen: B.04 intern abgenommen und als Fertig im öffentlichen Status markiert |
 | B.05 Profil/Identität | `profile-guild-surfaces.spec.ts` und der Live-Gilden-Capture prüfen getrennte Avatar-/Rahmen-Auswahl, Fallbacks und die Identität im Mitglieder-/Freundesbereich; H01–H12 sind im UI-Kit verfügbar. | geschlossen: Ranglistenlogik bleibt bewusst Roadmap C |
 | B.06 Gilde/Soziales | Vertrag, servergespeister Gildenhub, Feature-Flag-Aus-Zustand, 4/4 Foundation, 7/7 Auth, 8/8 Run, 7/7 Guild-Integration sowie `live-guild.spec.ts` und Capture sind grün. | geschlossen: QA-Account und Testgilde nach dem Lauf entfernt |

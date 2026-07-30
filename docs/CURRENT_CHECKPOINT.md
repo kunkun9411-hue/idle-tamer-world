@@ -1,6 +1,6 @@
 # Aktueller Entwicklungs-Checkpoint
 
-Stand: 29. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
+Stand: 30. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Ausführliche Nachweise liegen in `docs/backend`.
 
 ## Projektstand
 
@@ -60,6 +60,10 @@ Der Browser sendet nur Absichten. Wertstände, Besitz, Zeit und Rechte kommen au
 - B.03-Folgeprüfung: QA-01 bis QA-05 technisch geschlossen; Monster- und
   Inventar-Schnellfenster, Truhenfeedback sowie Front/Support/Zonenbonus sind in
   Desktop, Tablet und Mobile automatisiert geprüft
+- Spieler-HUD und Inventarfluss nachgezogen: Profilbild, Name, Rang, Gold und
+  Kerne bilden eine gemeinsame Profilkarte; sämtliche Inventar-Einstiege öffnen
+  dasselbe responsive Kampf-Schnellfenster. Der aktuelle Vollcheck besteht mit
+  67 Web-, 24 API-, 9 Datenbank-Unit-, 6 Core- und 34 lokalen Browsertests.
 - Mobile-P1 behoben: widersprüchliche Kampf-Schnellleisten-Anker konnten die
   Bühne unsichtbar überdecken; Responsive-E2E prüft nun Monster-Sichtbarkeit,
   geladene Sprites und Kollisionsfreiheit der Bedienleisten

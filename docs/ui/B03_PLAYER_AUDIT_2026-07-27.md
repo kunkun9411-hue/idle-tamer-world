@@ -77,3 +77,21 @@ Live-Spielerprüfung des zusammenhängenden Spiels nach dem Deployment. Erst wen
 diese Prüfung keine neue erhebliche Bedien- oder Lesbarkeitsschuld zeigt,
 dürfen B.03.3/B.03.4 und anschließend B.08.3/B.08.4 gemeinsam abgenommen
 werden. Bis dahin gibt es keine Übergabe an Roadmap C.
+
+## Folgeprüfung 30. Juli 2026
+
+- Die zuvor lose rechte HUD-Zeile wurde als gemeinsame Spielerkarte umgesetzt:
+  aktives Monsterportrait, Accountname, Statuswappen, Rang, Run-Gold und
+  Prestige-Kerne bleiben als echte HTML-Werte lesbar und anklickbar.
+- Alle Inventar-Einstiege führen nun zurück in die Kampfszene und öffnen
+  dasselbe responsive Schnellfenster. Die alte Materialkarten-Unterseite ist
+  entfernt; ihre Herstellrezepte liegen unter Forschung.
+- Das Inventar zeigt Kategoriebelegung und globale Belegung getrennt
+  (`3 GEMS · 7/64 GESAMT`) und passt seine Höhe an die tatsächlich sichtbaren
+  Reihen an. Desktop, Tablet und 390×844-Mobile wurden visuell kontrolliert.
+- `pnpm check:all` ist grün: 67 Webtests, 24 API-Tests, 9 Datenbank-Unit-Tests,
+  6 Core-Tests und 34 lokale Browsertests; zwei optionale Live-Tests blieben
+  ohne Zugangsdaten erwartungsgemäß übersprungen.
+
+Der Roadmap-Status bleibt bewusst **28/32**. Dieser Nachweis schließt keine der
+noch offenen formalen Live-/Gesamtabnahmen B.03.3, B.03.4, B.08.3 oder B.08.4.

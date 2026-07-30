@@ -412,7 +412,10 @@ function tickBattle(now: number): void {
 function showNotice(title: string, message: string, tone: NoticeTone = "violet"): void {
   uiNotice = { title, message, tone };
   window.clearTimeout(noticeTimer);
-  noticeTimer = window.setTimeout(dismissNotice, 3_600);
+  // Reward confirmations must remain readable even while a modal rerenders or
+  // a slower device paints the inventory. Six seconds is long enough to scan
+  // the title and contents without turning the notice into permanent chrome.
+  noticeTimer = window.setTimeout(dismissNotice, 6_000);
   playUiTone(tone);
   render();
 }
@@ -846,6 +849,16 @@ function setView(view: View): void {
     return;
   }
   showLogin = false;
+  if (view === "inventory") {
+    activeView = "expedition";
+    activeCombatPanel = null;
+    combatFocusMode = false;
+    inventoryModalOpen = true;
+    monsterModalOpen = false;
+    window.scrollTo({ top: 0, behavior: "auto" });
+    render();
+    return;
+  }
   activeView = view;
   activeCombatPanel = null;
   combatFocusMode = false;
@@ -1111,7 +1124,7 @@ function playerAccountCard(): string {
   return `<button class="profile-chip player-account-card" data-view="profile" title="Profil, Avatar und Rahmen" aria-label="Profil von ${displayName} öffnen">
     ${accountAvatar("small", true)}
     <span class="player-account-card__copy">
-      <strong>${displayName}</strong>
+      <span class="player-account-card__identity"><strong>${displayName}</strong><i title="Aktives Tamer-Profil">${icon("shield")}</i></span>
       <span class="player-account-card__metrics">
         <span class="player-account-card__metric player-account-card__metric--rank" title="Tamer-Rang"><i>${icon("shield")}</i><small>RANG</small><b data-live="rank">${rank}</b></span>
         <span class="player-account-card__metric" title="Run-Gold">${resourceIcon("gold")}<b data-live="run-gold">${formatNumber(game.resources.gold)}</b></span>
@@ -1358,8 +1371,10 @@ function inventorySlots(category: InventoryCategory): InventorySlotData[] {
 }
 
 function combatInventoryModal(): string {
+  const inventoryCategories = Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[];
+  const categoryCounts = new Map(inventoryCategories.map((category) => [category, inventorySlots(category).length]));
   const slots = inventorySlots(inventoryCategory);
-  const occupied = slots.length;
+  const occupied = Array.from(categoryCounts.values()).reduce((sum, amount) => sum + amount, 0);
   const categoryLabel = INVENTORY_CATEGORY_LABELS[inventoryCategory];
   // Keep the 64-slot capacity as a data rule, but only render the rows that
   // contain content. This prevents a mostly empty category (especially Gems
@@ -1378,7 +1393,8 @@ function combatInventoryModal(): string {
     }
     return `<div class="combat-inventory-slot is-filled combat-inventory-slot--${inventoryCategory}" data-tooltip="${escapeHtml(tooltip)}" role="img" aria-label="${escapeHtml(tooltip)}"><img src="${entry.image}" alt="" loading="lazy"><strong>${entry.amount > 1 ? `×${entry.amount}` : ""}</strong></div>`;
   }).join("");
-  return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${occupied}/64 belegte Slots · ${categoryLabel}</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${(Object.keys(INVENTORY_CATEGORY_LABELS) as InventoryCategory[]).map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${inventorySlots(category).length}</small></button>`).join("")}</nav><div class="combat-inventory-grid${needsScroll ? " has-overflow" : ""}" aria-label="64 Inventarslots">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
+  const sizeClass = visibleSlotCount <= 8 ? "is-compact" : visibleSlotCount <= 16 ? "is-medium" : "";
+  return `<div class="combat-inventory-backdrop" data-close-combat-inventory aria-hidden="true"></div><aside class="combat-inventory-modal ${sizeClass}" role="dialog" aria-modal="true" aria-labelledby="combat-inventory-title"><img class="combat-inventory-modal__frame" src="/assets/ui/inventory/inventory-window-v3.png" alt="" aria-hidden="true"><div class="combat-inventory-modal__content"><header class="combat-inventory-modal__header"><div><span class="eyebrow">BEUTE · SAMMLUNG</span><h2 id="combat-inventory-title">Inventar</h2><small>${slots.length} ${categoryLabel} · ${occupied}/64 GESAMT</small></div><button class="combat-inventory-modal__close" id="close-combat-inventory" type="button" aria-label="Inventar schließen">×</button></header><nav class="combat-inventory-tabs" aria-label="Inventarkategorien">${inventoryCategories.map((category) => `<button type="button" class="${category === inventoryCategory ? "is-active" : ""}" data-inventory-category="${category}" aria-pressed="${category === inventoryCategory}">${INVENTORY_CATEGORY_LABELS[category]}<small>${categoryCounts.get(category) ?? 0}</small></button>`).join("")}</nav><div class="combat-inventory-grid${needsScroll ? " has-overflow" : ""}" aria-label="${visibleSlotCount} sichtbare Inventarslots, 64 gesamt">${slotMarkup}</div><p class="combat-inventory-hint">${slots.length === 0 ? `Keine ${categoryLabel.toLowerCase()} vorhanden.` : "Stapel werden automatisch zusammengefasst. Gems bleiben für die Ausrüstung permanent verfügbar."}</p></div></aside>`;
 }
 
 function combatControlDock(claimable: boolean, cacheEmpty: boolean): string {
@@ -1570,18 +1586,6 @@ function craftingWorkbench(): string {
   }).join("")}</div></section>`;
 }
 
-function inventoryView(): string {
-  const active = activeMonster();
-  const totalItems = Object.values(game.inventory).reduce((sum, amount) => sum + amount, 0);
-  return `<section class="page page--kit">${pageHeading("BEUTE · MATERIALIEN", "Inventar", "Hier landet alles, was du aus dem Kampfspeicher einsammelst. Materialien sind nach Einsatz und Quelle getrennt.", `${totalItems} MATERIALIEN · ${Object.values(game.eggInventory).reduce((sum, amount) => sum + amount, 0)} EIER`)}
-    <div class="inventory-summary panel"><div><span class="eyebrow">KAMPFSPEICHER</span><strong>${game.cacheSlotsUsed} / ${activeCacheCapacity()} Plätze belegt</strong><small>${Object.values(game.pendingItems).reduce((sum, amount) => sum + amount, 0)} Materialien, ${game.pendingEggs.length} Eier und ${game.pendingGems.length} Gems warten auf Abholung.</small></div><button class="primary-button" id="collect-cache" ${game.cacheSlotsUsed === 0 && game.pendingGold === 0 && game.pendingGems.length === 0 ? "disabled" : ""}>BEUTE EINSAMMELN ${icon("arrow")}</button></div>
-    <div class="item-grid">${ITEMS.map((item) => `<article class="item-card panel item-card--${item.rarity.toLowerCase()}"><span class="item-card__icon"><img src="${item.image}" alt=""></span><div><span class="eyebrow">${item.rarity.toUpperCase()}</span><h2>${item.name}</h2><p>${item.description}</p><small>QUELLE · ${item.source}</small></div><b class="item-count">${game.inventory[item.id]}×</b>${item.action === "train" && active ? `<button class="secondary-button" data-train="${active.uid}" ${game.inventory[item.id] <= 0 ? "disabled" : ""}>${getMonsterForm(active).name} TRAINIEREN</button>` : item.action === "accelerate" ? `<button class="secondary-button" id="accelerate-incubation" ${!game.incubation || game.inventory[item.id] <= 0 ? "disabled" : ""}>BRUTZEIT −60s</button>` : item.id === "ether_dust" ? `<span class="item-reserved">ROHSTOFF · ETHERWERKSTATT</span>` : `<span class="item-reserved">VERBRAUCH · EVOLUTION</span>`}</article>`).join("")}</div>
-    ${craftingWorkbench()}
-    <div class="inventory-gem-callout panel"><div><span class="eyebrow">GEM-AUSRÜSTUNG</span><strong>${Object.values(game.gemInventory).reduce((sum, amount) => sum + amount, 0)} Gems im Inventar</strong><small>Dreieck verstärkt Angriff, Quadrat verstärkt Leben, Raute verstärkt beides. Fünf Farben und drei Seltenheiten sind vorbereitet.</small></div><div>${GEMS.filter((gem) => (game.gemInventory[gem.id] ?? 0) > 0).slice(0, 5).map((gem) => `<img src="${gem.image}" alt="${gem.name}" title="${gem.name}">`).join("")}</div><button class="secondary-button" data-view="gems">GEMS AUSRÜSTEN</button></div>
-    <div class="inventory-note panel"><span>${icon("shield")}</span><div><strong>Backend-Regel</strong><small>Der Browser zeigt Bestände nur an. Im Onlinebetrieb bestätigt ausschließlich der Server jeden Fund, Verbrauch und Tausch.</small></div></div>
-  </section>`;
-}
-
 function objectiveRewardLabel(objective: ObjectiveDefinition): string {
   const parts: string[] = [];
   if (objective.reward.gold) parts.push(`${formatNumber(objective.reward.gold)} Gold`);
@@ -1748,7 +1752,7 @@ function starterDialog(): string {
 }
 
 function researchView(): string {
-  return `<section class="page page--kit">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${game.resources.cores} KERNE VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => { const level = game.research[research.id]; const cost = researchCost(level); const isMax = level >= research.maxLevel; return `<article class="research-card panel"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || game.resources.cores < cost ? "disabled" : ""}>${isMax ? "MAXIMAL" : `ERFORSCHEN · ${cost} P`}</button></article>`; }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section></section>`;
+  return `<section class="page page--kit">${pageHeading("ACCOUNT · DAUERHAFT", "Ether-Forschung", "Investiere Prestige-Kerne in accountweite Verbesserungen. Kein Forschungszweig wird durch einen neuen Run zurückgesetzt.", `${game.resources.cores} KERNE VERFÜGBAR`)}<div class="research-grid">${RESEARCH.map((research) => { const level = game.research[research.id]; const cost = researchCost(level); const isMax = level >= research.maxLevel; return `<article class="research-card panel"><span class="research-card__icon">${research.icon}</span><div><span class="eyebrow">FORSCHUNG ${String(RESEARCH.indexOf(research) + 1).padStart(2, "0")}</span><h2>${research.name}</h2><p>${research.description}</p></div><span class="level-chip">STUFE ${level} / ${research.maxLevel}</span><div class="research-levels">${Array.from({ length: research.maxLevel }, (_, index) => `<i class="${index < level ? "is-filled" : ""}"></i>`).join("")}</div><strong>${research.effectPerLevel}</strong><button class="primary-button" data-research="${research.id}" ${isMax || game.resources.cores < cost ? "disabled" : ""}>${isMax ? "MAXIMAL" : `ERFORSCHEN · ${cost} P`}</button></article>`; }).join("")}</div><section class="research-summary panel"><span class="eyebrow">AKTIVE ACCOUNT-EFFEKTE</span><span><small>ANGRIFF</small><b>+${game.research.power * 7}%</b></span><span><small>LEBEN</small><b>+${game.research.vitality * 8}%</b></span><span><small>GOLD</small><b>+${game.research.extraction * 10}%</b></span><span><small>BRUTZEIT</small><b>−${game.research.incubation * 10}%</b></span></section>${craftingWorkbench()}</section>`;
 }
 
 function guildFriendsMarkup(friends: GuildSnapshot["friends"]): string {
@@ -2065,7 +2069,7 @@ function render(): void {
   }
   if (showLogin) app.innerHTML = loginShell();
   else {
-    const views: Record<View, () => string> = { expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, gems: gemsView, incubation: incubationView, inventory: inventoryView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
+    const views: Record<View, () => string> = { expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, gems: gemsView, incubation: incubationView, inventory: expeditionView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
     const content = views[activeView]();
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
@@ -2177,7 +2181,6 @@ function bindEvents(): void {
     if (target.dataset.inventoryToggle) {
       inventoryModalOpen = true;
       monsterModalOpen = false;
-      inventoryCategory = "gems";
       return render();
     }
     if (target.dataset.monsterToggle) {
