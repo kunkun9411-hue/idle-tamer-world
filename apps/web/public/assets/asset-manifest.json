@@ -1059,15 +1059,15 @@
       "sha256": "89d5169f33a15efa58c940cb8d354c8384c2ba6fdc1c726b0888c41ebdd2cb74"
     },
     {
-      "id": "hub.ether-city-v2",
+      "id": "hub.ether-city-v3",
       "kind": "hub",
-      "path": "/assets/hub/ether-city-v2.gif",
-      "format": "gif",
-      "width": 720,
-      "height": 405,
-      "alpha": false,
-      "bytes": 639713,
-      "sha256": "dd6546ebd0be90071d9c889e3ae300d63e3fe10cfcda164d29b415aecd47f414"
+      "path": "/assets/hub/ether-city-v3.webp",
+      "format": "webp",
+      "width": 1440,
+      "height": 810,
+      "alpha": true,
+      "bytes": 2330258,
+      "sha256": "65582e2338bad7f08fb25eed881b97362cf2fc6ca924e4cf1ba79b6228cac057"
     },
     {
       "id": "incubator.incubator-frame-v1",

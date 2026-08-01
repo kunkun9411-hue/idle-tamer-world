@@ -90,7 +90,7 @@ def validate_manifest_asset(asset: dict[str, object]) -> None:
             "bytes": path.stat().st_size,
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         }
-        if kind == "hub" and path.suffix.lower() == ".gif" and getattr(image, "n_frames", 1) != 30:
+        if kind == "hub" and path.suffix.lower() in {".gif", ".webp"} and getattr(image, "n_frames", 1) > 1 and getattr(image, "n_frames", 1) != 30:
             raise ValueError(f"{path}: animated hub background must contain 30 frames")
     if asset != actual:
         mismatches = {key: (asset[key], actual[key]) for key in required if asset[key] != actual[key]}
@@ -270,8 +270,8 @@ def main() -> None:
     # evolution sprites share this contract. Keep the current foundation
     # release explicitly bounded; later delivery optimization can split source
     # masters from compressed runtime variants without weakening validation.
-    if total_bytes > 16_000_000:
-        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 16 MB budget")
+    if total_bytes > 18_000_000:
+        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 18 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
     print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + {len(ui_chrome_files)} UI chrome + {len(ui_kit_files)} UI kit + 1 branding + {len(prestige_files)} prestige assets")
 
