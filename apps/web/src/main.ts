@@ -1577,6 +1577,12 @@ function hubView(): string {
     <header class="hub-hero"><div><span class="eyebrow">ETHERSTADT · ZENTRALE</span><h1 id="hub-title">Deine Resonanzstadt</h1><p>Jeder Weg f&uuml;hrt von hier aus weiter. W&auml;hle ein Geb&auml;ude, um direkt in den passenden Spielbereich zu springen.</p></div><div class="hub-hero__actions"><button class="secondary-button" data-view="expedition">ZUR&Uuml;CK ZUM KAMPF ${icon("arrow")}</button></div></header>
     <div class="hub-scene" aria-label="Etherstadt mit interaktiven Geb&auml;uden">
       <div class="hub-scene__status"><strong><i></i> STADTNETZ ONLINE</strong><small>Alle Wege f&uuml;hren zum Etherkern</small></div>
+      <div class="hub-scene__fx hub-scene__fx--mine" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="hub-scene__fx hub-scene__fx--core" aria-hidden="true"></div>
+      <div class="hub-scene__fx hub-scene__fx--incubation" aria-hidden="true"></div>
+      <div class="hub-scene__fx hub-scene__fx--guild" aria-hidden="true"></div>
+      <div class="hub-scene__fx hub-scene__fx--arena" aria-hidden="true"></div>
+      <div class="hub-scene__fx hub-scene__fx--caravan" aria-hidden="true"></div>
       ${hubHotspot("hub-hotspot--arena", "Kampfarena", "Expedition starten", "expedition", "expedition")}
       ${hubHotspot("hub-hotspot--archive", "Monsterarchiv", "Rookie bis Ultima", "habitat", "habitat")}
       ${hubHotspot("hub-hotspot--incubation", "Brutstation", "Eier ausbr&uuml;ten", "incubation", "incubation")}
