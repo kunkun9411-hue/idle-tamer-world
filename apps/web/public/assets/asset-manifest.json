@@ -1059,15 +1059,15 @@
       "sha256": "89d5169f33a15efa58c940cb8d354c8384c2ba6fdc1c726b0888c41ebdd2cb74"
     },
     {
-      "id": "hub.ether-city-v4",
+      "id": "hub.ether-city-v1",
       "kind": "hub",
-      "path": "/assets/hub/ether-city-v4.webp",
+      "path": "/assets/hub/ether-city-v1.webp",
       "format": "webp",
       "width": 1672,
       "height": 941,
       "alpha": false,
-      "bytes": 16392816,
-      "sha256": "b10153023ff1f76b307247cfa28dfcbb3f433115d2e6f54bbb6b2db137e9296c"
+      "bytes": 416412,
+      "sha256": "6784a1d31b00da35193750947432d283111b427266a986eb9800c7daedb7a556"
     },
     {
       "id": "incubator.incubator-frame-v1",

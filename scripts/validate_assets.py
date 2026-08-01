@@ -29,7 +29,7 @@ UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
 EXPECTED_KIND_COUNTS = {"monster": 16, "enemy": 30, "boss": 5, "zone": 3, "hub": 1, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 148}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "hub": 18_000_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 2_000_000}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "hub": 4_000_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 2_000_000}
 
 
 def validate(path: Path) -> None:
@@ -270,8 +270,8 @@ def main() -> None:
     # evolution sprites share this contract. Keep the current foundation
     # release explicitly bounded; later delivery optimization can split source
     # masters from compressed runtime variants without weakening validation.
-    if total_bytes > 32_000_000:
-        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 32 MB budget")
+    if total_bytes > 18_000_000:
+        raise ValueError(f"asset manifest: runtime payload {total_bytes} bytes exceeds 18 MB budget")
     print(f"manifest: {len(manifest_paths)} IDs, paths, dimensions, sizes and SHA-256 hashes valid ({total_bytes / 1_000_000:.2f} MB)")
     print(f"total: {checked} creatures + {len(zone_files)} zones + {len(gem_files)} Gems + {len(egg_files)} eggs + {len(item_files)} items + {len(effect_files)} effects + {len(incubator_files)} incubator + {len(ui_chrome_files)} UI chrome + {len(ui_kit_files)} UI kit + 1 branding + {len(prestige_files)} prestige assets")
 
