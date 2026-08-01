@@ -28,8 +28,8 @@ UI_KIT_ROOT = PUBLIC / "assets" / "ui" / "kit"
 UI_KIT_MANIFEST = UI_KIT_ROOT / "ui-kit-manifest.json"
 MANIFEST = PUBLIC / "assets" / "asset-manifest.json"
 ASSET_ROOT = PUBLIC / "assets"
-EXPECTED_KIND_COUNTS = {"monster": 16, "enemy": 30, "boss": 5, "zone": 3, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 148}
-MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 2_000_000}
+EXPECTED_KIND_COUNTS = {"monster": 16, "enemy": 30, "boss": 5, "zone": 3, "hub": 1, "gem": 45, "branding": 1, "prestige": 2, "egg": 11, "effect": 4, "item": 5, "incubator": 1, "ui": 148}
+MAX_BYTES = {"monster": 100_000, "enemy": 100_000, "boss": 100_000, "gem": 100_000, "zone": 500_000, "hub": 4_000_000, "branding": 600_000, "prestige": 500_000, "egg": 100_000, "effect": 350_000, "item": 100_000, "incubator": 350_000, "ui": 2_000_000}
 
 
 def validate(path: Path) -> None:
@@ -52,6 +52,7 @@ def asset_kind(path: Path) -> str:
         "enemies": "enemy",
         "bosses": "boss",
         "zones": "zone",
+        "hub": "hub",
         "gems": "gem",
         "branding": "branding",
         "prestige": "prestige",

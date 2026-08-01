@@ -2951,6 +2951,17 @@
       "sha256": "173a0ca5a5a0fa4cdd73a6e74b55c0d38a93a331a1f074fa3ae16a15e9c2975e"
     },
     {
+      "id": "hub.ether-city-v1",
+      "kind": "hub",
+      "path": "/assets/hub/ether-city-v1.webp",
+      "format": "webp",
+      "width": 1672,
+      "height": 941,
+      "alpha": false,
+      "bytes": 416412,
+      "sha256": "6784a1d31b00da35193750947432d283111b427266a986eb9800c7daedb7a556"
+    },
+    {
       "id": "zone.glass-gardens-v2",
       "kind": "zone",
       "path": "/assets/zones/glass-gardens-v2.webp",

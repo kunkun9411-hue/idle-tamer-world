@@ -65,6 +65,32 @@
 .guild-directory-card { min-height: 82px; padding: 15px 17px; display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 14px; }
 .guild-directory-card h3 { margin: 0 0 5px; font-size: 15px; }
 .guild-directory-card p { margin: 0; color: var(--muted); font-size: 9px; }
+.guild-directory-empty {
+  min-height: 164px;
+  padding: 23px 24px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 5px 13px;
+  text-align: left;
+}
+.guild-directory-empty__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  grid-row: 1 / span 2;
+  border: 1px solid rgba(178, 151, 255, .28);
+  border-radius: 12px;
+  color: var(--violet-bright);
+  background: rgba(149, 111, 245, .08);
+}
+.guild-directory-empty__icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; }
+.guild-directory-empty > div { min-width: 0; display: grid; gap: 5px; }
+.guild-directory-empty b { display: block; color: var(--silver-2); font-size: 13px; }
+.guild-directory-empty small { display: block; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.guild-directory-empty p { grid-column: 1 / -1; margin: 8px 0 0; color: var(--dim); font-size: 8px; }
 .guild-tag {
   width: 48px;
   height: 48px;
@@ -202,6 +228,17 @@
 .guild-chat-panel input,
 .guild-friends-panel input { height: 39px; padding: 0 11px; }
 .guild-friends-panel > div:last-child { margin-top: 12px; }
+.guild-friends-panel > div:last-child > small {
+  display: block;
+  padding: 14px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(5, 5, 9, .24);
+  font-size: 9px;
+  line-height: 1.45;
+  text-align: center;
+}
 .profile-medallion { flex: 0 0 34px; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(185, 166, 236, .3); border-radius: 50%; color: #d7cbf6; background: #15131d; }
 .profile-medallion i { font-style: normal; font-size: 10px; font-weight: 800; }
 
@@ -227,6 +264,7 @@
   .guild-friends-panel { grid-column: auto; }
   .guild-command-stats { grid-template-columns: 1fr 1fr 1fr; }
   .guild-directory-card { grid-template-columns: 44px 1fr; }
+  .guild-directory-empty { min-height: 132px; padding: 19px; }
   .guild-invitations article { grid-template-columns: 42px 1fr; }
   .guild-invitations article button { grid-row: 2; }
   .guild-directory-card button { grid-column: 1 / -1; }

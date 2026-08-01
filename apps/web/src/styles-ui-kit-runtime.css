@@ -2580,3 +2580,178 @@
     justify-self: center;
   }
 }
+
+/* B.04 player polish: the permanent-progress surfaces use compact,
+   predictable rhythm. Keep generated art on the chamber perimeter only;
+   transparent assets must never create a black square around the egg. */
+.app-shell--incubation .incubator-panel {
+  min-height: 348px;
+  padding: 18px 20px 20px;
+  background-image: linear-gradient(145deg, rgba(18, 18, 28, .92), rgba(8, 8, 14, .95)) !important;
+}
+.app-shell--incubation .incubator-empty {
+  min-height: 274px;
+  row-gap: 0;
+}
+.app-shell--incubation .incubator-empty .egg-chamber {
+  width: 196px;
+  height: 188px;
+  isolation: isolate;
+  background: transparent;
+}
+.app-shell--incubation .incubator-empty .incubator-frame {
+  width: 198px;
+  height: 198px;
+  background: transparent;
+  mix-blend-mode: normal;
+}
+.app-shell--incubation .incubator-empty .egg-asset {
+  width: 126px;
+  height: 126px;
+  background: transparent;
+  mix-blend-mode: normal;
+}
+/* The hatch burst is already alpha-transparent. Screen blending its whole
+   512px layer causes a transient black rectangle in Chromium; normal compositing
+   preserves the glow while keeping the panel beneath visible. */
+.app-shell--incubation .hatch-vfx {
+  mix-blend-mode: normal;
+  background: transparent;
+}
+.app-shell--incubation .incubator-empty h2 {
+  margin: 0 0 5px;
+  font-size: 24px;
+}
+.app-shell--incubation .incubator-empty p {
+  max-width: 420px;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.app-shell--incubation .incubator-empty__action {
+  min-width: 198px;
+  min-height: 36px;
+  margin-top: 12px;
+}
+.app-shell--incubation .egg-grid .empty-slot--wide {
+  min-height: 174px;
+  padding-block: 18px;
+}
+
+.app-shell--research .research-grid {
+  gap: 12px;
+}
+.app-shell--research .research-card {
+  min-height: 218px;
+  padding: 20px;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 10px 14px;
+}
+.app-shell--research .research-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+.app-shell--research .research-card h2 {
+  margin: 3px 0 4px;
+  font-size: 20px;
+}
+.app-shell--research .research-card p {
+  max-width: 470px;
+  line-height: 1.45;
+}
+.app-shell--research .research-card .level-chip {
+  min-height: 22px;
+  padding: 0 9px;
+  border: 1px solid rgba(194, 169, 255, .28);
+  border-radius: 7px;
+  color: rgba(232, 224, 249, .82);
+  background: rgba(30, 25, 48, .82);
+  background-image: none;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06);
+  font-size: 7px;
+  letter-spacing: .08em;
+}
+.app-shell--research .research-levels {
+  margin-top: 2px;
+  gap: 4px;
+}
+.app-shell--research .research-levels i {
+  height: 5px;
+  background: rgba(255, 255, 255, .08);
+}
+.app-shell--research .research-levels i.is-filled {
+  animation: none;
+  background: var(--violet-bright);
+  box-shadow: none;
+}
+.app-shell--research .research-card > strong {
+  align-self: end;
+  min-width: 0;
+  color: var(--success);
+  font-size: 9px;
+  line-height: 1.2;
+}
+.app-shell--research .research-card > .primary-button {
+  align-self: end;
+  min-width: 176px;
+  min-height: 34px;
+}
+.app-shell--research .research-summary {
+  min-height: 68px;
+  margin-top: 12px;
+}
+
+@media (max-width: 700px) {
+  .app-shell--incubation .incubator-panel {
+    min-height: 324px;
+    padding: 16px;
+  }
+  .app-shell--incubation .incubator-empty {
+    min-height: 260px;
+  }
+  .app-shell--incubation .incubator-empty .egg-chamber {
+    width: 174px;
+    height: 166px;
+  }
+  .app-shell--incubation .incubator-empty .incubator-frame {
+    width: 178px;
+    height: 178px;
+  }
+  .app-shell--incubation .incubator-empty .egg-asset {
+    width: 112px;
+    height: 112px;
+  }
+  .app-shell--research .research-card {
+    min-height: 198px;
+    padding: 16px;
+  }
+  .app-shell--research .research-card > .primary-button {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* B.03 quick team window: every roster row keeps its own card height. The
+   previous `minmax(0, auto)` tracks were allowed to collapse when a roster
+   grew beyond the visible grid area; cards then painted into the next row and
+   behind the permanent-systems footer. Fixed minimum tracks keep the grid
+   scrollable without ever stacking monster art or action buttons on top of
+   one another. */
+.combat-monster-modal__grid {
+  grid-auto-rows: minmax(162px, max-content);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.combat-monster-modal__card {
+  min-height: 162px;
+}
+
+@media (max-width: 700px) {
+  .combat-monster-modal__grid {
+    grid-auto-rows: minmax(162px, max-content);
+  }
+  .combat-monster-modal__card {
+    min-height: 162px;
+  }
+}

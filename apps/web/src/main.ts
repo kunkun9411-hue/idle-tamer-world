@@ -5,6 +5,7 @@ import "./styles-progression-v3.css";
 import "./styles-guild.css";
 import "./styles-ui-kit-runtime.css";
 import "./styles-combat-mobile-nav.css";
+import "./styles-hub.css";
 import type { AccountBootstrapResponse, AuthoritativeRunSnapshot, GuildCommand, GuildSnapshot, RunBootstrapResponse, RunCommandResponse } from "@idle-tamer/contracts";
 import { ACTIVE_ACCOUNT_NAMESPACE_KEY, AccountApiError, AccountClient, getClientInstanceId, RunApiError } from "./account/client";
 import { AVATARS, BALANCE, COMBAT_ROLE_LABELS, FRAMES, GEM_COLORS, GEM_RARITIES, GEM_SHAPES, GEMS, getGem, getZone, ITEMS, ZONES } from "./game/catalog";
@@ -45,7 +46,7 @@ import { SYSTEM_MESSAGES } from "./game/system-messages";
 import { TEST_CHEST_REWARD, testChestOpenResult, testChestPresentation } from "./game/test-chest";
 import type { BattleState, GemShape, MonsterInstance, PlayerSettings } from "./game/types";
 
-type View = "expedition" | "objectives" | "dispatch" | "habitat" | "gems" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
+type View = "hub" | "expedition" | "objectives" | "dispatch" | "habitat" | "gems" | "incubation" | "inventory" | "research" | "guild" | "profile" | "prestige";
 type NoticeTone = "violet" | "success" | "warning";
 type CombatPanel = "missions" | "loot" | "duo" | "monsters" | "log";
 type InventoryCategory = "gems" | "consumables" | "materials" | "other";
@@ -101,6 +102,7 @@ let inventoryModalOpen = false;
 let monsterModalOpen = false;
 let inventoryCategory: InventoryCategory = "gems";
 let inventoryTooltipKey: string | null = null;
+let hubMerchantOpen = false;
 let gemTargetUid = "";
 let testChestAvailable = import.meta.env.DEV;
 let pointerInteractionActive = false;
@@ -857,6 +859,7 @@ function confirmPrestige(): void {
 
 function setView(view: View): void {
   combatAreasOpen = false;
+  hubMerchantOpen = false;
   if (game.roster.length === 0 && view !== "profile" && view !== "guild") {
     showLogin = false;
     starterDialogOpen = true;
@@ -1122,7 +1125,7 @@ function officialLogoMarkup(): string {
 }
 
 function navButton(view: View, label: string, locked = false): string {
-  const shortLabel: Record<View, string> = { expedition: "Kampf", objectives: "Aufträge", dispatch: "Missionen", habitat: "Monster", gems: "Gems", incubation: "Brut", inventory: "Inventar", research: "Labor", guild: "Gilde", profile: "Profil", prestige: "Prestige" };
+  const shortLabel: Record<View, string> = { hub: "Zentrale", expedition: "Kampf", objectives: "Aufträge", dispatch: "Missionen", habitat: "Monster", gems: "Gems", incubation: "Brut", inventory: "Inventar", research: "Labor", guild: "Gilde", profile: "Profil", prestige: "Prestige" };
   return `<button class="nav-button ${activeView === view ? "is-active" : ""}" data-view="${view}" aria-label="${label}" aria-current="${activeView === view ? "page" : "false"}"><span>${icon(view)}</span><b><span class="nav-label-full">${label}</span><span class="nav-label-short">${shortLabel[view]}</span></b>${locked ? '<i title="Vorschau ab Rang 10">10</i>' : ""}</button>`;
 }
 
@@ -1203,7 +1206,7 @@ function topShell(content: string): string {
     <div class="app-shell app-shell--ui-kit app-shell--${activeView} app-shell--zone-${game.currentZoneId}">
       <div class="ambient ambient--game" aria-hidden="true"><i></i><i></i><i></i></div>
       <header class="topbar">
-        <button class="brand" data-home aria-label="Zur Idle-Tamer-Homepage">${brandMarkup()}</button>
+        <button class="brand" data-home aria-label="Zur Etherstadt-Zentrale" title="Etherstadt-Zentrale öffnen">${brandMarkup()}</button>
         <nav class="main-nav" aria-label="Spielbereiche">
           ${activeView === "objectives" ? navButton("objectives", "Aufträge") : navButton("expedition", "Kampf")}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
         </nav>
@@ -1549,6 +1552,44 @@ function expeditionView(): string {
     </main>`;
 }
 
+function hubMerchantMarkup(): string {
+  if (!hubMerchantOpen) return "";
+  return `<div class="hub-merchant" role="dialog" aria-modal="true" aria-labelledby="hub-merchant-title">
+    <section class="hub-merchant__card">
+      <header class="hub-merchant__head"><div><span class="eyebrow">KARAWANE Â· ZENTRALPLATZ</span><h2 id="hub-merchant-title">Der Ether-H&auml;ndler</h2><p>Der Wagen ist angekommen. Angebote und Tauschgesch&auml;fte werden bald direkt mit deinem Account verkn&uuml;pft.</p></div><button class="hub-merchant__close" type="button" data-hub-merchant-close aria-label="H&auml;ndler schlie&szlig;en">&times;</button></header>
+      <div class="hub-merchant__offers">
+        <article class="hub-merchant__offer"><div><strong>Resonanz-Kiste</strong><small>Enth&auml;lt zuf&auml;llige Materialien und Gems.</small></div><button class="secondary-button" type="button" disabled>BALD VERF&Uuml;GBAR</button></article>
+        <article class="hub-merchant__offer"><div><strong>Brutstarter-Paket</strong><small>Ein Ei, Futter und eine kleine Beschleunigung.</small></div><button class="secondary-button" type="button" disabled>BALD VERF&Uuml;GBAR</button></article>
+        <article class="hub-merchant__offer"><div><strong>Deine Beute ansehen</strong><small>Der Warenstand wird sp&auml;ter direkt an dein Inventar angebunden.</small></div><button class="primary-button" type="button" data-view="inventory">INVENTAR &Ouml;FFNEN ${icon("arrow")}</button></article>
+      </div>
+    </section>
+  </div>`;
+}
+
+function hubHotspot(className: string, label: string, detail: string, action: string, iconName: "home" | View, merchant = false): string {
+  const actionMarkup = merchant ? `data-hub-merchant="true"` : `data-view="${action}"`;
+  return `<button class="hub-hotspot ${className}" ${actionMarkup} aria-label="${label}: ${detail}"><span class="hub-hotspot__icon">${icon(iconName)}</span><strong>${label}</strong><small>${detail}</small><i class="hub-hotspot__signal" aria-hidden="true"></i></button>`;
+}
+
+function hubView(): string {
+  return `<section class="page page--kit hub-page" aria-labelledby="hub-title">
+    <header class="hub-hero"><div><span class="eyebrow">ETHERSTADT Â· ZENTRALE</span><h1 id="hub-title">Deine Resonanzstadt</h1><p>Jeder Weg f&uuml;hrt von hier aus weiter. W&auml;hle ein Geb&auml;ude, um direkt in den passenden Spielbereich zu springen.</p></div><div class="hub-hero__actions"><button class="secondary-button" data-view="expedition">ZUR&Uuml;CK ZUM KAMPF ${icon("arrow")}</button></div></header>
+    <div class="hub-scene" aria-label="Etherstadt mit interaktiven Geb&auml;uden">
+      <div class="hub-scene__status"><strong><i></i> STADTNETZ ONLINE</strong><small>Alle Wege f&uuml;hren zum Etherkern</small></div>
+      ${hubHotspot("hub-hotspot--arena", "Kampfarena", "Expedition starten", "expedition", "expedition")}
+      ${hubHotspot("hub-hotspot--archive", "Monsterarchiv", "Rookie bis Ultima", "habitat", "habitat")}
+      ${hubHotspot("hub-hotspot--incubation", "Brutstation", "Eier ausbr&uuml;ten", "incubation", "incubation")}
+      ${hubHotspot("hub-hotspot--research", "Forschungslabor", "Permanente Boni", "research", "research")}
+      ${hubHotspot("hub-hotspot--guild", "Gildenhalle", "DNA &amp; Gemeinschaft", "guild", "guild")}
+      ${hubHotspot("hub-hotspot--mine", "Gem-Mine", "Ausr&uuml;stung veredeln", "gems", "gems")}
+      ${hubHotspot("hub-hotspot--caravan", "H&auml;ndler-Karawane", "Angebote ansehen", "", "inventory", true)}
+      ${hubHotspot("hub-hotspot--core", "Etherkern", "Zentrale Resonanz", "expedition", "home")}
+      <div class="hub-scene__legend"><i></i> Geb&auml;ude anklicken, Bereich &ouml;ffnen</div>
+    </div>
+    ${hubMerchantMarkup()}
+  </section>`;
+}
+
 function pageHeading(kicker: string, title: string, copy: string, meta: string, metaLiveName?: string): string {
   return `<div class="page-heading page-heading--kit"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${copy}</p></div><span class="page-heading__meta"${metaLiveName ? ` data-live="${metaLiveName}"` : ""}>${meta}</span></div>`;
 }
@@ -1838,7 +1879,7 @@ function guildView(): string {
       ${joinLocked ? `<div class="guild-cooldown panel">${icon("shield")}<span><b>GILDENWECHSEL-SPERRE</b><small>Neuer Beitritt ab ${new Date(guildSnapshot.joinAvailableAt).toLocaleString("de-DE")}.</small></span></div>` : ""}
       ${guildSnapshot.invitations.length ? `<section class="guild-invitations panel"><span class="eyebrow">OFFENE EINLADUNGEN</span>${guildSnapshot.invitations.map((invite) => `<article><span class="guild-tag">${escapeHtml(invite.guildTag)}</span><div><b>${escapeHtml(invite.guildName)}</b><small>von ${escapeHtml(invite.invitedByDisplayName)} · gültig bis ${new Date(invite.expiresAt).toLocaleDateString("de-DE")}</small></div><button data-guild-invite-accept="${invite.inviteId}" ${joinLocked ? "disabled" : ""}>ANNEHMEN</button><button class="danger-text" data-guild-invite-decline="${invite.inviteId}">ABLEHNEN</button></article>`).join("")}</section>` : ""}
       <div class="guild-onboarding-grid"><form id="guild-create-form" class="panel guild-create-card"><span class="eyebrow">NEUE GILDE</span><h2>Eigenes Chromosom gründen</h2><label>Name<input name="name" minlength="3" maxlength="32" placeholder="Etherwacht" required></label><label>Tag<input name="tag" minlength="2" maxlength="5" placeholder="ETW" required></label><label>Beschreibung<textarea name="description" maxlength="240" placeholder="Wofür steht eure Gilde?"></textarea></label><button class="primary-button" ${joinLocked || guildSyncBusy ? "disabled" : ""}>GILDE GRÜNDEN ${icon("arrow")}</button></form>
-      <section class="guild-directory"><span class="eyebrow">OFFENE GILDEN</span>${guildSnapshot.directory.length ? guildSnapshot.directory.map((guild) => `<article class="panel guild-directory-card"><span class="guild-tag">${escapeHtml(guild.tag)}</span><div><h3>${escapeHtml(guild.name)}</h3><p>${guild.memberCount}/${guild.memberLimit} Mitglieder · DNA-Stufe ${guild.dnaLevel}</p></div><button class="secondary-button" data-guild-join="${guild.guildId}" ${joinLocked || guild.joinPolicy !== "open" || guild.memberCount >= guild.memberLimit ? "disabled" : ""}>BEITRETEN</button></article>`).join("") : `<div class="empty-state panel"><b>Noch keine Gilde gegründet.</b><small>Du kannst die erste Doppelhelix der Welt beginnen.</small></div>`}</section></div>${guildFriendsMarkup(guildSnapshot.friends)}</section>`;
+      <section class="guild-directory"><span class="eyebrow">OFFENE GILDEN</span>${guildSnapshot.directory.length ? guildSnapshot.directory.map((guild) => `<article class="panel guild-directory-card"><span class="guild-tag">${escapeHtml(guild.tag)}</span><div><h3>${escapeHtml(guild.name)}</h3><p>${guild.memberCount}/${guild.memberLimit} Mitglieder · DNA-Stufe ${guild.dnaLevel}</p></div><button class="secondary-button" data-guild-join="${guild.guildId}" ${joinLocked || guild.joinPolicy !== "open" || guild.memberCount >= guild.memberLimit ? "disabled" : ""}>BEITRETEN</button></article>`).join("") : `<div class="empty-state panel guild-directory-empty" role="status" aria-live="polite"><span class="guild-directory-empty__icon">${icon("guild")}</span><div><b>Noch keine offene Gilde</b><small>Aktuell wartet hier noch keine Gemeinschaft auf neue Mitglieder.</small></div><p>Gründe links die erste Doppelhelix der Welt.</p></div>`}</section></div>${guildFriendsMarkup(guildSnapshot.friends)}</section>`;
   }
 
   const canManage = membership.role === "leader" || membership.role === "officer";
@@ -2142,7 +2183,7 @@ function render(): void {
   }
   if (showLogin) app.innerHTML = loginShell();
   else {
-    const views: Record<View, () => string> = { expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, gems: gemsView, incubation: incubationView, inventory: expeditionView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
+    const views: Record<View, () => string> = { hub: hubView, expedition: expeditionView, objectives: objectivesView, dispatch: dispatchView, habitat: habitatView, gems: gemsView, incubation: incubationView, inventory: expeditionView, research: researchView, guild: guildView, profile: profileView, prestige: prestigeView };
     const content = views[activeView]();
     app.innerHTML = activeView === "expedition" ? combatShell(content) : activeView === "prestige" ? prestigeShell(content) : topShell(content);
   }
@@ -2307,7 +2348,15 @@ function bindEvents(): void {
     }
     if (target.dataset.view) return setView(target.dataset.view as View);
     if (target.dataset.combatPanel) return toggleCombatPanel(target.dataset.combatPanel as CombatPanel);
-    if (target.hasAttribute("data-home")) return setView("expedition");
+    if (target.hasAttribute("data-hub-merchant-close")) {
+      hubMerchantOpen = false;
+      return render();
+    }
+    if (target.dataset.hubMerchant) {
+      hubMerchantOpen = true;
+      return render();
+    }
+    if (target.hasAttribute("data-home")) return setView("hub");
     if (target.dataset.level) return run(`level:${target.dataset.level}`, () => levelUp(target.dataset.level ?? ""));
     if (target.dataset.train) return run(`train:${target.dataset.train}`, () => trainWithData(target.dataset.train ?? ""));
     if (target.dataset.evolve) return run(`evolve:${target.dataset.evolve}`, () => evolveMonster(target.dataset.evolve ?? ""));
