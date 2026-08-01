@@ -27,7 +27,7 @@
   overflow: hidden;
   border: 1px solid rgba(208, 190, 255, .26);
   border-radius: 26px;
-  background: #0b0d18 url("/assets/hub/ether-city-v3.webp") center bottom / cover no-repeat;
+  background: #0b0d18 url("/assets/hub/ether-city-v4.webp") center bottom / cover no-repeat;
   box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255,255,255,.05);
   animation: hub-frame-glow 6s ease-in-out infinite;
 }
