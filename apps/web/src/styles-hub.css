@@ -27,7 +27,7 @@
   overflow: hidden;
   border: 1px solid rgba(208, 190, 255, .26);
   border-radius: 26px;
-  background: #0b0d18 url("/assets/hub/ether-city-v1.webp") center bottom / cover no-repeat;
+  background: #0b0d18 url("/assets/hub/ether-city-v2.gif") center bottom / cover no-repeat;
   box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255,255,255,.05);
   animation: hub-frame-glow 6s ease-in-out infinite;
 }
@@ -176,6 +176,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hub-scene, .hub-scene::before, .hub-scene::after, .hub-scene__status::after, .hub-scene__status i, .hub-hotspot__signal { animation: none; }
+  .hub-scene { background-image: url("/hub/ether-city-v1.webp"); }
   .hub-hotspot { transition: none; }
 }
 

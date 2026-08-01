@@ -1059,6 +1059,17 @@
       "sha256": "89d5169f33a15efa58c940cb8d354c8384c2ba6fdc1c726b0888c41ebdd2cb74"
     },
     {
+      "id": "hub.ether-city-v2",
+      "kind": "hub",
+      "path": "/assets/hub/ether-city-v2.gif",
+      "format": "gif",
+      "width": 720,
+      "height": 405,
+      "alpha": false,
+      "bytes": 639713,
+      "sha256": "dd6546ebd0be90071d9c889e3ae300d63e3fe10cfcda164d29b415aecd47f414"
+    },
+    {
       "id": "incubator.incubator-frame-v1",
       "kind": "incubator",
       "path": "/assets/incubator/incubator-frame-v1.png",
@@ -2949,17 +2960,6 @@
       "alpha": true,
       "bytes": 7196,
       "sha256": "173a0ca5a5a0fa4cdd73a6e74b55c0d38a93a331a1f074fa3ae16a15e9c2975e"
-    },
-    {
-      "id": "hub.ether-city-v1",
-      "kind": "hub",
-      "path": "/assets/hub/ether-city-v1.webp",
-      "format": "webp",
-      "width": 1672,
-      "height": 941,
-      "alpha": false,
-      "bytes": 416412,
-      "sha256": "6784a1d31b00da35193750947432d283111b427266a986eb9800c7daedb7a556"
     },
     {
       "id": "zone.glass-gardens-v2",

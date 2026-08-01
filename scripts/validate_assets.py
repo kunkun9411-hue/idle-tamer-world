@@ -90,6 +90,8 @@ def validate_manifest_asset(asset: dict[str, object]) -> None:
             "bytes": path.stat().st_size,
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         }
+        if kind == "hub" and path.suffix.lower() == ".gif" and getattr(image, "n_frames", 1) != 30:
+            raise ValueError(f"{path}: animated hub background must contain 30 frames")
     if asset != actual:
         mismatches = {key: (asset[key], actual[key]) for key in required if asset[key] != actual[key]}
         raise ValueError(f"asset manifest: stale metadata for {asset['id']}: {mismatches}")
@@ -245,7 +247,7 @@ def main() -> None:
     actual_paths = {
         f"/{path.relative_to(PUBLIC).as_posix()}"
         for path in ASSET_ROOT.rglob("*")
-        if path.is_file() and path.suffix.lower() in {".png", ".webp"}
+        if path.is_file() and path.suffix.lower() in {".png", ".webp", ".gif"}
     }
     assets = manifest.get("assets", [])
     manifest_paths = {asset["path"] for asset in assets}

@@ -57,7 +57,7 @@ def main() -> None:
     paths = sorted(
         path
         for path in ASSET_ROOT.rglob("*")
-        if path.is_file() and path.suffix.lower() in {".png", ".webp"}
+        if path.is_file() and path.suffix.lower() in {".png", ".webp", ".gif"}
     )
     payload = {
         "manifestVersion": 1,
