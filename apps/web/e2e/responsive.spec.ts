@@ -9,6 +9,24 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
   await page.getByTestId("login-submit").click();
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
+  await expect(page.locator(".hub-page")).toBeVisible();
+  const hubLayout = await page.evaluate(() => {
+    const hotspots = [...document.querySelectorAll<HTMLElement>(".hub-hotspot")]
+      .filter((element) => getComputedStyle(element).display !== "none")
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { label: element.getAttribute("aria-label"), left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+      });
+    return { viewportWidth: innerWidth, hotspots };
+  });
+  if (hubLayout.viewportWidth <= 600) {
+    for (let index = 1; index < hubLayout.hotspots.length; index += 1) {
+      const previous = hubLayout.hotspots[index - 1];
+      const current = hubLayout.hotspots[index];
+      expect(current.top, `${previous.label} overlaps ${current.label}`).toBeGreaterThanOrEqual(previous.bottom - 1);
+    }
+  }
+  await page.locator(".hub-hotspot--arena").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
 
   const skipTutorial = page.locator("#skip-tutorial");
@@ -71,10 +89,11 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
 
   const mobileCombatNavigation = (page.viewportSize()?.width ?? 0) <= 620;
   const selectors = [".fighter--player", ".fighter--enemy", ".combat-control-dock", ...(mobileCombatNavigation ? [] : [".combat-rail"])];
+  const visualSelectors = [".fighter--player .monster-avatar", ".fighter--enemy .monster-avatar"];
   const boxes = await page.evaluate((targets) => Object.fromEntries(targets.map((selector) => {
     const rect = document.querySelector(selector)?.getBoundingClientRect();
     return [selector, rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null];
-  })), selectors);
+  })), [...selectors, ...visualSelectors]);
   for (const selector of selectors) {
     const box = boxes[selector];
     expect(box, `${selector} needs a visible box`).not.toBeNull();
@@ -85,8 +104,9 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
     expect(box!.y + box!.height, `${selector} ends inside the viewport`).toBeLessThanOrEqual((page.viewportSize()?.height ?? 0) + 1);
   }
   const primaryNavigation = boxes[mobileCombatNavigation ? ".combat-control-dock" : ".combat-rail"]!;
-  for (const selector of [".fighter--player", ".fighter--enemy"]) {
+  for (const selector of visualSelectors) {
     const fighter = boxes[selector]!;
+    expect(fighter, `${selector} needs a visible sprite box`).not.toBeNull();
     const overlapWidth = Math.min(primaryNavigation.x + primaryNavigation.width, fighter.x + fighter.width) - Math.max(primaryNavigation.x, fighter.x);
     const overlapHeight = Math.min(primaryNavigation.y + primaryNavigation.height, fighter.y + fighter.height) - Math.max(primaryNavigation.y, fighter.y);
     expect(overlapWidth > 4 && overlapHeight > 4, `${selector} must not be covered by the primary navigation`).toBe(false);

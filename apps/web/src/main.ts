@@ -658,7 +658,7 @@ async function chooseStarter(definitionId: string): Promise<void> {
   starterDialogOpen = false;
   showLogin = false;
   showOfflineReport = false;
-  activeView = "expedition";
+  activeView = "hub";
   clientUiState = accountApiEnabled ? "online" : "local";
   battle = createBattleState();
   const starter = activeMonster();
@@ -891,7 +891,7 @@ function setView(view: View): void {
 
 function enterLocalPrototype(): void {
   showLogin = false;
-  activeView = "expedition";
+  activeView = "hub";
   if (game.roster.length === 0) starterDialogOpen = true;
   else {
     showOfflineReport = true;
@@ -935,7 +935,7 @@ function activateAccount(bootstrap: AccountBootstrapResponse): boolean {
   }
   showLogin = false;
   clientUiState = "online";
-  activeView = "expedition";
+  activeView = "hub";
   starterDialogOpen = !serverStarter;
   showOfflineReport = Boolean(serverStarter && shouldShowOfflineReport(isRunOnline(), {
     offlineSeconds: loaded.offlineSeconds,
@@ -1208,7 +1208,7 @@ function topShell(content: string): string {
       <header class="topbar">
         <button class="brand" data-home aria-label="Zur Etherstadt-Zentrale" title="Etherstadt-Zentrale öffnen">${brandMarkup()}</button>
         <nav class="main-nav" aria-label="Spielbereiche">
-          ${activeView === "objectives" ? navButton("objectives", "Aufträge") : navButton("expedition", "Kampf")}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
+          ${activeView === "hub" ? "" : navButton("hub", "Zentrale")}${activeView === "objectives" ? navButton("objectives", "Aufträge") : navButton("expedition", "Kampf")}${navButton("dispatch", "Expeditionen")}${navButton("habitat", "Monster")}${navButton("gems", "Gems")}${navButton("incubation", "Brutstation")}${navButton("inventory", "Inventar")}${navButton("research", "Forschung")}${navButton("guild", "Gilde")}
         </nav>
         <div class="topbar__account">${playerAccountCard()}</div>
       </header>
@@ -1217,7 +1217,7 @@ function topShell(content: string): string {
         ? `<button class="text-button" data-view="profile">PROFIL &amp; EINSTELLUNGEN</button>`
         : `<button class="text-button" id="reset-game">Spielstand zurücksetzen</button>`}</footer>
     </div>
-    ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${starterDialog()}`;
+     ${qaPanel()}${clientStatusMarkup()}${uiNoticeMarkup()}${activeView === "hub" ? offlineReport() : ""}${starterDialog()}`;
 }
 
 function combatShell(content: string): string {

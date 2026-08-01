@@ -247,6 +247,7 @@
 }
 .app-shell--ui-kit .nav-button > span svg { opacity: 0; }
 .app-shell--ui-kit .nav-button[data-view="expedition"] > span { background-image: url("/assets/ui/kit/system/g01-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="hub"] > span { background-image: url("/assets/ui/kit/system/g02-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="objectives"] > span { background-image: url("/assets/ui/kit/system/g08-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="dispatch"] > span { background-image: url("/assets/ui/kit/system/g07-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="habitat"] > span { background-image: url("/assets/ui/kit/system/g03-v1.webp"); }
@@ -1082,6 +1083,7 @@
 }
 .app-shell--ui-kit .nav-button > span svg { opacity: 0; }
 .app-shell--ui-kit .nav-button[data-view="expedition"] > span { background-image: url("/assets/ui/kit/system/g01-v1.webp"); }
+.app-shell--ui-kit .nav-button[data-view="hub"] > span { background-image: url("/assets/ui/kit/system/g02-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="objectives"] > span { background-image: url("/assets/ui/kit/system/g08-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="dispatch"] > span { background-image: url("/assets/ui/kit/system/g07-v1.webp"); }
 .app-shell--ui-kit .nav-button[data-view="habitat"] > span { background-image: url("/assets/ui/kit/system/g03-v1.webp"); }

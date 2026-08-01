@@ -8,7 +8,7 @@ const skipTutorialIfVisible = async (page: Page): Promise<void> => {
   if (await skip.count()) await skip.click();
 };
 
-test("fresh account reaches starter choice and the focused auto battle", async ({ page }) => {
+test("fresh account reaches the city and can enter the focused auto battle", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("login-screen")).toBeVisible();
   await expect(page.locator('img[alt="Idle Tamer World"]').first()).toBeVisible();
@@ -19,6 +19,10 @@ test("fresh account reaches starter choice and the focused auto battle", async (
   await expect(page.getByTestId("starter-dialog")).toBeVisible();
   await page.getByTestId("starter-pyrook").click();
   await expect(page.getByTestId("offline-report")).toHaveCount(0);
+  await expect(page.locator(".hub-page")).toBeVisible();
+  const arena = page.locator(".hub-hotspot--arena");
+  await expect(arena).toHaveAttribute("aria-label", "Kampfarena: Expedition starten");
+  await arena.click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();
   await expect(page.getByText("Violetter Saum").first()).toBeVisible();
   await expect(page.getByTestId("qa-panel")).toHaveCount(0);

@@ -29,6 +29,7 @@
   border-radius: 26px;
   background: #0b0d18 url("/assets/hub/ether-city-v1.webp") center bottom / cover no-repeat;
   box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255,255,255,.05);
+  animation: hub-frame-glow 6s ease-in-out infinite;
 }
 
 .hub-scene::before,
@@ -66,6 +67,8 @@
 }
 
 .hub-scene__status { top: 18px; left: 18px; padding: 10px 13px; }
+.hub-scene__status { overflow: hidden; }
+.hub-scene__status::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 30%, rgba(226, 212, 255, .18) 48%, transparent 66%); transform: translateX(-130%); animation: hub-sweep 7s ease-in-out infinite; }
 .hub-scene__status strong { display: block; font-size: .75rem; letter-spacing: .14em; color: #eeeaff; }
 .hub-scene__status small { display: block; margin-top: 3px; color: rgba(231, 230, 248, .68); }
 .hub-scene__status i { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #79f2d0; box-shadow: 0 0 14px #79f2d0; animation: hub-status-pulse 2.4s ease-in-out infinite; }
@@ -132,6 +135,8 @@
 @keyframes hub-breathe { 0%, 100% { opacity: .72; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
 @keyframes hub-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(42px, -28px, 0); } }
 @keyframes hub-status-pulse { 0%, 100% { opacity: .6; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.18); } }
+@keyframes hub-frame-glow { 0%, 100% { box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255,255,255,.05), inset 0 0 28px rgba(153, 111, 255, .04); } 50% { box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255,255,255,.1), inset 0 0 42px rgba(153, 111, 255, .14); } }
+@keyframes hub-sweep { 0%, 28% { transform: translateX(-130%); } 58%, 100% { transform: translateX(130%); } }
 
 @media (max-width: 900px) {
   .hub-page { width: min(100% - 20px, 760px); }
@@ -170,6 +175,61 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hub-scene::before, .hub-scene::after, .hub-scene__status i, .hub-hotspot__signal { animation: none; }
+  .hub-scene, .hub-scene::before, .hub-scene::after, .hub-scene__status::after, .hub-scene__status i, .hub-hotspot__signal { animation: none; }
   .hub-hotspot { transition: none; }
+}
+
+/* B.05 visual refinement: the city labels are wayfinding markers, not cards.
+   Keep the artwork visible and let the building itself carry the weight. */
+.hub-hotspot {
+  min-width: 0;
+  max-width: 178px;
+  grid-template-columns: 25px minmax(0, 1fr);
+  grid-template-areas: "icon title" "icon detail";
+  align-items: center;
+  column-gap: 8px;
+  padding: 7px 10px 8px;
+  border-color: rgba(231, 221, 255, .24);
+  border-radius: 10px;
+  background: rgba(12, 12, 27, .62);
+  box-shadow: 0 8px 22px rgba(4, 3, 15, .28), inset 0 0 14px rgba(183, 149, 255, .05);
+  backdrop-filter: blur(8px);
+}
+.hub-hotspot::after { display: none; }
+.hub-hotspot__icon { grid-area: icon; width: 25px; height: 25px; border-radius: 8px; }
+.hub-hotspot strong { grid-area: title; font-size: .68rem; letter-spacing: .075em; line-height: 1.1; white-space: nowrap; }
+.hub-hotspot small { grid-area: detail; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .59rem; line-height: 1.15; }
+.hub-hotspot__signal { top: 8px; right: 8px; width: 5px; height: 5px; }
+.hub-hotspot:hover, .hub-hotspot:focus-visible {
+  background: rgba(31, 22, 54, .84);
+  box-shadow: 0 12px 28px rgba(4, 3, 15, .4), 0 0 18px rgba(181, 141, 255, .18), inset 0 0 18px rgba(183, 149, 255, .1);
+}
+.hub-hotspot--core { min-width: 0; }
+
+@media (max-width: 600px) {
+  .hub-hotspot { max-width: none; padding: 9px 12px; }
+  .hub-hotspot strong { font-size: .7rem; }
+  .hub-hotspot small { font-size: .61rem; }
+}
+
+/* B.05 mobile wayfinding: keep city markers readable and vertically distinct.
+   The scene is intentionally a little taller on phones so the seven destinations
+   never stack on top of each other or the legend. */
+@media (max-width: 600px) {
+  .hub-scene { min-height: 840px; }
+  .hub-hotspot {
+    grid-template-columns: 31px minmax(0, 1fr);
+    grid-template-areas: "icon title" "icon detail";
+    min-height: 52px;
+  }
+  .hub-hotspot__icon { grid-area: icon; align-self: center; }
+  .hub-hotspot strong { grid-area: title; }
+  .hub-hotspot small { grid-area: detail; }
+  .hub-hotspot--arena { top: 44%; }
+  .hub-hotspot--archive { top: 51%; }
+  .hub-hotspot--incubation { top: 58%; }
+  .hub-hotspot--research { top: 65%; }
+  .hub-hotspot--guild { top: 72%; }
+  .hub-hotspot--mine { top: 79%; }
+  .hub-hotspot--caravan { top: 86%; }
 }
