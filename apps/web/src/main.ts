@@ -1557,7 +1557,7 @@ function hubMerchantMarkup(): string {
   if (!hubMerchantOpen) return "";
   return `<div class="hub-merchant" role="dialog" aria-modal="true" aria-labelledby="hub-merchant-title">
     <section class="hub-merchant__card">
-      <header class="hub-merchant__head"><div><span class="eyebrow">KARAWANE Â· ZENTRALPLATZ</span><h2 id="hub-merchant-title">Der Ether-H&auml;ndler</h2><p>Der Wagen ist angekommen. Angebote und Tauschgesch&auml;fte werden bald direkt mit deinem Account verkn&uuml;pft.</p></div><button class="hub-merchant__close" type="button" data-hub-merchant-close aria-label="H&auml;ndler schlie&szlig;en">&times;</button></header>
+      <header class="hub-merchant__head"><div><span class="eyebrow">KARAWANE · ZENTRALPLATZ</span><h2 id="hub-merchant-title">Der Ether-H&auml;ndler</h2><p>Der Wagen ist angekommen. Angebote und Tauschgesch&auml;fte werden bald direkt mit deinem Account verkn&uuml;pft.</p></div><button class="hub-merchant__close" type="button" data-hub-merchant-close aria-label="H&auml;ndler schlie&szlig;en">&times;</button></header>
       <div class="hub-merchant__offers">
         <article class="hub-merchant__offer"><div><strong>Resonanz-Kiste</strong><small>Enth&auml;lt zuf&auml;llige Materialien und Gems.</small></div><button class="secondary-button" type="button" disabled>BALD VERF&Uuml;GBAR</button></article>
         <article class="hub-merchant__offer"><div><strong>Brutstarter-Paket</strong><small>Ein Ei, Futter und eine kleine Beschleunigung.</small></div><button class="secondary-button" type="button" disabled>BALD VERF&Uuml;GBAR</button></article>
@@ -1574,7 +1574,7 @@ function hubHotspot(className: string, label: string, detail: string, action: st
 
 function hubView(): string {
   return `<section class="page page--kit hub-page" aria-labelledby="hub-title">
-    <header class="hub-hero"><div><span class="eyebrow">ETHERSTADT Â· ZENTRALE</span><h1 id="hub-title">Deine Resonanzstadt</h1><p>Jeder Weg f&uuml;hrt von hier aus weiter. W&auml;hle ein Geb&auml;ude, um direkt in den passenden Spielbereich zu springen.</p></div><div class="hub-hero__actions"><button class="secondary-button" data-view="expedition">ZUR&Uuml;CK ZUM KAMPF ${icon("arrow")}</button></div></header>
+    <header class="hub-hero"><div><span class="eyebrow">ETHERSTADT · ZENTRALE</span><h1 id="hub-title">Deine Resonanzstadt</h1><p>Jeder Weg f&uuml;hrt von hier aus weiter. W&auml;hle ein Geb&auml;ude, um direkt in den passenden Spielbereich zu springen.</p></div><div class="hub-hero__actions"><button class="secondary-button" data-view="expedition">ZUR&Uuml;CK ZUM KAMPF ${icon("arrow")}</button></div></header>
     <div class="hub-scene" aria-label="Etherstadt mit interaktiven Geb&auml;uden">
       <div class="hub-scene__status"><strong><i></i> STADTNETZ ONLINE</strong><small>Alle Wege f&uuml;hren zum Etherkern</small></div>
       ${hubHotspot("hub-hotspot--arena", "Kampfarena", "Expedition starten", "expedition", "expedition")}
