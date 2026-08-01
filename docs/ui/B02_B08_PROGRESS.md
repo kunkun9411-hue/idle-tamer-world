@@ -1,30 +1,30 @@
 # Roadmap B · B.02–B.08 Arbeitsstand
 
-Stand: **30. Juli 2026, Roadmap B bei 28/32 – B.03 und B.08 offen**
+Stand: **30. Juli 2026, Roadmap B 32/32 – vollständig abgenommen und eingefroren**
 
-Dieses Dokument trennt nachweisbare Vorarbeit von einer formalen Abnahme. Kein
-Block wird dadurch vorzeitig freigegeben. B.01 ist nach B.01.4 visuell
-abgenommen; B.02 sowie B.04–B.07 sind ebenfalls abgeschlossen. B.03 wurde nach
-der visuellen Spielersicht wieder geöffnet. Deshalb bleiben auch die
-Gesamtprüfung und Abnahme in B.08 offen.
+Dieses Dokument trennt die historische technische Vorarbeit von der späteren
+formalen Abnahme. B.01–B.08 sind abgeschlossen. Die zwischenzeitlich erneut
+geöffnete Kampfszenenprüfung in B.03 und die davon abhängige Gesamtprüfung in
+B.08 wurden mit der finalen Live-Spielerabnahme geschlossen.
 
 Statusautorität ist
 `apps/web/public/roadmap/roadmap-status.json`; die dazugehörige schriftliche
 Fortschrittstabelle steht in `docs/ROADMAP_B_DESIGN_UI.md`. Bei einem
 Widerspruch gelten diese beiden Quellen und nicht ältere Nachweise in diesem
-Dokument. Roadmap C ist bis zur synchronen Abnahme von B.03 und B.08 gesperrt.
+Dokument. Roadmap B ist synchron auf 32/32 abgeschlossen; Roadmap C ist der
+aktive nächste Arbeitsabschnitt.
 
 ## Nachweisbare Vorarbeit
 
-| Block | Bereits nachweisbar | Noch offen für die formale Abnahme |
+| Block | Nachweisbare Umsetzung | Abschlussstatus |
 | --- | --- | --- |
 | B.02 Navigation | `navigation-ia.spec.ts` prüft Ziele als Kampfpanel sowie Monster und Inventar als gegenseitig ausschließende Kampf-Schnellfenster. Jeder Inventar-Einstieg öffnet jetzt dasselbe 64-Slot-Fenster in der Kampfszene; die frühere Inventar-Unterseite ist entfernt und Herstellung liegt unter Forschung. Expeditionen, Brut, Forschung und Gilde bleiben eigene Szenen; Profil und die Rückkehr zum Kampf sind ebenfalls geprüft. Auf 390 px entfällt der im Kampf redundante globale Kampf-Eintrag; fünf primäre Kampfaktionen und sechs sekundäre Bereichsziele bleiben beschriftet und mindestens 44 px hoch. Die globale Zweireihen-Navigation langer Unterseiten orientiert sich an der nutzbaren Dokumentbreite statt `100vw`, damit kein rechter Button unter dem Scrollbalken liegt. | geschlossen: B.02.4 intern abgenommen und als Fertig im öffentlichen Status markiert |
-| B.03 Kampfszene/HUD | B03-Vertrag, Fokus-/Zwei-Monster-QA-Fixture, Core-Loop, Responsive-Checks und aktuelle Desktop-/Tablet-/Mobile-Captures prüfen Monsterposition, kompakte Nameplates, die hierarchisierten Bedienleisten sowie Front/Support/Zonenbonus. Die am 29. Juli gefundene mobile Eingabeblockade ist behoben und regressionsgesichert. Die Spieleridentität ist als gemeinsame Avatar-/Name-/Rang-/Währungskarte statt loser HUD-Chips umgesetzt. | **offen:** vollständige Live-Spielerprüfung des zusammenhängenden Spiels und danach formale B.03.3/B.03.4-Abnahme |
+| B.03 Kampfszene/HUD | B03-Vertrag, Fokus-/Zwei-Monster-QA-Fixture, Core-Loop, Responsive-Checks und aktuelle Desktop-/Tablet-/Mobile-Captures prüfen Monsterposition, kompakte Nameplates, die hierarchisierten Bedienleisten sowie Front/Support/Zonenbonus. Die am 29. Juli gefundene mobile Eingabeblockade ist behoben und regressionsgesichert. Die Spieleridentität ist als gemeinsame Avatar-/Name-/Rang-/Währungskarte statt loser HUD-Chips umgesetzt. | geschlossen: zusammenhängender Live-Spielerweg geprüft und B.03.3/B.03.4 formal abgenommen |
 | B.04 Sammlung/Entwicklung | `state-matrix.spec.ts` deckt leere Brut-/Habitat-Zustände und die gesperrte Prestige-Bestätigung ab; Core-Loop deckt Ei, Fragment, Hyperlevel, Evolution und Gem aus. | geschlossen: B.04 intern abgenommen und als Fertig im öffentlichen Status markiert |
 | B.05 Profil/Identität | `profile-guild-surfaces.spec.ts` und der Live-Gilden-Capture prüfen getrennte Avatar-/Rahmen-Auswahl, Fallbacks und die Identität im Mitglieder-/Freundesbereich; H01–H12 sind im UI-Kit verfügbar. | geschlossen: Ranglistenlogik bleibt bewusst Roadmap C |
 | B.06 Gilde/Soziales | Vertrag, servergespeister Gildenhub, Feature-Flag-Aus-Zustand, 4/4 Foundation, 7/7 Auth, 8/8 Run, 7/7 Guild-Integration sowie `live-guild.spec.ts` und Capture sind grün. | geschlossen: QA-Account und Testgilde nach dem Lauf entfernt |
 | B.07 Responsive/A11y | Layout-Audit, Responsive-, Keyboard-, Kontrast-, Reduced-Motion- und `b07-b08-acceptance.spec.ts`-Läufe sind grün; drei Viewports und 2×-Typografiestress sind dokumentiert. Der frühere Befund „keine P0/P1-Layoutschuld“ ist eine technische Baseline, kein Ersatz für die aktuelle Gesamtprüfung. | geschlossen: echte Geräte-Smokes gehören zu Roadmap D |
-| B.08 Gesamtpolish | 136 textfreie Rasterelemente, 10 CSS-/Rotationsableitungen, Zustandsmatrix, Asset-Budget, bereinigte Capture-Sätze ohne Altdateien, spielerbezogene Texte, Live-Gilden-Capture, Mikrofeedback und Produktionsbuild liefern technische Vorarbeit. QA-01 bis QA-05 aus der Spielerprüfung sind technisch geschlossen. | **offen:** B.08.3 wartet auf die vollständige Live-Spielerprüfung und B.03-Abnahme; B.08.4 und die Übergabe an C bleiben gesperrt |
+| B.08 Gesamtpolish | 136 textfreie Rasterelemente, 10 CSS-/Rotationsableitungen, Zustandsmatrix, Asset-Budget, bereinigte Capture-Sätze ohne Altdateien, spielerbezogene Texte, Live-Gilden-Capture, Mikrofeedback und Produktionsbuild liefern technische Vorarbeit. QA-01 bis QA-05 aus der Spielerprüfung sind technisch geschlossen. | geschlossen: Gesamtpolish erneut geprüft, B.08.3/B.08.4 abgenommen und Übergabe an C freigegeben |
 
 ## Reproduzierbare Prüfbefehle
 
@@ -46,7 +46,8 @@ eine spätere Runtime-Kompression wird separat bewertet.
 
 ## Historischer Nachtlauf-Nachweis für B.08
 
-Der Nachtlauf belegt technische Vorarbeit, aber **keine aktuelle B.08-Abnahme**:
+Der Nachtlauf belegte zu diesem Zeitpunkt technische Vorarbeit, war für sich
+allein aber **noch keine B.08-Abnahme**:
 
 - die komplette G30–G36-/H09–H12-Serienliste inklusive Master, Chroma-Quelle,
   Runtime-WebP, Manifest, Katalogkarte und Assetprüfung;
@@ -59,21 +60,20 @@ Der Nachtlauf belegt technische Vorarbeit, aber **keine aktuelle B.08-Abnahme**:
   Responsive/A11y und den damaligen Gesamtpolish-Stand.
 
 Der aktive Gildenpfad wurde auf der Dev-Domain mit einem ephemeren Konto
-bestätigt und anschließend bereinigt. Dieser Nachweis bleibt gültig, ersetzt
-aber nicht die wieder geöffnete visuelle Prüfung von B.03 oder die erneute
-Gesamtprüfung von B.08.
+bestätigt und anschließend bereinigt. Dieser historische Nachweis bleibt
+gültig; die später ausgeführte Live-Spielerprüfung ergänzt ihn.
 
-Der aktuelle Stand ist **28/32**:
+## Finale Abnahme und Übergabe
 
-- offen: B.03.3 und B.03.4;
-- davon abhängig offen: B.08.3 und B.08.4;
-- keine Übergabe an Roadmap C.
+QA-01 bis QA-05 sowie die Dokumentationsabweichung QA-04 sind geschlossen.
+Die vollständige Live-Spielerprüfung zeigte keine erhebliche neue Bedien- oder
+Kampfszenen-Schuld. B.03 und B.08 wurden deshalb am **30.07.2026** formal
+abgenommen und die Statusquellen gemeinsam auf **32/32** gesetzt.
 
-QA-03 und QA-05 sind technisch behoben; ebenso sind QA-01, QA-02 und die
-Dokumentationsabweichung QA-04 geschlossen. Erst wenn die vollständige
-Live-Spielerprüfung keine erhebliche neue Bedien- oder Kampfszenen-Schuld zeigt,
-B.03 abgenommen und B.08 anschließend erneut geprüft wurde, dürfen
-`apps/web/public/roadmap/roadmap-status.json` und
-`docs/ROADMAP_B_DESIGN_UI.md` gemeinsam auf 32/32 gesetzt werden. Neue
-Ranglistenlogik, größere Wettbewerbssysteme und Content gehören danach in
-Roadmap C.
+Verbindlicher Nachweis:
+[Roadmap-B-Live-Abnahme](ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md), geprüft
+gegen `5820733c5dab4dfc8e35d411574e2b8491aafd15`.
+
+Roadmap B ist eingefroren. Neue Ranglistenlogik, größere Wettbewerbssysteme
+und Content gehören in die jetzt aktive Roadmap C. Die Alpha-Testgruppe beginnt
+weiterhin erst nach dem vollständigen Abschluss von Roadmap D.

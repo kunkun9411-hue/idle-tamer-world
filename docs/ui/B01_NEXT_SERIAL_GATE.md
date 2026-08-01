@@ -1,11 +1,12 @@
 # B.01.2 – Nächste serielle Qualitätsgates
 
-Stand: **26. Juli 2026**
+Stand des Katalogs: **26. Juli 2026**
+Aktualisierter Roadmap-Status: **30. Juli 2026 · Roadmap B 32/32 abgeschlossen und eingefroren · Roadmap C aktiv**
 Status: **G26/G27/G28/G29/G30/G31/G32/G33/G34/G35/G36/H09/H10/H11/H12 freigegeben; B.01.4 abgenommen**
 
 B.01.2 **Bauen**, B.01.3 **Prüfen** und B.01.4 **Abnehmen** sind abgeschlossen.
-Der Designsystem-Freeze gilt für B.02–B.08; der aktive Roadmap-Stand liegt
-inzwischen bei B.06 Prüfen.
+Der Designsystem-Freeze galt für B.02–B.08 und bleibt nach der vollständigen
+Abnahme von Roadmap B als verbindliche UI-Basis für Roadmap C bestehen.
 
 Dieses Dokument friert die nächste Produktionsreihenfolge des Silver-Ether-
 Baukastens ein. Es beschreibt Rollen, Runtime-Namen, Ableitungen und
@@ -279,21 +280,24 @@ Produktentscheidung bleibt ein eigener Schritt.
 ### Roadmap-B-Blöcke nach B.01
 
 Die folgende Tabelle ist der **historische technische Baseline-Nachweis** vom
-26. Juli. Sie schließt B.01 als Designsystem-Freeze ab, ist aber keine aktuelle
-Freigabe von B.03 oder B.08. Der verbindliche Status steht in
-`apps/web/public/roadmap/roadmap-status.json` und
-`docs/ROADMAP_B_DESIGN_UI.md`: Roadmap B bleibt bei 28/32, B.03 und B.08 sind
-offen und es gibt keine Übergabe an Roadmap C.
+26. Juli. Sie schloss B.01 als Designsystem-Freeze ab und dokumentiert den
+damaligen Zwischenstand der nachfolgenden Blöcke. Die spätere formale
+Live-Abnahme ist nicht aus dieser Tabelle abzuleiten. Der heutige verbindliche
+Status steht in `apps/web/public/roadmap/roadmap-status.json`,
+`docs/ROADMAP_B_DESIGN_UI.md` und der
+[Roadmap-B-Live-Abnahme](ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md):
+Roadmap B ist bei 32/32 eingefroren.
+Roadmap C ist aktiv.
 
 | Block | Planen | Bauen | Prüfen | Abnehmen / eindeutiges Exit-Kriterium |
 | --- | --- | --- | --- | --- |
 | B.02 Navigation | Spielerwege und Hierarchie festgelegt | Hauptnavigation, Kontextaktionen und mobile Dock umgesetzt | `navigation-ia.spec.ts`, Responsive- und Layout-Audit grün | Kampf, Sammlung, Brut, Forschung, Gilde und Profil eindeutig erreichbar |
-| B.03 Kampfszene/HUD | Kampfzentrum, HUD-Prioritäten und versteckbare Panels festgelegt | Bühne, Monster, Teamwahl, Gegnerstatus und Panel-Chrome umgesetzt | Fokus-/Zwei-Monster-E2E und Captures als technische Baseline grün | **aktuell offen:** vollständige Live-Spielerprüfung und formale Abnahme |
+| B.03 Kampfszene/HUD | Kampfzentrum, HUD-Prioritäten und versteckbare Panels festgelegt | Bühne, Monster, Teamwahl, Gegnerstatus und Panel-Chrome umgesetzt | Fokus-/Zwei-Monster-E2E und Captures als technische Baseline grün | historischer Zwischenstand; später durch die Live-Spielerprüfung formal abgenommen |
 | B.04 Sammlung/Entwicklung | Run-/Permanent-Ebenen und Reset-Grenzen festgelegt | Habitat, Brut, Inventar, Forschung, Gems und Prestige umgesetzt | State-Matrix, Core-Loop und Zone-10-Gate grün | Run-Fortschritt und permanente Entwicklung unterscheidbar |
 | B.05 Profil/Identität | Avatar-, Rahmen-, Besitz- und Auswahl-Hierarchie festgelegt | Profilfläche, Layer und Identitätsornamente umgesetzt | Auswahl-, Fallback-, Responsive- und Live-Gilden-Nachweis grün | Dieselbe Identität bleibt in Profil, Gilde und Sozial-Leerzuständen konsistent; Ranglistenlogik startet in C |
 | B.06 Gilde/Soziales | DNA, Rollen, Ziele, Boss, Expedition, Freunde, Chat, Moderation festgelegt | Servergespeister Hub und Feature-Flag-Aus-Zustand umgesetzt | 4/4, 7/7, 8/8, 7/7 Integrationen plus Live-Browser-Capture grün | Kooperation nachvollziehbar und moderierbar |
 | B.07 Responsive/A11y | Viewports, Eingaben, Kontrast, Fokus, Zoom, Touch und Bewegung festgelegt | Responsive Raster, Tastaturführung und Motion-Fallbacks umgesetzt | Layout-Audit, Matrix, 2×-Typografiestress, Keyboard und Reduced Motion grün | historische Baseline; echte Geräte-Smokes folgen in Roadmap D |
-| B.08 Polish/Übergabe | Budget, Szenenmatrix und C-Übergabekriterien festgelegt | Mikrofeedback, Übergänge, Restzustände und visuelle Schulden technisch bearbeitet | Gesamtregression, Captures, Live-Capture und Build als technische Baseline grün | **aktuell offen:** B.08.3/B.08.4; keine Übergabe an C |
+| B.08 Polish/Übergabe | Budget, Szenenmatrix und C-Übergabekriterien festgelegt | Mikrofeedback, Übergänge, Restzustände und visuelle Schulden technisch bearbeitet | Gesamtregression, Captures, Live-Capture und Build als technische Baseline grün | historischer Zwischenstand; später formal abgenommen und an C übergeben |
 
 Die vorherigen Layoutschulden – mobile Navigationskollision und Accountleisten-
 Überlauf – sind durch das einreihige 7er-Dock und das kompakte Desktop-Raster

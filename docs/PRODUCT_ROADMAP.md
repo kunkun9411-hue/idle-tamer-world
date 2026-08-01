@@ -12,7 +12,15 @@ Vor Block 4 wurde ein Qualitätscheckpoint eingeschoben: Die Kampfszene lädt ni
 
 Die bestätigte Content-Richtung umfasst 40 sammelbare Rookie-Linien: zehn vorhandene plus die 30 derzeitigen Normalgegner-Designs. Die fünf Bosse bleiben separat. Diese Migration wird vor dem serverautoritativen Besitz- und Eiermodell eingeplant.
 
-Die acht Blöcke bilden die abgeschlossene **Roadmap A – Systemfundament**. Roadmap B für Design und UI ist jetzt aktiv; danach folgen Roadmap C für Content und Features sowie Roadmap D für Abnahme und Prüfung. Erst nach vollständiger Roadmap D beginnt die geschlossene Alpha-Testgruppe. Die historische Prozentanzeige von A bezieht sich ausschließlich auf ihre 32 Gates. Details: `RELEASE_LIFECYCLE.md`; der aktive Arbeitsrahmen steht in `ROADMAP_B_DESIGN_UI.md`.
+Die acht Blöcke bilden die abgeschlossene **Roadmap A – Systemfundament**.
+Roadmap B für Design und UI ist ebenfalls mit 32/32 Gates abgeschlossen und
+eingefroren. Roadmap C für Content und Features ist jetzt aktiv; danach folgt
+Roadmap D für Abnahme und Prüfung. Erst nach vollständiger Roadmap D beginnt
+die geschlossene Alpha-Testgruppe. Die Prozentanzeigen von A und B beziehen
+sich ausschließlich auf ihre jeweils 32 Gates. Details:
+`RELEASE_LIFECYCLE.md`; die finale B-Abnahme vom **30.07.2026** für
+`5820733c5dab4dfc8e35d411574e2b8491aafd15` steht in
+[Roadmap-B-Live-Abnahme](ui/ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md).
 
 ## Arbeitsmodell: 8 Blöcke × 4 Schritte
 
@@ -46,7 +54,10 @@ flowchart LR
 | 7 | Gilden, Gilden-DNA und soziale Systeme | [x] | [x] | [x] | [x] | **Fertig** |
 | 8 | Fundament einfrieren und an Roadmap B übergeben | [x] | [x] | [x] | [x] | **Fertig** |
 
-Gesamtfortschritt: **32 von 32 Schritten abgeschlossen (100 %)**. Roadmap A ist eingefroren; neue UI-Arbeit wird ausschließlich in Roadmap B gezählt.
+Gesamtfortschritt dieser historischen Roadmap A: **32 von 32 Schritten
+abgeschlossen (100 %)**. Roadmap A ist eingefroren. Roadmap B wurde später
+ebenfalls vollständig abgeschlossen; neue Arbeit wird im aktiven
+Roadmap-C-Abschnitt gezählt.
 
 ## Verbindliche Arbeitsregeln
 
@@ -418,7 +429,7 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 - [x] Roadmap-A-Abschlussbericht mit offenen UX-Themen veröffentlichen
 - [x] Systemfundament gegen die ursprünglichen acht Blöcke abnehmen
 - [x] Roadmap A einfrieren und nur noch für kritische Fehler öffnen
-- [x] Roadmap B als aktiven Design- und UI-Zyklus starten
+- [x] damals Roadmap B als folgenden Design- und UI-Zyklus starten
 - [x] öffentliche Statusseite von A.08 auf B.01 umstellen
 - [x] ausdrücklich festhalten, dass noch keine Alpha-Testgruppe startet
 
@@ -449,8 +460,16 @@ Abgenommen in `GAMEPLAY_FOUNDATION_SPEC.md`: Zielkorridore, Foundation-1.0-Werte
 
 ## Direkt als Nächstes
 
-**Roadmap A ist mit 32/32 Gates abgeschlossen.** Als Nächstes läuft Roadmap B, Block B.01, Schritt 1: Der vorhandene UI-Bestand wird zu einem verbindlichen Designsystem für die eigentliche Spieleroberfläche. Die Alpha bleibt bis zum Abschluss von Roadmap D geschlossen.
+**Roadmap A und Roadmap B sind mit jeweils 32/32 Gates abgeschlossen und
+eingefroren.** Roadmap C ist der aktive nächste Abschnitt für Content und
+Features. Der in B entstandene UI-Baukasten und seine Abnahmeregeln bleiben
+für alle neuen C-Flächen verbindlich. Die Alpha bleibt bis zum Abschluss von
+Roadmap D geschlossen.
 
 PvP, Handel, Saisons, Events und weitere große Features gehören in Roadmap C. Reale Alpha-Spielerdaten werden erst nach der vollständigen Abnahme in Roadmap D erhoben.
 
-Der technische Wiedereinstieg und die Block-6-/7-Nachweise stehen in `CURRENT_CHECKPOINT.md`, `backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md` und `backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.
+Der technische Wiedereinstieg, die finale B-Abnahme und die
+Block-6-/7-Nachweise stehen in `CURRENT_CHECKPOINT.md`,
+`ui/ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md`,
+`backend/BLOCK6_SOLO_ONLINE_ACCEPTANCE.md` und
+`backend/BLOCK7_GUILD_SOCIAL_ACCEPTANCE.md`.

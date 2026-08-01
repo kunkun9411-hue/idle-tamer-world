@@ -95,3 +95,40 @@ werden. Bis dahin gibt es keine Übergabe an Roadmap C.
 
 Der Roadmap-Status bleibt bewusst **28/32**. Dieser Nachweis schließt keine der
 noch offenen formalen Live-/Gesamtabnahmen B.03.3, B.03.4, B.08.3 oder B.08.4.
+
+## Finale Live-Folgeprüfung vom 30. Juli 2026
+
+Der zuvor offene zusammenhängende Spielerlauf wurde am Live-SHA
+`5820733c5dab4dfc8e35d411574e2b8491aafd15` abgeschlossen. Dieser Abschnitt
+ergänzt den historischen Bericht; frühere Zwischenbefunde bleiben unverändert
+und werden nicht rückwirkend als damalige Abnahme dargestellt.
+
+Geprüft wurden 1280×720, 1024×768 und 390×844. Mobile wurde in einer echten
+Dev-Session bedient. Die Spielerkarte maß 286×66 px auf Desktop und Tablet
+sowie 286×58 px auf Mobile. Die Monsterdarstellung maß 307/379 px auf Desktop
+und 300/370 px auf Tablet. Das mobile Kampfdock blieb mit 378×56 px, das
+Bereiche-Fenster mit 378×253 px vollständig im Viewport. Der Touch-Tooltip im
+Inventar war tatsächlich per Touch bedienbar; der Brut-CTA maß 220×44 px.
+
+In keinem Referenz-Viewport entstand horizontale Überbreite. Während des
+Live-Laufs meldete die Browserkonsole 0 Warnungen und 0 Fehler.
+
+Die automatisierte Abschlussprüfung war ebenfalls grün:
+
+- `pnpm check`: 67 Web-, 24 API-, 11 Datenbank-Unit- und 6 Core-Tests,
+  sämtliche Builds sowie 271 geprüfte Assets;
+- E2E mit vier Workern: 66 bestanden, 2 übersprungen;
+- isolierte Bossprüfung: 6/6;
+- Capture-Matrix: 3/3.
+
+Die Backend-Evidenz 28/28 Datenbank-Integrationen, Live Auth 1/1 und Live Gilde
+1/1 stammt aus dem Lauf vor dem finalen UI-only-Commit. Da der finale Commit
+diese Backendpfade nicht verändert hat, bleibt sie gültige, aber ausdrücklich
+ältere Evidenz.
+
+Der QA-Zustand wurde anschließend bereinigt: 3 synthetische Konten wurden
+anonymisiert, 1 QA-Gilde entfernt und 0 aktive QA-Muster verblieben.
+
+**Finale Entscheidung:** B.03.3, B.03.4, B.08.3 und B.08.4 sind geschlossen.
+B.03 und B.08 sind geprüft und abgenommen. Verbindliche Abschlussquelle:
+[`ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md`](./ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md).

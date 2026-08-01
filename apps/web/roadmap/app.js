@@ -238,7 +238,7 @@ const renderDetail = (block, data) => {
 
   const hint = block.steps.every((step) => step.done)
     ? data.status === "complete"
-      ? "Dieser Block ist abgenommen und eingefroren. Roadmap A wird nur für kritische Fehler erneut geöffnet."
+      ? `Dieser Block ist abgenommen und eingefroren. Roadmap ${data.roadmap} wird nur für kritische Fehler erneut geöffnet.`
       : "Dieser Block ist abgenommen. Er wird nur für Fehlerkorrekturen erneut geöffnet."
     : isActive
       ? `Aktuell aktiv: ${getBlockCode(data, block)}, Schritt ${activeStep.number} – ${activeStep.step.name}.`
@@ -272,10 +272,12 @@ const init = async () => {
   document.querySelector("#program-b-percent").textContent = formatPercent(activeTotals.percent);
   document.querySelector("#switch-a-progress").textContent = `${aTotals.completed}/${aTotals.total} · ${formatPercent(aTotals.percent)}`;
   document.querySelector("#switch-b-progress").textContent = `${activeTotals.completed}/${activeTotals.total} · ${formatPercent(activeTotals.percent)}`;
-  document.querySelector("#active-block-label").textContent = `${getBlockCode(activeData, activeBlock)} · ${activeBlock.title}`;
+  document.querySelector("#active-block-label").textContent = activeData.status === "complete"
+    ? "ROADMAP C · CONTENT & FEATURES"
+    : `${getBlockCode(activeData, activeBlock)} · ${activeBlock.title}`;
   const activeStep = resolveActiveStep(activeData, activeBlock);
   document.querySelector("#active-step-label").textContent = activeData.status === "complete"
-    ? "ABGESCHLOSSEN · ÜBERGABE AN C"
+    ? "ROADMAP B EINGEFROREN · 32/32"
     : `${activeStep.number} · ${activeStep.step.name}`;
   document.querySelector("#completed-label").textContent = `${activeTotals.completed} / ${activeTotals.total} B-Gates`;
   document.querySelector("#updated-label").textContent = activeData.updated;

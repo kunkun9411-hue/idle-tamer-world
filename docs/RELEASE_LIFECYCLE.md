@@ -19,7 +19,14 @@ flowchart LR
     D --> E["Geschlossene Alpha-Testgruppe"]
 ```
 
-**Roadmap A ist mit 32/32 Gates abgeschlossen und eingefroren. Roadmap B ist aktiv.** Die aktuelle Prozentanzeige misst ausschließlich die 32 Design- und UI-Gates von B. Die 100 % von A und der Fortschritt von B sind weder der Gesamtfortschritt bis Alpha noch der Gesamtfortschritt bis Version 1.0.
+**Roadmap A und Roadmap B sind jeweils mit 32/32 Gates abgeschlossen und
+eingefroren. Roadmap C ist der aktive Arbeitsabschnitt.** Die finale
+Live-Spielerabnahme von B erfolgte am **30.07.2026** gegen
+`5820733c5dab4dfc8e35d411574e2b8491aafd15`; siehe
+[Roadmap-B-Live-Abnahme](ui/ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md).
+Die 100 % von A und B bezeichnen ausschließlich die jeweiligen 32
+Roadmap-Gates und sind weder der Gesamtfortschritt bis Alpha noch der
+Gesamtfortschritt bis Version 1.0.
 
 ## Alpha erst nach Roadmap D
 

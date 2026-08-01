@@ -1,9 +1,9 @@
 {
   "roadmap": "B",
-  "status": "in_progress",
-  "updated": "30. Juli 2026 · Live-Auth und Gilde grün, finaler Spieler-Freeze offen",
-  "activeBlock": 3,
-  "activeStep": "Prüfen",
+  "status": "complete",
+  "updated": "30. Juli 2026 · Roadmap B 32/32 abgeschlossen und eingefroren",
+  "activeBlock": null,
+  "activeStep": null,
   "blocks": [
     {
       "id": 1,
@@ -43,8 +43,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "HUD-Prioritäten, Zwei-Monster-Bühne und einklappbare Nebeninformationen im B03-Vertrag festgelegt" },
         { "name": "Bauen", "done": true, "note": "Kampf-Dock, Frontwahl, Duo, Speicher, Aufträge, Kampflog und Fokusmodus umgesetzt" },
-        { "name": "Prüfen", "done": false, "note": "Desktop, Tablet und Mobile sowie Front/Support/Zonenbonus sind automatisiert und visuell geprüft; vollständiger Live-Spielerlauf des deployten Stands bleibt offen" },
-        { "name": "Abnehmen", "done": false, "note": "Noch nicht freigegeben; B.03 bleibt bis zur vollständigen Live-Spielerabnahme offen" }
+        { "name": "Prüfen", "done": true, "note": "Finaler Live-Spielerlauf auf idle-tamer-world.de mit SHA 5820733c5dab4dfc8e35d411574e2b8491aafd15: 1280×720, 1024×768 und 390×844 geprüft, Browserkonsole 0 Fehler" },
+        { "name": "Abnehmen", "done": true, "note": "Kampfszene, Schnellfenster, Front/Support, Zonenbonus und Rückwege im zusammenhängenden Live-Spielerlauf freigegeben" }
       ]
     },
     {
@@ -113,8 +113,8 @@
       "steps": [
         { "name": "Planen", "done": true, "note": "136 UI-Kit-Rasterelemente, 10 Ableitungen, aktuelle Capture-Matrix, 16-MB-Foundation-Budget und C-Übergaberegeln festgelegt" },
         { "name": "Bauen", "done": true, "note": "Mikrofeedback, Fokusmodus, Zustandsfeedback, textfreie Chrome-Bausteine und reduzierte Bewegung geschlossen" },
-        { "name": "Prüfen", "done": false, "note": "QA-01 bis QA-05 sind technisch behoben; wartet auf vollständigen Live-Spielerlauf, B.03-Abnahme und erneute Gesamtpolish-Prüfung" },
-        { "name": "Abnehmen", "done": false, "note": "Roadmap B wird nicht an C übergeben, solange B.03 und B.08 offen sind" }
+        { "name": "Prüfen", "done": true, "note": "Finaler Gesamtpolish mit 66 bestandenen und 2 erwartungsgemäß übersprungenen Browsertests, 3/3 Capture-Viewports und fehlerfreier Browserkonsole geprüft" },
+        { "name": "Abnehmen", "done": true, "note": "Roadmap B ist mit 32/32 Gates abgeschlossen und eingefroren; Roadmap C ist als nächster aktiver Abschnitt freigegeben" }
       ]
     }
   ]

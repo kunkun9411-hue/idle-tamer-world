@@ -4,9 +4,10 @@ Stand: 30. Juli 2026. Dieses Dokument ist der schnelle Wiedereinstiegspunkt. Aus
 
 ## Projektstand
 
-- Version: `0.2.0`, **Roadmap B – Design, Interface und Lesbarkeit**
+- Version: `0.2.0`, **Roadmap C – Content und Features**
 - Roadmap A: **32/32 Gates, vollständig abgenommen und technisch eingefroren**
-- Roadmap B: **aktiv bei B.03 – Kampfszene visuell nacharbeiten; 28/32 Gates**
+- Roadmap B: **32/32 Gates, vollständig abgenommen und eingefroren**
+- Roadmap C: **nächster aktiver Arbeitsabschnitt**
 - B.01-Art: vollständiger textfreier Silver-Ether-Baukasten mit 136 Rasterelementen, zehn CSS-/Rotationsableitungen, G30–G36-Systemicons und H09–H12-Identitätslayern integriert; technische Prüfkette grün, B.01.4 visuell abgenommen und eingefroren
 - Alpha-Status: noch keine Alpha-Testgruppe; Freigabe erst nach Roadmap D
 - Spiel: `https://idle-tamer-world.de/`
@@ -154,18 +155,26 @@ Ein früheres Root-Passwort wurde im Chat genannt. SSH-Passwortanmeldung ist dea
 
 ## Nächster sinnvoller Arbeitsauftrag
 
-Roadmap A ist abgeschlossen. Roadmap B bleibt nach der visuellen Spielerprüfung bewusst offen: B.03 (Kampfszene) und B.08 (Gesamtpolish) sind noch nicht abgenommen.
+Roadmap A und Roadmap B sind abgeschlossen und eingefroren. Die finale
+Live-Spielerabnahme von B wurde am **30.07.2026** gegen
+`5820733c5dab4dfc8e35d411574e2b8491aafd15` durchgeführt; der vollständige
+Nachweis steht in der
+[Roadmap-B-Live-Abnahme](ui/ROADMAP_B_LIVE_ACCEPTANCE_2026-07-30.md).
 
-1. aktuellen Stand deployen und den zusammenhängenden Live-Spielerweg erneut
-   vollständig durchspielen;
-2. dabei Kampfszene, Schnellfenster, Truhe, Duo und Rückkehrwege gegen die
-   automatisierten Desktop-/Tablet-/Mobile-Belege vergleichen;
-3. B.03 nur bei schuldenfreiem Live-Befund abnehmen, danach B.08 erneut prüfen
-   und erst dann die Übergabe an Roadmap C freigeben;
-4. Roadmap D weiterhin erst nach C für Abnahme, Balance, Sicherheit und Last vorbereiten.
+1. Roadmap C als aktiven Abschnitt für Content und Features eröffnen;
+2. Monster, Gegner, Zonen, Bosse sowie die vorgesehenen Mehrspielersysteme
+   blockweise planen, bauen, prüfen und abnehmen;
+3. den eingefrorenen UI-Vertrag aus Roadmap B bei jeder neuen Spielerfläche
+   weiterverwenden;
+4. Roadmap D erst nach C für Regression, Balance, Sicherheit, Last und
+   Geräteabnahme ausführen.
 
 Die erste Runtime-Brücke des UI-Baukastens ist in `ui/UI_KIT_RUNTIME_BRIDGE.md`
-dokumentiert. Weitere visuelle Nacharbeit bleibt bis zur B-Abnahme in B.03 und
-B.08; Roadmap C ergänzt erst danach neue Content- und Serververträge.
+dokumentiert. Weitere UI-Änderungen sind ab jetzt entweder notwendige
+Fehlerkorrekturen am eingefrorenen B-Stand oder Teil einer konkreten
+Roadmap-C-Funktion.
 
-PvP, Handel, Events und weitere große Features werden in Roadmap C geplant. Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an die geschlossene Alpha-Testgruppe gegeben. Der aktive Arbeitsrahmen liegt in `ROADMAP_B_DESIGN_UI.md`.
+PvP, Handel, Events und weitere große Features werden in Roadmap C geplant.
+Roadmap D übernimmt Gesamtprüfung und Abnahme. Erst danach wird das Spiel an
+die geschlossene Alpha-Testgruppe gegeben. Der eingefrorene UI-Arbeitsrahmen
+liegt in `ROADMAP_B_DESIGN_UI.md`.
