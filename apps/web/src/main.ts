@@ -1580,6 +1580,7 @@ function hubView(): string {
       <div class="hub-scene__fx hub-scene__fx--mine" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="hub-scene__fx hub-scene__fx--core" aria-hidden="true"></div>
       <div class="hub-scene__fx hub-scene__fx--incubation" aria-hidden="true"></div>
+      <div class="hub-scene__fx hub-scene__fx--research" aria-hidden="true"></div>
       <div class="hub-scene__fx hub-scene__fx--guild" aria-hidden="true"></div>
       <div class="hub-scene__fx hub-scene__fx--arena" aria-hidden="true"></div>
       <div class="hub-scene__fx hub-scene__fx--caravan" aria-hidden="true"></div>
