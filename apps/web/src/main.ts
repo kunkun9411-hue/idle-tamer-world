@@ -1290,6 +1290,7 @@ function combatZoneTabs(): string {
 }
 
 const COMBAT_AREA_ENTRIES: Array<[View, string]> = [
+  ["hub", "Zentrale"],
   ["expedition", "Kampf"],
   ["habitat", "Monster"],
   ["incubation", "Brut"],
