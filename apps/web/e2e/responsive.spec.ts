@@ -25,6 +25,7 @@ test("starter flow and combat HUD fit the configured viewport", async ({ page })
       const current = hubLayout.hotspots[index];
       expect(current.top, `${previous.label} overlaps ${current.label}`).toBeGreaterThanOrEqual(previous.bottom - 1);
     }
+    expect(hubLayout.hotspots[0]?.top).toBeLessThan(page.viewportSize()?.height ?? 0);
   }
   await page.locator(".hub-hotspot--arena").click();
   await expect(page.getByTestId("combat-scene")).toBeVisible();

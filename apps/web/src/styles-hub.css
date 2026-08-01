@@ -213,10 +213,11 @@
 }
 
 /* B.05 mobile wayfinding: keep city markers readable and vertically distinct.
-   The scene is intentionally a little taller on phones so the seven destinations
-   never stack on top of each other or the legend. */
+   The scene gives the seven destinations a steady touch rhythm; the desktop
+   legend is redundant on phones because every marker is already labeled. */
 @media (max-width: 600px) {
-  .hub-scene { min-height: 840px; }
+  .hub-scene { min-height: 780px; }
+  .hub-scene__legend { display: none; }
   .hub-hotspot {
     grid-template-columns: 31px minmax(0, 1fr);
     grid-template-areas: "icon title" "icon detail";
@@ -225,11 +226,11 @@
   .hub-hotspot__icon { grid-area: icon; align-self: center; }
   .hub-hotspot strong { grid-area: title; }
   .hub-hotspot small { grid-area: detail; }
-  .hub-hotspot--arena { top: 44%; }
-  .hub-hotspot--archive { top: 51%; }
-  .hub-hotspot--incubation { top: 58%; }
-  .hub-hotspot--research { top: 65%; }
-  .hub-hotspot--guild { top: 72%; }
-  .hub-hotspot--mine { top: 79%; }
-  .hub-hotspot--caravan { top: 86%; }
+  .hub-hotspot--arena { top: 20%; }
+  .hub-hotspot--archive { top: 27%; }
+  .hub-hotspot--incubation { top: 34%; }
+  .hub-hotspot--research { top: 41%; }
+  .hub-hotspot--guild { top: 48%; }
+  .hub-hotspot--mine { top: 55%; }
+  .hub-hotspot--caravan { top: 62%; }
 }
